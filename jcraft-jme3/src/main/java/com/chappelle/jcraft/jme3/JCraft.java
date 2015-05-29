@@ -1,11 +1,13 @@
 package com.chappelle.jcraft.jme3;
 
+import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.chappelle.jcraft.BlockHelper;
 import com.chappelle.jcraft.Blocks;
 import com.chappelle.jcraft.CubesSettings;
+import com.chappelle.jcraft.GameSettings;
 import com.chappelle.jcraft.Vector3Int;
 import com.chappelle.jcraft.World;
 import com.jme3.app.SimpleApplication;
@@ -27,23 +29,29 @@ public class JCraft extends SimpleApplication implements ActionListener
 	public static void main(String[] args)
 	{
 		Logger.getLogger("").setLevel(Level.SEVERE);
-		JCraft app = new JCraft();
-		app.setShowSettings(false);
+
+		GameSettings gameSettings = new GameSettings(new File(System.getProperty("user.home")));
+		gameSettings.load();
+
+		JCraft app = new JCraft(gameSettings);
+		app.setShowSettings(gameSettings.showSettings);
 		app.start();
 	}
 
-	public JCraft()
+	public JCraft(GameSettings gameSettings)
 	{
+		this.gameSettings = gameSettings;
 		settings = new AppSettings(true);
-		settings.setWidth(1366);
-		settings.setHeight(768);
+		settings.setWidth(gameSettings.screenWidth);
+		settings.setHeight(gameSettings.screenHeight);
 		settings.setTitle("JCraft - Sandbox");
-//		settings.setFrameRate(60);
+		settings.setFrameRate(gameSettings.frameRate);
 	}
 	
 	private final Vector3Int terrainSize = new Vector3Int(50, 10, 50);
 	private int terrainIndex = terrainSize.getX();
 
+	private GameSettings gameSettings;
 	private CubesSettings cubesSettings;
 	private BlockTerrainControl blockTerrain;
 	private BlockHelper blockHelper;
@@ -54,6 +62,7 @@ public class JCraft extends SimpleApplication implements ActionListener
 	@Override
 	public void simpleInitApp()
 	{
+		
 		initControls();
 		initBlockTerrain();
 		cam.lookAtDirection(new Vector3f(1, 0, 1), Vector3f.UNIT_Y);
@@ -289,4 +298,11 @@ public class JCraft extends SimpleApplication implements ActionListener
     {
     	return blockHelper;
     }
+
+	@Override
+	public void destroy()
+	{
+		super.destroy();
+		gameSettings.save();
+	}
 }
