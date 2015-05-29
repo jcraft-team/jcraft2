@@ -1,11 +1,11 @@
 package com.chappelle.jcraft.blocks;
 
-import com.cubes.Block;
-import com.cubes.BlockSkin;
-import com.cubes.BlockSkin_TextureLocation;
-import com.cubes.Chunk;
-import com.cubes.Vector3Int;
-import com.cubes.World;
+import com.chappelle.jcraft.Block;
+import com.chappelle.jcraft.BlockSkin;
+import com.chappelle.jcraft.BlockSkin_TextureLocation;
+import com.chappelle.jcraft.Chunk;
+import com.chappelle.jcraft.Vector3Int;
+import com.chappelle.jcraft.World;
 
 public class Grass extends Block
 {

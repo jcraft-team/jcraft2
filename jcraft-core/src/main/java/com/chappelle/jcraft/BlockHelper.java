@@ -1,12 +1,6 @@
 package com.chappelle.jcraft;
 
 import com.chappelle.jcraft.blocks.PickedBlock;
-import com.cubes.Block;
-import com.cubes.BlockNavigator;
-import com.cubes.CubesSettings;
-import com.cubes.Util;
-import com.cubes.Vector3Int;
-import com.cubes.World;
 import com.jme3.collision.CollisionResults;
 import com.jme3.math.Ray;
 import com.jme3.math.Vector2f;

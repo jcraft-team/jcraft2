@@ -1,7 +1,7 @@
 package com.chappelle.jcraft.blocks;
 
-import com.cubes.Block;
-import com.cubes.Vector3Int;
+import com.chappelle.jcraft.Block;
+import com.chappelle.jcraft.Vector3Int;
 import com.jme3.collision.CollisionResults;
 import com.jme3.math.Vector3f;
 
@@ -21,7 +21,7 @@ public class PickedBlock
     {
         this.block = block;
         Vector3f collisionContactPoint = collisionResults.getClosestCollision().getContactPoint();
-        this.collisionLocation = com.cubes.Util.compensateFloatRoundingErrors(collisionContactPoint);
+        this.collisionLocation = com.chappelle.jcraft.Util.compensateFloatRoundingErrors(collisionContactPoint);
         this.blockLocation = blockLocation;
         this.contactNormal = collisionResults.getClosestCollision().getContactNormal();
         this.cameraDirection = cameraDirection;

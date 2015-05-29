@@ -4,9 +4,6 @@ import com.chappelle.jcraft.blocks.Door;
 import com.chappelle.jcraft.blocks.Glass;
 import com.chappelle.jcraft.blocks.Grass;
 import com.chappelle.jcraft.blocks.Torch;
-import com.cubes.Block;
-import com.cubes.BlockManager;
-import com.cubes.World;
 
 public class Blocks
 {
