@@ -114,7 +114,7 @@ public abstract class BlockShape
     				}
     				else
     				{
-    					World terrain = chunk.getTerrain();
+    					World terrain = chunk.world;
     					Chunk neighborChunk = terrain.getChunkNeighbor(chunk, Direction.FRONT);
     					if(neighborChunk == null)
     					{
@@ -135,7 +135,7 @@ public abstract class BlockShape
     				}
     				else
     				{
-    					World terrain = chunk.getTerrain();
+    					World terrain = chunk.world;
     					Chunk neighborChunk = terrain.getChunkNeighbor(chunk, Direction.BACK);
     					if(neighborChunk == null)
     					{
@@ -156,7 +156,7 @@ public abstract class BlockShape
     				}
     				else
     				{
-    					World terrain = chunk.getTerrain();
+    					World terrain = chunk.world;
     					Chunk neighborChunk = terrain.getChunkNeighbor(chunk, Direction.LEFT);
     					if(neighborChunk == null)
     					{
@@ -177,7 +177,7 @@ public abstract class BlockShape
     				}
     				else
     				{
-    					World terrain = chunk.getTerrain();
+    					World terrain = chunk.world;
     					Chunk neighborChunk = terrain.getChunkNeighbor(chunk, Direction.RIGHT);
     					if(neighborChunk == null)
     					{

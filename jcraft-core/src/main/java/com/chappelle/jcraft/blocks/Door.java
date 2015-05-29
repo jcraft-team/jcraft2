@@ -62,7 +62,7 @@ public class Door extends Block
 		
 		if(!top && myLocation.subtract(0, 1, 0).equals(removedBlockLocation))//Block underneath the door
 		{
-			terrainMgr.removeBlock(this, myLocation);
+			terrainMgr.removeBlock(myLocation);
 		}
 	}
 	

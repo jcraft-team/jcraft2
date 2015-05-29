@@ -1,22 +1,17 @@
 package com.chappelle.jcraft;
 
-import com.chappelle.jcraft.blocks.BlockTerrainManager;
-import com.cubes.BlockChunkControl;
 import com.cubes.Chunk;
 import com.cubes.CubesSettings;
-import com.cubes.MeshGenerator;
 import com.cubes.Vector3Int;
+import com.cubes.World;
 import com.jme3.asset.AssetManager;
 import com.jme3.font.BitmapFont;
 import com.jme3.font.BitmapText;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
-import com.jme3.scene.CameraNode;
-import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.AbstractControl;
-import com.jme3.scene.control.CameraControl.ControlDirection;
 import com.jme3.system.AppSettings;
 
 public class HUDControl extends AbstractControl
@@ -33,21 +28,17 @@ public class HUDControl extends AbstractControl
 	private BitmapText chunkLocationLabel;
 	private BitmapText lightLevelLabel;
 	private PlayerControl player;
-	private BlockTerrainManager terrainMgr;
-//	private Geometry geometry;
-//	private CameraNode cameraNode;
+	private World world;
 	
 	public HUDControl(JCraft app, AppSettings appSettings, PlayerControl player)
 	{
 		this.node = new Node();
+		this.world = app.world;
 		this.app = app;
-		this.terrainMgr = app.getBlockTerrainManager();
 		this.guiNode = app.getGuiNode();
 		this.assetManager = app.getAssetManager();
 		this.settings = appSettings;
 		this.player = player;
-//		this.cameraNode = new CameraNode("selectedItemNode", app.getCamera());
-//		this.cameraNode.setControlDir(ControlDirection.CameraToSpatial);
 	}
 	
 	@Override
@@ -57,7 +48,6 @@ public class HUDControl extends AbstractControl
         {
             Node parentNode = (Node) spatial;
             parentNode.attachChild(node);
-//            parentNode.attachChild(cameraNode);
 
             guiNode.detachAllChildren();
             
@@ -102,12 +92,6 @@ public class HUDControl extends AbstractControl
             y-= 25;
             lightLevelLabel.setLocalTranslation(x, y, 0);
             app.getGuiNode().attachChild(lightLevelLabel);
-
-//            geometry = new Geometry("selectedBlock");
-//            geometry.setMesh(MeshGenerator.generateMesh(player.getSelectedBlock()));
-//            geometry.setMaterial(app.getCubesSettings().getUnshadedBlockMaterial());
-//            geometry.setLocalTranslation(player.getLocalTranslation().add(0, -50, 20));
-//            cameraNode.attachChild(geometry);
         }	
 	}
 	
@@ -120,11 +104,11 @@ public class HUDControl extends AbstractControl
 		blockLocationLabel.setText("Block location: " + blockLoc);//TODO: replace with cubeSettings.getBlockSize()
 		if(blockLoc != null)
 		{
-			lightLevelLabel.setText("Light Level: " + terrainMgr.getTerrain().getLight(blockLoc.subtract(0, 1, 0)));
-			Chunk chunk = terrainMgr.getTerrain().getChunk(blockLoc);
+			lightLevelLabel.setText("Light Level: " + world.getLight(blockLoc.subtract(0, 1, 0)));
+			Chunk chunk = world.getChunk(blockLoc);
 			if(chunk != null)
 			{
-				chunkLocationLabel.setText("Chunk location: " + chunk.getLocation());
+				chunkLocationLabel.setText("Chunk location: " + chunk.location);
 			}
 		}
 	}

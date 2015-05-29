@@ -3,10 +3,10 @@ package com.chappelle.jcraft;
 import com.chappelle.jcraft.blocks.PickedBlock;
 import com.cubes.Block;
 import com.cubes.BlockNavigator;
-import com.cubes.BlockTerrainControl;
 import com.cubes.CubesSettings;
 import com.cubes.Util;
 import com.cubes.Vector3Int;
+import com.cubes.World;
 import com.jme3.collision.CollisionResults;
 import com.jme3.math.Ray;
 import com.jme3.math.Vector2f;
@@ -17,17 +17,17 @@ import com.jme3.system.AppSettings;
 
 public class BlockHelper
 {
-    private BlockTerrainControl blockTerrain;
+    private World blockTerrain;
     private AppSettings settings;
     private Camera cam;
     private Node blocksNode;
     private CubesSettings cubeSettings;
 
-    public BlockHelper(JCraft game, BlockTerrainControl blockTerrain, AppSettings settings, Node blocksNode, CubesSettings cubeSettings)
+    public BlockHelper(Camera camera, World blockTerrain, AppSettings settings, Node blocksNode, CubesSettings cubeSettings)
     {
         this.blockTerrain = blockTerrain;
         this.settings = settings;
-        this.cam = game.getCamera();
+        this.cam = camera;
         this.blocksNode = blocksNode;
         this.cubeSettings = cubeSettings;
     }

@@ -32,12 +32,12 @@ public class MeshGenerator
 				for(int z = 0; z < blockTerrain.getSettings().getChunkSizeZ(); z++)
 				{
 					tmpLocation.set(x, y, z);
-					Block block = blockChunk.getBlock(tmpLocation);
+					Block block = blockChunk.chunk.getBlock(tmpLocation);
 					if(block != null)
 					{
-						BlockShape blockShape = block.getShape(blockChunk, tmpLocation);
+						BlockShape blockShape = block.getShape(blockChunk.chunk, tmpLocation);
 						blockShape.prepare(isTransparent, meshData);
-						blockShape.addTo(blockChunk, block, tmpLocation);
+						blockShape.addTo(blockChunk.chunk, block, tmpLocation);
 					}
 				}
 			}

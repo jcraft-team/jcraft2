@@ -50,7 +50,7 @@ public class BlockModel{
                     if(collisionResult != null){
                         tmpLocation.set(location).addLocal(x, y, z);
                         Block block = getMaterialBlock(collisionResult.getGeometry().getMaterial());
-                        blockTerrain.setBlock(tmpLocation, block);
+                        blockTerrain.world.setBlock(tmpLocation, block);
                     }
                 }
             }

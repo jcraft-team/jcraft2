@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.cubes.network;
 
 import java.io.ByteArrayInputStream;
@@ -9,14 +5,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import com.cubes.*;
 
-/**
- *
- * @author Carl
- */
 public class CubesSerializer{
     
-    public static byte[][][][] writeChunksToBytes(BlockTerrainControl blockTerrain){
-        BlockChunkControl[][][] chunks = blockTerrain.getChunks();
+    public static byte[][][][] writeChunksToBytes(World world){
+        Chunk[][][] chunks = world.chunks;
         byte[][][][] bytes = new byte[chunks.length][chunks[0].length][chunks[0][0].length][];
         for(int x=0;x<chunks.length;x++){
             for(int y=0;y<chunks[x].length;y++){

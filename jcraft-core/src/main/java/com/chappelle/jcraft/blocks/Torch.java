@@ -40,7 +40,7 @@ public class Torch extends Block
         Vector3Int attachedLocation = (Vector3Int)state.get(VAR_ATTACHED_BLOCK);
         if(removedBlockLocation.equals(attachedLocation))
         {
-            terrainMgr.removeBlock(this, myLocation);
+            terrainMgr.removeBlock(myLocation);
         }
     }
     

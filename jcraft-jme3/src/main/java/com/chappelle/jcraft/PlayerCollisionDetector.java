@@ -1,14 +1,14 @@
 package com.chappelle.jcraft;
 
 import com.cubes.Block;
-import com.cubes.BlockTerrainControl;
 import com.cubes.CubesSettings;
 import com.cubes.Vector3Int;
+import com.cubes.World;
 import com.jme3.math.Vector3f;
 
 public class PlayerCollisionDetector
 {
-	private BlockTerrainControl blockTerrain;
+	private World world;
 	private float blockSize;
 
 	public float xPen = 0, yPen = 0, zPen = 0; // penetration vector
@@ -22,9 +22,9 @@ public class PlayerCollisionDetector
 	private Vector3f corner7;
 	private Vector3f corner8;
 	
-	public PlayerCollisionDetector(BlockTerrainControl blockTerrain, CubesSettings cubesSettings)
+	public PlayerCollisionDetector(World world, CubesSettings cubesSettings)
 	{
-		this.blockTerrain = blockTerrain;
+		this.world = world;
 		
 		blockSize = cubesSettings.getBlockSize();
 		float extents = cubesSettings.getBlockSize()/4;
@@ -63,7 +63,7 @@ public class PlayerCollisionDetector
 	{
 		Vector3f corner = playerLocation.add(cornerOffset);
 		Vector3Int cell = Vector3Int.fromVector3f(corner.divide(blockSize));
-		Block block = blockTerrain.getBlock(cell);
+		Block block = world.getBlock(cell);
 		if(block != null && block.isSolid())
 		{
 			cell.multLocal((int)blockSize);//Convert cell to world coordinates

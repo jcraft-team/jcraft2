@@ -1,9 +1,9 @@
 package com.chappelle.jcraft;
 
-import com.chappelle.jcraft.blocks.BlockTerrainManager;
 import com.chappelle.jcraft.blocks.PickedBlock;
 import com.cubes.Block;
 import com.cubes.CubesSettings;
+import com.cubes.World;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Node;
@@ -19,17 +19,17 @@ public class PlayerControl extends NodeControl
 	private boolean gravityEnabled = true;
 	private BlockHelper blockHelper;
 	private CubesSettings cubesSettings;
-	private BlockTerrainManager terrainMgr;
 	private Block selected;
 	private Camera cam;
+	private World world;
 
 	public PlayerControl(JCraft app)
 	{
-		this.terrainMgr = app.getBlockTerrainManager();
 		this.cubesSettings = app.getCubesSettings();
 		this.blockHelper = app.getBlockHelper();
 		cam = app.getCamera();
-		collision = new PlayerCollisionDetector(terrainMgr.getTerrain(), cubesSettings);
+		this.world = app.world;
+		collision = new PlayerCollisionDetector(app.world, cubesSettings);
 		selectBlock(1);
 	}
 	
@@ -166,7 +166,7 @@ public class PlayerControl extends NodeControl
 		if(pickedBlock != null)
 		{
 			System.out.println("Removing block at " + pickedBlock.getBlockLocation());
-			terrainMgr.removeBlock(pickedBlock);
+			world.removeBlock(pickedBlock.getBlockLocation());
 		}
 	}
 	
@@ -177,7 +177,7 @@ public class PlayerControl extends NodeControl
     	{
     		if(canPlaceBlock())
     		{
-    			terrainMgr.setBlock(pickedBlock, selected);
+    			world.setBlock(pickedBlock, selected);
 //    			System.out.println("Setting block at " + pickedBlock.getBlockLocation());
     			System.out.println("blockTerrain.setBlock(" + pickedBlock.getBlockLocation().x + ", " + pickedBlock.getBlockLocation().y + ", " + pickedBlock.getBlockLocation().z + ", Blocks.GRASS);");
     		}

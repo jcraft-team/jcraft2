@@ -3,10 +3,10 @@ package com.chappelle.jcraft;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.chappelle.jcraft.blocks.BlockTerrainManager;
 import com.cubes.BlockTerrainControl;
 import com.cubes.CubesSettings;
 import com.cubes.Vector3Int;
+import com.cubes.World;
 import com.jme3.app.SimpleApplication;
 import com.jme3.font.BitmapFont;
 import com.jme3.input.KeyInput;
@@ -45,10 +45,10 @@ public class JCraft extends SimpleApplication implements ActionListener
 
 	private CubesSettings cubesSettings;
 	private BlockTerrainControl blockTerrain;
-	private BlockTerrainManager terrainMgr;
 	private BlockHelper blockHelper;
 	private Node terrainNode = new Node("terrain");
 	private PlayerControl player;
+	public World world;
 	
 	@Override
 	public void simpleInitApp()
@@ -107,79 +107,80 @@ public class JCraft extends SimpleApplication implements ActionListener
 		cubesSettings.setDefaultBlockMaterial("Textures/FaithfulBlocks.png");
 
 		blockTerrain = new BlockTerrainControl(this, cubesSettings, new Vector3Int(14, 1, 14));
+		world = blockTerrain.world;
 		terrainNode.addControl(blockTerrain);
 		terrainNode.setShadowMode(RenderQueue.ShadowMode.CastAndReceive);
 		rootNode.attachChild(terrainNode);
 
-		terrainMgr = new BlockTerrainManager(cubesSettings, blockTerrain);
+//		terrainMgr = new BlockTerrainManager(cubesSettings, world);
 		
-		blockHelper = new BlockHelper(this, blockTerrain, settings, terrainNode, cubesSettings);
-		Blocks.registerBlocks(terrainMgr);
+		blockHelper = new BlockHelper(cam, world, settings, terrainNode, cubesSettings);
+		Blocks.registerBlocks(world);
 //		blockTerrain.setBlocksFromNoise(new Vector3Int(), terrainSize, 0.5f, Blocks.GRASS);
-		blockTerrain.setBlockArea(new Vector3Int(), terrainSize, Blocks.GRASS);
-		blockTerrain.setBlock(6, 10, 4, Blocks.GRASS);
-		blockTerrain.setBlock(7, 10, 4, Blocks.GRASS);
-		blockTerrain.setBlock(7, 10, 5, Blocks.GRASS);
-		blockTerrain.setBlock(7, 10, 6, Blocks.GRASS);
-		blockTerrain.setBlock(7, 10, 7, Blocks.GRASS);
-		blockTerrain.setBlock(7, 10, 8, Blocks.GRASS);
-		blockTerrain.setBlock(7, 11, 4, Blocks.GRASS);
-		blockTerrain.setBlock(7, 11, 5, Blocks.GRASS);
-		blockTerrain.setBlock(7, 11, 5, Blocks.GRASS);
-		blockTerrain.setBlock(7, 12, 4, Blocks.GRASS);
-		blockTerrain.setBlock(7, 11, 6, Blocks.GRASS);
-		blockTerrain.setBlock(7, 13, 4, Blocks.GRASS);
-		blockTerrain.setBlock(7, 13, 5, Blocks.GRASS);
-		blockTerrain.setBlock(7, 13, 6, Blocks.GRASS);
-		blockTerrain.setBlock(7, 13, 7, Blocks.GRASS);
-		blockTerrain.setBlock(7, 12, 5, Blocks.GRASS);
-		blockTerrain.setBlock(7, 13, 6, Blocks.GRASS);
-		blockTerrain.setBlock(7, 13, 7, Blocks.GRASS);
-		blockTerrain.setBlock(7, 12, 5, Blocks.GRASS);
-		blockTerrain.setBlock(7, 12, 6, Blocks.GRASS);
-		blockTerrain.setBlock(7, 12, 7, Blocks.GRASS);
-		blockTerrain.setBlock(7, 11, 7, Blocks.GRASS);
-		blockTerrain.setBlock(7, 11, 8, Blocks.GRASS);
-		blockTerrain.setBlock(7, 12, 8, Blocks.GRASS);
-		blockTerrain.setBlock(7, 13, 8, Blocks.GRASS);
-		blockTerrain.setBlock(6, 13, 8, Blocks.GRASS);
-		blockTerrain.setBlock(6, 13, 7, Blocks.GRASS);
-		blockTerrain.setBlock(6, 13, 6, Blocks.GRASS);
-		blockTerrain.setBlock(6, 13, 5, Blocks.GRASS);
-		blockTerrain.setBlock(6, 13, 4, Blocks.GRASS);
-		blockTerrain.setBlock(6, 12, 4, Blocks.GRASS);
-		blockTerrain.setBlock(6, 11, 4, Blocks.GRASS);
-		blockTerrain.setBlock(6, 12, 8, Blocks.GRASS);
-		blockTerrain.setBlock(6, 11, 8, Blocks.GRASS);
-		blockTerrain.setBlock(6, 10, 8, Blocks.GRASS);
-		blockTerrain.setBlock(5, 13, 8, Blocks.GRASS);
-		blockTerrain.setBlock(5, 13, 7, Blocks.GRASS);
-		blockTerrain.setBlock(5, 13, 6, Blocks.GRASS);
-		blockTerrain.setBlock(5, 13, 5, Blocks.GRASS);
-		blockTerrain.setBlock(5, 13, 4, Blocks.GRASS);
-		blockTerrain.setBlock(5, 12, 4, Blocks.GRASS);
-		blockTerrain.setBlock(5, 11, 4, Blocks.GRASS);
-		blockTerrain.setBlock(5, 10, 4, Blocks.GRASS);
-		blockTerrain.setBlock(5, 10, 8, Blocks.GRASS);
-		blockTerrain.setBlock(5, 11, 8, Blocks.GRASS);
-		blockTerrain.setBlock(5, 12, 8, Blocks.GRASS);
-		blockTerrain.setBlock(4, 13, 4, Blocks.GRASS);
-		blockTerrain.setBlock(4, 12, 4, Blocks.GRASS);
-		blockTerrain.setBlock(4, 11, 4, Blocks.GRASS);
-		blockTerrain.setBlock(4, 10, 4, Blocks.GRASS);
-		blockTerrain.setBlock(4, 13, 5, Blocks.GRASS);
-		blockTerrain.setBlock(4, 13, 6, Blocks.GRASS);
-		blockTerrain.setBlock(4, 13, 7, Blocks.GRASS);
-		blockTerrain.setBlock(4, 13, 8, Blocks.GRASS);
-		blockTerrain.setBlock(4, 12, 8, Blocks.GRASS);
-		blockTerrain.setBlock(4, 11, 8, Blocks.GRASS);
-		blockTerrain.setBlock(4, 10, 8, Blocks.GRASS);
-		blockTerrain.setBlock(4, 12, 7, Blocks.GRASS);
-		blockTerrain.setBlock(4, 11, 7, Blocks.GRASS);
-		blockTerrain.setBlock(4, 10, 7, Blocks.GRASS);
-		blockTerrain.setBlock(4, 10, 5, Blocks.GRASS);
-		blockTerrain.setBlock(4, 11, 5, Blocks.GRASS);
-		blockTerrain.setBlock(4, 12, 5, Blocks.GRASS);
+		world.setBlockArea(new Vector3Int(), terrainSize, Blocks.GRASS);
+		world.setBlock(6, 10, 4, Blocks.GRASS);
+		world.setBlock(7, 10, 4, Blocks.GRASS);
+		world.setBlock(7, 10, 5, Blocks.GRASS);
+		world.setBlock(7, 10, 6, Blocks.GRASS);
+		world.setBlock(7, 10, 7, Blocks.GRASS);
+		world.setBlock(7, 10, 8, Blocks.GRASS);
+		world.setBlock(7, 11, 4, Blocks.GRASS);
+		world.setBlock(7, 11, 5, Blocks.GRASS);
+		world.setBlock(7, 11, 5, Blocks.GRASS);
+		world.setBlock(7, 12, 4, Blocks.GRASS);
+		world.setBlock(7, 11, 6, Blocks.GRASS);
+		world.setBlock(7, 13, 4, Blocks.GRASS);
+		world.setBlock(7, 13, 5, Blocks.GRASS);
+		world.setBlock(7, 13, 6, Blocks.GRASS);
+		world.setBlock(7, 13, 7, Blocks.GRASS);
+		world.setBlock(7, 12, 5, Blocks.GRASS);
+		world.setBlock(7, 13, 6, Blocks.GRASS);
+		world.setBlock(7, 13, 7, Blocks.GRASS);
+		world.setBlock(7, 12, 5, Blocks.GRASS);
+		world.setBlock(7, 12, 6, Blocks.GRASS);
+		world.setBlock(7, 12, 7, Blocks.GRASS);
+		world.setBlock(7, 11, 7, Blocks.GRASS);
+		world.setBlock(7, 11, 8, Blocks.GRASS);
+		world.setBlock(7, 12, 8, Blocks.GRASS);
+		world.setBlock(7, 13, 8, Blocks.GRASS);
+		world.setBlock(6, 13, 8, Blocks.GRASS);
+		world.setBlock(6, 13, 7, Blocks.GRASS);
+		world.setBlock(6, 13, 6, Blocks.GRASS);
+		world.setBlock(6, 13, 5, Blocks.GRASS);
+		world.setBlock(6, 13, 4, Blocks.GRASS);
+		world.setBlock(6, 12, 4, Blocks.GRASS);
+		world.setBlock(6, 11, 4, Blocks.GRASS);
+		world.setBlock(6, 12, 8, Blocks.GRASS);
+		world.setBlock(6, 11, 8, Blocks.GRASS);
+		world.setBlock(6, 10, 8, Blocks.GRASS);
+		world.setBlock(5, 13, 8, Blocks.GRASS);
+		world.setBlock(5, 13, 7, Blocks.GRASS);
+		world.setBlock(5, 13, 6, Blocks.GRASS);
+		world.setBlock(5, 13, 5, Blocks.GRASS);
+		world.setBlock(5, 13, 4, Blocks.GRASS);
+		world.setBlock(5, 12, 4, Blocks.GRASS);
+		world.setBlock(5, 11, 4, Blocks.GRASS);
+		world.setBlock(5, 10, 4, Blocks.GRASS);
+		world.setBlock(5, 10, 8, Blocks.GRASS);
+		world.setBlock(5, 11, 8, Blocks.GRASS);
+		world.setBlock(5, 12, 8, Blocks.GRASS);
+		world.setBlock(4, 13, 4, Blocks.GRASS);
+		world.setBlock(4, 12, 4, Blocks.GRASS);
+		world.setBlock(4, 11, 4, Blocks.GRASS);
+		world.setBlock(4, 10, 4, Blocks.GRASS);
+		world.setBlock(4, 13, 5, Blocks.GRASS);
+		world.setBlock(4, 13, 6, Blocks.GRASS);
+		world.setBlock(4, 13, 7, Blocks.GRASS);
+		world.setBlock(4, 13, 8, Blocks.GRASS);
+		world.setBlock(4, 12, 8, Blocks.GRASS);
+		world.setBlock(4, 11, 8, Blocks.GRASS);
+		world.setBlock(4, 10, 8, Blocks.GRASS);
+		world.setBlock(4, 12, 7, Blocks.GRASS);
+		world.setBlock(4, 11, 7, Blocks.GRASS);
+		world.setBlock(4, 10, 7, Blocks.GRASS);
+		world.setBlock(4, 10, 5, Blocks.GRASS);
+		world.setBlock(4, 11, 5, Blocks.GRASS);
+		world.setBlock(4, 12, 5, Blocks.GRASS);
 		
 	}
 
@@ -259,7 +260,7 @@ public class JCraft extends SimpleApplication implements ActionListener
         }
         else if("t".equals(name) && !isPressed)
         {
-        	blockTerrain.setBlocksFromNoise(new Vector3Int(terrainIndex, 0, 0), terrainSize, 0.8f, Blocks.GRASS);
+        	blockTerrain.world.setBlocksFromNoise(new Vector3Int(terrainIndex, 0, 0), terrainSize, 0.8f, Blocks.GRASS);
         	terrainIndex += terrainSize.getX();
         }
         else if("g".equals(name) && !isPressed)
@@ -286,10 +287,5 @@ public class JCraft extends SimpleApplication implements ActionListener
     public BlockHelper getBlockHelper()
     {
     	return blockHelper;
-    }
-    
-    public BlockTerrainManager getBlockTerrainManager()
-    {
-    	return terrainMgr;
     }
 }
