@@ -1,6 +1,7 @@
 package com.chappelle.jcraft.jme3;
 
 import com.chappelle.jcraft.Chunk;
+import com.chappelle.jcraft.MeshGenerator;
 import com.chappelle.jcraft.Vector3Int;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
@@ -78,8 +79,8 @@ public class BlockChunkControl extends AbstractControl
                 node.attachChild(optimizedGeometry_Transparent);
                 updateBlockMaterial();
             }
-            optimizedGeometry_Opaque.setMesh(MeshGenerator.generateOptimizedMesh(this, false));
-            optimizedGeometry_Transparent.setMesh(MeshGenerator.generateOptimizedMesh(this, true));
+            optimizedGeometry_Opaque.setMesh(MeshGenerator.generateOptimizedMesh(chunk, false));
+            optimizedGeometry_Transparent.setMesh(MeshGenerator.generateOptimizedMesh(chunk, true));
             chunk.needsMeshUpdate = false;
             return true;
         }

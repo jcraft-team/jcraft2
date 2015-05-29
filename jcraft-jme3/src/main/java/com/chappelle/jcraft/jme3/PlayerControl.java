@@ -4,6 +4,7 @@ import com.chappelle.jcraft.Block;
 import com.chappelle.jcraft.BlockHelper;
 import com.chappelle.jcraft.Blocks;
 import com.chappelle.jcraft.CubesSettings;
+import com.chappelle.jcraft.PlayerCollisionDetector;
 import com.chappelle.jcraft.World;
 import com.chappelle.jcraft.blocks.PickedBlock;
 import com.jme3.math.Vector3f;

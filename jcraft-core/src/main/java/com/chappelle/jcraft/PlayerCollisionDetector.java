@@ -1,9 +1,5 @@
-package com.chappelle.jcraft.jme3;
+package com.chappelle.jcraft;
 
-import com.chappelle.jcraft.Block;
-import com.chappelle.jcraft.CubesSettings;
-import com.chappelle.jcraft.Vector3Int;
-import com.chappelle.jcraft.World;
 import com.jme3.math.Vector3f;
 
 public class PlayerCollisionDetector

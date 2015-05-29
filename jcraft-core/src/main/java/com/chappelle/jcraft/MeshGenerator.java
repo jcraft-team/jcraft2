@@ -1,11 +1,7 @@
-package com.chappelle.jcraft.jme3;
+package com.chappelle.jcraft;
 
 import java.util.Iterator;
 
-import com.chappelle.jcraft.Block;
-import com.chappelle.jcraft.BlockShape;
-import com.chappelle.jcraft.MeshData;
-import com.chappelle.jcraft.Vector3Int;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Mesh;
@@ -24,10 +20,10 @@ public class MeshGenerator
 		return generateMesh(meshData, 3);//TODO:
 	}
 	
-	public static Mesh generateOptimizedMesh(BlockChunkControl blockChunk, boolean isTransparent)
+	public static Mesh generateOptimizedMesh(Chunk blockChunk, boolean isTransparent)
 	{
 		MeshData meshData = new MeshData();
-		BlockTerrainControl blockTerrain = blockChunk.getTerrain();
+		World blockTerrain = blockChunk.world;
 		Vector3Int tmpLocation = new Vector3Int();
 		for(int x = 0; x < blockTerrain.getSettings().getChunkSizeX(); x++)
 		{
@@ -36,12 +32,12 @@ public class MeshGenerator
 				for(int z = 0; z < blockTerrain.getSettings().getChunkSizeZ(); z++)
 				{
 					tmpLocation.set(x, y, z);
-					Block block = blockChunk.chunk.getBlock(tmpLocation);
+					Block block = blockChunk.getBlock(tmpLocation);
 					if(block != null)
 					{
-						BlockShape blockShape = block.getShape(blockChunk.chunk, tmpLocation);
+						BlockShape blockShape = block.getShape(blockChunk, tmpLocation);
 						blockShape.prepare(isTransparent, meshData);
-						blockShape.addTo(blockChunk.chunk, block, tmpLocation);
+						blockShape.addTo(blockChunk, block, tmpLocation);
 					}
 				}
 			}
