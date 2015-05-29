@@ -15,6 +15,7 @@ import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme3.input.controls.Trigger;
+import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Node;
@@ -41,7 +42,6 @@ public class JCraft extends SimpleApplication implements ActionListener
 	
 	private final Vector3Int terrainSize = new Vector3Int(50, 10, 50);
 	private int terrainIndex = terrainSize.getX();
-	private EnvironmentAppState environmentAppState;
 
 	private CubesSettings cubesSettings;
 	private BlockTerrainControl blockTerrain;
@@ -58,9 +58,8 @@ public class JCraft extends SimpleApplication implements ActionListener
 		cam.lookAtDirection(new Vector3f(1, 0, 1), Vector3f.UNIT_Y);
 		
 		//Setup sky
-		environmentAppState = new EnvironmentAppState();
-		stateManager.attach(environmentAppState);
-
+		viewPort.setBackgroundColor(ColorRGBA.White);
+		
 		//Setup player
 		player = new PlayerControl(this);
 		rootNode.addControl(player);
