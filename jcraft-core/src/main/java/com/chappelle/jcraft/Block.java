@@ -1,12 +1,18 @@
 package com.chappelle.jcraft;
 
+import com.chappelle.jcraft.blocks.Door;
+import com.chappelle.jcraft.blocks.Glass;
+import com.chappelle.jcraft.blocks.Grass;
 import com.chappelle.jcraft.blocks.PickedBlock;
+import com.chappelle.jcraft.blocks.Torch;
 import com.chappelle.jcraft.shapes.BlockShape_Cube;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 
 public class Block
 {
+	public static final Block[] blocksList = new Block[4096];
+	
 	public static enum Face
 	{
 		Top, Bottom, Left, Right, Front, Back;
@@ -59,20 +65,23 @@ public class Block
 
 	};
 
-	protected final World terrainMgr;
+	public static final Block grass = new Grass(1);
+	public static final Block glass = new Glass(2);
+	public static final Block door = new Door(3);
+	public static final Block torch = new Torch(4);
+	
 	private BlockShape[] shapes = new BlockShape[] { new BlockShape_Cube() };
 	private BlockSkin[] skins;
 
-	public Block(World blockTerrainManager, BlockSkin... skins)
+	/** ID of the block. */
+	public final int blockId;
+	
+	public Block(int blockId, BlockSkin... skins)
 	{
 		this.skins = skins;
-		this.terrainMgr = blockTerrainManager;
-	}
-
-	public Block(BlockSkin... skins)
-	{
-		this.skins = skins;
-		this.terrainMgr = null;
+		this.blockId = blockId;
+		
+		blocksList[blockId] = this;
 	}
 	
 	protected void setShapes(BlockShape... shapes)
@@ -124,7 +133,7 @@ public class Block
 		return true;
 	}
 
-	public void onBlockPlaced(Vector3Int location, Vector3f contactNormal, Vector3f cameraDirectionAsUnitVector)
+	public void onBlockPlaced(World world, Vector3Int location, Vector3f contactNormal, Vector3f cameraDirectionAsUnitVector)
 	{
 		// TODO Auto-generated method stub
 		
@@ -136,7 +145,7 @@ public class Block
 		
 	}
 
-	public void onNeighborRemoved(Vector3Int location, Vector3Int neighborLocation)
+	public void onNeighborRemoved(World world, Vector3Int location, Vector3Int neighborLocation)
 	{
 		// TODO Auto-generated method stub
 		

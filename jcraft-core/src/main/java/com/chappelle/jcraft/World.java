@@ -113,7 +113,7 @@ public class World implements BitSerializable
 	                Block neighbor = getBlock(neighborLocation);
 	                if (neighbor != null)
 	                {
-	                    neighbor.onNeighborRemoved(location, neighborLocation);
+	                    neighbor.onNeighborRemoved(this, location, neighborLocation);
 	                }
 	            }
 			}
@@ -390,7 +390,7 @@ public class World implements BitSerializable
             else
             {
                 setBlock(location, blockToPlace);
-                blockToPlace.onBlockPlaced(location, pickedBlock.getContactNormal(), getCameraDirectionAsUnitVector(pickedBlock.getCameraDirection()));
+                blockToPlace.onBlockPlaced(this, location, pickedBlock.getContactNormal(), getCameraDirectionAsUnitVector(pickedBlock.getCameraDirection()));
             }
         }
     }

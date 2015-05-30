@@ -17,22 +17,22 @@ public class Door extends Block
     public static final Short VAR_OPEN = 3;
     public static final Short VAR_ORIENTATION = 4;
 
-	public Door(World blockTerrainManager)
+	public Door(int blockId)
 	{
-		super(blockTerrainManager, new BlockSkin[] { new BlockSkin(new BlockSkin_TextureLocation(1, 5), true), new BlockSkin(new BlockSkin_TextureLocation(1, 6), false)});
+		super(blockId, new BlockSkin[] { new BlockSkin(new BlockSkin_TextureLocation(1, 5), true), new BlockSkin(new BlockSkin_TextureLocation(1, 6), false)});
 		
 		setShapes(new BlockShape_Door());
 	}
 	
 	
     @Override
-    public void onBlockPlaced(Vector3Int location, Vector3f contactNormal, Vector3f cameraDirectionUnitVector)
+    public void onBlockPlaced(World world, Vector3Int location, Vector3f contactNormal, Vector3f cameraDirectionUnitVector)
     {
-        BlockState blockState = terrainMgr.getBlockState(location);
+        BlockState blockState = world.getBlockState(location);
         blockState.put(VAR_OPEN, Boolean.FALSE);            
         blockState.put(VAR_ORIENTATION, cameraDirectionUnitVector);            
         
-        Block bottomBlock = terrainMgr.getBlock(location.subtract(new Vector3Int(0,1,0)));
+        Block bottomBlock = world.getBlock(location.subtract(new Vector3Int(0,1,0)));
         if(this == bottomBlock)
         {
             blockState.put(VAL_SECTION_TOP, Boolean.TRUE);
@@ -41,28 +41,28 @@ public class Door extends Block
         {
             blockState.put(VAL_SECTION_TOP, Boolean.FALSE);
             Vector3Int topLocation = location.add(0,1,0);
-            terrainMgr.setBlock(topLocation, this);
-            onBlockPlaced(topLocation, null, cameraDirectionUnitVector);
+            world.setBlock(topLocation, this);
+            onBlockPlaced(world, topLocation, null, cameraDirectionUnitVector);
         }
     }
 
 	@Override
-	public void onNeighborRemoved(Vector3Int removedBlockLocation, Vector3Int myLocation)
+	public void onNeighborRemoved(World world, Vector3Int removedBlockLocation, Vector3Int myLocation)
 	{
-		BlockState blockState = terrainMgr.getBlockState(myLocation);
+		BlockState blockState = world.getBlockState(myLocation);
 		boolean top = isTop(blockState);
 		if(top && myLocation.subtract(0, 1, 0).equals(removedBlockLocation))
 		{
-			terrainMgr.removeBlock(myLocation);
+			world.removeBlock(myLocation);
 		}
 		if(!top && myLocation.add(0, 1, 0).equals(removedBlockLocation))
 		{
-			terrainMgr.removeBlock(myLocation);
+			world.removeBlock(myLocation);
 		}
 		
 		if(!top && myLocation.subtract(0, 1, 0).equals(removedBlockLocation))//Block underneath the door
 		{
-			terrainMgr.removeBlock(myLocation);
+			world.removeBlock(myLocation);
 		}
 	}
 	

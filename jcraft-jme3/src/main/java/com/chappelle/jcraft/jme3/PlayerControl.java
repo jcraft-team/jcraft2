@@ -2,7 +2,6 @@ package com.chappelle.jcraft.jme3;
 
 import com.chappelle.jcraft.Block;
 import com.chappelle.jcraft.BlockHelper;
-import com.chappelle.jcraft.Blocks;
 import com.chappelle.jcraft.CubesSettings;
 import com.chappelle.jcraft.PlayerCollisionDetector;
 import com.chappelle.jcraft.World;
@@ -209,7 +208,7 @@ public class PlayerControl extends NodeControl
 	
 	public void selectBlock(int index)
 	{
-		selected = Blocks.blocks[index-1];
+		selected = Block.blocksList[index];
 		System.out.println("Selected block is " + selected.getClass().getName());
 	}
 	

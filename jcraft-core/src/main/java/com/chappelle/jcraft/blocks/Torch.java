@@ -18,29 +18,29 @@ public class Torch extends Block
     public static final Short VAR_ORIENTATION = 1;
     public static final Short VAR_ATTACHED_BLOCK = 2;//TODO: could probably use just this one and remove the VAR_ORIENTATION in the future
 	
-    public Torch(World blockTerrainManager)
+    public Torch(int blockId)
     {
-    	super(blockTerrainManager, new BlockSkin(new BlockSkin_TextureLocation(0, 5), true));
+    	super(blockId, new BlockSkin(new BlockSkin_TextureLocation(0, 5), true));
     	
     	setShapes(new BlockShape_Torch());
     }
 
     @Override
-    public void onBlockPlaced(Vector3Int location, Vector3f contactNormal, Vector3f cameraDirectionUnitVector)
+    public void onBlockPlaced(World world, Vector3Int location, Vector3f contactNormal, Vector3f cameraDirectionUnitVector)
     {
-        BlockState blockState = terrainMgr.getBlockState(location);
+        BlockState blockState = world.getBlockState(location);
         blockState.put(VAR_ORIENTATION, contactNormal);
         blockState.put(VAR_ATTACHED_BLOCK, location.subtract(Vector3Int.fromVector3f(contactNormal)));        
     }
     
     @Override
-    public void onNeighborRemoved(Vector3Int removedBlockLocation, Vector3Int myLocation)
+    public void onNeighborRemoved(World world, Vector3Int removedBlockLocation, Vector3Int myLocation)
     {
-        BlockState state = terrainMgr.getBlockState(myLocation);
+        BlockState state = world.getBlockState(myLocation);
         Vector3Int attachedLocation = (Vector3Int)state.get(VAR_ATTACHED_BLOCK);
         if(removedBlockLocation.equals(attachedLocation))
         {
-            terrainMgr.removeBlock(myLocation);
+            world.removeBlock(myLocation);
         }
     }
     

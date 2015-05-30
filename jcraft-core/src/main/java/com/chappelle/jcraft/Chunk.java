@@ -12,7 +12,7 @@ public class Chunk implements BitSerializable
 {
     public Vector3Int location = new Vector3Int();
     private Vector3Int blockLocation = new Vector3Int();
-    private byte[][][] blockTypes;
+    private int[][][] blockTypes;
     private boolean[][][] blocks_IsOnSurface;
     private BlockState[][][] blockState;
     private LightMap lights;
@@ -24,7 +24,7 @@ public class Chunk implements BitSerializable
     	this.world = world;
     	location.set(x, y, z);
     	blockLocation.set(location.mult(world.getSettings().getChunkSizeX(), world.getSettings().getChunkSizeY(), world.getSettings().getChunkSizeZ()));
-    	blockTypes = new byte[world.getSettings().getChunkSizeX()][world.getSettings().getChunkSizeY()][world.getSettings().getChunkSizeZ()];
+    	blockTypes = new int[world.getSettings().getChunkSizeX()][world.getSettings().getChunkSizeY()][world.getSettings().getChunkSizeZ()];
     	blocks_IsOnSurface = new boolean[world.getSettings().getChunkSizeX()][world.getSettings().getChunkSizeY()][world.getSettings().getChunkSizeZ()];
     	blockState = new BlockState[world.getSettings().getChunkSizeX()][world.getSettings().getChunkSizeY()][world.getSettings().getChunkSizeZ()];
     	lights = new LightMap(new Vector3Int(world.getSettings().getChunkSizeX(), world.getSettings().getChunkSizeY(), world.getSettings().getChunkSizeZ()), location);
@@ -86,8 +86,8 @@ public class Chunk implements BitSerializable
 
     public Block getBlock(Vector3Int location){
         if(isValidBlockLocation(location)){
-            byte blockType = blockTypes[location.getX()][location.getY()][location.getZ()];
-            return BlockManager.getBlock(blockType);
+            int blockType = blockTypes[location.getX()][location.getY()][location.getZ()];
+            return Block.blocksList[blockType];
         }
         return null;
     }
@@ -105,8 +105,7 @@ public class Chunk implements BitSerializable
 
     public void setBlock(Vector3Int location, Block block){
         if(isValidBlockLocation(location)){
-            byte blockType = BlockManager.getType(block);
-            blockTypes[location.getX()][location.getY()][location.getZ()] = blockType;
+            blockTypes[location.getX()][location.getY()][location.getZ()] = block.blockId;
             updateBlockState(location);
             needsMeshUpdate = true;
         }
