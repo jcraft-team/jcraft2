@@ -189,4 +189,9 @@ public class Block
 	{
 		return false;
 	}
+	
+	public boolean useNeighborLight()
+	{
+		return true;
+	}
 }

@@ -130,7 +130,7 @@ public class World implements BitSerializable
 		if(localBlockState != null)
 		{
 			lightMgr.setBlockLight(location, block.getBlockLightValue());
-        	lightMgr.removeSunlight(location);
+			lightMgr.removeSunlight(location);
 			
 			localBlockState.setBlock(block);
 		}

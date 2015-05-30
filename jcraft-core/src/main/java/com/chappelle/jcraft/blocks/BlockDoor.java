@@ -94,6 +94,12 @@ public class BlockDoor extends Block
     	}
     }
 
+	@Override
+	public void onBlockRemoved(World world, Vector3Int location)
+	{
+		world.playSound(SoundConstants.DIG_WOOD, 4);
+	}
+
     private Vector3Int getOtherDoorSection(BlockState blockState, Vector3Int blockLocation)
     {
     	if(isTop(blockState))
@@ -139,4 +145,16 @@ public class BlockDoor extends Block
     {
     	return true;
     }
+
+    @Override
+	public boolean isTransparent()
+	{
+		return true;
+	}
+    
+    @Override
+	public boolean useNeighborLight()
+	{
+		return false;
+	}
 }
