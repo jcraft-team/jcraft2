@@ -24,12 +24,12 @@ public class PlayerCollisionDetector
 		
 		blockSize = cubesSettings.getBlockSize();
 		float extents = cubesSettings.getBlockSize()/4;
-		
+		float topOffset = 2.25f;
 		//TOP
-		corner1 = new Vector3f(-extents, blockSize, -extents);
-		corner2 = new Vector3f(-extents, blockSize, extents);
-		corner3 = new Vector3f(extents, blockSize, -extents);
-		corner4 = new Vector3f(extents, blockSize, extents);
+		corner1 = new Vector3f(-extents, blockSize-topOffset, -extents);
+		corner2 = new Vector3f(-extents, blockSize-topOffset, extents);
+		corner3 = new Vector3f(extents, blockSize-topOffset, -extents);
+		corner4 = new Vector3f(extents, blockSize-topOffset, extents);
 
 		//BOTTOM
 		corner5 = new Vector3f(-extents, -blockSize, -extents);
