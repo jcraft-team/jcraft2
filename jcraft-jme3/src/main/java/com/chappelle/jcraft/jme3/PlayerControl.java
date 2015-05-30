@@ -4,6 +4,7 @@ import com.chappelle.jcraft.Block;
 import com.chappelle.jcraft.BlockHelper;
 import com.chappelle.jcraft.CubesSettings;
 import com.chappelle.jcraft.PlayerCollisionDetector;
+import com.chappelle.jcraft.Vector3Int;
 import com.chappelle.jcraft.World;
 import com.chappelle.jcraft.blocks.PickedBlock;
 import com.jme3.math.Vector3f;
@@ -24,6 +25,7 @@ public class PlayerControl extends NodeControl
 	private Block selected;
 	private Camera cam;
 	private World world;
+	private Vector3Int currentBlockLocation;
 
 	public PlayerControl(JCraft app)
 	{
@@ -44,6 +46,7 @@ public class PlayerControl extends NodeControl
 	@Override
 	protected void controlUpdate(float tpf)
 	{
+		currentBlockLocation = getStandingBlockLocation();
 		float playerMoveSpeed = ((cubesSettings.getBlockSize() * 6.5f) * tpf);
 		Vector3f camDir = cam.getDirection().mult(playerMoveSpeed);
 		Vector3f camLeft = cam.getLeft().mult(playerMoveSpeed);
@@ -79,6 +82,16 @@ public class PlayerControl extends NodeControl
 		detectCollisions();
 
 		cam.setLocation(playerNode.getLocalTranslation().add(0, 2, 0));
+		Vector3Int newBlockLocation = getStandingBlockLocation();
+		if(newBlockLocation.x != currentBlockLocation.x || newBlockLocation.z != currentBlockLocation.z)
+		{
+			Block block = getStandingBlock();
+			if(block != null)
+			{
+				block.onEntityWalking(world, newBlockLocation);
+			}
+			currentBlockLocation = newBlockLocation;
+		}
 	}
 	
 	private void detectCollisions()
@@ -221,5 +234,28 @@ public class PlayerControl extends NodeControl
 	public Block getSelectedBlock()
 	{
 		return selected;
+	}
+	
+	/**
+	 * Returns the Block the player is standing on
+	 */
+	public Block getStandingBlock()
+	{
+		Vector3Int location = getStandingBlockLocation();
+		if(location != null)
+		{
+			return world.getBlock(location);
+		}
+		return null;
+	}
+	
+	public Vector3Int getStandingBlockLocation()
+	{
+		Vector3Int result = Vector3Int.fromVector3f(getLocalTranslation().divide(CubesSettings.getInstance().getBlockSize()));
+		if(result != null)
+		{
+			result.subtractLocal(0,2,0);
+		}
+		return result;
 	}
 }

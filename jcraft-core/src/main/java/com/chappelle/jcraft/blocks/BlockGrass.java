@@ -27,6 +27,11 @@ public class BlockGrass extends Block
 		world.playSound(SoundConstants.DIG_GRASS, 4);
 	}
 
+	public void onEntityWalking(World world, Vector3Int location)
+	{
+//		world.playSound(SoundConstants.STEP_GRASS, 4);//FIXME: Currently not working correctly
+	}
+
 	@Override
 	protected int getSkinIndex(Chunk chunk, Vector3Int location, Block.Face face)
 	{

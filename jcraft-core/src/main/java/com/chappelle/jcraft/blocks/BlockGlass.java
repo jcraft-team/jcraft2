@@ -24,6 +24,11 @@ public class BlockGlass extends Block
 		world.playSound(SoundConstants.MISC_GLASS, 3);
 	}
 
+	public void onEntityWalking(World world, Vector3Int location)
+	{
+		world.playSound(SoundConstants.STEP_STONE, 4);
+	}
+
 	@Override
 	public boolean isTransparent()
 	{

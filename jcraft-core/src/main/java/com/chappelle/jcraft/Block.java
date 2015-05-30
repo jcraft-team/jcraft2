@@ -158,6 +158,12 @@ public class Block
 		// TODO Auto-generated method stub
 		
 	}
+
+	public void onEntityWalking(World world, Vector3Int location)
+	{
+		// TODO Auto-generated method stub
+		
+	}
 	
     public boolean smothersBottomBlock()
     {
