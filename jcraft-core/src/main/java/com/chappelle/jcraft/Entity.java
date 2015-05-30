@@ -5,6 +5,11 @@ import com.jme3.math.Vector3f;
 
 public class Entity
 {
+	public float yAcceleration = -50.0f;
+	public float yVelocity = 0;
+
+	private boolean gravityEnabled = true;
+	
 	public double prevPosX;
 	public double prevPosY;
 	public double prevPosZ;
@@ -63,5 +68,18 @@ public class Entity
 
 	public void update(float tpf)
 	{
+		if(gravityEnabled)
+		{
+			yVelocity = yVelocity + tpf*yAcceleration;
+			float oldY = pos.y;
+			float newY = (oldY + tpf*yVelocity);
+			float yDiff = Math.max(-2.9f, newY - oldY);
+			pos.addLocal(0, yDiff, 0);
+		}
+	}
+	
+	public void toggleGravity()
+	{
+		gravityEnabled = !gravityEnabled;
 	}
 }

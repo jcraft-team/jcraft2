@@ -6,12 +6,9 @@ import com.jme3.renderer.Camera;
 
 public class EntityPlayer extends Entity
 {
-	private float yAcceleration = -50.0f;
-	private float yVelocity = 0;
-	private Vector3f walkDirection = new Vector3f();
+	private Vector3f motionVector = new Vector3f();
 	private PlayerCollisionDetector collision;
 	private boolean[] arrowKeys = new boolean[4];
-	private boolean gravityEnabled = true;
 	private BlockHelper blockHelper;
 	private CubesSettings cubesSettings;
 	private Block selected;
@@ -34,39 +31,33 @@ public class EntityPlayer extends Entity
 	@Override
 	public void update(float tpf)
 	{
+		super.update(tpf);
+		
 		currentBlockLocation = getStandingBlockLocation();
 		float playerMoveSpeed = ((cubesSettings.getBlockSize() * 6.5f) * tpf);
 		Vector3f camDir = cam.getDirection().mult(playerMoveSpeed);
 		Vector3f camLeft = cam.getLeft().mult(playerMoveSpeed);
-		walkDirection.set(0, 0, 0);
+		motionVector.set(0, 0, 0);
 		if(arrowKeys[0])
 		{
-			walkDirection.addLocal(camDir);
+			motionVector.addLocal(camDir);
 		}
 		if(arrowKeys[1])
 		{
-			walkDirection.addLocal(camLeft.negate());
+			motionVector.addLocal(camLeft.negate());
 		}
 		if(arrowKeys[2])
 		{
-			walkDirection.addLocal(camDir.negate());
+			motionVector.addLocal(camDir.negate());
 		}
 		if(arrowKeys[3])
 		{
-			walkDirection.addLocal(camLeft);
+			motionVector.addLocal(camLeft);
 		}
-		walkDirection.setY(0);
+		motionVector.setY(0);
 		
-		pos.addLocal(walkDirection);
+		pos.addLocal(motionVector);
 
-		if(gravityEnabled)
-		{
-			yVelocity = yVelocity + tpf*yAcceleration;
-			float oldY = pos.y;
-			float newY = (oldY + tpf*yVelocity);
-			float yDiff = Math.max(-2.9f, newY - oldY);
-			pos.addLocal(0, yDiff, 0);
-		}
 		detectCollisions();
 
 		cam.setLocation(pos.add(0, 2, 0));
@@ -146,11 +137,6 @@ public class EntityPlayer extends Entity
         float distanceToDesiredPlacement = pos.distance(BlockHelper.toVector(blockHelper.getPointedBlockLocationInWorldSpace()));
 		return distanceToDesiredPlacement > blockSize * 1.25 && distanceToDesiredPlacement < blockSize * blockInteractionRange + 1;
     }
-
-	public void toggleGravity()
-	{
-		gravityEnabled = !gravityEnabled;
-	}
 
 	public void breakBlock()
 	{

@@ -1,7 +1,6 @@
 package com.chappelle.jcraft.jme3;
 
 import com.chappelle.jcraft.EntityPlayer;
-import com.chappelle.jcraft.World;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Node;
 
@@ -9,13 +8,11 @@ public class PlayerControl extends NodeControl
 {
 	private Node playerNode = new Node("player");
 	private Camera cam;
-	private World world;
 	private EntityPlayer player;
 
 	public PlayerControl(JCraft app, EntityPlayer player)
 	{
 		cam = app.getCamera();
-		this.world = app.world;
 		
 		this.player = player;
 	}
