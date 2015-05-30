@@ -25,7 +25,7 @@ public class BlockTerrainControl extends AbstractControl
 
 	public BlockTerrainControl(JCraft app, CubesSettings settings, Vector3Int chunksCount)
 	{
-		this.world = new World(app.getProfiler(), settings, chunksCount);
+		this.world = new World(app.getProfiler(), settings, chunksCount, app.getAssetManager());
 		this.settings = settings;
 		this.app = app;
 		this.profiler = app.getProfiler();

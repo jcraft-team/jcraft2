@@ -10,16 +10,20 @@ import com.chappelle.jcraft.World;
 import com.chappelle.jcraft.shapes.BlockShape_Door;
 import com.jme3.math.Vector3f;
 
-public class Door extends Block
+public class BlockDoor extends Block
 {
     public static final Short VAL_SECTION_TOP = 1;
     public static final Short VAR_SECTION = 2;
     public static final Short VAR_OPEN = 3;
     public static final Short VAR_ORIENTATION = 4;
 
-	public Door(int blockId)
+    private boolean userCanOpen;//Iron doors can't be opened by user
+    
+	public BlockDoor(int blockId, boolean userCanOpen)
 	{
 		super(blockId, new BlockSkin[] { new BlockSkin(new BlockSkin_TextureLocation(1, 5), true), new BlockSkin(new BlockSkin_TextureLocation(1, 6), false)});
+		
+		this.userCanOpen = userCanOpen;
 		
 		setShapes(new BlockShape_Door());
 	}
@@ -66,6 +70,42 @@ public class Door extends Block
 		}
 	}
 	
+	
+    @Override
+    public void onBlockActivated(World world, PickedBlock pickedBlock)
+    {
+    	if(userCanOpen)
+    	{
+    		BlockState blockState = world.getBlockState(pickedBlock.getBlockLocation());
+    		Boolean open = (Boolean)blockState.get(VAR_OPEN);
+    		blockState.put(VAR_OPEN, !open);
+    		
+    		blockState = world.getBlockState(getOtherDoorSection(blockState, pickedBlock.getBlockLocation()));
+    		blockState.put(VAR_OPEN, !open);
+    		
+    		if(open)
+    		{
+    			world.playSound(SoundConstants.MISC_DOOR_CLOSE);
+    		}
+    		else
+    		{
+    			world.playSound(SoundConstants.MISC_DOOR_OPEN);
+    		}
+    	}
+    }
+
+    private Vector3Int getOtherDoorSection(BlockState blockState, Vector3Int blockLocation)
+    {
+    	if(isTop(blockState))
+    	{
+    		return blockLocation.subtract(0, 1, 0);
+    	}
+    	else
+    	{
+    		return blockLocation.add(0, 1, 0);
+    	}
+    }
+
     private boolean isTop(BlockState blockState)
     {
         Boolean isTop = (Boolean)blockState.get(VAL_SECTION_TOP);
@@ -92,5 +132,11 @@ public class Door extends Block
     public boolean smothersBottomBlock()
     {
         return false;
+    }
+    
+    @Override
+    public boolean isActionBlock()
+    {
+    	return true;
     }
 }

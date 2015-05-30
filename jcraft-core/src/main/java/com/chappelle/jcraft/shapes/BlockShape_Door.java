@@ -8,7 +8,7 @@ import com.chappelle.jcraft.BlockShape;
 import com.chappelle.jcraft.BlockSkin_TextureLocation;
 import com.chappelle.jcraft.Chunk;
 import com.chappelle.jcraft.Vector3Int;
-import com.chappelle.jcraft.blocks.Door;
+import com.chappelle.jcraft.blocks.BlockDoor;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 
@@ -34,11 +34,11 @@ public class BlockShape_Door extends BlockShape
     @Override
     public void addTo(Chunk chunk, Block block, Vector3Int blockLocation)
     {
-        Vector3f orientation = (Vector3f) chunk.getBlockStateValue(blockLocation, Door.VAR_ORIENTATION);
+        Vector3f orientation = (Vector3f) chunk.getBlockStateValue(blockLocation, BlockDoor.VAR_ORIENTATION);
         
         Block.Face homeFace = BlockNavigator.getOppositeFace(Block.Face.fromNormal(orientation));
         Vector3f offsetVector = null;
-        Boolean open = (Boolean)chunk.getBlockStateValue(blockLocation, Door.VAR_OPEN);
+        Boolean open = (Boolean)chunk.getBlockStateValue(blockLocation, BlockDoor.VAR_OPEN);
         if(open)
         {
         	if(isXVector(orientation))

@@ -5,14 +5,26 @@ import com.chappelle.jcraft.BlockSkin;
 import com.chappelle.jcraft.BlockSkin_TextureLocation;
 import com.chappelle.jcraft.Chunk;
 import com.chappelle.jcraft.Vector3Int;
+import com.chappelle.jcraft.World;
+import com.jme3.math.Vector3f;
 
-public class Grass extends Block
+public class BlockGrass extends Block
 {
-	public Grass(int blockId)
+	public BlockGrass(int blockId)
 	{
 		super(blockId, new BlockSkin[] { new BlockSkin(new BlockSkin_TextureLocation(0, 0), false),
 				new BlockSkin(new BlockSkin_TextureLocation(3, 0), false),
 				new BlockSkin(new BlockSkin_TextureLocation(2, 0), false) });
+	}
+
+	public void onBlockPlaced(World world, Vector3Int location, Vector3f contactNormal, Vector3f cameraDirectionAsUnitVector)
+	{
+		world.playSound(SoundConstants.DIG_GRASS, 4);
+	}
+
+	public void onBlockRemoved(World world, Vector3Int location)
+	{
+		world.playSound(SoundConstants.DIG_GRASS, 4);
 	}
 
 	@Override

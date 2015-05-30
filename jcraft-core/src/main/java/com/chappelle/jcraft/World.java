@@ -2,8 +2,10 @@ package com.chappelle.jcraft;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Random;
 
 import com.chappelle.jcraft.blocks.PickedBlock;
+import com.chappelle.jcraft.blocks.SoundConstants;
 import com.chappelle.jcraft.lighting.FloodFillLightManager;
 import com.chappelle.jcraft.lighting.LightManager;
 import com.chappelle.jcraft.network.BitInputStream;
@@ -11,6 +13,8 @@ import com.chappelle.jcraft.network.BitOutputStream;
 import com.chappelle.jcraft.network.BitSerializable;
 import com.chappelle.jcraft.network.CubesSerializer;
 import com.chappelle.jcraft.profiler.Profiler;
+import com.jme3.asset.AssetManager;
+import com.jme3.audio.AudioNode;
 import com.jme3.math.Vector3f;
 
 public class World implements BitSerializable
@@ -20,14 +24,52 @@ public class World implements BitSerializable
 	private ArrayList<BlockChunkListener> chunkListeners = new ArrayList<BlockChunkListener>();
 	private LightManager lightMgr;
 	private Profiler profiler;
-
-	public World(Profiler profiler, CubesSettings settings, Vector3Int chunksCount)
+	private AssetManager assetManager;
+	private Random random = new Random();
+	private AudioNode music;
+	
+	public World(Profiler profiler, CubesSettings settings, Vector3Int chunksCount, AssetManager assetManager)
 	{
 		this.profiler = profiler;
 		this.settings = settings;
+		this.assetManager = assetManager;
 		this.lightMgr = new FloodFillLightManager(this);
 		initializeChunks(chunksCount);
+		
+        music = new AudioNode(assetManager, SoundConstants.MUSIC_CALM1);
+        music.setReverbEnabled(false);
+        music.setPositional(false);
+        music.setLooping(true);
 	}
+
+	/**
+	 * Plays a sound given the full path to the sound file.
+	 * Sound file paths can be found in {@code SoundConstants}.
+	 * @param name The full path of the sound file
+	 */
+    public void playSound(String name)
+    {
+    	makeAudio(name).play();//TODO: Could be a lot of object creation. May want to somehow pool these nodes or something in the future
+    }
+
+    /**
+     * Plays a random sound given the base path of the file and the number
+     * of existing sound variants. 
+     * @param name The base name of the sound file.
+     * @param fileVariants The number of different file variants
+     */
+    public void playSound(String name, int fileVariants)
+    {
+		playSound(name + (random.nextInt(3) + 1) + ".ogg");
+    }
+
+    protected AudioNode makeAudio(String location)
+    {
+        AudioNode result = new AudioNode(assetManager, location);
+        result.setReverbEnabled(false);
+        result.setVolume(.3f);
+        return result;
+    }
 
 	private void initializeChunks(Vector3Int chunksCount)
 	{
@@ -105,6 +147,7 @@ public class World implements BitSerializable
 				lightMgr.removeBlockLight(location);
 				lightMgr.rebuildSunlight(localBlockState.getChunk());
 				localBlockState.removeBlock();
+				block.onBlockRemoved(this, location);
 				
 	            //Notify neighbors of block removal
 	            for (Block.Face face : Block.Face.values())
@@ -394,7 +437,7 @@ public class World implements BitSerializable
             }
         }
     }
-    
+
     private Vector3f getCameraDirectionAsUnitVector(Vector3f cameraDirection)
     {
     	cameraDirection = cameraDirection.normalize();

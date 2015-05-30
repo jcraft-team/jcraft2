@@ -174,11 +174,17 @@ public class PlayerControl extends NodeControl
 	
 	public void placeBlock()
 	{
-    	PickedBlock pickedBlock = blockHelper.pickNeighborBlock();
+    	PickedBlock pickedBlock = blockHelper.pickBlock();
     	if(pickedBlock != null)
     	{
-    		if(canPlaceBlock())
+    		Block block = pickedBlock.getBlock();
+			if(block != null && block.isActionBlock())
     		{
+    			block.onBlockActivated(world, pickedBlock);
+    		}
+			else if(canPlaceBlock())
+    		{
+				pickedBlock = blockHelper.pickNeighborBlock();
     			world.setBlock(pickedBlock, selected);
     			System.out.println("Setting block at " + pickedBlock.getBlockLocation());
 //    			System.out.println("blockTerrain.setBlock(" + pickedBlock.getBlockLocation().x + ", " + pickedBlock.getBlockLocation().y + ", " + pickedBlock.getBlockLocation().z + ", Blocks.GRASS);");

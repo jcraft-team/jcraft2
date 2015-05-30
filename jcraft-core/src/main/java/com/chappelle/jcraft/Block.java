@@ -1,10 +1,11 @@
 package com.chappelle.jcraft;
 
-import com.chappelle.jcraft.blocks.Door;
-import com.chappelle.jcraft.blocks.Glass;
-import com.chappelle.jcraft.blocks.Grass;
+import com.chappelle.jcraft.blocks.BlockStone;
+import com.chappelle.jcraft.blocks.BlockDoor;
+import com.chappelle.jcraft.blocks.BlockGlass;
+import com.chappelle.jcraft.blocks.BlockGrass;
 import com.chappelle.jcraft.blocks.PickedBlock;
-import com.chappelle.jcraft.blocks.Torch;
+import com.chappelle.jcraft.blocks.BlockTorch;
 import com.chappelle.jcraft.shapes.BlockShape_Cube;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
@@ -65,10 +66,11 @@ public class Block
 
 	};
 
-	public static final Block grass = new Grass(1);
-	public static final Block glass = new Glass(2);
-	public static final Block door = new Door(3);
-	public static final Block torch = new Torch(4);
+	public static final Block grass = new BlockGrass(1);
+	public static final Block glass = new BlockGlass(2);
+	public static final Block door = new BlockDoor(3, true);
+	public static final Block torch = new BlockTorch(4);
+	public static final Block stone = new BlockStone(5);
 	
 	private BlockShape[] shapes = new BlockShape[] { new BlockShape_Cube() };
 	private BlockSkin[] skins;
@@ -139,7 +141,13 @@ public class Block
 		
 	}
 
-	public void onAction(PickedBlock pickedBlock)
+	public void onBlockRemoved(World world, Vector3Int location)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onBlockActivated(World world, PickedBlock pickedBlock)
 	{
 		// TODO Auto-generated method stub
 		
@@ -169,5 +177,10 @@ public class Block
 	public int getBlockLightValue()
 	{
 		return 0;
+	}
+	
+	public boolean isActionBlock()
+	{
+		return false;
 	}
 }

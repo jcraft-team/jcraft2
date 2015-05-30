@@ -7,7 +7,7 @@ import com.chappelle.jcraft.BlockShape;
 import com.chappelle.jcraft.BlockSkin_TextureLocation;
 import com.chappelle.jcraft.Chunk;
 import com.chappelle.jcraft.Vector3Int;
-import com.chappelle.jcraft.blocks.Torch;
+import com.chappelle.jcraft.blocks.BlockTorch;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector2f;
@@ -41,7 +41,7 @@ public class BlockShape_Torch extends BlockShape
                 faceLoc_Top_TopLeft, faceLoc_Top_TopRight, faceLoc_Top_BottomLeft, faceLoc_Top_BottomRight);
 
         //Get orientation from the block state
-        Vector3f normalVector = (Vector3f) chunk.getBlockStateValue(blockLocation, Torch.VAR_ORIENTATION);
+        Vector3f normalVector = (Vector3f) chunk.getBlockStateValue(blockLocation, BlockTorch.VAR_ORIENTATION);
         if(normalVector == null)
         {
             normalVector = Vector3f.UNIT_Z.clone();
