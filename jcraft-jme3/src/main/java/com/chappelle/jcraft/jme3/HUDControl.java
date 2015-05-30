@@ -11,12 +11,13 @@ import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
+import com.jme3.scene.Spatial.CullHint;
 import com.jme3.scene.control.AbstractControl;
 import com.jme3.system.AppSettings;
 
 public class HUDControl extends AbstractControl
 {
-	private Node node;
+	private Node debugNode;
 	private Node guiNode;
 	private BitmapText crosshairs;
 	private AssetManager assetManager;
@@ -32,7 +33,7 @@ public class HUDControl extends AbstractControl
 	
 	public HUDControl(JCraft app, AppSettings appSettings, PlayerControl player)
 	{
-		this.node = new Node();
+		this.debugNode = new Node("debug");
 		this.world = app.world;
 		this.app = app;
 		this.guiNode = app.getGuiNode();
@@ -46,10 +47,8 @@ public class HUDControl extends AbstractControl
 	{
         if (spatial instanceof Node)
         {
-            Node parentNode = (Node) spatial;
-            parentNode.attachChild(node);
-
             guiNode.detachAllChildren();
+            guiNode.attachChild(debugNode);
             
             guiFont = assetManager.loadFont("Interface/Fonts/Default.fnt");
             app.setGuiFont(guiFont);
@@ -59,7 +58,7 @@ public class HUDControl extends AbstractControl
             float x = settings.getWidth() / 2 - guiFont.getCharSet().getRenderedSize() / 3 * 2;
             float y = settings.getHeight() / 2 + crosshairs.getLineHeight() / 2;
             crosshairs.setLocalTranslation(x, y, 0);
-            app.getGuiNode().attachChild(crosshairs);
+            guiNode.attachChild(crosshairs);
 
             playerLocationLabel = new BitmapText(guiFont, false);
             playerLocationLabel.setSize(guiFont.getCharSet().getRenderedSize());
@@ -67,7 +66,7 @@ public class HUDControl extends AbstractControl
             x = 10;
             y = settings.getHeight() - 100;
             playerLocationLabel.setLocalTranslation(x, y, 0);
-            app.getGuiNode().attachChild(playerLocationLabel);
+            debugNode.attachChild(playerLocationLabel);
 
             blockLocationLabel = new BitmapText(guiFont, false);
             blockLocationLabel.setSize(guiFont.getCharSet().getRenderedSize());
@@ -75,7 +74,7 @@ public class HUDControl extends AbstractControl
             x = 10;
             y-= 25;
             blockLocationLabel.setLocalTranslation(x, y, 0);
-            app.getGuiNode().attachChild(blockLocationLabel);
+            debugNode.attachChild(blockLocationLabel);
 
             chunkLocationLabel = new BitmapText(guiFont, false);
             chunkLocationLabel.setSize(guiFont.getCharSet().getRenderedSize());
@@ -83,7 +82,7 @@ public class HUDControl extends AbstractControl
             x = 10;
             y-= 25;
             chunkLocationLabel.setLocalTranslation(x, y, 0);
-            app.getGuiNode().attachChild(chunkLocationLabel);
+            debugNode.attachChild(chunkLocationLabel);
 
             lightLevelLabel = new BitmapText(guiFont, false);
             lightLevelLabel.setSize(guiFont.getCharSet().getRenderedSize());
@@ -91,25 +90,33 @@ public class HUDControl extends AbstractControl
             x = 10;
             y-= 25;
             lightLevelLabel.setLocalTranslation(x, y, 0);
-            app.getGuiNode().attachChild(lightLevelLabel);
+            debugNode.attachChild(lightLevelLabel);
         }	
 	}
 	
 	@Override
 	protected void controlUpdate(float tpf)
 	{
-		playerLocationLabel.setText("Player location: " + player.getLocalTranslation());
-		
-		Vector3Int blockLoc = Vector3Int.fromVector3f(player.getLocalTranslation().divide(CubesSettings.getInstance().getBlockSize()));
-		blockLocationLabel.setText("Block location: " + blockLoc);//TODO: replace with cubeSettings.getBlockSize()
-		if(blockLoc != null)
+		if(app.debugEnabled)
 		{
-			lightLevelLabel.setText("Light Level: " + world.getLight(blockLoc.subtract(0, 1, 0)));
-			Chunk chunk = world.getChunk(blockLoc);
-			if(chunk != null)
+			debugNode.setCullHint(CullHint.Never);
+			playerLocationLabel.setText("Player location: " + player.getLocalTranslation());
+			
+			Vector3Int blockLoc = Vector3Int.fromVector3f(player.getLocalTranslation().divide(CubesSettings.getInstance().getBlockSize()));
+			blockLocationLabel.setText("Block location: " + blockLoc);
+			if(blockLoc != null)
 			{
-				chunkLocationLabel.setText("Chunk location: " + chunk.location);
+				lightLevelLabel.setText("Light Level: " + world.getLight(blockLoc.subtract(0, 1, 0)));
+				Chunk chunk = world.getChunk(blockLoc);
+				if(chunk != null)
+				{
+					chunkLocationLabel.setText("Chunk location: " + chunk.location);
+				}
 			}
+		}
+		else
+		{
+			debugNode.setCullHint(CullHint.Always);
 		}
 	}
 

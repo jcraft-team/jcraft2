@@ -7,7 +7,7 @@ import com.chappelle.jcraft.BlockChunkListener;
 import com.chappelle.jcraft.CubesSettings;
 import com.chappelle.jcraft.Vector3Int;
 import com.chappelle.jcraft.World;
-import com.jme3.app.SimpleApplication;
+import com.chappelle.jcraft.profiler.Profiler;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Spatial;
@@ -19,14 +19,16 @@ public class BlockTerrainControl extends AbstractControl
 	private CubesSettings settings;
 	private BlockChunkControl[][][] chunks;
 	private ArrayList<BlockChunkListener> chunkListeners = new ArrayList<BlockChunkListener>();
-	private SimpleApplication app;
+	private JCraft app;
 	public World world;
+	private Profiler profiler;
 
-	public BlockTerrainControl(SimpleApplication app, CubesSettings settings, Vector3Int chunksCount)
+	public BlockTerrainControl(JCraft app, CubesSettings settings, Vector3Int chunksCount)
 	{
-		this.world = new World(settings, chunksCount);
+		this.world = new World(app.getProfiler(), settings, chunksCount);
 		this.settings = settings;
 		this.app = app;
+		this.profiler = app.getProfiler();
 		initializeChunks(world, chunksCount);
 	}
 
@@ -111,6 +113,7 @@ public class BlockTerrainControl extends AbstractControl
 
 	public boolean updateSpatial()
 	{
+		profiler.startSection("chunkBuilding");
 		boolean wasUpdatedNeeded = false;
 		for(int x = 0; x < chunks.length; x++)
 		{
@@ -131,6 +134,7 @@ public class BlockTerrainControl extends AbstractControl
 				}
 			}
 		}
+		profiler.endSection();
 		return wasUpdatedNeeded;
 	}
 

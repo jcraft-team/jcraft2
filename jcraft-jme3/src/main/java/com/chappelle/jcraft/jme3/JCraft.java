@@ -10,7 +10,10 @@ import com.chappelle.jcraft.CubesSettings;
 import com.chappelle.jcraft.GameSettings;
 import com.chappelle.jcraft.Vector3Int;
 import com.chappelle.jcraft.World;
+import com.chappelle.jcraft.profiler.Profiler;
+import com.chappelle.jcraft.profiler.ProfilerResult;
 import com.jme3.app.SimpleApplication;
+import com.jme3.app.StatsAppState;
 import com.jme3.font.BitmapFont;
 import com.jme3.input.KeyInput;
 import com.jme3.input.MouseInput;
@@ -26,31 +29,12 @@ import com.jme3.system.AppSettings;
 
 public class JCraft extends SimpleApplication implements ActionListener
 {
-	public static void main(String[] args)
-	{
-		Logger.getLogger("").setLevel(Level.SEVERE);
-
-		GameSettings gameSettings = new GameSettings(new File(System.getProperty("user.home")));
-		gameSettings.load();
-
-		JCraft app = new JCraft(gameSettings);
-		app.setShowSettings(gameSettings.showSettings);
-		app.start();
-	}
-
-	public JCraft(GameSettings gameSettings)
-	{
-		this.gameSettings = gameSettings;
-		settings = new AppSettings(true);
-		settings.setWidth(gameSettings.screenWidth);
-		settings.setHeight(gameSettings.screenHeight);
-		settings.setTitle("JCraft - Sandbox");
-		settings.setFrameRate(gameSettings.frameRate);
-	}
-	
 	private final Vector3Int terrainSize = new Vector3Int(50, 10, 50);
 	private int terrainIndex = terrainSize.getX();
 
+	private static JCraft jcraft;
+	
+	public boolean debugEnabled = false;
 	private GameSettings gameSettings;
 	private CubesSettings cubesSettings;
 	private BlockTerrainControl blockTerrain;
@@ -58,11 +42,36 @@ public class JCraft extends SimpleApplication implements ActionListener
 	private Node terrainNode = new Node("terrain");
 	private PlayerControl player;
 	public World world;
+	private Profiler profiler;
+	
+	public JCraft(GameSettings gameSettings)
+	{
+		jcraft = this;
+		
+		this.gameSettings = gameSettings;
+		debugEnabled = gameSettings.debugEnabled;
+		this.profiler = new Profiler();
+		profiler.profilingEnabled = gameSettings.profilingEnabled;
+		settings = new AppSettings(true);
+		settings.setWidth(gameSettings.screenWidth);
+		settings.setHeight(gameSettings.screenHeight);
+		settings.setTitle("JCraft");
+		settings.setFrameRate(gameSettings.frameRate);
+	}
+
+	public Profiler getProfiler()
+	{
+		return profiler;
+	}
+	
+	public static JCraft getInstance()
+	{
+		return jcraft;
+	}
 	
 	@Override
 	public void simpleInitApp()
 	{
-		
 		initControls();
 		initBlockTerrain();
 		cam.lookAtDirection(new Vector3f(1, 0, 1), Vector3f.UNIT_Y);
@@ -77,6 +86,32 @@ public class JCraft extends SimpleApplication implements ActionListener
 
 		rootNode.addControl(new HUDControl(this, settings, player));
 		rootNode.addControl(new BlockCursorControl(blockHelper, assetManager, cubesSettings.getBlockSize()));
+
+		profiler.startSection("root");
+		updateStatsView();
+		
+		System.out.println("****************************************************************************");
+		System.out.println("Press F3 to toggle debug, F4 to toggle profiler");
+		System.out.println("See key bindings in JCraft class for other controls");
+		System.out.println("****************************************************************************");
+		System.out.println("\r\n\r\n");
+	}
+	
+	private void toggleDebug()
+	{
+		debugEnabled = !debugEnabled;
+		updateStatsView();
+	}
+	
+	private void toggleProfiling()
+	{
+		profiler.profilingEnabled = !profiler.profilingEnabled;
+	}
+	
+	private void updateStatsView()
+	{
+		stateManager.getState(StatsAppState.class).setDisplayStatView(debugEnabled);
+		stateManager.getState(StatsAppState.class).setDisplayFps(debugEnabled);
 	}
 
 	private void addMapping(String action, Trigger trigger)
@@ -109,6 +144,8 @@ public class JCraft extends SimpleApplication implements ActionListener
         addMapping("t", new KeyTrigger(KeyInput.KEY_T));
         addMapping("g", new KeyTrigger(KeyInput.KEY_G));
         addMapping("u", new KeyTrigger(KeyInput.KEY_U));
+        addMapping("f3", new KeyTrigger(KeyInput.KEY_F3));
+        addMapping("f4", new KeyTrigger(KeyInput.KEY_F4));
 	}
 
 	private void initBlockTerrain()
@@ -277,6 +314,14 @@ public class JCraft extends SimpleApplication implements ActionListener
         {
         	player.toggleGravity();
         }
+        else if("f3".equals(name) && !isPressed)
+        {
+        	toggleDebug();
+        }
+        else if("f4".equals(name) && !isPressed)
+        {
+        	toggleProfiling();
+        }
 	}
 	
     public BitmapFont getGuiFont()
@@ -304,5 +349,35 @@ public class JCraft extends SimpleApplication implements ActionListener
 	{
 		super.destroy();
 		gameSettings.save();
+
+		if(profiler.profilingEnabled)
+		{
+			printProfilingData();
+		}
+	}
+
+	private void printProfilingData()
+	{
+		System.out.println("\r\n\r\n");
+		System.out.println("**********************************************");
+		System.out.println("************* Profiler results ***************");
+		System.out.println("**********************************************");
+		profiler.endSection();//needed to close the root profiling section
+		for(ProfilerResult result : profiler.getProfilingData("root"))
+		{
+			System.out.println(result.section + " [" + result.elapsedTime + "," + result.maxTime + "]");
+		}
+	}
+	
+	public static void main(String[] args)
+	{
+		Logger.getLogger("").setLevel(Level.SEVERE);
+
+		GameSettings gameSettings = new GameSettings(new File(System.getProperty("user.home")));
+		gameSettings.load();
+
+		JCraft app = new JCraft(gameSettings);
+		app.setShowSettings(gameSettings.showSettings);
+		app.start();
 	}
 }

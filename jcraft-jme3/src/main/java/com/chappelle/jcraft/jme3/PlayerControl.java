@@ -181,8 +181,8 @@ public class PlayerControl extends NodeControl
     		if(canPlaceBlock())
     		{
     			world.setBlock(pickedBlock, selected);
-//    			System.out.println("Setting block at " + pickedBlock.getBlockLocation());
-    			System.out.println("blockTerrain.setBlock(" + pickedBlock.getBlockLocation().x + ", " + pickedBlock.getBlockLocation().y + ", " + pickedBlock.getBlockLocation().z + ", Blocks.GRASS);");
+    			System.out.println("Setting block at " + pickedBlock.getBlockLocation());
+//    			System.out.println("blockTerrain.setBlock(" + pickedBlock.getBlockLocation().x + ", " + pickedBlock.getBlockLocation().y + ", " + pickedBlock.getBlockLocation().z + ", Blocks.GRASS);");
     		}
     	}
 	}
@@ -210,7 +210,7 @@ public class PlayerControl extends NodeControl
 	public void selectBlock(int index)
 	{
 		selected = Blocks.blocks[index-1];
-		System.out.println("Selected block is " + selected);
+		System.out.println("Selected block is " + selected.getClass().getName());
 	}
 	
 	public Block getSelectedBlock()

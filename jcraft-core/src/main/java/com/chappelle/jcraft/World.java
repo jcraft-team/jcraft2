@@ -10,6 +10,7 @@ import com.chappelle.jcraft.network.BitInputStream;
 import com.chappelle.jcraft.network.BitOutputStream;
 import com.chappelle.jcraft.network.BitSerializable;
 import com.chappelle.jcraft.network.CubesSerializer;
+import com.chappelle.jcraft.profiler.Profiler;
 import com.jme3.math.Vector3f;
 
 public class World implements BitSerializable
@@ -18,9 +19,11 @@ public class World implements BitSerializable
 	public Chunk[][][] chunks;
 	private ArrayList<BlockChunkListener> chunkListeners = new ArrayList<BlockChunkListener>();
 	private LightManager lightMgr;
+	private Profiler profiler;
 
-	public World(CubesSettings settings, Vector3Int chunksCount)
+	public World(Profiler profiler, CubesSettings settings, Vector3Int chunksCount)
 	{
+		this.profiler = profiler;
 		this.settings = settings;
 		this.lightMgr = new FloodFillLightManager(this);
 		initializeChunks(chunksCount);
@@ -353,7 +356,11 @@ public class World implements BitSerializable
 
     public void calculateLight()
     {
+    	profiler.startSection("light");
+    	
     	lightMgr.calculateLight();
+    	
+    	profiler.endSection();
     }
 
     public void setBlock(PickedBlock pickedBlock, Block blockToPlace)
