@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 import com.chappelle.jcraft.Block;
 import com.chappelle.jcraft.BlockHelper;
 import com.chappelle.jcraft.CubesSettings;
+import com.chappelle.jcraft.EntityPlayer;
 import com.chappelle.jcraft.GameSettings;
 import com.chappelle.jcraft.Vector3Int;
 import com.chappelle.jcraft.World;
@@ -40,7 +41,7 @@ public class JCraft extends SimpleApplication implements ActionListener
 	private BlockTerrainControl blockTerrain;
 	private BlockHelper blockHelper;
 	private Node terrainNode = new Node("terrain");
-	private PlayerControl player;
+	private EntityPlayer player;
 	public World world;
 	private Profiler profiler;
 	
@@ -80,9 +81,9 @@ public class JCraft extends SimpleApplication implements ActionListener
 		viewPort.setBackgroundColor(ColorRGBA.White);
 		
 		//Setup player
-		player = new PlayerControl(this);
-		rootNode.addControl(player);
-		player.setLocalTranslation(new Vector3f(0, terrainSize.getY() + 10, 0).mult(cubesSettings.getBlockSize()));
+		player = new EntityPlayer(world, cam, blockHelper);
+		rootNode.addControl(new PlayerControl(this, player));
+		player.pos.set(new Vector3f(0, terrainSize.getY() + 10, 0).mult(cubesSettings.getBlockSize()));
 
 		rootNode.addControl(new HUDControl(this, settings, player));
 		rootNode.addControl(new BlockCursorControl(blockHelper, assetManager, cubesSettings.getBlockSize()));

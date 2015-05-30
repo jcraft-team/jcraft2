@@ -2,6 +2,7 @@ package com.chappelle.jcraft.jme3;
 
 import com.chappelle.jcraft.Chunk;
 import com.chappelle.jcraft.CubesSettings;
+import com.chappelle.jcraft.EntityPlayer;
 import com.chappelle.jcraft.Vector3Int;
 import com.chappelle.jcraft.World;
 import com.jme3.asset.AssetManager;
@@ -28,10 +29,10 @@ public class HUDControl extends AbstractControl
 	private BitmapText blockLocationLabel;
 	private BitmapText chunkLocationLabel;
 	private BitmapText lightLevelLabel;
-	private PlayerControl player;
+	private EntityPlayer player;
 	private World world;
 	
-	public HUDControl(JCraft app, AppSettings appSettings, PlayerControl player)
+	public HUDControl(JCraft app, AppSettings appSettings, EntityPlayer player)
 	{
 		this.debugNode = new Node("debug");
 		this.world = app.world;
@@ -100,9 +101,9 @@ public class HUDControl extends AbstractControl
 		if(app.debugEnabled)
 		{
 			debugNode.setCullHint(CullHint.Never);
-			playerLocationLabel.setText("Player location: " + player.getLocalTranslation());
+			playerLocationLabel.setText("Player location: " + player.pos);
 			
-			Vector3Int blockLoc = Vector3Int.fromVector3f(player.getLocalTranslation().divide(CubesSettings.getInstance().getBlockSize()));
+			Vector3Int blockLoc = Vector3Int.fromVector3f(player.pos.divide(CubesSettings.getInstance().getBlockSize()));
 			blockLocationLabel.setText("Block location: " + blockLoc);
 			if(blockLoc != null)
 			{
