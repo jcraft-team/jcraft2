@@ -14,7 +14,7 @@ public class EntityPlayer extends Entity
 	private Block selected;
 	private Vector3Int currentBlockLocation;
 
-	private Camera cam;
+	public Camera cam;
 	
 	public EntityPlayer(World world, Camera cam, BlockHelper blockHelper)
 	{

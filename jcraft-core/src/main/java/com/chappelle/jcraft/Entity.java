@@ -76,6 +76,7 @@ public class Entity
 			float yDiff = Math.max(-2.9f, newY - oldY);
 			pos.addLocal(0, yDiff, 0);
 		}
+		
 	}
 	
 	public void toggleGravity()

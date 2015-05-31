@@ -1,5 +1,6 @@
 package com.chappelle.jcraft.jme3;
 
+import com.chappelle.jcraft.Block;
 import com.chappelle.jcraft.Chunk;
 import com.chappelle.jcraft.CubesSettings;
 import com.chappelle.jcraft.EntityPlayer;
@@ -28,7 +29,10 @@ public class HUDControl extends AbstractControl
 	private BitmapText playerLocationLabel;
 	private BitmapText blockLocationLabel;
 	private BitmapText chunkLocationLabel;
+	private BitmapText walkingOnLabel;
+	private BitmapText selectedBlockLabel;
 	private BitmapText lightLevelLabel;
+	private BitmapText facingLabel;
 	private EntityPlayer player;
 	private World world;
 	
@@ -65,7 +69,7 @@ public class HUDControl extends AbstractControl
             playerLocationLabel.setSize(guiFont.getCharSet().getRenderedSize());
             playerLocationLabel.setText("Player location: ");
             x = 10;
-            y = settings.getHeight() - 100;
+            y = settings.getHeight() - 10;
             playerLocationLabel.setLocalTranslation(x, y, 0);
             debugNode.attachChild(playerLocationLabel);
 
@@ -92,6 +96,30 @@ public class HUDControl extends AbstractControl
             y-= 25;
             lightLevelLabel.setLocalTranslation(x, y, 0);
             debugNode.attachChild(lightLevelLabel);
+
+            walkingOnLabel = new BitmapText(guiFont, false);
+            walkingOnLabel.setSize(guiFont.getCharSet().getRenderedSize());
+            walkingOnLabel.setText("Walking On: ");
+            x = 10;
+            y-= 25;
+            walkingOnLabel.setLocalTranslation(x, y, 0);
+            debugNode.attachChild(walkingOnLabel);
+
+            selectedBlockLabel = new BitmapText(guiFont, false);
+            selectedBlockLabel.setSize(guiFont.getCharSet().getRenderedSize());
+            selectedBlockLabel.setText("Selected Block: ");
+            x = 10;
+            y-= 25;
+            selectedBlockLabel.setLocalTranslation(x, y, 0);
+            debugNode.attachChild(selectedBlockLabel);
+
+            facingLabel = new BitmapText(guiFont, false);
+            facingLabel.setSize(guiFont.getCharSet().getRenderedSize());
+            facingLabel.setText("Facing: ");
+            x = 10;
+            y-= 25;
+            facingLabel .setLocalTranslation(x, y, 0);
+            debugNode.attachChild(facingLabel);
         }	
 	}
 	
@@ -102,12 +130,18 @@ public class HUDControl extends AbstractControl
 		{
 			debugNode.setCullHint(CullHint.Never);
 			playerLocationLabel.setText("Player location: " + player.pos);
-			
+			selectedBlockLabel.setText("Selected Block: " + toString(player.getSelectedBlock()));
 			Vector3Int blockLoc = Vector3Int.fromVector3f(player.pos.divide(CubesSettings.getInstance().getBlockSize()));
 			blockLocationLabel.setText("Block location: " + blockLoc);
+			facingLabel.setText("Facing: " + player.cam.getDirection());
 			if(blockLoc != null)
 			{
-				lightLevelLabel.setText("Light Level: " + world.getLight(blockLoc.subtract(0, 1, 0)));
+				Vector3Int walkedOnBlockLocation = blockLoc.subtract(0, 2, 0);
+				if(walkedOnBlockLocation != null)
+				{
+					lightLevelLabel.setText("Light Level: " + world.getLight(blockLoc));
+					walkingOnLabel.setText("Walking On: " + toString(world.getBlock(walkedOnBlockLocation)));
+				}
 				Chunk chunk = world.getChunk(blockLoc);
 				if(chunk != null)
 				{
@@ -119,6 +153,11 @@ public class HUDControl extends AbstractControl
 		{
 			debugNode.setCullHint(CullHint.Always);
 		}
+	}
+	
+	private String toString(Block block)
+	{
+		return block == null ? "Air" : block.getClass().getSimpleName();
 	}
 
 	@Override

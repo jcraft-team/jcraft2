@@ -78,7 +78,7 @@ public class JCraft extends SimpleApplication implements ActionListener
 		cam.lookAtDirection(new Vector3f(1, 0, 1), Vector3f.UNIT_Y);
 		
 		//Setup sky
-		viewPort.setBackgroundColor(ColorRGBA.White);
+		viewPort.setBackgroundColor(ColorRGBA.Black);
 		
 		//Setup player
 		player = new EntityPlayer(world, cam, blockHelper);
