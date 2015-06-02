@@ -85,6 +85,8 @@ public class Block
 	/** maximum Z for the block bounds (local coordinates) */
 	protected double maxZ;
 
+	public float slipperiness;
+	
 	public static final Block grass = new BlockGrass(1);
 	public static final Block glass = new BlockGlass(2);
 	public static final Block door = new BlockDoor(3, true);
@@ -101,7 +103,7 @@ public class Block
 	{
 		this.skins = skins;
 		this.blockId = blockId;
-		
+		this.slipperiness = 0.75F;
 		blocksList[blockId] = this;
 		this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
 	}
@@ -238,4 +240,6 @@ public class Block
 	{
 		return getClass().getSimpleName();
 	}
+	
+	
 }

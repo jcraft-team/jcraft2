@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.chappelle.jcraft.blocks.PickedBlock;
 import com.chappelle.jcraft.util.AABB;
+import com.chappelle.jcraft.util.MathUtils;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 
@@ -30,28 +31,40 @@ public class EntityPlayer extends Entity
 	{
 		super.update(tpf);
 		
-		float playerMoveSpeed = (5 * tpf);
+		float playerMoveSpeed = (1.5f * tpf);
 		Vector3f camDir = cam.getDirection().mult(playerMoveSpeed);
 		Vector3f camLeft = cam.getLeft().mult(playerMoveSpeed);
 		
 		if(arrowKeys[0])
 		{
-			motionVector.addLocal(camDir);
+			addVelocity(camDir.x, 0, camDir.z);
 		}
 		if(arrowKeys[1])
 		{
-			motionVector.addLocal(camLeft.negate());
+			Vector3f negate = camLeft.negate();
+			addVelocity(negate.x, 0, negate.z);
 		}
 		if(arrowKeys[2])
 		{
-			motionVector.addLocal(camDir.negate());
+			Vector3f negate = camDir.negate();
+			addVelocity(negate.x, 0, negate.z);
 		}
 		if(arrowKeys[3])
 		{
-			motionVector.addLocal(camLeft);
+			addVelocity(camLeft.x, 0, camLeft.z);
 		}
 		
-		moveEntity(motionVector.x, motionVector.y, motionVector.z);
+		moveEntity(motionX, motionY, motionZ);
+		
+		float slipperiness = 0.91F;
+		Block block = world.getBlock(MathUtils.floor_double(this.posX), MathUtils.floor_double(this.boundingBox.minY) - 1, MathUtils.floor_double(this.posZ));
+		if(block != null)
+		{
+			slipperiness = block.slipperiness;
+		}
+		this.motionY *= 0.9800000190734863D;
+		this.motionX *= (double) slipperiness;
+		this.motionZ *= (double) slipperiness;
 	}
 	
 	public void moveEntity(double x, double y, double z)
@@ -81,10 +94,7 @@ public class EntityPlayer extends Entity
 
 	public void jump()
 	{
-		if(onGround)
-		{
-			yVelocity += 12.0f;
-		}
+		this.motionY = 0.41999998688697815D;
 	}
 	
     public boolean canPlaceBlock()

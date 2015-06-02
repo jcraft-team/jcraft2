@@ -6,13 +6,23 @@ import com.jme3.math.Vector3f;
 public class Entity
 {
 	public float yAcceleration = -9.8f;
-	public float yVelocity = 0;
 
+	public boolean isAirBorne;
 	private boolean gravityEnabled = true;
 	
 	public double prevPosX;
 	public double prevPosY;
 	public double prevPosZ;
+	
+	/** Entity motion X */
+	public double motionX;
+
+	/** Entity motion Y */
+	public double motionY;
+
+	/** Entity motion Z */
+	public double motionZ;
+	
 	/** Entity position X */
 	public double posX;
 
@@ -22,11 +32,7 @@ public class Entity
 	/** Entity position Z */
 	public double posZ;
 
-
-	public Vector3f motionVector = new Vector3f();
-//	public Vector3f pos = new Vector3f();
 	public Vector3f previousPos = new Vector3f();
-	
 
 	public final AABB boundingBox;
 	
@@ -50,16 +56,32 @@ public class Entity
 
 	public void update(float tpf)
 	{
-//		previousPos = pos.clone();
-		motionVector.set(0, 0, 0);
-		if(gravityEnabled)
+		//Dampening
+		this.motionX *= 0.98D;
+		this.motionY *= 0.98D;
+		this.motionZ *= 0.98D;
+		if (Math.abs(this.motionX) < 0.005D)
 		{
-			yVelocity = yVelocity + tpf*yAcceleration;
-			double oldY = posY;
-			double newY = (oldY + tpf*yVelocity);
-			double yDiff = Math.max(-0.9f, newY - oldY);
-			motionVector.y += yDiff;
+			this.motionX = 0.0D;
 		}
+
+		if (Math.abs(this.motionY) < 0.005D)
+		{
+			this.motionY = 0.0D;
+		}
+
+		if (Math.abs(this.motionZ) < 0.005D)
+		{
+			this.motionZ = 0.0D;
+		}
+		
+		//Gravity
+		this.motionY -= 0.03999999910593033D;
+		
+		//Update previous position before movement happens
+		prevPosX = posX;
+		prevPosY = posY;
+		prevPosZ = posZ;
 	}
 
 	public void setPosition(double x, double y, double z)
@@ -67,7 +89,6 @@ public class Entity
 		posX = x;
 		posY = y;
 		posZ = z;
-//		this.pos.set(x, y, z);
 
 		float halfWidth = this.width / 2.0F;
 		double minX = x - (double) halfWidth;
@@ -109,7 +130,22 @@ public class Entity
 
 			++posY;
 		}
-		motionVector.set(0,0,0);
+		setVelocity(0, 0, 0);
+	}
+
+	public void addVelocity(double par1, double par3, double par5)
+	{
+		this.motionX += par1;
+		this.motionY += par3;
+		this.motionZ += par5;
+		this.isAirBorne = true;
+	}
+
+	public void setVelocity(double par1, double par3, double par5)
+	{
+		this.motionX = par1;
+		this.motionY = par3;
+		this.motionZ = par5;
 	}
 
 	public void toggleGravity()
