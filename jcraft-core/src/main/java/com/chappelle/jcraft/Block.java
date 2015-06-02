@@ -200,7 +200,12 @@ public class Block
 		
 	}
 	
-	public AABB getCollisionBoundingBox(World par1World, int x, int y, int z)
+	public AABB getCollisionBoundingBox(World world, int x, int y, int z)
+	{
+		return AABB.getAABBPool().getAABB((double) x + this.minX, (double) y + this.minY, (double) z + this.minZ, (double) x + this.maxX, (double) y + this.maxY, (double) z + this.maxZ);
+	}
+
+	public AABB getSelectedBoundingBox(World world, int x, int y, int z)
 	{
 		return AABB.getAABBPool().getAABB((double) x + this.minX, (double) y + this.minY, (double) z + this.minZ, (double) x + this.maxX, (double) y + this.maxY, (double) z + this.maxZ);
 	}

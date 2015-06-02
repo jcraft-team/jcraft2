@@ -7,6 +7,7 @@ import com.chappelle.jcraft.BlockState;
 import com.chappelle.jcraft.Vector3Int;
 import com.chappelle.jcraft.World;
 import com.chappelle.jcraft.shapes.BlockShape_Torch;
+import com.chappelle.jcraft.util.AABB;
 import com.jme3.math.Vector3f;
 
 public class BlockTorch extends Block
@@ -51,6 +52,11 @@ public class BlockTorch extends Block
         }
     }
     
+	public AABB getCollisionBoundingBox(World par1World, int x, int y, int z)
+	{
+		return null;
+	}
+
     @Override
     public boolean isValidPlacementFace(Block.Face face)
     {

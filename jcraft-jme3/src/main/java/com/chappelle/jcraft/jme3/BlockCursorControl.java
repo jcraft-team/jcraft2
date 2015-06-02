@@ -67,7 +67,7 @@ public class BlockCursorControl extends NodeControl
 					{
 						blockCursor.setCullHint(Spatial.CullHint.Never);
 						
-						AABB bb = block.getCollisionBoundingBox(world, newCursorLocation.x, newCursorLocation.y, newCursorLocation.z);
+						AABB bb = block.getSelectedBoundingBox(world, newCursorLocation.x, newCursorLocation.y, newCursorLocation.z);
 						Vector3f center = new Vector3f((float)Math.abs(bb.minX-bb.maxX)/2.0f, (float)Math.abs(bb.minY-bb.maxY)/2.0f, (float)Math.abs(bb.minZ-bb.maxZ)/2.0f);
 						box.updateGeometry(center, center.x, center.y, center.z);
 						blockCursor.setLocalTranslation(newCursorLocation.toVector3f());
