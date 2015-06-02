@@ -5,7 +5,7 @@ import com.jme3.math.Vector3f;
 
 public class Entity
 {
-	public float yAcceleration = -50.0f;
+	public float yAcceleration = -9.8f;
 	public float yVelocity = 0;
 
 	private boolean gravityEnabled = true;
@@ -13,8 +13,20 @@ public class Entity
 	public double prevPosX;
 	public double prevPosY;
 	public double prevPosZ;
+	/** Entity position X */
+	public double posX;
 
-	public Vector3f pos = new Vector3f();
+	/** Entity position Y */
+	public double posY;
+
+	/** Entity position Z */
+	public double posZ;
+
+
+	public Vector3f motionVector = new Vector3f();
+//	public Vector3f pos = new Vector3f();
+	public Vector3f previousPos = new Vector3f();
+	
 
 	public final AABB boundingBox;
 	
@@ -28,16 +40,34 @@ public class Entity
 	public float height;
 
 	protected final World world;
+	protected boolean onGround;
 	
 	public Entity(World world)
 	{
 		this.world = world;
 		this.boundingBox = AABB.getBoundingBox(0, 0, 0, 0, 0, 0);
 	}
-	
-	public void setPosition(float x, float y, float z)
+
+	public void update(float tpf)
 	{
-		this.pos.set(x, y, z);
+//		previousPos = pos.clone();
+		motionVector.set(0, 0, 0);
+		if(gravityEnabled)
+		{
+			yVelocity = yVelocity + tpf*yAcceleration;
+			double oldY = posY;
+			double newY = (oldY + tpf*yVelocity);
+			double yDiff = Math.max(-0.9f, newY - oldY);
+			motionVector.y += yDiff;
+		}
+	}
+
+	public void setPosition(double x, double y, double z)
+	{
+		posX = x;
+		posY = y;
+		posZ = z;
+//		this.pos.set(x, y, z);
 
 		float halfWidth = this.width / 2.0F;
 		double minX = x - (double) halfWidth;
@@ -65,20 +95,23 @@ public class Entity
 			this.boundingBox.maxY = this.boundingBox.minY + (double) this.height;
 		}
 	}
-
-	public void update(float tpf)
-	{
-		if(gravityEnabled)
-		{
-			yVelocity = yVelocity + tpf*yAcceleration;
-			float oldY = pos.y;
-			float newY = (oldY + tpf*yVelocity);
-			float yDiff = Math.max(-2.9f, newY - oldY);
-			pos.addLocal(0, yDiff, 0);
-		}
-		
-	}
 	
+	protected void preparePlayerToSpawn()
+	{
+		while (posY < 256)
+		{
+			this.setPosition(posX, posY, posZ);
+
+			if (world.getCollidingBoundingBoxes(this, this.boundingBox).isEmpty())
+			{
+				break;
+			}
+
+			++posY;
+		}
+		motionVector.set(0,0,0);
+	}
+
 	public void toggleGravity()
 	{
 		gravityEnabled = !gravityEnabled;

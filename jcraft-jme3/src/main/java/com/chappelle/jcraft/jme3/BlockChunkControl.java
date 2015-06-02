@@ -26,7 +26,7 @@ public class BlockChunkControl extends AbstractControl
     	this.chunk = chunk;
     	this.terrain = terrain;
     	Vector3Int blockLocation = chunk.getBlockLocation();
-    	node.setLocalTranslation(new Vector3f(blockLocation.getX(), blockLocation.getY(), blockLocation.getZ()).mult(terrain.getSettings().getBlockSize()));
+    	node.setLocalTranslation(new Vector3f(blockLocation.getX(), blockLocation.getY(), blockLocation.getZ()));
     }
 
     public BlockTerrainControl getTerrain()

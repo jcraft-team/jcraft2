@@ -7,7 +7,6 @@ import com.jme3.material.Material;
 public class CubesSettings
 {
 	private AssetManager assetManager;
-	private float blockSize = 3;
 	// private int chunkSizeX = 16;
 	// private int chunkSizeY = 256;
 	// private int chunkSizeZ = 16;
@@ -35,16 +34,6 @@ public class CubesSettings
 	public AssetManager getAssetManager()
 	{
 		return assetManager;
-	}
-
-	public float getBlockSize()
-	{
-		return blockSize;
-	}
-
-	public void setBlockSize(float blockSize)
-	{
-		this.blockSize = blockSize;
 	}
 
 	public int getChunkSizeX()

@@ -1,18 +1,17 @@
 package com.chappelle.jcraft;
 
+import java.util.List;
+
 import com.chappelle.jcraft.blocks.PickedBlock;
+import com.chappelle.jcraft.util.AABB;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 
 public class EntityPlayer extends Entity
 {
-	private Vector3f motionVector = new Vector3f();
-	private PlayerCollisionDetector collision;
 	private boolean[] arrowKeys = new boolean[4];
 	private BlockHelper blockHelper;
-	private CubesSettings cubesSettings;
 	private Block selected;
-	private Vector3Int currentBlockLocation;
 
 	public Camera cam;
 	
@@ -22,8 +21,6 @@ public class EntityPlayer extends Entity
 		
 		this.cam = cam;
 		this.blockHelper = blockHelper;
-		this.cubesSettings = CubesSettings.getInstance();
-		this.collision = new PlayerCollisionDetector(world, cubesSettings);
 
 		selectBlock(1);
 	}
@@ -33,11 +30,10 @@ public class EntityPlayer extends Entity
 	{
 		super.update(tpf);
 		
-		currentBlockLocation = getStandingBlockLocation();
-		float playerMoveSpeed = ((cubesSettings.getBlockSize() * 6.5f) * tpf);
+		float playerMoveSpeed = (5 * tpf);
 		Vector3f camDir = cam.getDirection().mult(playerMoveSpeed);
 		Vector3f camLeft = cam.getLeft().mult(playerMoveSpeed);
-		motionVector.set(0, 0, 0);
+		
 		if(arrowKeys[0])
 		{
 			motionVector.addLocal(camDir);
@@ -54,88 +50,48 @@ public class EntityPlayer extends Entity
 		{
 			motionVector.addLocal(camLeft);
 		}
-		motionVector.setY(0);
 		
-		pos.addLocal(motionVector);
-
-		detectCollisions();
-
-		cam.setLocation(pos.add(0, 2, 0));
-		Vector3Int newBlockLocation = getStandingBlockLocation();
-		if(newBlockLocation.x != currentBlockLocation.x || newBlockLocation.z != currentBlockLocation.z)
-		{
-			Block block = getStandingBlock();
-			if(block != null)
-			{
-				block.onEntityWalking(world, newBlockLocation);
-			}
-			currentBlockLocation = newBlockLocation;
-		}
-
+		moveEntity(motionVector.x, motionVector.y, motionVector.z);
 	}
 	
-	private void detectCollisions()
+	public void moveEntity(double x, double y, double z)
 	{
-		//Ground block
-		collision.calculate(pos);
-		if(collision.penetrating)
+		List<AABB> boundingBoxes = world.getCollidingBoundingBoxes(this, boundingBox.addCoord(x, y, z));
+		for(AABB boundingBox : boundingBoxes)
 		{
-			pos.addLocal(0, collision.yPen, 0);
-			yVelocity = 0;
+			y = boundingBox.calculateYOffset(this.boundingBox, y);
 		}
-		//Top block
-		collision.calculate(pos.add(0, 2, 0));
-		if(collision.penetrating)
+		this.boundingBox.offset(0, y, 0);
+		for(AABB boundingBox : boundingBoxes)
 		{
-			pos.subtractLocal(0, collision.yPen, 0);
+			x = boundingBox.calculateXOffset(this.boundingBox, x);
 		}
-		//Front block
-		collision.calculate(pos.add(0, 1, 1));
-		if(collision.penetrating)
+		this.boundingBox.offset(x, 0, 0);
+		for(AABB boundingBox : boundingBoxes)
 		{
-			pos.subtractLocal(0, 0, collision.zPen);
+			z = boundingBox.calculateZOffset(this.boundingBox, z);
 		}
-		//Front top block
-		collision.calculate(pos.add(0, 2, 1));
-		if(collision.penetrating)
-		{
-			pos.subtractLocal(0, 0, collision.zPen);
-		}
-		//Back block
-		collision.calculate(pos.add(0, 1, -1));
-		if(collision.penetrating)
-		{
-			pos.addLocal(0, 0, collision.zPen);
-		}
-		//Right block
-		collision.calculate(pos.add(1, 1, 0));
-		if(collision.penetrating)
-		{
-			pos.subtractLocal(collision.xPen, 0, 0);
-		}
-		//left block
-		collision.calculate(pos.add(-1, 1, 0));
-		if(collision.penetrating)
-		{
-			pos.addLocal(collision.xPen, 0, 0);
-		}
+		this.boundingBox.offset(0, 0, z);
+
+		posX = (float)(this.boundingBox.minX + this.boundingBox.maxX) / 2.0f;
+		posZ = (float)(this.boundingBox.minZ + this.boundingBox.maxZ) / 2.0f;
+		posY = (float)this.boundingBox.minY + this.yOffset - this.ySize;
 	}
 	
 
 	public void jump()
 	{
-		if(yVelocity == 0)
+		if(onGround)
 		{
-			yVelocity = 20.0f;
+			yVelocity += 12.0f;
 		}
 	}
 	
     public boolean canPlaceBlock()
     {
     	int blockInteractionRange = 5;
-    	float blockSize = cubesSettings.getBlockSize();
-        float distanceToDesiredPlacement = pos.distance(BlockHelper.toVector(blockHelper.getPointedBlockLocationInWorldSpace()));
-		return distanceToDesiredPlacement > blockSize * 1.25 && distanceToDesiredPlacement < blockSize * blockInteractionRange + 1;
+        float distanceToDesiredPlacement = new Vector3f((float)posX, (float)posY, (float)posZ).distance(BlockHelper.toVector(blockHelper.getPointedBlockLocationInWorldSpace()));
+		return distanceToDesiredPlacement > 1.25 && distanceToDesiredPlacement < blockInteractionRange + 1;
     }
 
 	public void breakBlock()
@@ -199,6 +155,14 @@ public class EntityPlayer extends Entity
 		return selected;
 	}
 	
+	public void preparePlayerToSpawn()
+	{
+		this.yOffset = 1.62F;
+		this.setSize(0.6F, 1.8F);
+		super.preparePlayerToSpawn();
+	}
+
+	
 	/**
 	 * Returns the Block the player is standing on
 	 */
@@ -214,7 +178,7 @@ public class EntityPlayer extends Entity
 	
 	public Vector3Int getStandingBlockLocation()
 	{
-		Vector3Int result = Vector3Int.fromVector3f(pos.divide(CubesSettings.getInstance().getBlockSize()));
+		Vector3Int result = new Vector3Int((int)posX, (int)posY, (int)posZ);
 		if(result != null)
 		{
 			result.subtractLocal(0,2,0);

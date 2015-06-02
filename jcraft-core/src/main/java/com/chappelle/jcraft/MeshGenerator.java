@@ -17,7 +17,7 @@ public class MeshGenerator
 		BlockShape blockShape = block.getShape(null, null);
 		blockShape.prepare(false, meshData);
 		blockShape.addTo(null, block, new Vector3Int());
-		return generateMesh(meshData, 3);//TODO:
+		return generateMesh(meshData);//TODO:
 	}
 	
 	public static Mesh generateOptimizedMesh(Chunk blockChunk, boolean isTransparent)
@@ -42,16 +42,16 @@ public class MeshGenerator
 				}
 			}
 		}
-		return generateMesh(meshData, blockTerrain.getSettings().getBlockSize());
+		return generateMesh(meshData);
 	}
 
-	private static Mesh generateMesh(MeshData meshData, float blockSize)
+	private static Mesh generateMesh(MeshData meshData)
 	{
 		Vector3f[] positions = new Vector3f[meshData.positionsList.size()];
 		Iterator<Vector3f> positionsIterator = meshData.positionsList.iterator();
 		for(int i = 0; positionsIterator.hasNext(); i++)
 		{
-			positions[i] = positionsIterator.next().mult(blockSize);
+			positions[i] = positionsIterator.next();
 		}
 		short[] indices = new short[meshData.indicesList.size()];
 		Iterator<Short> indicesIterator = meshData.indicesList.iterator();

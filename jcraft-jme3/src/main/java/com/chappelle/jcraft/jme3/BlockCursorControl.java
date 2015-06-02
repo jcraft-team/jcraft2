@@ -1,7 +1,10 @@
 package com.chappelle.jcraft.jme3;
 
+import com.chappelle.jcraft.Block;
 import com.chappelle.jcraft.BlockHelper;
 import com.chappelle.jcraft.Vector3Int;
+import com.chappelle.jcraft.World;
+import com.chappelle.jcraft.util.AABB;
 import com.jme3.asset.AssetManager;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
@@ -17,24 +20,29 @@ import com.jme3.scene.shape.Box;
 public class BlockCursorControl extends NodeControl
 {
 	private Geometry blockCursor;
-	private float halfBlockSize;
-	private float blockSize;
 	private BlockHelper blockHelper;
 	private AssetManager assetManager;
 	private Vector3Int prevCursorLocation;
+	private World world;
+	private Box box;
 	
-	public BlockCursorControl(BlockHelper blockHelper, AssetManager assetManager, float blockSize)
+	public BlockCursorControl(World world, BlockHelper blockHelper, AssetManager assetManager)
 	{
+		this.world = world;
 		this.blockHelper = blockHelper;
 		this.assetManager = assetManager;
-		this.blockSize = blockSize;
-		this.halfBlockSize = blockSize/2;
 	}
 	
     @Override
     public void setNode(Node node)
     {
-        blockCursor = createWireBox(halfBlockSize, ColorRGBA.Yellow);
+    	box = new Box(1,1,1);
+        blockCursor = new Geometry("wireframe cube", box);
+        Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        mat.getAdditionalRenderState().setWireframe(true);
+        mat.setColor("Color", ColorRGBA.Yellow);
+        blockCursor.setMaterial(mat);
+
         blockCursor.setCullHint(Spatial.CullHint.Always);
 
         node.attachChild(blockCursor);
@@ -54,23 +62,23 @@ public class BlockCursorControl extends NodeControl
 			{
 				if(!newCursorLocation.equals(prevCursorLocation))
 				{
-					blockCursor.setCullHint(Spatial.CullHint.Never);
-					Vector3f pos = newCursorLocation.mult((int)blockSize).toVector3f().addLocal(halfBlockSize, halfBlockSize, halfBlockSize);
-					blockCursor.setLocalTranslation(pos);
+					Block block = world.getBlock(newCursorLocation);
+					if(block != null)
+					{
+						blockCursor.setCullHint(Spatial.CullHint.Never);
+						
+						AABB bb = block.getCollisionBoundingBox(world, newCursorLocation.x, newCursorLocation.y, newCursorLocation.z);
+						Vector3f center = new Vector3f((float)Math.abs(bb.minX-bb.maxX)/2.0f, (float)Math.abs(bb.minY-bb.maxY)/2.0f, (float)Math.abs(bb.minZ-bb.maxZ)/2.0f);
+						box.updateGeometry(center, center.x, center.y, center.z);
+						blockCursor.setLocalTranslation(newCursorLocation.toVector3f());
+					}
+					else
+					{
+						blockCursor.setCullHint(Spatial.CullHint.Always);
+					}
 				}
 			}
 			prevCursorLocation = newCursorLocation;
 		}
 	}
-
-    private Geometry createWireBox(float size, ColorRGBA color)
-    {
-        Geometry g = new Geometry("wireframe cube", new Box(size + 0.01f, size + 0.01f, size + 0.01f));
-        Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        mat.getAdditionalRenderState().setWireframe(true);
-        mat.setColor("Color", color);
-        g.setMaterial(mat);
-        return g;
-    }
-
 }

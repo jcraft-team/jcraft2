@@ -1,6 +1,7 @@
 package com.chappelle.jcraft.jme3;
 
 import com.chappelle.jcraft.EntityPlayer;
+import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Node;
 
@@ -9,6 +10,7 @@ public class PlayerControl extends NodeControl
 	private Node playerNode = new Node("player");
 	private Camera cam;
 	private EntityPlayer player;
+	private Vector3f position = new Vector3f();
 
 	public PlayerControl(JCraft app, EntityPlayer player)
 	{
@@ -28,7 +30,8 @@ public class PlayerControl extends NodeControl
 	{
 		player.update(tpf);
 		
-		playerNode.setLocalTranslation(player.pos);
-		cam.setLocation(playerNode.getLocalTranslation().add(0, 2, 0));
+		position.set((float)player.posX, (float)player.posY, (float)player.posZ);
+		playerNode.setLocalTranslation(position);
+		cam.setLocation(playerNode.getLocalTranslation());
 	}
 }

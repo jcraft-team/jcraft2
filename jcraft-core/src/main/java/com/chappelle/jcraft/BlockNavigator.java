@@ -60,20 +60,20 @@ public class BlockNavigator{
         return null;
     }
     
-    public static Vector3Int getPointedBlockLocation(World blockTerrain, Vector3f collisionContactPoint, boolean getNeighborLocation){
+    public static Vector3Int getPointedBlockLocation(World world, Vector3f collisionContactPoint, boolean getNeighborLocation){
         Vector3f collisionLocation = Util.compensateFloatRoundingErrors(collisionContactPoint);
         Vector3Int blockLocation = new Vector3Int(
-                (int) (collisionLocation.getX() / blockTerrain.getSettings().getBlockSize()),
-                (int) (collisionLocation.getY() / blockTerrain.getSettings().getBlockSize()),
-                (int) (collisionLocation.getZ() / blockTerrain.getSettings().getBlockSize()));
-        if((blockTerrain.getBlock(blockLocation) != null) == getNeighborLocation){
-            if((collisionLocation.getX() % blockTerrain.getSettings().getBlockSize()) == 0) {
+                (int) (collisionLocation.getX()),
+                (int) (collisionLocation.getY()),
+                (int) (collisionLocation.getZ()));
+        if((world.getBlock(blockLocation) != null) == getNeighborLocation){
+            if((collisionLocation.getX() % 1) == 0) {
                 blockLocation.subtractLocal(1, 0, 0);
             }
-            else if((collisionLocation.getY() % blockTerrain.getSettings().getBlockSize()) == 0){
+            else if((collisionLocation.getY() % 1) == 0){
                 blockLocation.subtractLocal(0, 1, 0);
             }
-            else if((collisionLocation.getZ() % blockTerrain.getSettings().getBlockSize()) == 0){
+            else if((collisionLocation.getZ() % 1) == 0){
                 blockLocation.subtractLocal(0, 0, 1);
             }
         }

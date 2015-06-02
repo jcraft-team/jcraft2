@@ -39,10 +39,5 @@
 			<artifactId>jme3-lwjgl</artifactId>
 			<version>${jme.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>com.jme3</groupId>
-			<artifactId>jme3-test-data</artifactId>
-			<version>${jme.version}</version>
-		</dependency>
 	</dependencies>
 </project>

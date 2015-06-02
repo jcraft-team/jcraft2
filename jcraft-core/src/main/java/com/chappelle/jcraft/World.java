@@ -2,6 +2,7 @@ package com.chappelle.jcraft;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import com.chappelle.jcraft.blocks.PickedBlock;
@@ -13,6 +14,8 @@ import com.chappelle.jcraft.network.BitOutputStream;
 import com.chappelle.jcraft.network.BitSerializable;
 import com.chappelle.jcraft.network.CubesSerializer;
 import com.chappelle.jcraft.profiler.Profiler;
+import com.chappelle.jcraft.util.AABB;
+import com.chappelle.jcraft.util.MathUtils;
 import com.jme3.asset.AssetManager;
 import com.jme3.audio.AudioNode;
 import com.jme3.math.Vector3f;
@@ -437,7 +440,39 @@ public class World implements BitSerializable
             }
         }
     }
+    
+    public List<AABB> getCollidingBoundingBoxes(Entity entity, AABB boundingBox)
+    {
+    	List<AABB> boundingBoxes = new ArrayList<AABB>();
+    	
+		int minX = MathUtils.floor_double(boundingBox.minX);
+		int maxX = MathUtils.floor_double(boundingBox.maxX + 1.0D);
+		int minY = MathUtils.floor_double(boundingBox.minY);
+		int maxY = MathUtils.floor_double(boundingBox.maxY + 1.0D);
+		int minZ = MathUtils.floor_double(boundingBox.minZ);
+		int maxZ = MathUtils.floor_double(boundingBox.maxZ + 1.0D);
 
+		for (int x = minX; x < maxX; ++x)
+		{
+			for (int z = minZ; z < maxZ; ++z)
+			{
+				for (int y = minY - 1; y < maxY; ++y)
+				{
+					Block block = getBlock(x, y, z);
+					if (block != null)
+					{
+						AABB blockBoundingBox = block.getCollisionBoundingBox(this, x, y, z);
+						if(blockBoundingBox != null && blockBoundingBox.intersectsWith(boundingBox))
+						{
+							boundingBoxes.add(blockBoundingBox);
+						}
+					}
+				}
+			}
+		}
+		return boundingBoxes;
+    }
+    
     private Vector3f getCameraDirectionAsUnitVector(Vector3f cameraDirection)
     {
     	cameraDirection = cameraDirection.normalize();

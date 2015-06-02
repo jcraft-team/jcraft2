@@ -7,6 +7,7 @@ import com.chappelle.jcraft.blocks.BlockGrass;
 import com.chappelle.jcraft.blocks.PickedBlock;
 import com.chappelle.jcraft.blocks.BlockTorch;
 import com.chappelle.jcraft.shapes.BlockShape_Cube;
+import com.chappelle.jcraft.util.AABB;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 
@@ -66,6 +67,24 @@ public class Block
 
 	};
 
+	/** minimum X for the block bounds (local coordinates) */
+	protected double minX;
+
+	/** minimum Y for the block bounds (local coordinates) */
+	protected double minY;
+
+	/** minimum Z for the block bounds (local coordinates) */
+	protected double minZ;
+
+	/** maximum X for the block bounds (local coordinates) */
+	protected double maxX;
+
+	/** maximum Y for the block bounds (local coordinates) */
+	protected double maxY;
+
+	/** maximum Z for the block bounds (local coordinates) */
+	protected double maxZ;
+
 	public static final Block grass = new BlockGrass(1);
 	public static final Block glass = new BlockGlass(2);
 	public static final Block door = new BlockDoor(3, true);
@@ -84,8 +103,22 @@ public class Block
 		this.blockId = blockId;
 		
 		blocksList[blockId] = this;
+		this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
 	}
 	
+	/**
+	 * Sets the bounds of the block. minX, minY, minZ, maxX, maxY, maxZ
+	 */
+	public final void setBlockBounds(float par1, float par2, float par3, float par4, float par5, float par6)
+	{
+		this.minX = (double) par1;
+		this.minY = (double) par2;
+		this.minZ = (double) par3;
+		this.maxX = (double) par4;
+		this.maxY = (double) par5;
+		this.maxZ = (double) par6;
+	}
+
 	protected void setShapes(BlockShape... shapes)
 	{
 		this.shapes = shapes;
@@ -165,6 +198,11 @@ public class Block
 		
 	}
 	
+	public AABB getCollisionBoundingBox(World par1World, int x, int y, int z)
+	{
+		return AABB.getAABBPool().getAABB((double) x + this.minX, (double) y + this.minY, (double) z + this.minZ, (double) x + this.maxX, (double) y + this.maxY, (double) z + this.maxZ);
+	}
+
     public boolean smothersBottomBlock()
     {
         return true;
@@ -193,5 +231,11 @@ public class Block
 	public boolean useNeighborLight()
 	{
 		return true;
+	}
+	
+	@Override
+	public String toString()
+	{
+		return getClass().getSimpleName();
 	}
 }

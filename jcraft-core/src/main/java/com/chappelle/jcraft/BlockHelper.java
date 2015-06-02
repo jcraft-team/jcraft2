@@ -11,24 +11,17 @@ import com.jme3.system.AppSettings;
 
 public class BlockHelper
 {
-    private World blockTerrain;
+    private World world;
     private AppSettings settings;
     private Camera cam;
     private Node blocksNode;
-    private CubesSettings cubeSettings;
 
-    public BlockHelper(Camera camera, World blockTerrain, AppSettings settings, Node blocksNode, CubesSettings cubeSettings)
+    public BlockHelper(Camera camera, World world, AppSettings settings, Node blocksNode)
     {
-        this.blockTerrain = blockTerrain;
+        this.world = world;
         this.settings = settings;
         this.cam = camera;
         this.blocksNode = blocksNode;
-        this.cubeSettings = cubeSettings;
-    }
-
-    public Block getBlock(Vector3Int blockLocation)
-    {
-        return blockTerrain.getBlock(blockLocation);
     }
 
     private CollisionResults getRayCastingResults(Node node, Integer rayLength)
@@ -59,7 +52,7 @@ public class BlockHelper
         if (results.size() > 0)
         {
             Vector3f collisionContactPoint = results.getClosestCollision().getContactPoint();
-            return BlockNavigator.getPointedBlockLocation(blockTerrain, collisionContactPoint, getNeighborLocation);
+            return BlockNavigator.getPointedBlockLocation(world, collisionContactPoint, getNeighborLocation);
         }
         return null;
     }
@@ -90,8 +83,8 @@ public class BlockHelper
         if (results.size() > 0)
         {
             Vector3f collisionContactPoint = results.getClosestCollision().getContactPoint();
-            Vector3Int blockLocation = BlockNavigator.getPointedBlockLocation(blockTerrain, collisionContactPoint, getNeighborLocation);
-            Block block = getBlock(blockLocation);
+            Vector3Int blockLocation = BlockNavigator.getPointedBlockLocation(world, collisionContactPoint, getNeighborLocation);
+            Block block = world.getBlock(blockLocation);
             if(!getNeighborLocation && block == null)//If we are getting a neighbor then the block could be null, otherwise we don't allow null
             {
                 return null;
@@ -99,16 +92,6 @@ public class BlockHelper
             return new PickedBlock(block, blockLocation, results, cam.getDirection());
         }
         return null;
-    }
-
-    /**
-     * Returns the center of the block. This can be used to place real geometries in the scene
-     * at the given chunk location. Just set the Geometry's localTranslation to the result of
-     * this method.
-     */
-    public Vector3Int getBlockCenterInWorldSpace(Vector3Int chunkLocation)
-    {
-        return chunkLocation.mult((int)cubeSettings.getBlockSize());
     }
 
     private Vector3f getPointedBlockLocationInWorldSpaceVector()
@@ -162,10 +145,10 @@ public class BlockHelper
         if(results.size() > 0)
         {
             Vector3f collisionContactPoint = results.getClosestCollision().getContactPoint();
-            Vector3Int blockLocation = BlockNavigator.getPointedBlockLocation(blockTerrain, collisionContactPoint, false);
+            Vector3Int blockLocation = BlockNavigator.getPointedBlockLocation(world, collisionContactPoint, false);
             if(blockLocation != null)
             {
-                return getBlock(blockLocation);
+                return world.getBlock(blockLocation);
             }
         }
         return null;

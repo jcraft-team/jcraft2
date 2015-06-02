@@ -1,8 +1,8 @@
 package com.chappelle.jcraft.jme3;
 
 import com.chappelle.jcraft.Block;
+import com.chappelle.jcraft.BlockHelper;
 import com.chappelle.jcraft.Chunk;
-import com.chappelle.jcraft.CubesSettings;
 import com.chappelle.jcraft.EntityPlayer;
 import com.chappelle.jcraft.Vector3Int;
 import com.chappelle.jcraft.World;
@@ -33,8 +33,11 @@ public class HUDControl extends AbstractControl
 	private BitmapText selectedBlockLabel;
 	private BitmapText lightLevelLabel;
 	private BitmapText facingLabel;
+	private BitmapText pointedBlockLabel;
+	private BitmapText boundingBoxLabel;
 	private EntityPlayer player;
 	private World world;
+	private BlockHelper blockHelper;
 	
 	public HUDControl(JCraft app, AppSettings appSettings, EntityPlayer player)
 	{
@@ -45,6 +48,7 @@ public class HUDControl extends AbstractControl
 		this.assetManager = app.getAssetManager();
 		this.settings = appSettings;
 		this.player = player;
+		this.blockHelper = app.getBlockHelper();
 	}
 	
 	@Override
@@ -73,6 +77,14 @@ public class HUDControl extends AbstractControl
             playerLocationLabel.setLocalTranslation(x, y, 0);
             debugNode.attachChild(playerLocationLabel);
 
+            boundingBoxLabel = new BitmapText(guiFont, false);
+            boundingBoxLabel.setSize(guiFont.getCharSet().getRenderedSize());
+            boundingBoxLabel.setText("Bounding Box: ");
+            x = 10;
+            y -= 25;
+            boundingBoxLabel.setLocalTranslation(x, y, 0);
+            debugNode.attachChild(boundingBoxLabel);
+            
             blockLocationLabel = new BitmapText(guiFont, false);
             blockLocationLabel.setSize(guiFont.getCharSet().getRenderedSize());
             blockLocationLabel.setText("Block location: ");
@@ -113,6 +125,14 @@ public class HUDControl extends AbstractControl
             selectedBlockLabel.setLocalTranslation(x, y, 0);
             debugNode.attachChild(selectedBlockLabel);
 
+            pointedBlockLabel = new BitmapText(guiFont, false);
+            pointedBlockLabel.setSize(guiFont.getCharSet().getRenderedSize());
+            pointedBlockLabel.setText("Pointed Block: ");
+            x = 10;
+            y-= 25;
+            pointedBlockLabel.setLocalTranslation(x, y, 0);
+            debugNode.attachChild(pointedBlockLabel);
+            
             facingLabel = new BitmapText(guiFont, false);
             facingLabel.setSize(guiFont.getCharSet().getRenderedSize());
             facingLabel.setText("Facing: ");
@@ -129,9 +149,10 @@ public class HUDControl extends AbstractControl
 		if(app.debugEnabled)
 		{
 			debugNode.setCullHint(CullHint.Never);
-			playerLocationLabel.setText("Player location: " + player.pos);
+			playerLocationLabel.setText("Player location: [" + player.posX + "," + player.posY + ", " + player.posZ + "]");
+			boundingBoxLabel.setText("Bounding Box: " + player.boundingBox);
 			selectedBlockLabel.setText("Selected Block: " + toString(player.getSelectedBlock()));
-			Vector3Int blockLoc = Vector3Int.fromVector3f(player.pos.divide(CubesSettings.getInstance().getBlockSize()));
+			Vector3Int blockLoc = new Vector3Int((int)player.posX, (int)player.posY, (int)player.posZ);
 			blockLocationLabel.setText("Block location: " + blockLoc);
 			facingLabel.setText("Facing: " + player.cam.getDirection());
 			if(blockLoc != null)
@@ -147,6 +168,15 @@ public class HUDControl extends AbstractControl
 				{
 					chunkLocationLabel.setText("Chunk location: " + chunk.location);
 				}
+			}
+			Vector3Int pointedLocation = blockHelper.getPointedBlockLocationInChunkSpace(false);
+			if(pointedLocation != null)
+			{
+				pointedBlockLabel.setText("Pointed Block: " + world.getBlock(pointedLocation) + " at " + pointedLocation);
+			}
+			else
+			{
+				pointedBlockLabel.setText("Pointed Block: Air");
 			}
 		}
 		else

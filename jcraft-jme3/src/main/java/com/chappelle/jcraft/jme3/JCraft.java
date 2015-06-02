@@ -13,6 +13,7 @@ import com.chappelle.jcraft.Vector3Int;
 import com.chappelle.jcraft.World;
 import com.chappelle.jcraft.profiler.Profiler;
 import com.chappelle.jcraft.profiler.ProfilerResult;
+import com.chappelle.jcraft.util.AABB;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.StatsAppState;
 import com.jme3.font.BitmapFont;
@@ -73,20 +74,21 @@ public class JCraft extends SimpleApplication implements ActionListener
 	@Override
 	public void simpleInitApp()
 	{
+		cam.setFrustumPerspective(45f, (float)cam.getWidth()/cam.getHeight(), 0.01f, 1000f);
 		initControls();
 		initBlockTerrain();
 		cam.lookAtDirection(new Vector3f(1, 0, 1), Vector3f.UNIT_Y);
 		
 		//Setup sky
 		viewPort.setBackgroundColor(ColorRGBA.Black);
-		
+
 		//Setup player
 		player = new EntityPlayer(world, cam, blockHelper);
+		player.preparePlayerToSpawn();
 		rootNode.addControl(new PlayerControl(this, player));
-		player.pos.set(new Vector3f(0, terrainSize.getY() + 10, 0).mult(cubesSettings.getBlockSize()));
 
 		rootNode.addControl(new HUDControl(this, settings, player));
-		rootNode.addControl(new BlockCursorControl(blockHelper, assetManager, cubesSettings.getBlockSize()));
+		rootNode.addControl(new BlockCursorControl(world, blockHelper, assetManager));
 
 		profiler.startSection("root");
 		updateStatsView();
@@ -162,7 +164,7 @@ public class JCraft extends SimpleApplication implements ActionListener
 
 //		terrainMgr = new BlockTerrainManager(cubesSettings, world);
 		
-		blockHelper = new BlockHelper(cam, world, settings, terrainNode, cubesSettings);
+		blockHelper = new BlockHelper(cam, world, settings, terrainNode);
 //		blockTerrain.setBlocksFromNoise(new Vector3Int(), terrainSize, 0.5f, Blocks.GRASS);
 		world.setBlockArea(new Vector3Int(), terrainSize, Block.grass);
 		world.setBlock(6, 10, 4, Block.grass);
@@ -234,6 +236,7 @@ public class JCraft extends SimpleApplication implements ActionListener
 	@Override
 	public void simpleUpdate(float tpf)
 	{
+		AABB.getAABBPool().cleanPool();
 	}
 
 

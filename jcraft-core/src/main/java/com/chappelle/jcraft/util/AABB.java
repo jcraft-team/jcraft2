@@ -170,6 +170,128 @@ public class AABB
 		this.maxZ = other.maxZ;
 	}
 
+	public double calculateYOffset(AABB other, double previousValue)
+	{
+		if (other.maxX > this.minX && other.minX < this.maxX)
+		{
+			if (other.maxZ > this.minZ && other.minZ < this.maxZ)
+			{
+				double d1;
+
+				if (previousValue > 0.0D && other.maxY <= this.minY)
+				{
+					d1 = this.minY - other.maxY;
+
+					if (d1 < previousValue)
+					{
+						previousValue = d1;
+					}
+				}
+
+				if (previousValue < 0.0D && other.minY >= this.maxY)
+				{
+					d1 = this.maxY - other.minY;
+
+					if (d1 > previousValue)
+					{
+						previousValue = d1;
+					}
+				}
+				return previousValue;
+			} 
+			else
+			{
+				return previousValue;
+			}
+		} else
+		{
+			return previousValue;
+		}
+	}
+	
+	public double calculateZOffset(AABB other, double previousValue)
+	{
+		if (other.maxX > this.minX && other.minX < this.maxX)
+		{
+			if (other.maxY > this.minY && other.minY < this.maxY)
+			{
+				double d1;
+
+				if (previousValue > 0.0D && other.maxZ <= this.minZ)
+				{
+					d1 = this.minZ - other.maxZ;
+
+					if (d1 < previousValue)
+					{
+						previousValue = d1;
+					}
+				}
+
+				if (previousValue < 0.0D && other.minZ >= this.maxZ)
+				{
+					d1 = this.maxZ - other.minZ;
+
+					if (d1 > previousValue)
+					{
+						previousValue = d1;
+					}
+				}
+
+				return previousValue;
+			} 
+			else
+			{
+				return previousValue;
+			}
+		} 
+		else
+		{
+			return previousValue;
+		}
+	}
+	
+
+	public double calculateXOffset(AABB other, double previousValue)
+	{
+		if (other.maxY > this.minY && other.minY < this.maxY)
+		{
+			if (other.maxZ > this.minZ && other.minZ < this.maxZ)
+			{
+				double diff;
+
+				if (previousValue > 0.0D && other.maxX <= this.minX)
+				{
+					diff = this.minX - other.maxX;
+
+					if (diff < previousValue)
+					{
+						previousValue = diff;
+					}
+				}
+
+				if (previousValue < 0.0D && other.minX >= this.maxX)
+				{
+					diff = this.maxX - other.minX;
+
+					if (diff > previousValue)
+					{
+						previousValue = diff;
+					}
+				}
+
+				return previousValue;
+			} 
+			else
+			{
+				return previousValue;
+			}
+		} 
+		else
+		{
+			return previousValue;
+		}
+	}
+
 	public String toString()
 	{
 		return "aabb[" + this.minX + ", " + this.minY + ", " + this.minZ + " -> " + this.maxX + ", " + this.maxY + ", "	+ this.maxZ + "]";
