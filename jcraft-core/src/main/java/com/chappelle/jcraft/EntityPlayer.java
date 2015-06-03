@@ -54,20 +54,30 @@ public class EntityPlayer extends Entity
 			addVelocity(camLeft.x, 0, camLeft.z);
 		}
 		
-		float slipperiness = 0.91F;
-		Block block = world.getBlock(MathUtils.floor_double(this.posX), MathUtils.floor_double(this.boundingBox.minY) - 1, MathUtils.floor_double(this.posZ));
-		if(block != null)
-		{
-			slipperiness = block.slipperiness;
-		}
 		this.motionY *= 0.9800000190734863D;
-		this.motionX *= (double) slipperiness;
-		this.motionZ *= (double) slipperiness;
+		if(onGround)
+		{
+			float slipperiness = 0.91F;
+			Block block = world.getBlock(MathUtils.floor_double(this.posX), MathUtils.floor_double(this.boundingBox.minY) - 1, MathUtils.floor_double(this.posZ));
+			if(block != null)
+			{
+				slipperiness = block.slipperiness;
+			}
+			this.motionX *= (double) slipperiness;
+			this.motionZ *= (double) slipperiness;
+		}
+		else
+		{
+			this.motionX *= 0.75D;
+			this.motionZ *= 0.75D;
+		}
 		moveEntity(motionX, motionY, motionZ);
 	}
 	
 	public void moveEntity(double x, double y, double z)
 	{
+		double orgY = y;
+		
 		List<AABB> boundingBoxes = world.getCollidingBoundingBoxes(this, boundingBox.addCoord(x, y, z));
 		for(AABB boundingBox : boundingBoxes)
 		{
@@ -85,6 +95,8 @@ public class EntityPlayer extends Entity
 		}
 		this.boundingBox.offset(0, 0, z);
 
+		this.onGround = orgY != y && orgY < 0.0D;
+		
 		posX = (float)(this.boundingBox.minX + this.boundingBox.maxX) / 2.0f;
 		posZ = (float)(this.boundingBox.minZ + this.boundingBox.maxZ) / 2.0f;
 		posY = (float)this.boundingBox.minY + this.yOffset - this.ySize;
@@ -93,7 +105,10 @@ public class EntityPlayer extends Entity
 
 	public void jump()
 	{
-		this.motionY = 0.41999998688697815D;
+		if(onGround)
+		{
+			this.motionY = 0.2D;
+		}
 	}
 	
     public boolean canPlaceBlock()

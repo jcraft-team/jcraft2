@@ -76,7 +76,7 @@ public class Entity
 		}
 		
 		//Gravity
-		this.motionY -= 0.03999999910593033D;
+		this.motionY -= 0.008D;
 		
 		//Update previous position before movement happens
 		prevPosX = posX;

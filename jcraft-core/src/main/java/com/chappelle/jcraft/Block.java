@@ -105,7 +105,7 @@ public class Block
 	{
 		this.skins = skins;
 		this.blockId = blockId;
-		this.slipperiness = 0.84F;
+		this.slipperiness = 0.79F;
 		blocksList[blockId] = this;
 		this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
 	}
