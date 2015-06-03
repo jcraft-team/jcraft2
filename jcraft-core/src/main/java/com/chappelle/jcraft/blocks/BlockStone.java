@@ -25,10 +25,4 @@ public class BlockStone extends Block
 	{
 		world.playSound(SoundConstants.DIG_STONE, 4);
 	}
-	
-	@Override
-	public void onEntityWalking(World world, Vector3Int location)
-	{
-		world.playSound(SoundConstants.STEP_STONE, 4);
-	}
 }

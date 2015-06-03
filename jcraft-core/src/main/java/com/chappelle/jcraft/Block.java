@@ -7,6 +7,7 @@ import com.chappelle.jcraft.blocks.BlockGlass;
 import com.chappelle.jcraft.blocks.BlockGrass;
 import com.chappelle.jcraft.blocks.PickedBlock;
 import com.chappelle.jcraft.blocks.BlockTorch;
+import com.chappelle.jcraft.blocks.SoundConstants;
 import com.chappelle.jcraft.shapes.BlockShape_Cube;
 import com.chappelle.jcraft.util.AABB;
 import com.jme3.math.Vector3f;
@@ -88,18 +89,20 @@ public class Block
 
 	public float slipperiness;
 	
-	public static final Block grass = new BlockGrass(1);
-	public static final Block glass = new BlockGlass(2);
-	public static final Block door = new BlockDoor(3, true);
+	public static final Block grass = new BlockGrass(1).setStepSound(SoundConstants.STEP_GRASS_4);
+	public static final Block glass = new BlockGlass(2).setStepSound(SoundConstants.STEP_STONE_1);
+	public static final Block door = new BlockDoor(3, true).setStepSound(SoundConstants.STEP_WOOD_1);
 	public static final Block torch = new BlockTorch(4);
-	public static final Block stone = new BlockStone(5);
-	public static final Block ice = new BlockIce(6);
+	public static final Block stone = new BlockStone(5).setStepSound(SoundConstants.STEP_STONE_1);
+	public static final Block ice = new BlockIce(6).setStepSound(SoundConstants.STEP_STONE_4);
 	
 	private BlockShape[] shapes = new BlockShape[] { new BlockShape_Cube() };
 	private BlockSkin[] skins;
 
 	/** ID of the block. */
 	public final int blockId;
+	
+	public String stepSound;
 	
 	public Block(int blockId, BlockSkin... skins)
 	{
@@ -196,10 +199,9 @@ public class Block
 		
 	}
 
-	public void onEntityWalking(World world, Vector3Int location)
+	public void onEntityWalking(World world, int x, int y, int z)
 	{
-		// TODO Auto-generated method stub
-		
+		world.playSound(SoundConstants.STEP_GRASS_4);
 	}
 	
 	public AABB getCollisionBoundingBox(World world, int x, int y, int z)
@@ -222,6 +224,9 @@ public class Block
     	return true;
     }
 
+    /**
+     * Returns true if light should pass through this block, false otherwise
+     */
 	public boolean isTransparent()
 	{
 		return false;
@@ -248,5 +253,9 @@ public class Block
 		return getClass().getSimpleName();
 	}
 	
-	
+	public Block setStepSound(String stepSound)
+	{
+		this.stepSound = stepSound;
+		return this;
+	}
 }

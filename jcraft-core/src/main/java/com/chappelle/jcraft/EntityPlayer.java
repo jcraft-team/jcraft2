@@ -97,9 +97,27 @@ public class EntityPlayer extends Entity
 
 		this.onGround = orgY != y && orgY < 0.0D;
 		
-		posX = (float)(this.boundingBox.minX + this.boundingBox.maxX) / 2.0f;
-		posZ = (float)(this.boundingBox.minZ + this.boundingBox.maxZ) / 2.0f;
-		posY = (float)this.boundingBox.minY + this.yOffset - this.ySize;
+		posX = (this.boundingBox.minX + this.boundingBox.maxX) / 2.0f;
+		posZ = (this.boundingBox.minZ + this.boundingBox.maxZ) / 2.0f;
+		posY = this.boundingBox.minY + this.yOffset - this.ySize;
+		
+		double distX = prevPosX - posX;
+		double distY = prevPosY - posY;
+		double distZ = prevPosZ - posZ;
+		this.distanceWalkedModified = (float) ((double) this.distanceWalkedModified + (double) Math.sqrt(distX * distX + distZ * distZ) * 0.6D);
+		this.distanceWalkedOnStepModified = (float) ((double) this.distanceWalkedOnStepModified + (double) Math.sqrt(distX * distX + distY * distY + distZ * distZ) * 0.6D);
+
+		int blockX = MathUtils.floor_double(this.posX);
+		int blockY = MathUtils.floor_double(this.boundingBox.minY) - 1;
+		int blockZ = MathUtils.floor_double(this.posZ);
+		Block block = world.getBlock(blockX, blockY, blockZ);
+		if (this.distanceWalkedOnStepModified > (float) this.nextStepDistance && block != null)
+		{
+			this.nextStepDistance = (int) this.distanceWalkedOnStepModified + 1;
+
+			this.playStepSound(blockX, blockY, blockZ, block);
+			block.onEntityWalking(world, blockX, blockY, blockZ);
+		}
 	}
 	
 
@@ -142,8 +160,8 @@ public class EntityPlayer extends Entity
     		{
 				pickedBlock = blockHelper.pickNeighborBlock();
     			world.setBlock(pickedBlock, selected);
-    			System.out.println("Setting block at " + pickedBlock.getBlockLocation());
-//    			System.out.println("blockTerrain.setBlock(" + pickedBlock.getBlockLocation().x + ", " + pickedBlock.getBlockLocation().y + ", " + pickedBlock.getBlockLocation().z + ", Blocks.GRASS);");
+//    			System.out.println("Setting block at " + pickedBlock.getBlockLocation());
+    			System.out.println("world.setBlock(" + pickedBlock.getBlockLocation().x + ", " + pickedBlock.getBlockLocation().y + ", " + pickedBlock.getBlockLocation().z + ", Block." + pickedBlock.getBlock().toString().replace("Block","").toLowerCase() + ");");
     		}
     	}
 	}

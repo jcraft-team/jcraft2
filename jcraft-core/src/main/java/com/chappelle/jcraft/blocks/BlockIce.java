@@ -26,9 +26,11 @@ public class BlockIce extends Block
 	{
 		world.playSound(SoundConstants.MISC_GLASS, 3);
 	}
-	
+
 	@Override
-	public void onEntityWalking(World world, Vector3Int location)
+	public boolean isTransparent()
 	{
+		return true;
 	}
+	
 }

@@ -26,7 +26,6 @@ public class BlockGlass extends Block
 
 	public void onEntityWalking(World world, Vector3Int location)
 	{
-		world.playSound(SoundConstants.STEP_STONE, 4);
 	}
 
 	@Override

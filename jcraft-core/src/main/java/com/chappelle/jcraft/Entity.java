@@ -48,6 +48,16 @@ public class Entity
 	protected final World world;
 	protected boolean onGround;
 	
+	/**
+	 * The distance that has to be exceeded in order to triger a new step sound
+	 * and an onEntityWalking event on a block
+	 */
+	protected int nextStepDistance = 1;
+	
+	/** The distance walked multiplied by 0.6 */
+	public float distanceWalkedModified;
+	public float distanceWalkedOnStepModified;
+	
 	public Entity(World world)
 	{
 		this.world = world;
@@ -114,6 +124,14 @@ public class Entity
 			this.boundingBox.maxX = this.boundingBox.minX + (double) this.width;
 			this.boundingBox.maxZ = this.boundingBox.minZ + (double) this.width;
 			this.boundingBox.maxY = this.boundingBox.minY + (double) this.height;
+		}
+	}
+	
+	protected void playStepSound(int x, int y, int z, Block block)
+	{
+		if(block.stepSound != null)
+		{
+			world.playSound(block.stepSound);
 		}
 	}
 	
