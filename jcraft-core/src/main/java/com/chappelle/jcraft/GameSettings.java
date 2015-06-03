@@ -22,7 +22,7 @@ public class GameSettings
 	{
 		this.optionsFile = new File(parent, "jcraft-options.txt");
 	}
-	
+	/**/
 	public void load()
 	{
 		if(optionsFile.exists())
