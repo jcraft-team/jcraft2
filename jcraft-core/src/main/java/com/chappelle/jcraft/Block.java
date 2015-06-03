@@ -89,7 +89,7 @@ public class Block
 
 	public float slipperiness;
 	
-	public static final Block grass = new BlockGrass(1).setStepSound(SoundConstants.STEP_GRASS_4);
+	public static final Block grass = new BlockGrass(1).setStepSound(SoundConstants.DIG_GRASS_2);
 	public static final Block glass = new BlockGlass(2).setStepSound(SoundConstants.STEP_STONE_1);
 	public static final Block door = new BlockDoor(3, true).setStepSound(SoundConstants.STEP_WOOD_1);
 	public static final Block torch = new BlockTorch(4);
@@ -108,7 +108,7 @@ public class Block
 	{
 		this.skins = skins;
 		this.blockId = blockId;
-		this.slipperiness = 0.79F;
+		this.slipperiness = 0.91F;
 		blocksList[blockId] = this;
 		this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
 	}

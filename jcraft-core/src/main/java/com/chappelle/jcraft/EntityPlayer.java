@@ -10,7 +10,11 @@ import com.jme3.renderer.Camera;
 
 public class EntityPlayer extends Entity
 {
-	private boolean[] arrowKeys = new boolean[4];
+	private boolean forward;
+	private boolean backward;
+	private boolean left;
+	private boolean right;
+	
 	private BlockHelper blockHelper;
 	private Block selected;
 
@@ -31,25 +35,24 @@ public class EntityPlayer extends Entity
 	{
 		super.update(tpf);
 		
-		float playerMoveSpeed = (1.5f * tpf);
-		Vector3f camDir = cam.getDirection().mult(playerMoveSpeed);
-		Vector3f camLeft = cam.getLeft().mult(playerMoveSpeed);
+		Vector3f camDir = cam.getDirection().mult(tpf);
+		Vector3f camLeft = cam.getLeft().mult(tpf);
 		
-		if(arrowKeys[0])
+		if(forward)
 		{
 			addVelocity(camDir.x, 0, camDir.z);
 		}
-		if(arrowKeys[1])
+		if(right)
 		{
 			Vector3f negate = camLeft.negate();
 			addVelocity(negate.x, 0, negate.z);
 		}
-		if(arrowKeys[2])
+		if(backward)
 		{
 			Vector3f negate = camDir.negate();
 			addVelocity(negate.x, 0, negate.z);
 		}
-		if(arrowKeys[3])
+		if(left)
 		{
 			addVelocity(camLeft.x, 0, camLeft.z);
 		}
@@ -63,6 +66,7 @@ public class EntityPlayer extends Entity
 			{
 				slipperiness = block.slipperiness;
 			}
+			
 			this.motionX *= (double) slipperiness;
 			this.motionZ *= (double) slipperiness;
 		}
@@ -101,12 +105,12 @@ public class EntityPlayer extends Entity
 		posZ = (this.boundingBox.minZ + this.boundingBox.maxZ) / 2.0f;
 		posY = this.boundingBox.minY + this.yOffset - this.ySize;
 		
+		//Calculate distance walked and play step sound
 		double distX = prevPosX - posX;
 		double distY = prevPosY - posY;
 		double distZ = prevPosZ - posZ;
 		this.distanceWalkedModified = (float) ((double) this.distanceWalkedModified + (double) Math.sqrt(distX * distX + distZ * distZ) * 0.6D);
 		this.distanceWalkedOnStepModified = (float) ((double) this.distanceWalkedOnStepModified + (double) Math.sqrt(distX * distX + distY * distY + distZ * distZ) * 0.6D);
-
 		int blockX = MathUtils.floor_double(this.posX);
 		int blockY = MathUtils.floor_double(this.boundingBox.minY) - 1;
 		int blockZ = MathUtils.floor_double(this.posZ);
@@ -168,22 +172,22 @@ public class EntityPlayer extends Entity
 	
 	public void moveUp(boolean isPressed)
 	{
-		arrowKeys[0] = isPressed;
+		forward = isPressed;
 	}
 	
 	public void moveRight(boolean isPressed)
 	{
-		arrowKeys[1] = isPressed;
+		right = isPressed;
 	}
 	
 	public void moveDown(boolean isPressed)
 	{
-		arrowKeys[2] = isPressed;
+		backward = isPressed;
 	}
 	
 	public void moveLeft(boolean isPressed)
 	{
-		arrowKeys[3] = isPressed;
+		left = isPressed;
 	}
 	
 	public void selectBlock(int index)

@@ -29,7 +29,6 @@ public class BlockGrass extends Block
 
 	public void onEntityWalking(World world, Vector3Int location)
 	{
-//		world.playSound(SoundConstants.STEP_GRASS, 4);//FIXME: Currently not working correctly
 	}
 
 	@Override
