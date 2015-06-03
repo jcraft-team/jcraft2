@@ -7,12 +7,6 @@ import com.jme3.material.Material;
 public class CubesSettings
 {
 	private AssetManager assetManager;
-	// private int chunkSizeX = 16;
-	// private int chunkSizeY = 256;
-	// private int chunkSizeZ = 16;
-	private int chunkSizeX = 32;
-	private int chunkSizeY = 32;
-	private int chunkSizeZ = 32;
 	private Material blockMaterial;
 	private Material unshadedBlockMaterial;
 	private int texturesCountX = 16;
@@ -34,36 +28,6 @@ public class CubesSettings
 	public AssetManager getAssetManager()
 	{
 		return assetManager;
-	}
-
-	public int getChunkSizeX()
-	{
-		return chunkSizeX;
-	}
-
-	public void setChunkSizeX(int chunkSizeX)
-	{
-		this.chunkSizeX = chunkSizeX;
-	}
-
-	public int getChunkSizeY()
-	{
-		return chunkSizeY;
-	}
-
-	public void setChunkSizeY(int chunkSizeY)
-	{
-		this.chunkSizeY = chunkSizeY;
-	}
-
-	public int getChunkSizeZ()
-	{
-		return chunkSizeZ;
-	}
-
-	public void setChunkSizeZ(int chunkSizeZ)
-	{
-		this.chunkSizeZ = chunkSizeZ;
 	}
 
 	public Material getBlockMaterial()

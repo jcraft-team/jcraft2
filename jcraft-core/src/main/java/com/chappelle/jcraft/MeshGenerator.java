@@ -23,13 +23,12 @@ public class MeshGenerator
 	public static Mesh generateOptimizedMesh(Chunk blockChunk, boolean isTransparent)
 	{
 		MeshData meshData = new MeshData();
-		World blockTerrain = blockChunk.world;
 		Vector3Int tmpLocation = new Vector3Int();
-		for(int x = 0; x < blockTerrain.getSettings().getChunkSizeX(); x++)
+		for(int x = 0; x < 32; x++)
 		{
-			for(int y = 0; y < blockTerrain.getSettings().getChunkSizeY(); y++)
+			for(int y = 0; y < 256; y++)
 			{
-				for(int z = 0; z < blockTerrain.getSettings().getChunkSizeZ(); z++)
+				for(int z = 0; z < 32; z++)
 				{
 					tmpLocation.set(x, y, z);
 					Block block = blockChunk.getBlock(tmpLocation);

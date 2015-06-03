@@ -11,7 +11,6 @@ import com.chappelle.jcraft.World;
 
 public class FloodFillLightManager implements LightManager
 {
-	private final int chunkWidth = 32;
 	private boolean sunlightEnabled = true;
 	
 	private World terrain;
@@ -54,10 +53,9 @@ public class FloodFillLightManager implements LightManager
 		while(node != null)
 		{
 			Chunk chunk = node.chunk;
-			short index = node.index;
-			int x = index % chunkWidth;
-			int y = index / (chunkWidth * chunkWidth); 
-			int z = (index % (chunkWidth * chunkWidth) ) / chunkWidth;
+			int x = node.x;
+			int y = node.y; 
+			int z = node.z;
 			int lightLevel = node.val;
 			
 			Vector3Int location = new Vector3Int(x, y, z);
@@ -69,7 +67,7 @@ public class FloodFillLightManager implements LightManager
 			}
 			else
 			{
-				propagateRemovedBlockLights(terrain.getChunkNeighbor(chunk, Direction.LEFT), lightLevel, location.setX(chunkWidth-1));
+				propagateRemovedBlockLights(terrain.getChunkNeighbor(chunk, Direction.LEFT), lightLevel, location.setX(15));
 			}
 			
 
@@ -77,7 +75,7 @@ public class FloodFillLightManager implements LightManager
 			location.x = x + 1;
 			location.y = y;
 			location.z = z;
-			if(location.x < chunkWidth)//Check chunk boundary 
+			if(location.x < 16)//Check chunk boundary 
 			{
 				propagateRemovedBlockLights(chunk, lightLevel, location);
 			}
@@ -99,7 +97,7 @@ public class FloodFillLightManager implements LightManager
 			location.x = x;
 			location.y = y + 1;
 			location.z = z;
-			if(location.y < chunkWidth)//Check chunk boundary 
+			if(location.y < 256)//Check chunk boundary 
 			{
 				propagateRemovedBlockLights(chunk, lightLevel, location);
 			}
@@ -114,14 +112,14 @@ public class FloodFillLightManager implements LightManager
 			}
 			else
 			{
-				propagateRemovedBlockLights(terrain.getChunkNeighbor(chunk, Direction.BACK), lightLevel, location.setZ(chunkWidth-1));
+				propagateRemovedBlockLights(terrain.getChunkNeighbor(chunk, Direction.BACK), lightLevel, location.setZ(15));
 			}
 			
 			//Positive Z neighbor
 			location.x = x;
 			location.y = y;
 			location.z = z + 1;
-			if(location.z < chunkWidth)//Check chunk boundary 
+			if(location.z < 16)//Check chunk boundary 
 			{
 				propagateRemovedBlockLights(chunk, lightLevel, location);
 			}
@@ -141,11 +139,11 @@ public class FloodFillLightManager implements LightManager
 			if(neighborLevel != 0 && neighborLevel < lightLevel)
 			{
 				chunk.setLight(location.x, location.y, location.z, LightType.BLOCK, 0);
-				lightRemovalQueue.add(new LightRemovalNode(index(location), (short)neighborLevel, chunk));
+				lightRemovalQueue.add(new LightRemovalNode(location, (short)neighborLevel, chunk));
 			}
 			else if(neighborLevel >= lightLevel)
 			{
-				lightAdditionQueue.add(new LightNode(index(location), chunk));
+				lightAdditionQueue.add(new LightNode(location, chunk));
 			}
 		}
 	}
@@ -156,10 +154,9 @@ public class FloodFillLightManager implements LightManager
 		while(node != null)
 		{
 			Chunk chunk = node.chunk;
-			short index = node.index;
-			int x = index % chunkWidth;
-			int y = index / (chunkWidth * chunkWidth); 
-			int z = (index % (chunkWidth * chunkWidth) ) / chunkWidth;
+			int x = node.x;
+			int y = node.y; 
+			int z = node.z;
 			Vector3Int location = new Vector3Int(x, y, z);
 			
 			int lightLevel = chunk.getLight(location.x, location.y, location.z, LightType.BLOCK);
@@ -171,7 +168,7 @@ public class FloodFillLightManager implements LightManager
 			}
 			else
 			{
-				propagateAddedBlockLights(terrain.getChunkNeighbor(chunk, Direction.LEFT), location.setX(chunkWidth-1), lightLevel);
+				propagateAddedBlockLights(terrain.getChunkNeighbor(chunk, Direction.LEFT), location.setX(15), lightLevel);
 			}
 			
 
@@ -179,7 +176,7 @@ public class FloodFillLightManager implements LightManager
 			location.x = x + 1;
 			location.y = y;
 			location.z = z;
-			if(location.x < chunkWidth)//Check chunk boundary 
+			if(location.x < 16)//Check chunk boundary 
 			{
 				propagateAddedBlockLights(chunk, location, lightLevel);
 			}
@@ -201,7 +198,7 @@ public class FloodFillLightManager implements LightManager
 			location.x = x;
 			location.y = y + 1;
 			location.z = z;
-			if(location.y < chunkWidth)//Check chunk boundary 
+			if(location.y < 256)//Check chunk boundary 
 			{
 				propagateAddedBlockLights(chunk, location, lightLevel);
 			}
@@ -216,14 +213,14 @@ public class FloodFillLightManager implements LightManager
 			}
 			else
 			{
-				propagateAddedBlockLights(terrain.getChunkNeighbor(chunk, Direction.BACK), location.setZ(chunkWidth-1), lightLevel);
+				propagateAddedBlockLights(terrain.getChunkNeighbor(chunk, Direction.BACK), location.setZ(15), lightLevel);
 			}
 			
 			//Positive Z neighbor
 			location.x = x;
 			location.y = y;
 			location.z = z + 1;
-			if(location.z < chunkWidth)//Check chunk boundary 
+			if(location.z < 16)//Check chunk boundary 
 			{
 				propagateAddedBlockLights(chunk, location, lightLevel);
 			}
@@ -240,7 +237,7 @@ public class FloodFillLightManager implements LightManager
 		if(needsLightUpdated(chunk, location, LightType.BLOCK, lightLevel))
 		{
 			chunk.setLight(location.x, location.y, location.z, LightType.BLOCK, lightLevel - 1);
-			lightAdditionQueue.add(new LightNode(index(location), chunk));
+			lightAdditionQueue.add(new LightNode(location, chunk));
 		}
 	}
 
@@ -250,10 +247,9 @@ public class FloodFillLightManager implements LightManager
 		while(node != null)
 		{
 			Chunk chunk = node.chunk;
-			short index = node.index;
-			int x = index % chunkWidth;
-			int y = index / (chunkWidth * chunkWidth); 
-			int z = (index % (chunkWidth * chunkWidth) ) / chunkWidth;
+			int x = node.x;
+			int y = node.y; 
+			int z = node.z;
 			Vector3Int location = new Vector3Int(x, y, z);
 			
 			int lightLevel = chunk.getLight(location.x, location.y, location.z, LightType.SKY);
@@ -265,14 +261,14 @@ public class FloodFillLightManager implements LightManager
 			}
 			else
 			{
-				propagateAddedSunlight(terrain.getChunkNeighbor(chunk, Direction.LEFT), location.setX(chunkWidth-1), lightLevel);
+				propagateAddedSunlight(terrain.getChunkNeighbor(chunk, Direction.LEFT), location.setX(15), lightLevel);
 			}
 
 			//Positive X neighbor
 			location.x = x + 1;
 			location.y = y;
 			location.z = z;
-			if(location.x < chunkWidth)//Check chunk boundary 
+			if(location.x < 16)//Check chunk boundary 
 			{
 				propagateAddedSunlight(chunk, location, lightLevel);
 			}
@@ -298,7 +294,7 @@ public class FloodFillLightManager implements LightManager
 					{
 						chunk.setLight(location.x, location.y, location.z, LightType.SKY, lightLevel - 1);
 					}
-					sunlightAdditionQueue.add(new LightNode(index(location), chunk));
+					sunlightAdditionQueue.add(new LightNode(location, chunk));
 				}
 			}
 
@@ -306,7 +302,7 @@ public class FloodFillLightManager implements LightManager
 			location.x = x;
 			location.y = y + 1;
 			location.z = z;
-			if(location.y < chunkWidth)//Check chunk boundary 
+			if(location.y < 256)//Check chunk boundary 
 			{
 				propagateAddedSunlight(chunk, location, lightLevel);
 			}
@@ -321,14 +317,14 @@ public class FloodFillLightManager implements LightManager
 			}
 			else
 			{
-				propagateAddedSunlight(terrain.getChunkNeighbor(chunk, Direction.BACK), location.setZ(chunkWidth-1), lightLevel);
+				propagateAddedSunlight(terrain.getChunkNeighbor(chunk, Direction.BACK), location.setZ(15), lightLevel);
 			}
 			
 			//Positive Z neighbor
 			location.x = x;
 			location.y = y;
 			location.z = z + 1;
-			if(location.z < chunkWidth)//Check chunk boundary 
+			if(location.z < 16)//Check chunk boundary 
 			{
 				propagateAddedSunlight(chunk, location, lightLevel);
 			}
@@ -346,7 +342,7 @@ public class FloodFillLightManager implements LightManager
 		if(needsLightUpdated(chunk, location, LightType.SKY, lightLevel))
 		{
 			chunk.setLight(location.x, location.y, location.z, LightType.SKY, lightLevel - 1);
-			sunlightAdditionQueue.add(new LightNode(index(location), chunk));
+			sunlightAdditionQueue.add(new LightNode(location, chunk));
 		}
 	}
 	
@@ -356,10 +352,9 @@ public class FloodFillLightManager implements LightManager
 		while(node != null)
 		{
 			Chunk chunk = node.chunk;
-			short index = node.index;
-			int x = index % chunkWidth;
-			int y = index / (chunkWidth * chunkWidth); 
-			int z = (index % (chunkWidth * chunkWidth) ) / chunkWidth;
+			int x = node.x;
+			int y = node.y; 
+			int z = node.z;
 			int lightLevel = node.val;
 			
 			Vector3Int location = new Vector3Int(x, y, z);
@@ -372,14 +367,14 @@ public class FloodFillLightManager implements LightManager
 			}
 			else
 			{
-				propagateRemovedSunlight(terrain.getChunkNeighbor(chunk, Direction.LEFT), lightLevel, location.setX(chunkWidth-1));
+				propagateRemovedSunlight(terrain.getChunkNeighbor(chunk, Direction.LEFT), lightLevel, location.setX(15));
 			}
 
 			//Positive X neighbor
 			location.x = x + 1;
 			location.y = y;
 			location.z = z;
-			if(location.x < chunkWidth)//Check chunk boundary 
+			if(location.x < 16)//Check chunk boundary 
 			{
 				propagateRemovedSunlight(chunk, lightLevel, location);
 			}
@@ -398,11 +393,11 @@ public class FloodFillLightManager implements LightManager
 				if(lightLevel == LightMap.MAX_LIGHT || (neighborLevel != 0 && neighborLevel < lightLevel))
 				{
 					chunk.setLight(location.x, location.y, location.z, LightType.SKY, 0);
-					sunlightRemovalQueue.add(new LightRemovalNode(index(location), (short)neighborLevel, chunk));
+					sunlightRemovalQueue.add(new LightRemovalNode(location, (short)neighborLevel, chunk));
 				}
 				else if(neighborLevel >= lightLevel)
 				{
-					sunlightAdditionQueue.add(new LightNode(index(location), chunk));
+					sunlightAdditionQueue.add(new LightNode(location, chunk));
 				}
 			}
 
@@ -410,7 +405,7 @@ public class FloodFillLightManager implements LightManager
 			location.x = x;
 			location.y = y + 1;
 			location.z = z;
-			if(location.y < chunkWidth)//Check chunk boundary 
+			if(location.y < 256)//Check chunk boundary 
 			{
 				propagateRemovedSunlight(chunk, lightLevel, location);
 			}
@@ -425,14 +420,14 @@ public class FloodFillLightManager implements LightManager
 			}
 			else
 			{
-				propagateRemovedSunlight(terrain.getChunkNeighbor(chunk, Direction.BACK), lightLevel, location.setZ(chunkWidth-1));
+				propagateRemovedSunlight(terrain.getChunkNeighbor(chunk, Direction.BACK), lightLevel, location.setZ(15));
 			}
 			
 			//Positive Z neighbor
 			location.x = x;
 			location.y = y;
 			location.z = z + 1;
-			if(location.z < chunkWidth)//Check chunk boundary 
+			if(location.z < 16)//Check chunk boundary 
 			{
 				propagateRemovedSunlight(chunk, lightLevel, location);
 			}
@@ -452,11 +447,11 @@ public class FloodFillLightManager implements LightManager
 			if(neighborLevel != 0 && neighborLevel < lightLevel)
 			{
 				chunk.setLight(location.x, location.y, location.z, LightType.SKY, 0);
-				sunlightRemovalQueue.add(new LightRemovalNode(index(location), (short)neighborLevel, chunk));
+				sunlightRemovalQueue.add(new LightRemovalNode(location, (short)neighborLevel, chunk));
 			}
 			else if(neighborLevel >= lightLevel)
 			{
-				sunlightAdditionQueue.add(new LightNode(index(location), chunk));
+				sunlightAdditionQueue.add(new LightNode(location, chunk));
 			}
 		}
 	}
@@ -472,11 +467,6 @@ public class FloodFillLightManager implements LightManager
 		return block == null || block.isTransparent();
 	}
 
-	private short index(Vector3Int location)
-	{
-		return (short)(location.y * chunkWidth * chunkWidth + location.z * chunkWidth + location.x);
-	}
-	
 	@Override
 	public void addSunlight(Vector3Int location)
 	{
@@ -484,7 +474,7 @@ public class FloodFillLightManager implements LightManager
 		Vector3Int localBlockLocation = terrain.getLocalBlockLocation(location, chunk);
 		
 		chunk.setLight(localBlockLocation.x, localBlockLocation.y, localBlockLocation.z, LightType.SKY, LightMap.MAX_LIGHT);
-		sunlightAdditionQueue.add(new LightNode(index(localBlockLocation), chunk));
+		sunlightAdditionQueue.add(new LightNode(localBlockLocation, chunk));
 	}
 
 	@Override
@@ -493,7 +483,7 @@ public class FloodFillLightManager implements LightManager
 		Chunk chunk = terrain.getChunk(location);
 		Vector3Int localBlockLocation = terrain.getLocalBlockLocation(location, chunk);
 		chunk.setLight(localBlockLocation.x, localBlockLocation.y, localBlockLocation.z, LightType.BLOCK, light);
-		lightAdditionQueue.add(new LightNode(index(localBlockLocation), chunk));
+		lightAdditionQueue.add(new LightNode(localBlockLocation, chunk));
 	}
 	
 	@Override
@@ -503,7 +493,7 @@ public class FloodFillLightManager implements LightManager
 		Vector3Int localBlockLocation = terrain.getLocalBlockLocation(location, chunk);
 		short val = (short)chunk.getLight(localBlockLocation.x, localBlockLocation.y, localBlockLocation.z, LightType.BLOCK);
 		
-		lightRemovalQueue.add(new LightRemovalNode(index(localBlockLocation), val, chunk));
+		lightRemovalQueue.add(new LightRemovalNode(localBlockLocation, val, chunk));
 		
 		chunk.setLight(localBlockLocation.x, localBlockLocation.y, localBlockLocation.z, LightType.BLOCK, 0);
 	}
@@ -515,7 +505,7 @@ public class FloodFillLightManager implements LightManager
 		Vector3Int localBlockLocation = terrain.getLocalBlockLocation(location, chunk);
 		short val = (short)chunk.getLight(localBlockLocation.x, localBlockLocation.y, localBlockLocation.z, LightType.SKY);
 		
-		sunlightRemovalQueue.add(new LightRemovalNode(index(localBlockLocation), val, chunk));
+		sunlightRemovalQueue.add(new LightRemovalNode(localBlockLocation, val, chunk));
 		
 		chunk.setLight(localBlockLocation.x, localBlockLocation.y, localBlockLocation.z, LightType.SKY, 0);
 	}
@@ -523,18 +513,18 @@ public class FloodFillLightManager implements LightManager
 	@Override
 	public void initChunkSunlight(Chunk chunk)
 	{
-		Vector3Int location = new Vector3Int(0, chunkWidth - 1, 0);
-		for(int x = 0; x < chunkWidth; x++)
+		Vector3Int location = new Vector3Int(0, 255, 0);
+		for(int x = 0; x < 16; x++)
 		{
 			location.x = x;
-			for(int z = 0; z < chunkWidth; z++)
+			for(int z = 0; z < 16; z++)
 			{
 				location.z = z;
 				Block block = chunk.getBlock(location);
 				if(block == null || block.isTransparent())
 				{
 					chunk.setLight(location.x, location.y, location.z, LightType.SKY, LightMap.MAX_LIGHT);
-					sunlightAdditionQueue.add(new LightNode(index(location), chunk));
+					sunlightAdditionQueue.add(new LightNode(location, chunk));
 				}
 			}
 		}

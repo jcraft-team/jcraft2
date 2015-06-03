@@ -25,6 +25,8 @@ public class BlockCursorControl extends NodeControl
 	private Vector3Int prevCursorLocation;
 	private World world;
 	private Box box;
+	private Vector3f minPoint = new Vector3f(0, 0, 0);
+	private Vector3f maxPoint = new Vector3f(1, 1, 1);
 	
 	public BlockCursorControl(World world, BlockHelper blockHelper, AssetManager assetManager)
 	{
@@ -36,7 +38,7 @@ public class BlockCursorControl extends NodeControl
     @Override
     public void setNode(Node node)
     {
-    	box = new Box(1,1,1);
+    	box = new Box(minPoint, maxPoint);
         blockCursor = new Geometry("wireframe cube", box);
         Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         mat.getAdditionalRenderState().setWireframe(true);
@@ -68,8 +70,11 @@ public class BlockCursorControl extends NodeControl
 						blockCursor.setCullHint(Spatial.CullHint.Never);
 						
 						AABB bb = block.getSelectedBoundingBox(world, newCursorLocation.x, newCursorLocation.y, newCursorLocation.z);
-						Vector3f center = new Vector3f((float)Math.abs(bb.minX-bb.maxX)/2.0f, (float)Math.abs(bb.minY-bb.maxY)/2.0f, (float)Math.abs(bb.minZ-bb.maxZ)/2.0f);
-						box.updateGeometry(center, center.x, center.y, center.z);
+						bb.offset(-newCursorLocation.x, -newCursorLocation.y, -newCursorLocation.z);
+						minPoint.set((float)bb.minX, (float)bb.minY, (float)bb.minZ);
+						maxPoint.set((float)bb.maxX, (float)bb.maxY, (float)bb.maxZ);
+						box.updateGeometry(minPoint, maxPoint);
+
 						blockCursor.setLocalTranslation(newCursorLocation.toVector3f());
 					}
 					else

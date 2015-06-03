@@ -8,6 +8,7 @@ import com.chappelle.jcraft.Chunk;
 import com.chappelle.jcraft.Vector3Int;
 import com.chappelle.jcraft.World;
 import com.chappelle.jcraft.shapes.BlockShape_Door;
+import com.chappelle.jcraft.util.AABB;
 import com.jme3.math.Vector3f;
 
 public class BlockDoor extends Block
@@ -18,6 +19,8 @@ public class BlockDoor extends Block
     public static final Short VAR_ORIENTATION = 4;
 
     private boolean userCanOpen;//Iron doors can't be opened by user
+    
+    private Vector3Int temp = new Vector3Int();
     
 	public BlockDoor(int blockId, boolean userCanOpen)
 	{
@@ -156,5 +159,85 @@ public class BlockDoor extends Block
 	public boolean useNeighborLight()
 	{
 		return false;
+	}
+
+
+	@Override
+	public AABB getCollisionBoundingBox(World world, int x, int y, int z)
+	{
+		temp.set(x, y, z);
+		BlockState blockState = world.getBlockState(temp);
+		Boolean open = (Boolean)blockState.get(VAR_OPEN);
+		Vector3f orientation = (Vector3f)blockState.get(VAR_ORIENTATION);
+		Block.Face homeFace = Block.Face.fromNormal(orientation);
+		minX = 0;
+		maxX = 1.0;
+		minZ = 0;
+		maxZ = 1.0;
+		if(homeFace == Block.Face.Front)
+		{
+			if(open)
+			{
+				this.minX = 0.9f;
+				this.maxX = 1.0f;
+			}
+			else
+			{
+				this.maxZ = 0.1;
+			}
+		}
+		else if(homeFace == Block.Face.Back)
+		{
+			if(open)
+			{
+				this.minX = 0f;
+				this.maxX = 0.1f;
+			}
+			else
+			{
+				this.maxZ = 0.9;
+			}
+		}
+		else if(homeFace == Block.Face.Left)
+		{
+			if(open)
+			{
+				this.minZ = 0.9f;
+				this.maxZ = 1.0f;
+			}
+			else
+			{
+				this.minX = 1.0;
+				this.maxX = 0.9f;
+			}
+		}
+		else if(homeFace == Block.Face.Right)
+		{
+			if(open)
+			{
+				this.minZ = 0f;
+				this.maxZ = 0.1f;
+			}
+			else
+			{
+				this.minX = 0;
+				this.maxX = 0.1f;
+			}
+		}
+		return AABB.getAABBPool().getAABB((double) x + this.minX, (double) y + this.minY, (double) z + this.minZ, (double) x + this.maxX, (double) y + this.maxY, (double) z + this.maxZ);
+	}
+
+
+	@Override
+	public AABB getSelectedBoundingBox(World world, int x, int y, int z)
+	{
+		return getCollisionBoundingBox(world, x, y, z);
+	}
+
+
+	@Override
+	public boolean isValidPlacementFace(Face face)
+	{
+		return face == Block.Face.Top;
 	}
 }

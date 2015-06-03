@@ -31,8 +31,8 @@ import com.jme3.system.AppSettings;
 
 public class JCraft extends SimpleApplication implements ActionListener
 {
-	private final Vector3Int terrainSize = new Vector3Int(50, 10, 50);
-	private int terrainIndex = terrainSize.getX();
+	private final Vector3Int terrainSize = new Vector3Int(32, 10, 32);
+	private int terrainIndex = terrainSize.x/16;
 
 	private static JCraft jcraft;
 	
@@ -80,7 +80,7 @@ public class JCraft extends SimpleApplication implements ActionListener
 		cam.lookAtDirection(new Vector3f(1, 0, 1), Vector3f.UNIT_Y);
 		
 		//Setup sky
-		viewPort.setBackgroundColor(ColorRGBA.Black);
+		viewPort.setBackgroundColor(new ColorRGBA((float)128/255, (float)173/255, (float)254/255, 1));
 
 		//Setup player
 		player = new EntityPlayer(world, cam, blockHelper);
@@ -231,6 +231,7 @@ public class JCraft extends SimpleApplication implements ActionListener
 		world.setBlock(4, 11, 5, Block.grass);
 		world.setBlock(4, 12, 5, Block.grass);
 		
+		
 	}
 
 	@Override
@@ -310,8 +311,8 @@ public class JCraft extends SimpleApplication implements ActionListener
         }
         else if("t".equals(name) && !isPressed)
         {
-        	blockTerrain.world.setBlocksFromNoise(new Vector3Int(terrainIndex, 0, 0), terrainSize, 0.8f, Block.grass);
-        	terrainIndex += terrainSize.getX();
+        	blockTerrain.world.setBlocksFromNoise(new Vector3Int(terrainIndex*16, 0, 0), terrainSize, 0.8f, Block.grass);
+        	terrainIndex++;
         }
         else if("g".equals(name) && !isPressed)
         {

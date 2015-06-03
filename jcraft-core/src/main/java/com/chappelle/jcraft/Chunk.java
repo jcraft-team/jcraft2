@@ -23,11 +23,11 @@ public class Chunk implements BitSerializable
     {
     	this.world = world;
     	location.set(x, y, z);
-    	blockLocation.set(location.mult(world.getSettings().getChunkSizeX(), world.getSettings().getChunkSizeY(), world.getSettings().getChunkSizeZ()));
-    	blockTypes = new int[world.getSettings().getChunkSizeX()][world.getSettings().getChunkSizeY()][world.getSettings().getChunkSizeZ()];
-    	blocks_IsOnSurface = new boolean[world.getSettings().getChunkSizeX()][world.getSettings().getChunkSizeY()][world.getSettings().getChunkSizeZ()];
-    	blockState = new BlockState[world.getSettings().getChunkSizeX()][world.getSettings().getChunkSizeY()][world.getSettings().getChunkSizeZ()];
-    	lights = new LightMap(new Vector3Int(world.getSettings().getChunkSizeX(), world.getSettings().getChunkSizeY(), world.getSettings().getChunkSizeZ()), location);
+    	blockLocation.set(location.mult(16, 256, 16));
+    	blockTypes = new int[16][256][16];
+    	blocks_IsOnSurface = new boolean[16][256][16];
+    	blockState = new BlockState[16][256][16];
+    	lights = new LightMap(new Vector3Int(16, 256, 16), location);
     }
     
     public Vector3Int getBlockLocation()

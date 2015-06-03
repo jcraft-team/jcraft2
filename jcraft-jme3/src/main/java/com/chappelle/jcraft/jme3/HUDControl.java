@@ -35,6 +35,7 @@ public class HUDControl extends AbstractControl
 	private BitmapText facingLabel;
 	private BitmapText pointedBlockLabel;
 	private BitmapText boundingBoxLabel;
+	private BitmapText pointedBoundingBoxLabel;
 	private EntityPlayer player;
 	private World world;
 	private BlockHelper blockHelper;
@@ -84,6 +85,14 @@ public class HUDControl extends AbstractControl
             y -= 25;
             boundingBoxLabel.setLocalTranslation(x, y, 0);
             debugNode.attachChild(boundingBoxLabel);
+            
+            pointedBoundingBoxLabel = new BitmapText(guiFont, false);
+            pointedBoundingBoxLabel.setSize(guiFont.getCharSet().getRenderedSize());
+            pointedBoundingBoxLabel.setText("Pointed Bounding Box: ");
+            x = 10;
+            y -= 25;
+            pointedBoundingBoxLabel.setLocalTranslation(x, y, 0);
+            debugNode.attachChild(pointedBoundingBoxLabel);
             
             blockLocationLabel = new BitmapText(guiFont, false);
             blockLocationLabel.setSize(guiFont.getCharSet().getRenderedSize());
@@ -172,7 +181,12 @@ public class HUDControl extends AbstractControl
 			Vector3Int pointedLocation = blockHelper.getPointedBlockLocationInChunkSpace(false);
 			if(pointedLocation != null)
 			{
-				pointedBlockLabel.setText("Pointed Block: " + world.getBlock(pointedLocation) + " at " + pointedLocation);
+				Block block = world.getBlock(pointedLocation);
+				pointedBlockLabel.setText("Pointed Block: " + (block == null ? "Air" : block) + " at " + pointedLocation);
+				if(block != null)
+				{
+					pointedBoundingBoxLabel.setText("Pointed Bounding Box: " + block.getCollisionBoundingBox(world, pointedLocation.x, pointedLocation.y, pointedLocation.z));
+				}
 			}
 			else
 			{

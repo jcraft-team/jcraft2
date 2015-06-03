@@ -234,9 +234,9 @@ public class World implements BitSerializable
 	private Vector3Int getChunkLocation(Vector3Int blockLocation)
 	{
 		Vector3Int chunkLocation = new Vector3Int();
-		int chunkX = (blockLocation.getX() / settings.getChunkSizeX());
-		int chunkY = (blockLocation.getY() / settings.getChunkSizeY());
-		int chunkZ = (blockLocation.getZ() / settings.getChunkSizeZ());
+		int chunkX = (blockLocation.getX() / 16);
+		int chunkY = (blockLocation.getY() / 256);
+		int chunkZ = (blockLocation.getZ() / 16);
 		chunkLocation.set(chunkX, chunkY, chunkZ);
 		return chunkLocation;
 	}

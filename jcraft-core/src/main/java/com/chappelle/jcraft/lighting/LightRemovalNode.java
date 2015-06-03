@@ -1,17 +1,22 @@
 package com.chappelle.jcraft.lighting;
 
 import com.chappelle.jcraft.Chunk;
+import com.chappelle.jcraft.Vector3Int;
 
 public class LightRemovalNode
 {
 	public Chunk chunk;
-	public short index;
 	public short val;
+	public int x;
+	public int y;
+	public int z;
 	
-	public LightRemovalNode(short index, short val, Chunk chunk)
+	public LightRemovalNode(Vector3Int location, short val, Chunk chunk)
 	{
 		this.chunk = chunk;
-		this.index = index;
 		this.val = val;
+		this.x = location.x;
+		this.y = location.y;
+		this.z = location.z;
 	}
 }
