@@ -54,8 +54,6 @@ public class EntityPlayer extends Entity
 			addVelocity(camLeft.x, 0, camLeft.z);
 		}
 		
-		moveEntity(motionX, motionY, motionZ);
-		
 		float slipperiness = 0.91F;
 		Block block = world.getBlock(MathUtils.floor_double(this.posX), MathUtils.floor_double(this.boundingBox.minY) - 1, MathUtils.floor_double(this.posZ));
 		if(block != null)
@@ -65,6 +63,7 @@ public class EntityPlayer extends Entity
 		this.motionY *= 0.9800000190734863D;
 		this.motionX *= (double) slipperiness;
 		this.motionZ *= (double) slipperiness;
+		moveEntity(motionX, motionY, motionZ);
 	}
 	
 	public void moveEntity(double x, double y, double z)
@@ -157,7 +156,10 @@ public class EntityPlayer extends Entity
 	public void selectBlock(int index)
 	{
 		selected = Block.blocksList[index];
-		System.out.println("Selected block is " + selected.getClass().getName());
+		if(selected != null)
+		{
+			System.out.println("Selected block is " + selected.getClass().getName());
+		}
 	}
 	
 	public Block getSelectedBlock()

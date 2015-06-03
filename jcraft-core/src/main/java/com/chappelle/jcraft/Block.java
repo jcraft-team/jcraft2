@@ -1,5 +1,6 @@
 package com.chappelle.jcraft;
 
+import com.chappelle.jcraft.blocks.BlockIce;
 import com.chappelle.jcraft.blocks.BlockStone;
 import com.chappelle.jcraft.blocks.BlockDoor;
 import com.chappelle.jcraft.blocks.BlockGlass;
@@ -92,6 +93,7 @@ public class Block
 	public static final Block door = new BlockDoor(3, true);
 	public static final Block torch = new BlockTorch(4);
 	public static final Block stone = new BlockStone(5);
+	public static final Block ice = new BlockIce(6);
 	
 	private BlockShape[] shapes = new BlockShape[] { new BlockShape_Cube() };
 	private BlockSkin[] skins;
@@ -103,7 +105,7 @@ public class Block
 	{
 		this.skins = skins;
 		this.blockId = blockId;
-		this.slipperiness = 0.75F;
+		this.slipperiness = 0.84F;
 		blocksList[blockId] = this;
 		this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
 	}
