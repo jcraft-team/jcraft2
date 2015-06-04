@@ -36,6 +36,17 @@ public class Entity
 
 	public Vector3f previousPos = new Vector3f();
 
+	/**
+	 * True if after a move this entity has collided with something on X- or
+	 * Z-axis
+	 */
+	public boolean isCollidedHorizontally;
+
+	/**
+	 * True if after a move this entity has collided with something on Y-axis
+	 */
+	public boolean isCollidedVertically;
+
 	public final AABB boundingBox;
 	
 	public float yOffset;

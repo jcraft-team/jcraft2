@@ -125,7 +125,9 @@ public class EntityPlayer extends Entity
 	
 	public void moveEntity(double x, double y, double z)
 	{
+		double orgX = x;
 		double orgY = y;
+		double orgZ = z;
 		
 		List<AABB> boundingBoxes = world.getCollidingBoundingBoxes(this, boundingBox.addCoord(x, y, z));
 		for(AABB boundingBox : boundingBoxes)
@@ -145,6 +147,9 @@ public class EntityPlayer extends Entity
 		this.boundingBox.offset(0, 0, z);
 
 		this.onGround = orgY != y && orgY < 0.0D;
+		this.isCollidedHorizontally = orgX != x || orgZ != z;
+		this.isCollidedVertically = orgY != y;
+
 		
 		posX = (this.boundingBox.minX + this.boundingBox.maxX) / 2.0f;
 		posZ = (this.boundingBox.minZ + this.boundingBox.maxZ) / 2.0f;
@@ -166,6 +171,11 @@ public class EntityPlayer extends Entity
 
 			this.playStepSound(blockX, blockY, blockZ, block);
 			block.onEntityWalking(world, blockX, blockY, blockZ);
+		}
+		
+		if (this.isCollidedHorizontally && this.isOnLadder())
+		{
+			this.motionY = 0.05D;
 		}
 	}
 	
