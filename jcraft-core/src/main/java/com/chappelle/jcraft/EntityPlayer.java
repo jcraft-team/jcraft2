@@ -149,12 +149,27 @@ public class EntityPlayer extends Entity
 		this.onGround = orgY != y && orgY < 0.0D;
 		this.isCollidedHorizontally = orgX != x || orgZ != z;
 		this.isCollidedVertically = orgY != y;
-
+		this.updateFallState(y, this.onGround);
 		
 		posX = (this.boundingBox.minX + this.boundingBox.maxX) / 2.0f;
 		posZ = (this.boundingBox.minZ + this.boundingBox.maxZ) / 2.0f;
 		posY = this.boundingBox.minY + this.yOffset - this.ySize;
 		
+		updateWalkDistance();
+		
+		climbIfOnLadder();
+	}
+
+	private void climbIfOnLadder()
+	{
+		if (this.isCollidedHorizontally && this.isOnLadder())
+		{
+			this.motionY = 0.05D;
+		}
+	}
+
+	private void updateWalkDistance()
+	{
 		//Calculate distance walked and play step sound
 		double distX = prevPosX - posX;
 		double distY = prevPosY - posY;
@@ -171,11 +186,6 @@ public class EntityPlayer extends Entity
 
 			this.playStepSound(blockX, blockY, blockZ, block);
 			block.onEntityWalking(world, blockX, blockY, blockZ);
-		}
-		
-		if (this.isCollidedHorizontally && this.isOnLadder())
-		{
-			this.motionY = 0.05D;
 		}
 	}
 	

@@ -183,4 +183,24 @@ public class Entity
 	{
 		gravityEnabled = !gravityEnabled;
 	}
+	
+	/**
+	 * Updates the fallDistance for this tick
+	 * @param distance The distance fallen this tick
+	 * @param onGround Whether the entity is on the ground
+	 */
+	protected void updateFallState(double distance, boolean onGround)
+	{
+		if (onGround)
+		{
+			if (this.fallDistance > 0.0F)
+			{
+				this.fallDistance = 0.0F;
+			}
+		} else if (distance < 0.0D)
+		{
+			this.fallDistance = (float) ((double) this.fallDistance - distance);
+		}
+	}
+	
 }
