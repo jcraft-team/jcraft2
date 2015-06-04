@@ -87,17 +87,22 @@ public class JCraft extends SimpleApplication implements ActionListener
 		player.preparePlayerToSpawn();
 		rootNode.addControl(new PlayerControl(this, player));
 
-		rootNode.addControl(new HUDControl(this, settings, player));
+		rootNode.addControl(makeHUD());
 		rootNode.addControl(new BlockCursorControl(world, blockHelper, assetManager));
 
 		profiler.startSection("root");
 		updateStatsView();
 		
 		System.out.println("****************************************************************************");
-		System.out.println("Press F3 to toggle debug, F4 to toggle profiler");
+		System.out.println("Press F1 for fullscreen, F3 to toggle debug, F4 to toggle profiler.");
 		System.out.println("See key bindings in JCraft class for other controls");
 		System.out.println("****************************************************************************");
 		System.out.println("\r\n\r\n");
+	}
+
+	private HUDControl makeHUD()
+	{
+		return new HUDControl(this, settings, player);
 	}
 	
 	private void toggleDebug()
@@ -145,9 +150,9 @@ public class JCraft extends SimpleApplication implements ActionListener
         addMapping("9", new KeyTrigger(KeyInput.KEY_9));
         addMapping("0", new KeyTrigger(KeyInput.KEY_0));
         addMapping("t", new KeyTrigger(KeyInput.KEY_T));
-        addMapping("f", new KeyTrigger(KeyInput.KEY_F));
         addMapping("g", new KeyTrigger(KeyInput.KEY_G));
         addMapping("u", new KeyTrigger(KeyInput.KEY_U));
+        addMapping("f1", new KeyTrigger(KeyInput.KEY_F1));
         addMapping("f3", new KeyTrigger(KeyInput.KEY_F3));
         addMapping("f4", new KeyTrigger(KeyInput.KEY_F4));
 	}
@@ -420,7 +425,7 @@ public class JCraft extends SimpleApplication implements ActionListener
         	blockTerrain.world.setBlocksFromNoise(new Vector3Int(terrainIndex*16, 0, 0), terrainSize, 0.8f, Block.grass);
         	terrainIndex++;
         }
-        else if("f".equals(name) && !isPressed)
+        else if("f1".equals(name) && !isPressed)
         {
         	toggleToFullscreen();
         }
@@ -483,31 +488,27 @@ public class JCraft extends SimpleApplication implements ActionListener
 		}
 	}
 
-	//FIXME: Not working properly. See http://hub.jmonkeyengine.org/t/error-switching-to-fullscreen-using-the-documented-code-sample/32750
+	//WARNING: This may be buggy. See http://hub.jmonkeyengine.org/t/error-switching-to-fullscreen-using-the-documented-code-sample/32750
 	public void toggleToFullscreen()
 	{
-		boolean success = false;
 		java.awt.GraphicsDevice device = java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
 		java.awt.DisplayMode[] modes = device.getDisplayModes();
-		for(int i = 0; i < modes.length; i++)
-		{
-			int bitDepth = modes[i].getBitDepth();
-			if(bitDepth == 32)
-			{
-				settings.setResolution(modes[i].getWidth(), modes[i].getHeight());
-				settings.setFrequency(modes[i].getRefreshRate());
-				settings.setBitsPerPixel(bitDepth);
-				settings.setFullscreen(device.isFullScreenSupported());
-				setSettings(settings);
-				restart(); // restart the context to apply changes
-				success = true;
-				break;
-			}
-		}
-		if(!success)
-		{
-			System.out.println("Could not toggle to fullscreen. No 32 bitDepth display mode found.");
-		}
+
+		int i = modes.length - 1;
+		settings.setResolution(modes[i].getWidth(), modes[i].getHeight());
+		settings.setFrequency(modes[i].getRefreshRate());
+		settings.setBitsPerPixel(modes[i].getBitDepth());
+		settings.setFullscreen(device.isFullScreenSupported());
+		setSettings(settings);
+		restart(); // restart the context to apply changes
+		
+		rootNode.removeControl(HUDControl.class);
+		rootNode.addControl(makeHUD());
+		
+		StatsAppState stats = stateManager.getState(StatsAppState.class);
+		stateManager.detach(stats);
+		stats = new StatsAppState(guiNode, guiFont);
+		stateManager.attach(stats);
 	}
 	
 	public static void main(String[] args)
