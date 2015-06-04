@@ -11,11 +11,17 @@ import com.jme3.renderer.Camera;
 public class EntityPlayer extends Entity
 {
 	private static final float MAX_SPEED = 0.08f;
+	private boolean up;
+	private boolean down;
 	private boolean forward;
 	private boolean backward;
 	private boolean left;
 	private boolean right;
-	
+
+	private static final float NORMAL_FLYSPEED = 0.05F;
+	private static final float FAST_FLYSPEED = 0.15F;
+	private float flySpeed = NORMAL_FLYSPEED;
+
 	private BlockHelper blockHelper;
 	private Block selected;
 
@@ -39,22 +45,42 @@ public class EntityPlayer extends Entity
 		moveAccordingToUserInputs(tpf);
 		
 		this.motionY *= 0.9800000190734863D;
+
 		addFriction();
+		handleLadderMovement();
+		
+		if (isFlying)
+		{
+			this.motionY *= 0.6D;
+		} 
+		
+		capSpeed();
+		//At this point all movement should be done(ie. altering of the motion vectors)
+		moveEntity(motionX, motionY, motionZ);
+	}
+
+	private void handleLadderMovement()
+	{
 		if(isOnLadder())
 		{
 			moveDownLadder();
 		}
 		climbIfOnLadder();
-		if(Math.abs(motionX) > MAX_SPEED)
+	}
+
+	private void capSpeed()
+	{
+		if(!isFlying)
 		{
-			motionX = MAX_SPEED*Math.signum(motionX);
+			if(Math.abs(motionX) > MAX_SPEED)
+			{
+				motionX = MAX_SPEED*Math.signum(motionX);
+			}
+			if(Math.abs(motionZ) > MAX_SPEED)
+			{
+				motionZ = MAX_SPEED*Math.signum(motionZ);
+			}
 		}
-		if(Math.abs(motionZ) > MAX_SPEED)
-		{
-			motionZ = MAX_SPEED*Math.signum(motionZ);
-		}
-		//At this point all movement should be done(ie. altering of the motion vectors)
-		moveEntity(motionX, motionY, motionZ);
 	}
 
 	private void moveAccordingToUserInputs(float tpf)
@@ -79,6 +105,19 @@ public class EntityPlayer extends Entity
 		{
 			addVelocity(camLeft.x, 0, camLeft.z);
 		}
+		if(isFlying)
+		{
+			//FIXME: need to handle X and Z for flying.
+//			addVelocity(Math.signum(motionX)*flySpeed, 0, Math.signum(motionZ)*flySpeed);
+			if(up)
+			{
+				addVelocity(0, flySpeed, 0);
+			}
+			if(down)
+			{
+				addVelocity(0, -flySpeed, 0);
+			}
+		}
 	}
 
 	private void addFriction()
@@ -95,11 +134,6 @@ public class EntityPlayer extends Entity
 		}
 		this.motionX *= (double) slipperiness;
 		this.motionZ *= (double) slipperiness;
-//		else
-//		{
-//			this.motionX *= 0.75D;
-//			this.motionZ *= 0.75D;
-//		}
 	}
 
 	private void moveDownLadder()
@@ -198,7 +232,11 @@ public class EntityPlayer extends Entity
 		}
 	}
 	
-
+	public void toggleFlying()
+	{
+		isFlying = !isFlying;
+	}
+	
 	public void jump()
 	{
 		if(onGround)
@@ -246,6 +284,16 @@ public class EntityPlayer extends Entity
 	
 	public void moveUp(boolean isPressed)
 	{
+		up = isPressed;
+	}
+
+	public void moveDown(boolean isPressed)
+	{
+		down = isPressed;
+	}
+
+	public void moveForward(boolean isPressed)
+	{
 		forward = isPressed;
 	}
 	
@@ -254,7 +302,7 @@ public class EntityPlayer extends Entity
 		right = isPressed;
 	}
 	
-	public void moveDown(boolean isPressed)
+	public void moveBackward(boolean isPressed)
 	{
 		backward = isPressed;
 	}
@@ -262,6 +310,19 @@ public class EntityPlayer extends Entity
 	public void moveLeft(boolean isPressed)
 	{
 		left = isPressed;
+	}
+	
+	public void setFastFlying(boolean isPressed)
+	{
+		if(isPressed)
+		{
+			flySpeed = FAST_FLYSPEED;
+		}
+		else
+		{
+			flySpeed = NORMAL_FLYSPEED;
+		}
+		System.out.println("flySpeed=" + flySpeed);
 	}
 	
 	public void selectBlock(int index)

@@ -31,6 +31,7 @@ import com.jme3.system.AppSettings;
 
 public class JCraft extends SimpleApplication implements ActionListener
 {
+	private static final int JUMP_TIME_INTERVAL = 200;
 	private final Vector3Int terrainSize = new Vector3Int(32, 10, 32);
 	private int terrainIndex = terrainSize.x/16;
 
@@ -45,6 +46,11 @@ public class JCraft extends SimpleApplication implements ActionListener
 	private EntityPlayer player;
 	public World world;
 	private Profiler profiler;
+	
+	/**
+	 * Used for enabling flying by double pressing space
+	 */
+	private long lastJumpPressed;
 	
 	public JCraft(GameSettings gameSettings)
 	{
@@ -152,6 +158,8 @@ public class JCraft extends SimpleApplication implements ActionListener
         addMapping("t", new KeyTrigger(KeyInput.KEY_T));
         addMapping("g", new KeyTrigger(KeyInput.KEY_G));
         addMapping("u", new KeyTrigger(KeyInput.KEY_U));
+        addMapping("lshift", new KeyTrigger(KeyInput.KEY_LSHIFT));
+        addMapping("lctrl", new KeyTrigger(KeyInput.KEY_LCONTROL));
         addMapping("f1", new KeyTrigger(KeyInput.KEY_F1));
         addMapping("f3", new KeyTrigger(KeyInput.KEY_F3));
         addMapping("f4", new KeyTrigger(KeyInput.KEY_F4));
@@ -358,7 +366,7 @@ public class JCraft extends SimpleApplication implements ActionListener
 	{
 		if(name.equals("move_up"))
 		{
-			player.moveUp(isPressed);
+			player.moveForward(isPressed);
 		}
 		else if(name.equals("move_right"))
 		{
@@ -370,11 +378,33 @@ public class JCraft extends SimpleApplication implements ActionListener
 		}
 		else if(name.equals("move_down"))
 		{
-			player.moveDown(isPressed);
+			player.moveBackward(isPressed);
 		}
 		else if(name.equals("jump"))
 		{
-			player.jump();
+			long currentTime = System.currentTimeMillis();
+			long timeSinceLastPressed = currentTime - lastJumpPressed;
+			if(!isPressed && timeSinceLastPressed > 0 && timeSinceLastPressed < JUMP_TIME_INTERVAL)
+			{
+				player.toggleFlying();
+			}
+			else
+			{
+				player.jump();
+			}
+			player.moveUp(isPressed);
+			if(!isPressed)
+			{
+				lastJumpPressed = System.currentTimeMillis();
+			}
+		}
+		else if(name.equals("lshift"))
+		{
+			player.moveDown(isPressed);
+		}
+		else if(name.equals("lctrl"))
+		{
+			player.setFastFlying(isPressed);
 		}
 		else if(name.equals("RightClick") && !isPressed)
 		{

@@ -7,10 +7,19 @@ public class Entity
 {
 	public float yAcceleration = -9.8f;
 
+	/** Sets/indicates whether the player is flying. */
+	public boolean isFlying;
+
 	public boolean isAirBorne;
 	private boolean gravityEnabled = true;
 	
 	public float fallDistance;
+	
+	/**
+	 * A factor used to determine how far this entity will move each tick if it
+	 * is jumping or falling.
+	 */
+	public float jumpMovementFactor = 0.02F;
 	
 	public double prevPosX;
 	public double prevPosY;
@@ -98,8 +107,11 @@ public class Entity
 			this.motionZ = 0.0D;
 		}
 		
-		//Gravity
-		this.motionY -= 0.008D;
+		if(!isFlying)
+		{
+			//Gravity
+			this.motionY -= 0.008D;
+		}
 		
 		//Update previous position before movement happens
 		prevPosX = posX;
