@@ -10,6 +10,7 @@ import com.jme3.renderer.Camera;
 
 public class EntityPlayer extends Entity
 {
+	private static final float MAX_SPEED = 0.08f;
 	private boolean forward;
 	private boolean backward;
 	private boolean left;
@@ -43,6 +44,16 @@ public class EntityPlayer extends Entity
 		{
 			moveDownLadder();
 		}
+		climbIfOnLadder();
+		if(Math.abs(motionX) > MAX_SPEED)
+		{
+			motionX = MAX_SPEED*Math.signum(motionX);
+		}
+		if(Math.abs(motionZ) > MAX_SPEED)
+		{
+			motionZ = MAX_SPEED*Math.signum(motionZ);
+		}
+		//At this point all movement should be done(ie. altering of the motion vectors)
 		moveEntity(motionX, motionY, motionZ);
 	}
 
@@ -72,23 +83,23 @@ public class EntityPlayer extends Entity
 
 	private void addFriction()
 	{
+		float slipperiness = Block.DEFAULT_SLIPPERINESS;
 		if(onGround)
 		{
-			float slipperiness = 0.91F;
 			Block block = world.getBlock(MathUtils.floor_double(this.posX), MathUtils.floor_double(this.boundingBox.minY) - 1, MathUtils.floor_double(this.posZ));
 			if(block != null)
 			{
 				slipperiness = block.slipperiness;
 			}
 			
-			this.motionX *= (double) slipperiness;
-			this.motionZ *= (double) slipperiness;
 		}
-		else
-		{
-			this.motionX *= 0.75D;
-			this.motionZ *= 0.75D;
-		}
+		this.motionX *= (double) slipperiness;
+		this.motionZ *= (double) slipperiness;
+//		else
+//		{
+//			this.motionX *= 0.75D;
+//			this.motionZ *= 0.75D;
+//		}
 	}
 
 	private void moveDownLadder()
@@ -156,8 +167,6 @@ public class EntityPlayer extends Entity
 		posY = this.boundingBox.minY + this.yOffset - this.ySize;
 		
 		updateWalkDistance();
-		
-		climbIfOnLadder();
 	}
 
 	private void climbIfOnLadder()

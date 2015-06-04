@@ -145,6 +145,7 @@ public class JCraft extends SimpleApplication implements ActionListener
         addMapping("9", new KeyTrigger(KeyInput.KEY_9));
         addMapping("0", new KeyTrigger(KeyInput.KEY_0));
         addMapping("t", new KeyTrigger(KeyInput.KEY_T));
+        addMapping("f", new KeyTrigger(KeyInput.KEY_F));
         addMapping("g", new KeyTrigger(KeyInput.KEY_G));
         addMapping("u", new KeyTrigger(KeyInput.KEY_U));
         addMapping("f3", new KeyTrigger(KeyInput.KEY_F3));
@@ -419,6 +420,10 @@ public class JCraft extends SimpleApplication implements ActionListener
         	blockTerrain.world.setBlocksFromNoise(new Vector3Int(terrainIndex*16, 0, 0), terrainSize, 0.8f, Block.grass);
         	terrainIndex++;
         }
+        else if("f".equals(name) && !isPressed)
+        {
+        	toggleToFullscreen();
+        }
         else if("g".equals(name) && !isPressed)
         {
         	player.toggleGravity();
@@ -475,6 +480,33 @@ public class JCraft extends SimpleApplication implements ActionListener
 		for(ProfilerResult result : profiler.getProfilingData("root"))
 		{
 			System.out.println(result.section + " [" + result.elapsedTime + "," + result.maxTime + "]");
+		}
+	}
+
+	//FIXME: Not working properly. See http://hub.jmonkeyengine.org/t/error-switching-to-fullscreen-using-the-documented-code-sample/32750
+	public void toggleToFullscreen()
+	{
+		boolean success = false;
+		java.awt.GraphicsDevice device = java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+		java.awt.DisplayMode[] modes = device.getDisplayModes();
+		for(int i = 0; i < modes.length; i++)
+		{
+			int bitDepth = modes[i].getBitDepth();
+			if(bitDepth == 32)
+			{
+				settings.setResolution(modes[i].getWidth(), modes[i].getHeight());
+				settings.setFrequency(modes[i].getRefreshRate());
+				settings.setBitsPerPixel(bitDepth);
+				settings.setFullscreen(device.isFullScreenSupported());
+				setSettings(settings);
+				restart(); // restart the context to apply changes
+				success = true;
+				break;
+			}
+		}
+		if(!success)
+		{
+			System.out.println("Could not toggle to fullscreen. No 32 bitDepth display mode found.");
 		}
 	}
 	

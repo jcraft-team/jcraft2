@@ -33,4 +33,10 @@ public class BlockGlass extends Block
 	{
 		return true;
 	}
+
+	@Override
+	public boolean smothersBottomBlock()
+	{
+		return false;
+	}
 }

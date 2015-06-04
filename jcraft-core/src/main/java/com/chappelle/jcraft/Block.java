@@ -106,11 +106,13 @@ public class Block
 	
 	public String stepSound;
 	
+	public static final float DEFAULT_SLIPPERINESS = 0.85F;
+	
 	public Block(int blockId, BlockSkin... skins)
 	{
 		this.skins = skins;
 		this.blockId = blockId;
-		this.slipperiness = 0.91F;
+		this.slipperiness = DEFAULT_SLIPPERINESS;
 		blocksList[blockId] = this;
 		this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
 	}
