@@ -330,6 +330,13 @@ public class JCraft extends SimpleApplication implements ActionListener
 		world.setBlock(15, 9, 8, Block.ice);
 		world.setBlock(15, 9, 7, Block.ice);
 		world.setBlock(15, 9, 6, Block.ice);
+		
+		world.setBlock(6, 10, 9, Block.grass);
+		world.setBlock(6, 10, 10, Block.grass);
+		world.setBlock(6, 10, 11, Block.grass);
+		world.setBlock(6, 11, 9, Block.grass);
+		world.setBlock(6, 11, 10, Block.grass);
+		world.setBlock(6, 12, 9, Block.grass);
 	}
 
 	@Override

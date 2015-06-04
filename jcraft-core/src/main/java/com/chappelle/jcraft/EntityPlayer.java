@@ -35,9 +35,21 @@ public class EntityPlayer extends Entity
 	{
 		super.update(tpf);
 		
+		moveAccordingToUserInputs(tpf);
+		
+		this.motionY *= 0.9800000190734863D;
+		addFriction();
+		if(isOnLadder())
+		{
+			moveDownLadder();
+		}
+		moveEntity(motionX, motionY, motionZ);
+	}
+
+	private void moveAccordingToUserInputs(float tpf)
+	{
 		Vector3f camDir = cam.getDirection().mult(tpf);
 		Vector3f camLeft = cam.getLeft().mult(tpf);
-		
 		if(forward)
 		{
 			addVelocity(camDir.x, 0, camDir.z);
@@ -56,8 +68,10 @@ public class EntityPlayer extends Entity
 		{
 			addVelocity(camLeft.x, 0, camLeft.z);
 		}
-		
-		this.motionY *= 0.9800000190734863D;
+	}
+
+	private void addFriction()
+	{
 		if(onGround)
 		{
 			float slipperiness = 0.91F;
@@ -75,7 +89,38 @@ public class EntityPlayer extends Entity
 			this.motionX *= 0.75D;
 			this.motionZ *= 0.75D;
 		}
-		moveEntity(motionX, motionY, motionZ);
+	}
+
+	private void moveDownLadder()
+	{
+		float ladderMotion = 0.07F;
+
+		if (this.motionX < (double) (-ladderMotion))
+		{
+			this.motionX = (double) (-ladderMotion);
+		}
+
+		if (this.motionX > (double) ladderMotion)
+		{
+			this.motionX = (double) ladderMotion;
+		}
+
+		if (this.motionZ < (double) (-ladderMotion))
+		{
+			this.motionZ = (double) (-ladderMotion);
+		}
+
+		if (this.motionZ > (double) ladderMotion)
+		{
+			this.motionZ = (double) ladderMotion;
+		}
+
+		this.fallDistance = 0.0F;
+
+		if (this.motionY < -ladderMotion)
+		{
+			this.motionY = -ladderMotion;
+		}
 	}
 	
 	public void moveEntity(double x, double y, double z)
@@ -233,6 +278,18 @@ public class EntityPlayer extends Entity
 			result.subtractLocal(0,2,0);
 		}
 		return result;
+	}
+
+	/**
+	 * returns true if this entity is by a ladder, false otherwise
+	 */
+	public boolean isOnLadder()
+	{
+		int i = MathUtils.floor_double(this.posX);
+		int j = MathUtils.floor_double(this.boundingBox.minY);
+		int k = MathUtils.floor_double(this.posZ);
+		Block block = this.world.getBlock(i, j, k);
+		return block != null && block.blockId == Block.ladder.blockId;
 	}
 
 }

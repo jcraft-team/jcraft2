@@ -1,6 +1,7 @@
 package com.chappelle.jcraft;
 
 import com.chappelle.jcraft.blocks.BlockIce;
+import com.chappelle.jcraft.blocks.BlockLadder;
 import com.chappelle.jcraft.blocks.BlockStone;
 import com.chappelle.jcraft.blocks.BlockDoor;
 import com.chappelle.jcraft.blocks.BlockGlass;
@@ -95,6 +96,7 @@ public class Block
 	public static final Block torch = new BlockTorch(4);
 	public static final Block stone = new BlockStone(5).setStepSound(SoundConstants.STEP_STONE_1);
 	public static final Block ice = new BlockIce(6).setStepSound(SoundConstants.STEP_STONE_4);
+	public static final Block ladder = new BlockLadder(7).setStepSound(SoundConstants.STEP_WOOD_4);
 	
 	private BlockShape[] shapes = new BlockShape[] { new BlockShape_Cube() };
 	private BlockSkin[] skins;

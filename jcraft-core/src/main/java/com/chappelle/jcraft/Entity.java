@@ -10,6 +10,8 @@ public class Entity
 	public boolean isAirBorne;
 	private boolean gravityEnabled = true;
 	
+	public float fallDistance;
+	
 	public double prevPosX;
 	public double prevPosY;
 	public double prevPosZ;
@@ -131,7 +133,7 @@ public class Entity
 	{
 		if(block.stepSound != null)
 		{
-			world.playSound(block.stepSound);
+//			world.playSound(block.stepSound);//FIXME: Getting java.lang.IllegalStateException: Only mono audio is supported for positional audio nodes
 		}
 	}
 	

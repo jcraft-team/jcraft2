@@ -70,12 +70,18 @@ public class BlockCursorControl extends NodeControl
 						blockCursor.setCullHint(Spatial.CullHint.Never);
 						
 						AABB bb = block.getSelectedBoundingBox(world, newCursorLocation.x, newCursorLocation.y, newCursorLocation.z);
-						bb.offset(-newCursorLocation.x, -newCursorLocation.y, -newCursorLocation.z);
-						minPoint.set((float)bb.minX, (float)bb.minY, (float)bb.minZ);
-						maxPoint.set((float)bb.maxX, (float)bb.maxY, (float)bb.maxZ);
-						box.updateGeometry(minPoint, maxPoint);
-
-						blockCursor.setLocalTranslation(newCursorLocation.toVector3f());
+						if(bb != null)
+						{
+							bb.offset(-newCursorLocation.x, -newCursorLocation.y, -newCursorLocation.z);
+							minPoint.set((float)bb.minX, (float)bb.minY, (float)bb.minZ);
+							maxPoint.set((float)bb.maxX, (float)bb.maxY, (float)bb.maxZ);
+							box.updateGeometry(minPoint, maxPoint);
+							blockCursor.setLocalTranslation(newCursorLocation.toVector3f());
+						}
+						else
+						{
+							blockCursor.setCullHint(Spatial.CullHint.Always);
+						}
 					}
 					else
 					{
