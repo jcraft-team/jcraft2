@@ -37,6 +37,57 @@ public class BlockLadder extends Block
 	{
 	}
 
+	public void setBlockBoundsBasedOnState(World world, int x, int y, int z)
+	{
+		BlockState blockState = world.getBlockState(new Vector3Int(x, y, z));
+		Vector3f orientation = (Vector3f)blockState.get(VAR_ORIENTATION);
+    	Block.Face homeFace = BlockNavigator.getOppositeFace(Block.Face.fromNormal(orientation));
+    	if(homeFace == Block.Face.Back)
+    	{
+    		minX = 0;
+    		minY = 0;
+    		minZ = 1;
+    		maxX = 1;
+    		maxY = 1;
+    		maxZ = 0.9f;
+    	}
+    	else if(homeFace == Block.Face.Front)
+    	{
+    		minX = 0;
+    		minY = 0;
+    		minZ = 0;
+    		maxX = 1;
+    		maxY = 1;
+    		maxZ = 0.1;
+    	}
+    	else if(homeFace == Block.Face.Left)
+    	{
+    		minX = 1;
+    		minY = 0;
+    		minZ = 0;
+    		maxX = 0.9f;
+    		maxY = 1;
+    		maxZ = 1;
+    	}
+    	else if(homeFace == Block.Face.Right)
+    	{
+    		minX = 0;
+    		minY = 0;
+    		minZ = 0;
+    		maxX = 0.1f;
+    		maxY = 1;
+    		maxZ = 1;
+    	}
+	}
+	
+	@Override
+	public AABB getSelectedBoundingBox(World world, int x, int y, int z)
+	{
+		setBlockBoundsBasedOnState(world, x, y, z);
+		return super.getSelectedBoundingBox(world, x, y, z);
+	}
+
+
 	@Override
 	public void onNeighborRemoved(World world, Vector3Int location, Vector3Int myLocation)
 	{
@@ -93,12 +144,6 @@ public class BlockLadder extends Block
 
 	@Override
 	public AABB getCollisionBoundingBox(World world, int x, int y, int z)
-	{
-		return null;
-	}
-
-	@Override
-	public AABB getSelectedBoundingBox(World world, int x, int y, int z)
 	{
 		return null;
 	}

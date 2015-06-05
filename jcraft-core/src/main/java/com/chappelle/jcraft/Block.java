@@ -276,15 +276,17 @@ public class Block
 		return this;
 	}
 	
+	public void setBlockBoundsBasedOnState(World world, int x, int y, int z)
+	{
+	}
+	
 	/**
 	 * Ray traces through the blocks collision from start vector to end vector
 	 * returning a ray trace hit.
 	 */
 	public RayTrace collisionRayTrace(World world, int x, int y, int z, Vector3f startVec, Vector3f endVec)
 	{
-//		this.setBlockBoundsBasedOnState(world, x, y, z);
-//		startVec = startVec.add((double) (-x), (double) (-y), (double) (-z));
-//		endVec = endVec.addVector((double) (-x), (double) (-y), (double) (-z));
+		this.setBlockBoundsBasedOnState(world, x, y, z);
 		startVec = startVec.add((-x), (-y), (-z));
 		endVec = endVec.add((-x), (-y), (-z));
 		Vector3f minXVec = MathUtils.getIntermediateWithXValue(startVec, endVec, this.minX);
