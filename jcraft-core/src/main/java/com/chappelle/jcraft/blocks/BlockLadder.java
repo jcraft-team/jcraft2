@@ -26,7 +26,7 @@ public class BlockLadder extends Block
 	public void onBlockPlaced(World world, Vector3Int location, Block.Face face, Vector3f cameraDirectionAsUnitVector)
 	{
         BlockState blockState = world.getBlockState(location);
-        blockState.put(VAR_ORIENTATION, cameraDirectionAsUnitVector);
+        blockState.put(VAR_ORIENTATION, face.oppositeNormal);
 	}
 
 	public void onBlockRemoved(World world, Vector3Int location)

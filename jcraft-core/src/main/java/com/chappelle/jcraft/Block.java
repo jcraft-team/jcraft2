@@ -23,11 +23,13 @@ public class Block
 	{
 		Top(Vector3f.UNIT_Y), Bottom(Vector3f.UNIT_Y.negate()), Left(Vector3f.UNIT_X.negate()), Right(Vector3f.UNIT_X), Front(Vector3f.UNIT_Z), Back(Vector3f.UNIT_Z.negate());
 
-		private Vector3f normal;
+		public Vector3f normal;
+		public Vector3f oppositeNormal;
 		
 		private Face(Vector3f normal)
 		{
 			this.normal = normal;
+			this.oppositeNormal = normal.negate();
 		}
 		
 		public Vector3f getNormal()
