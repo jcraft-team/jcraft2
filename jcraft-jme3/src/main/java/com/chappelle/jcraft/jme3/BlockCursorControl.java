@@ -60,6 +60,7 @@ public class BlockCursorControl extends NodeControl
 			if(rayTrace == null)
 			{
 				blockCursor.setCullHint(Spatial.CullHint.Always);
+				previousLocation.set(-1, -1, -1);//instead of setting to null, set to invalid location
 			}
 			else
 			{

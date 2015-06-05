@@ -9,6 +9,7 @@ import com.chappelle.jcraft.Vector3Int;
 import com.chappelle.jcraft.World;
 import com.chappelle.jcraft.shapes.BlockShape_Torch;
 import com.chappelle.jcraft.util.AABB;
+import com.chappelle.jcraft.util.RayTrace;
 import com.jme3.math.Vector3f;
 
 public class BlockTorch extends Block
@@ -20,6 +21,8 @@ public class BlockTorch extends Block
     public static final Short VAR_ORIENTATION = 1;
     public static final Short VAR_ATTACHED_BLOCK = 2;//TODO: could probably use just this one and remove the VAR_ORIENTATION in the future
 	
+    private Vector3Int temp = new Vector3Int();
+    
     public BlockTorch(int blockId)
     {
     	super(blockId, new BlockSkin(new BlockSkin_TextureLocation(0, 5), true));
@@ -36,6 +39,49 @@ public class BlockTorch extends Block
         blockState.put(VAR_ATTACHED_BLOCK, BlockNavigator.getNeighborBlockLocalLocation(location, face));
         world.playSound(SoundConstants.DIG_WOOD, 4);
     }
+    
+	@Override
+	public void setBlockBoundsBasedOnState(World world, int x, int y, int z)
+	{
+		temp.set(x, y, z);
+		BlockState blockState = world.getBlockState(temp);
+		Block.Face homeFace = (Block.Face)blockState.get(VAR_ORIENTATION);
+		float width = 0.15f;
+		float height = 0.6f;
+		float xzOffset = 0.35f;
+		float yOffset = 0.3f;
+		minX = 0.5 - width;
+		minY = 0;
+		minZ = 0.5 - width;
+		maxX = 0.5 + width;
+		maxY = height;
+		maxZ = 0.5 + width;
+		if(homeFace != Block.Face.Top)
+		{
+			minY += yOffset;
+			maxY += yOffset;
+		}
+		if(homeFace == Block.Face.Front)
+		{
+			minZ -= xzOffset;
+			maxZ -= xzOffset;
+		}
+		else if(homeFace == Block.Face.Back)
+		{
+			minZ += xzOffset;
+			maxZ += xzOffset;
+		}
+		else if(homeFace == Block.Face.Left)
+		{
+			minX += xzOffset;
+			maxX += xzOffset;
+		}
+		else if(homeFace == Block.Face.Right)
+		{
+			minX -= xzOffset;
+			maxX -= xzOffset;
+		}
+	}
     
 	@Override
 	public void onBlockRemoved(World world, Vector3Int location)
@@ -81,5 +127,21 @@ public class BlockTorch extends Block
 	public int getBlockLightValue()
 	{
 		return 14;
+	}
+
+	@Override
+	public AABB getSelectedBoundingBox(World world, int x, int y, int z)
+	{
+		setBlockBoundsBasedOnState(world, x, y, z);
+		AABB selectedBoundingBox = super.getSelectedBoundingBox(world, x, y, z);
+		System.out.println(selectedBoundingBox);
+		return selectedBoundingBox;
+	}
+
+	@Override
+	public RayTrace collisionRayTrace(World world, int x, int y, int z, Vector3f startVec, Vector3f endVec)
+	{
+		setBlockBoundsBasedOnState(world, x, y, z);
+		return super.collisionRayTrace(world, x, y, z, startVec, endVec);
 	}
 }

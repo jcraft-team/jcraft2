@@ -9,6 +9,7 @@ import com.chappelle.jcraft.Vector3Int;
 import com.chappelle.jcraft.World;
 import com.chappelle.jcraft.shapes.BlockShape_Door;
 import com.chappelle.jcraft.util.AABB;
+import com.chappelle.jcraft.util.RayTrace;
 import com.jme3.math.Vector3f;
 
 public class BlockDoor extends Block
@@ -166,6 +167,28 @@ public class BlockDoor extends Block
 	@Override
 	public AABB getCollisionBoundingBox(World world, int x, int y, int z)
 	{
+		setBlockBoundsBasedOnState(world, x, y, z);
+		return super.getCollisionBoundingBox(world, x, y, z);
+	}
+
+
+	@Override
+	public AABB getSelectedBoundingBox(World world, int x, int y, int z)
+	{
+		return getCollisionBoundingBox(world, x, y, z);
+	}
+
+
+	@Override
+	public boolean isValidPlacementFace(Face face)
+	{
+		return face == Block.Face.Top;
+	}
+
+
+	@Override
+	public void setBlockBoundsBasedOnState(World world, int x, int y, int z)
+	{
 		temp.set(x, y, z);
 		BlockState blockState = world.getBlockState(temp);
 		Boolean open = (Boolean)blockState.get(VAR_OPEN);
@@ -225,20 +248,13 @@ public class BlockDoor extends Block
 				this.maxX = 0.1f;
 			}
 		}
-		return AABB.getAABBPool().getAABB((double) x + this.minX, (double) y + this.minY, (double) z + this.minZ, (double) x + this.maxX, (double) y + this.maxY, (double) z + this.maxZ);
 	}
 
 
 	@Override
-	public AABB getSelectedBoundingBox(World world, int x, int y, int z)
+	public RayTrace collisionRayTrace(World world, int x, int y, int z, Vector3f startVec, Vector3f endVec)
 	{
-		return getCollisionBoundingBox(world, x, y, z);
-	}
-
-
-	@Override
-	public boolean isValidPlacementFace(Face face)
-	{
-		return face == Block.Face.Top;
+		setBlockBoundsBasedOnState(world, x, y, z);
+		return super.collisionRayTrace(world, x, y, z, startVec, endVec);
 	}
 }
