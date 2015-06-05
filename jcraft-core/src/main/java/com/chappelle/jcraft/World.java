@@ -135,7 +135,7 @@ public class World implements BitSerializable
 		BlockTerrain_LocalBlockState localBlockState = getLocalBlockState(location);
 		if(localBlockState != null)
 		{
-			lightMgr.setBlockLight(location, block.getBlockLightValue());
+			lightMgr.setBlockLight(location, block.lightValue);
 			lightMgr.removeSunlight(location);
 			
 			localBlockState.setBlock(block);

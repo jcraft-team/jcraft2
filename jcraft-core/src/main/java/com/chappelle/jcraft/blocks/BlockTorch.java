@@ -130,12 +130,6 @@ public class BlockTorch extends Block
     {
     	return false;
     }
-    
-    @Override
-	public int getBlockLightValue()
-	{
-		return 14;
-	}
 
 	@Override
 	public AABB getSelectedBoundingBox(World world, int x, int y, int z)

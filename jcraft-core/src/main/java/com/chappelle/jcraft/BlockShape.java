@@ -74,9 +74,9 @@ public abstract class BlockShape
     	if(chunk != null)
     	{
     		Block block = chunk.getBlock(location);
-    		if(block.getBlockLightValue() > 0)
+    		if(block.lightValue > 0)
     		{
-    			light = (float)block.getBlockLightValue()/LightMap.MAX_LIGHT;
+    			light = (float)block.lightValue/LightMap.MAX_LIGHT;
     		}
     		else
     		{

@@ -2,6 +2,7 @@ package com.chappelle.jcraft;
 
 import com.chappelle.jcraft.blocks.BlockDoor;
 import com.chappelle.jcraft.blocks.BlockGlass;
+import com.chappelle.jcraft.blocks.BlockGlowstone;
 import com.chappelle.jcraft.blocks.BlockGrass;
 import com.chappelle.jcraft.blocks.BlockIce;
 import com.chappelle.jcraft.blocks.BlockLadder;
@@ -108,10 +109,11 @@ public class Block
 	public static final Block grass = new BlockGrass(1).setStepSound(SoundConstants.DIG_GRASS_2);
 	public static final Block glass = new BlockGlass(2).setStepSound(SoundConstants.STEP_STONE_1);
 	public static final Block door = new BlockDoor(3, true).setStepSound(SoundConstants.STEP_WOOD_1);
-	public static final Block torch = new BlockTorch(4);
+	public static final Block torch = new BlockTorch(4).setLightValue(14);
 	public static final Block stone = new BlockStone(5).setStepSound(SoundConstants.STEP_STONE_1);
 	public static final Block ice = new BlockIce(6).setStepSound(SoundConstants.STEP_STONE_4);
 	public static final Block ladder = new BlockLadder(7).setStepSound(SoundConstants.STEP_WOOD_4);
+	public static final Block glowstone = new BlockGlowstone(8).setLightValue(15).setStepSound(SoundConstants.STEP_STONE_3);
 	
 	private BlockShape[] shapes = new BlockShape[] { new BlockShape_Cube() };
 	private BlockSkin[] skins;
@@ -122,6 +124,8 @@ public class Block
 	public String stepSound;
 	
 	public static final float DEFAULT_SLIPPERINESS = 0.85F;
+	
+	public int lightValue;
 	
 	public Block(int blockId, BlockSkin... skins)
 	{
@@ -251,9 +255,10 @@ public class Block
 		return false;
 	}
 
-	public int getBlockLightValue()
+	public Block setLightValue(int lightValue)
 	{
-		return 0;
+		this.lightValue = lightValue;
+		return this;
 	}
 	
 	public boolean isActionBlock()
