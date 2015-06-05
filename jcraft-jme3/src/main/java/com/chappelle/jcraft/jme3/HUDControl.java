@@ -1,11 +1,11 @@
 package com.chappelle.jcraft.jme3;
 
 import com.chappelle.jcraft.Block;
-import com.chappelle.jcraft.BlockHelper;
 import com.chappelle.jcraft.Chunk;
 import com.chappelle.jcraft.EntityPlayer;
 import com.chappelle.jcraft.Vector3Int;
 import com.chappelle.jcraft.World;
+import com.chappelle.jcraft.util.RayTrace;
 import com.jme3.asset.AssetManager;
 import com.jme3.font.BitmapFont;
 import com.jme3.font.BitmapText;
@@ -38,7 +38,6 @@ public class HUDControl extends AbstractControl
 	private BitmapText pointedBoundingBoxLabel;
 	private EntityPlayer player;
 	private World world;
-	private BlockHelper blockHelper;
 	
 	public HUDControl(JCraft app, AppSettings appSettings, EntityPlayer player)
 	{
@@ -49,7 +48,6 @@ public class HUDControl extends AbstractControl
 		this.assetManager = app.getAssetManager();
 		this.settings = appSettings;
 		this.player = player;
-		this.blockHelper = app.getBlockHelper();
 	}
 	
 	@Override
@@ -178,14 +176,14 @@ public class HUDControl extends AbstractControl
 					chunkLocationLabel.setText("Chunk location: " + chunk.location);
 				}
 			}
-			Vector3Int pointedLocation = blockHelper.getPointedBlockLocationInChunkSpace(false);
-			if(pointedLocation != null)
+			RayTrace rayTrace = player.pickBlock();
+			if(rayTrace != null)
 			{
-				Block block = world.getBlock(pointedLocation);
-				pointedBlockLabel.setText("Pointed Block: " + (block == null ? "Air" : block) + " at " + pointedLocation);
+				Block block = world.getBlock(rayTrace.blockX, rayTrace.blockY, rayTrace.blockZ);
+				pointedBlockLabel.setText("Pointed Block: " + (block == null ? "Air" : block) + " at " + rayTrace);
 				if(block != null)
 				{
-					pointedBoundingBoxLabel.setText("Pointed Bounding Box: " + block.getCollisionBoundingBox(world, pointedLocation.x, pointedLocation.y, pointedLocation.z));
+					pointedBoundingBoxLabel.setText("Pointed Bounding Box: " + block.getCollisionBoundingBox(world, rayTrace.blockX, rayTrace.blockY, rayTrace.blockZ));
 				}
 			}
 			else

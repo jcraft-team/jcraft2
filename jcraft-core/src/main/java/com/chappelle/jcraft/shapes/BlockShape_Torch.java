@@ -41,12 +41,12 @@ public class BlockShape_Torch extends BlockShape
                 faceLoc_Top_TopLeft, faceLoc_Top_TopRight, faceLoc_Top_BottomLeft, faceLoc_Top_BottomRight);
 
         //Get orientation from the block state
-        Vector3f normalVector = (Vector3f) chunk.getBlockStateValue(blockLocation, BlockTorch.VAR_ORIENTATION);
+        Block.Face face = (Block.Face)chunk.getBlockStateValue(blockLocation, BlockTorch.VAR_ORIENTATION);
+        Vector3f normalVector = face.getNormal();
         if(normalVector == null)
         {
             normalVector = Vector3f.UNIT_Z.clone();
         }
-        Block.Face face = Block.Face.fromNormal(normalVector);
         if (face != Block.Face.Top)
         {
             //Apply rotation to offsets   

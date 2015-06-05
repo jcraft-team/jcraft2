@@ -22,7 +22,8 @@ public class BlockLadder extends Block
 		setShapes(new BlockShape_Ladder());
 	}
 	
-	public void onBlockPlaced(World world, Vector3Int location, Vector3f contactNormal, Vector3f cameraDirectionAsUnitVector)
+	@Override
+	public void onBlockPlaced(World world, Vector3Int location, Block.Face face, Vector3f cameraDirectionAsUnitVector)
 	{
         BlockState blockState = world.getBlockState(location);
         blockState.put(VAR_ORIENTATION, cameraDirectionAsUnitVector);

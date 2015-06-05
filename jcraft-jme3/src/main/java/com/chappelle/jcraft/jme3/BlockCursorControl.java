@@ -1,10 +1,10 @@
 package com.chappelle.jcraft.jme3;
 
 import com.chappelle.jcraft.Block;
-import com.chappelle.jcraft.BlockHelper;
-import com.chappelle.jcraft.Vector3Int;
+import com.chappelle.jcraft.EntityPlayer;
 import com.chappelle.jcraft.World;
 import com.chappelle.jcraft.util.AABB;
+import com.chappelle.jcraft.util.RayTrace;
 import com.jme3.asset.AssetManager;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
@@ -20,19 +20,18 @@ import com.jme3.scene.shape.Box;
 public class BlockCursorControl extends NodeControl
 {
 	private Geometry blockCursor;
-	private BlockHelper blockHelper;
 	private AssetManager assetManager;
-	private Vector3Int prevCursorLocation;
 	private World world;
 	private Box box;
 	private Vector3f minPoint = new Vector3f(0, 0, 0);
 	private Vector3f maxPoint = new Vector3f(1, 1, 1);
+	private EntityPlayer player;
 	
-	public BlockCursorControl(World world, BlockHelper blockHelper, AssetManager assetManager)
+	public BlockCursorControl(World world, EntityPlayer player, AssetManager assetManager)
 	{
 		this.world = world;
-		this.blockHelper = blockHelper;
 		this.assetManager = assetManager;
+		this.player = player;
 	}
 	
     @Override
@@ -55,41 +54,37 @@ public class BlockCursorControl extends NodeControl
 	{
 		if(isEnabled())
 		{
-			Vector3Int newCursorLocation = blockHelper.getPointedBlockLocationInChunkSpace(false);
-			if(newCursorLocation == null)
+			RayTrace rayTrace = player.pickBlock();
+			if(rayTrace == null)
 			{
 				blockCursor.setCullHint(Spatial.CullHint.Always);
 			}
 			else
 			{
-				if(!newCursorLocation.equals(prevCursorLocation))
+				Block block = world.getBlock(rayTrace.blockX, rayTrace.blockY, rayTrace.blockZ);
+				if(block != null)
 				{
-					Block block = world.getBlock(newCursorLocation);
-					if(block != null)
+					blockCursor.setCullHint(Spatial.CullHint.Never);
+					
+					AABB bb = block.getSelectedBoundingBox(world, rayTrace.blockX, rayTrace.blockY, rayTrace.blockZ);
+					if(bb != null)
 					{
-						blockCursor.setCullHint(Spatial.CullHint.Never);
-						
-						AABB bb = block.getSelectedBoundingBox(world, newCursorLocation.x, newCursorLocation.y, newCursorLocation.z);
-						if(bb != null)
-						{
-							bb.offset(-newCursorLocation.x, -newCursorLocation.y, -newCursorLocation.z);
-							minPoint.set((float)bb.minX, (float)bb.minY, (float)bb.minZ);
-							maxPoint.set((float)bb.maxX, (float)bb.maxY, (float)bb.maxZ);
-							box.updateGeometry(minPoint, maxPoint);
-							blockCursor.setLocalTranslation(newCursorLocation.toVector3f());
-						}
-						else
-						{
-							blockCursor.setCullHint(Spatial.CullHint.Always);
-						}
+						bb.offset(-rayTrace.blockX, -rayTrace.blockY, -rayTrace.blockZ);
+						minPoint.set((float)bb.minX, (float)bb.minY, (float)bb.minZ);
+						maxPoint.set((float)bb.maxX, (float)bb.maxY, (float)bb.maxZ);
+						box.updateGeometry(minPoint, maxPoint);
+						blockCursor.setLocalTranslation(rayTrace.blockX, rayTrace.blockY, rayTrace.blockZ);
 					}
 					else
 					{
 						blockCursor.setCullHint(Spatial.CullHint.Always);
 					}
 				}
+				else
+				{
+					blockCursor.setCullHint(Spatial.CullHint.Always);
+				}
 			}
-			prevCursorLocation = newCursorLocation;
 		}
 	}
 }

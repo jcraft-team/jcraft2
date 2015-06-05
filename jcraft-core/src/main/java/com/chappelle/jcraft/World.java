@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import com.chappelle.jcraft.blocks.PickedBlock;
 import com.chappelle.jcraft.blocks.SoundConstants;
 import com.chappelle.jcraft.lighting.FloodFillLightManager;
 import com.chappelle.jcraft.lighting.LightManager;
@@ -16,9 +15,11 @@ import com.chappelle.jcraft.network.CubesSerializer;
 import com.chappelle.jcraft.profiler.Profiler;
 import com.chappelle.jcraft.util.AABB;
 import com.chappelle.jcraft.util.MathUtils;
+import com.chappelle.jcraft.util.RayTrace;
 import com.jme3.asset.AssetManager;
 import com.jme3.audio.AudioNode;
 import com.jme3.math.Vector3f;
+import com.jme3.renderer.Camera;
 
 public class World implements BitSerializable
 {
@@ -30,13 +31,15 @@ public class World implements BitSerializable
 	private AssetManager assetManager;
 	private Random random = new Random();
 	private AudioNode music;
+	private Camera cam;
 	
-	public World(Profiler profiler, CubesSettings settings, Vector3Int chunksCount, AssetManager assetManager)
+	public World(Profiler profiler, CubesSettings settings, Vector3Int chunksCount, AssetManager assetManager, Camera cam)
 	{
 		this.profiler = profiler;
 		this.settings = settings;
 		this.assetManager = assetManager;
 		this.lightMgr = new FloodFillLightManager(this);
+		this.cam = cam;
 		initializeChunks(chunksCount);
 		
         music = new AudioNode(assetManager, SoundConstants.MUSIC_CALM1);
@@ -409,35 +412,15 @@ public class World implements BitSerializable
     	profiler.endSection();
     }
 
-    public void setBlock(PickedBlock pickedBlock, Block blockToPlace)
+    public void setBlock(RayTrace rayTrace, Block blockToPlace)
     {
-        pickedBlock.setBlock(blockToPlace);//Kind of a hack, the pickedBlock has a null block at this point
-
-        Vector3Int location = pickedBlock.getBlockLocation();
-        Block.Face face = Block.Face.fromNormal(pickedBlock.getContactNormal());
-        if (blockToPlace.isValidPlacementFace(face))
+        Vector3Int location = new Vector3Int(rayTrace.blockX, rayTrace.blockY, rayTrace.blockZ);
+        Vector3Int newBlockLocation = BlockNavigator.getNeighborBlockLocalLocation(location, rayTrace.sideHit);
+        Block.Face placementFace = rayTrace.sideHit;
+        if (blockToPlace.isValidPlacementFace(placementFace))
         {
-            Block bottomBlock = getBlock(location.subtract(0, 1, 0));
-            if (blockToPlace.isAffectedByGravity() && bottomBlock == null)
-            {
-//                Geometry geometry = blockToPlace.makeBlockGeometry();
-//                if(geometry != null)
-//                {
-//                	geometry.setName("active block");
-//                	Vector3f placementLocation = location.mult((int) cubeSettings.getBlockSize()).toVector3f();
-//                	geometry.setLocalTranslation(placementLocation);
-//                	node.attachChild(geometry);
-//                	
-//                	FallingBlocks fallingBlocks = new FallingBlocks(getFloorGeometry(location), location);
-//                	fallingBlocks.add(blockToPlace, geometry);
-//                	fallingBlocksList.add(fallingBlocks);
-//                }
-            }
-            else
-            {
-                setBlock(location, blockToPlace);
-                blockToPlace.onBlockPlaced(this, location, pickedBlock.getContactNormal(), getCameraDirectionAsUnitVector(pickedBlock.getCameraDirection()));
-            }
+            setBlock(newBlockLocation, blockToPlace);
+            blockToPlace.onBlockPlaced(this, newBlockLocation, placementFace, getCameraDirectionAsUnitVector(cam.getDirection()));
         }
     }
     
@@ -502,5 +485,204 @@ public class World implements BitSerializable
     		return true;
     	}
     	return false;
+    }
+    
+    public RayTrace rayTraceBlocks(Vector3f position, Vector3f collisionEndPoint)
+    {
+		if (!Double.isNaN(position.x) && !Double.isNaN(position.y) && !Double.isNaN(position.z))
+		{
+			if (!Double.isNaN(collisionEndPoint.x) && !Double.isNaN(collisionEndPoint.y) && !Double.isNaN(collisionEndPoint.z))
+			{
+				int collisionX = MathUtils.floor_double(collisionEndPoint.x);
+				int collisionY = MathUtils.floor_double(collisionEndPoint.y);
+				int collisionZ = MathUtils.floor_double(collisionEndPoint.z);
+				int posX = MathUtils.floor_double(position.x);
+				int posY = MathUtils.floor_double(position.y);
+				int posZ = MathUtils.floor_double(position.z);
+				Block block = getBlock(posX, posY, posZ);
+
+				if (block != null)
+				{
+					RayTrace movingobjectposition = block.collisionRayTrace(this, posX, posY, posZ, position, collisionEndPoint);
+
+					if (movingobjectposition != null)
+					{
+						return movingobjectposition;
+					}
+				}
+				int maxLoops = 200;
+				while (maxLoops-- >= 0)
+				{
+					if (Double.isNaN(position.x) || Double.isNaN(position.y) || Double.isNaN(position.z))
+					{
+						return null;
+					}
+
+					if (posX == collisionX && posY == collisionY && posZ == collisionZ)
+					{
+						return null;
+					}
+
+					boolean xFinished = true;
+					boolean yFinished = true;
+					boolean zFinished = true;
+					double xStep = 999.0D;
+					double yStep = 999.0D;
+					double zStep = 999.0D;
+
+					if (collisionX > posX)
+					{
+						xStep = (double) posX + 1.0D;
+					} 
+					else if (collisionX < posX)
+					{
+						xStep = (double) posX + 0.0D;
+					} 
+					else
+					{
+						xFinished = false;
+					}
+
+					if (collisionY > posY)
+					{
+						yStep = (double) posY + 1.0D;
+					} 
+					else if (collisionY < posY)
+					{
+						yStep = (double) posY + 0.0D;
+					} 
+					else
+					{
+						yFinished = false;
+					}
+
+					if (collisionZ > posZ)
+					{
+						zStep = (double) posZ + 1.0D;
+					} 
+					else if (collisionZ < posZ)
+					{
+						zStep = (double) posZ + 0.0D;
+					} 
+					else
+					{
+						zFinished = false;
+					}
+
+					double x = 999.0D;
+					double y = 999.0D;
+					double z = 999.0D;
+					double xDist = collisionEndPoint.x - position.x;
+					double yDiff = collisionEndPoint.y - position.y;
+					double zDiff = collisionEndPoint.z - position.z;
+
+					if (xFinished)
+					{
+						x = (xStep - position.x) / xDist;
+					}
+
+					if (yFinished)
+					{
+						y = (yStep - position.y) / yDiff;
+					}
+
+					if (zFinished)
+					{
+						z = (zStep - position.z) / zDiff;
+					}
+
+					byte sideHit;
+
+					if (x < y && x < z)
+					{
+						if (collisionX > posX)
+						{
+							sideHit = 4;
+						} 
+						else
+						{
+							sideHit = 5;
+						}
+
+						position.x = (float)xStep;
+						position.y += yDiff * x;
+						position.z += zDiff * x;
+					} 
+					else if (y < z)
+					{
+						if (collisionY > posY)
+						{
+							sideHit = 0;
+						} 
+						else
+						{
+							sideHit = 1;
+						}
+
+						position.x += xDist * y;
+						position.y = (float)yStep;
+						position.z += zDiff * y;
+					} 
+					else
+					{
+						if (collisionZ > posZ)
+						{
+							sideHit = 2;
+						} 
+						else
+						{
+							sideHit = 3;
+						}
+
+						position.x += xDist * z;
+						position.y += yDiff * z;
+						position.z = (float)zStep;
+					}
+
+					Vector3f newVecPos = new Vector3f(position.x, position.y, position.z);
+					posX = (int) (newVecPos.x = (float) MathUtils.floor_double(position.x));
+
+					if (sideHit == 5)
+					{
+						--posX;
+						++newVecPos.x;
+					}
+
+					posY = (int) (newVecPos.y = (float) MathUtils.floor_double(position.y));
+
+					if (sideHit == 1)
+					{
+						--posY;
+						++newVecPos.y;
+					}
+
+					posZ = (int) (newVecPos.z = (float) MathUtils.floor_double(position.z));
+
+					if (sideHit == 3)
+					{
+						--posZ;
+						++newVecPos.z;
+					}
+
+					Block block1 = getBlock(posX, posY, posZ);
+
+					if (block1 != null)
+					{
+						RayTrace rayTrace = block1.collisionRayTrace(this, posX, posY, posZ, position, collisionEndPoint);
+
+						if (rayTrace != null)
+						{
+							return rayTrace;
+						}
+					}
+				}
+				return null;
+			}
+			else
+			{
+				return null;
+			}
+		}
+		return null;
     }
 }

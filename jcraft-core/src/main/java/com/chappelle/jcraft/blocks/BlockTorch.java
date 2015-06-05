@@ -1,6 +1,7 @@
 package com.chappelle.jcraft.blocks;
 
 import com.chappelle.jcraft.Block;
+import com.chappelle.jcraft.BlockNavigator;
 import com.chappelle.jcraft.BlockSkin;
 import com.chappelle.jcraft.BlockSkin_TextureLocation;
 import com.chappelle.jcraft.BlockState;
@@ -27,11 +28,12 @@ public class BlockTorch extends Block
     }
 
     @Override
-    public void onBlockPlaced(World world, Vector3Int location, Vector3f contactNormal, Vector3f cameraDirectionUnitVector)
+    public void onBlockPlaced(World world, Vector3Int location, Block.Face face, Vector3f cameraDirectionUnitVector)
     {
         BlockState blockState = world.getBlockState(location);
-        blockState.put(VAR_ORIENTATION, contactNormal);
-        blockState.put(VAR_ATTACHED_BLOCK, location.subtract(Vector3Int.fromVector3f(contactNormal)));
+        blockState.put(VAR_ORIENTATION, face);
+//        blockState.put(VAR_ATTACHED_BLOCK, location.subtract(Vector3Int.fromVector3f(contactNormal)));
+        blockState.put(VAR_ATTACHED_BLOCK, BlockNavigator.getNeighborBlockLocalLocation(location, face));
         world.playSound(SoundConstants.DIG_WOOD, 4);
     }
     

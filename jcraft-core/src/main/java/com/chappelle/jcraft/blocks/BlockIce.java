@@ -16,7 +16,7 @@ public class BlockIce extends Block
 	}
 
 	@Override
-	public void onBlockPlaced(World world, Vector3Int location, Vector3f contactNormal,	Vector3f cameraDirectionAsUnitVector)
+	public void onBlockPlaced(World world, Vector3Int location, Block.Face face,Vector3f cameraDirectionAsUnitVector)
 	{
 		world.playSound(SoundConstants.STEP_STONE_4);
 	}

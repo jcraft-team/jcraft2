@@ -33,7 +33,7 @@ public class BlockDoor extends Block
 	
 	
     @Override
-    public void onBlockPlaced(World world, Vector3Int location, Vector3f contactNormal, Vector3f cameraDirectionUnitVector)
+    public void onBlockPlaced(World world, Vector3Int location, Block.Face face, Vector3f cameraDirectionUnitVector)
     {
         BlockState blockState = world.getBlockState(location);
         blockState.put(VAR_OPEN, Boolean.FALSE);            
@@ -75,15 +75,16 @@ public class BlockDoor extends Block
 	
 	
     @Override
-    public void onBlockActivated(World world, PickedBlock pickedBlock)
+    public void onBlockActivated(World world, int x, int y, int z)
     {
     	if(userCanOpen)
     	{
-    		BlockState blockState = world.getBlockState(pickedBlock.getBlockLocation());
+    		Vector3Int location = new Vector3Int(x, y, z);
+    		BlockState blockState = world.getBlockState(location);
     		Boolean open = (Boolean)blockState.get(VAR_OPEN);
     		blockState.put(VAR_OPEN, !open);
     		
-    		blockState = world.getBlockState(getOtherDoorSection(blockState, pickedBlock.getBlockLocation()));
+    		blockState = world.getBlockState(getOtherDoorSection(blockState, location));
     		blockState.put(VAR_OPEN, !open);
     		
     		if(open)

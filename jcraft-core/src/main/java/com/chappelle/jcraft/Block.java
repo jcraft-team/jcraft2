@@ -1,16 +1,17 @@
 package com.chappelle.jcraft;
 
-import com.chappelle.jcraft.blocks.BlockIce;
-import com.chappelle.jcraft.blocks.BlockLadder;
-import com.chappelle.jcraft.blocks.BlockStone;
 import com.chappelle.jcraft.blocks.BlockDoor;
 import com.chappelle.jcraft.blocks.BlockGlass;
 import com.chappelle.jcraft.blocks.BlockGrass;
-import com.chappelle.jcraft.blocks.PickedBlock;
+import com.chappelle.jcraft.blocks.BlockIce;
+import com.chappelle.jcraft.blocks.BlockLadder;
+import com.chappelle.jcraft.blocks.BlockStone;
 import com.chappelle.jcraft.blocks.BlockTorch;
 import com.chappelle.jcraft.blocks.SoundConstants;
 import com.chappelle.jcraft.shapes.BlockShape_Cube;
 import com.chappelle.jcraft.util.AABB;
+import com.chappelle.jcraft.util.MathUtils;
+import com.chappelle.jcraft.util.RayTrace;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 
@@ -20,8 +21,20 @@ public class Block
 	
 	public static enum Face
 	{
-		Top, Bottom, Left, Right, Front, Back;
+		Top(Vector3f.UNIT_Y), Bottom(Vector3f.UNIT_Y.negate()), Left(Vector3f.UNIT_X.negate()), Right(Vector3f.UNIT_X), Front(Vector3f.UNIT_Z), Back(Vector3f.UNIT_Z.negate());
 
+		private Vector3f normal;
+		
+		private Face(Vector3f normal)
+		{
+			this.normal = normal;
+		}
+		
+		public Vector3f getNormal()
+		{
+			return normal;
+		}
+		
 		public static Block.Face fromNormal(Vector3f normal)
 		{
 			return fromNormal(Vector3Int.fromVector3f(normal));
@@ -179,7 +192,7 @@ public class Block
 		return true;
 	}
 
-	public void onBlockPlaced(World world, Vector3Int location, Vector3f contactNormal, Vector3f cameraDirectionAsUnitVector)
+	public void onBlockPlaced(World world, Vector3Int location, Block.Face face, Vector3f cameraDirectionAsUnitVector)
 	{
 		// TODO Auto-generated method stub
 		
@@ -191,7 +204,7 @@ public class Block
 		
 	}
 
-	public void onBlockActivated(World world, PickedBlock pickedBlock)
+	public void onBlockActivated(World world, int x, int y, int z)
 	{
 		// TODO Auto-generated method stub
 		
@@ -262,4 +275,150 @@ public class Block
 		this.stepSound = stepSound;
 		return this;
 	}
+	
+	/**
+	 * Ray traces through the blocks collision from start vector to end vector
+	 * returning a ray trace hit.
+	 */
+	public RayTrace collisionRayTrace(World world, int x, int y, int z, Vector3f startVec, Vector3f endVec)
+	{
+//		this.setBlockBoundsBasedOnState(world, x, y, z);
+//		startVec = startVec.add((double) (-x), (double) (-y), (double) (-z));
+//		endVec = endVec.addVector((double) (-x), (double) (-y), (double) (-z));
+		startVec = startVec.add((-x), (-y), (-z));
+		endVec = endVec.add((-x), (-y), (-z));
+		Vector3f minXVec = MathUtils.getIntermediateWithXValue(startVec, endVec, this.minX);
+		Vector3f maxXVec = MathUtils.getIntermediateWithXValue(startVec, endVec, this.maxX);
+		Vector3f minYVec = MathUtils.getIntermediateWithYValue(startVec, endVec, this.minY);
+		Vector3f maxYVec = MathUtils.getIntermediateWithYValue(startVec, endVec, this.maxY);
+		Vector3f minZVec = MathUtils.getIntermediateWithZValue(startVec, endVec, this.minZ);
+		Vector3f maxZVec = MathUtils.getIntermediateWithZValue(startVec, endVec, this.maxZ);
+
+		if (!this.isVecInsideYZBounds(minXVec))
+		{
+			minXVec = null;
+		}
+
+		if (!this.isVecInsideYZBounds(maxXVec))
+		{
+			maxXVec = null;
+		}
+
+		if (!this.isVecInsideXZBounds(minYVec))
+		{
+			minYVec = null;
+		}
+
+		if (!this.isVecInsideXZBounds(maxYVec))
+		{
+			maxYVec = null;
+		}
+
+		if (!this.isVecInsideXYBounds(minZVec))
+		{
+			minZVec = null;
+		}
+
+		if (!this.isVecInsideXYBounds(maxZVec))
+		{
+			maxZVec = null;
+		}
+
+		Vector3f hitVec = null;
+
+		if (minXVec != null && (hitVec == null || MathUtils.squareDistanceTo(startVec, minXVec) < MathUtils.squareDistanceTo(startVec, hitVec)))
+		{
+			hitVec = minXVec;
+		}
+
+		if (maxXVec != null && (hitVec == null || MathUtils.squareDistanceTo(startVec, maxXVec) < MathUtils.squareDistanceTo(startVec, hitVec)))
+		{
+			hitVec = maxXVec;
+		}
+
+		if (minYVec != null && (hitVec == null || MathUtils.squareDistanceTo(startVec, minYVec) < MathUtils.squareDistanceTo(startVec, hitVec)))
+		{
+			hitVec = minYVec;
+		}
+
+		if (maxYVec != null && (hitVec == null || MathUtils.squareDistanceTo(startVec, maxYVec) < MathUtils.squareDistanceTo(startVec, hitVec)))
+		{
+			hitVec = maxYVec;
+		}
+
+		if (minZVec != null && (hitVec == null || MathUtils.squareDistanceTo(startVec, minZVec) < MathUtils.squareDistanceTo(startVec, hitVec)))
+		{
+			hitVec = minZVec;
+		}
+
+		if (maxZVec != null && (hitVec == null || MathUtils.squareDistanceTo(startVec, maxZVec) < MathUtils.squareDistanceTo(startVec, hitVec)))
+		{
+			hitVec = maxZVec;
+		}
+
+		if (hitVec == null)
+		{
+			return null;
+		} 
+		else
+		{
+			Block.Face sideHit = null;
+			if (hitVec == minXVec)
+			{
+				sideHit = Block.Face.Left;
+			}
+
+			if (hitVec == maxXVec)
+			{
+				sideHit = Block.Face.Right;
+			}
+
+			if (hitVec == minYVec)
+			{
+				sideHit = Block.Face.Bottom;
+			}
+
+			if (hitVec == maxYVec)
+			{
+				sideHit = Block.Face.Top;
+			}
+
+			if (hitVec == minZVec)
+			{
+				sideHit = Block.Face.Back;
+			}
+
+			if (hitVec == maxZVec)
+			{
+				sideHit = Block.Face.Front;
+			}
+
+			return new RayTrace(x, y, z, sideHit, hitVec.add((float)x, (float)y, (float)z));
+		}
+	}
+	
+	/**
+	 * Checks if a vector is within the Y and Z bounds of the block.
+	 */
+	private boolean isVecInsideYZBounds(Vector3f v)
+	{
+		return v == null ? false : v.y >= this.minY && v.y <= this.maxY && v.z >= this.minZ && v.z <= this.maxZ;
+	}
+
+	/**
+	 * Checks if a vector is within the X and Z bounds of the block.
+	 */
+	private boolean isVecInsideXZBounds(Vector3f v)
+	{
+		return v == null ? false : v.x >= this.minX && v.x <= this.maxX && v.z >= this.minZ && v.z <= this.maxZ;
+	}
+
+	/**
+	 * Checks if a vector is within the X and Y bounds of the block.
+	 */
+	private boolean isVecInsideXYBounds(Vector3f v)
+	{
+		return v == null ? false : v.x >= this.minX && v.x <= this.maxX && v.z >= this.minY && v.y <= this.maxY;
+	}
+	
 }

@@ -5,7 +5,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.chappelle.jcraft.Block;
-import com.chappelle.jcraft.BlockHelper;
 import com.chappelle.jcraft.CubesSettings;
 import com.chappelle.jcraft.EntityPlayer;
 import com.chappelle.jcraft.GameSettings;
@@ -32,7 +31,7 @@ import com.jme3.system.AppSettings;
 public class JCraft extends SimpleApplication implements ActionListener
 {
 	private static final int JUMP_TIME_INTERVAL = 200;
-	private final Vector3Int terrainSize = new Vector3Int(32, 10, 32);
+	private final Vector3Int terrainSize = new Vector3Int(16, 10, 16);
 	private int terrainIndex = terrainSize.x/16;
 
 	private static JCraft jcraft;
@@ -41,7 +40,6 @@ public class JCraft extends SimpleApplication implements ActionListener
 	private GameSettings gameSettings;
 	private CubesSettings cubesSettings;
 	private BlockTerrainControl blockTerrain;
-	private BlockHelper blockHelper;
 	private Node terrainNode = new Node("terrain");
 	private EntityPlayer player;
 	public World world;
@@ -89,12 +87,12 @@ public class JCraft extends SimpleApplication implements ActionListener
 		viewPort.setBackgroundColor(new ColorRGBA((float)128/255, (float)173/255, (float)254/255, 1));
 
 		//Setup player
-		player = new EntityPlayer(world, cam, blockHelper);
+		player = new EntityPlayer(world, cam);
 		player.preparePlayerToSpawn();
 		rootNode.addControl(new PlayerControl(this, player));
 
 		rootNode.addControl(makeHUD());
-		rootNode.addControl(new BlockCursorControl(world, blockHelper, assetManager));
+		rootNode.addControl(new BlockCursorControl(world, player, assetManager));
 
 		profiler.startSection("root");
 		updateStatsView();
@@ -176,10 +174,6 @@ public class JCraft extends SimpleApplication implements ActionListener
 		terrainNode.setShadowMode(RenderQueue.ShadowMode.CastAndReceive);
 		rootNode.attachChild(terrainNode);
 
-//		terrainMgr = new BlockTerrainManager(cubesSettings, world);
-		
-		blockHelper = new BlockHelper(cam, world, settings, terrainNode);
-//		blockTerrain.setBlocksFromNoise(new Vector3Int(), terrainSize, 0.5f, Blocks.GRASS);
 		world.setBlockArea(new Vector3Int(), terrainSize, Block.grass);
 		world.setBlock(6, 10, 4, Block.grass);
 		world.setBlock(7, 10, 4, Block.grass);
@@ -488,11 +482,6 @@ public class JCraft extends SimpleApplication implements ActionListener
     	return cubesSettings;
     }
     
-    public BlockHelper getBlockHelper()
-    {
-    	return blockHelper;
-    }
-
 	@Override
 	public void destroy()
 	{

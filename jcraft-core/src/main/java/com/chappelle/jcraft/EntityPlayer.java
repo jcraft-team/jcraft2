@@ -2,9 +2,9 @@ package com.chappelle.jcraft;
 
 import java.util.List;
 
-import com.chappelle.jcraft.blocks.PickedBlock;
 import com.chappelle.jcraft.util.AABB;
 import com.chappelle.jcraft.util.MathUtils;
+import com.chappelle.jcraft.util.RayTrace;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 
@@ -22,17 +22,15 @@ public class EntityPlayer extends Entity
 	private static final float FAST_FLYSPEED = 0.15F;
 	private float flySpeed = NORMAL_FLYSPEED;
 
-	private BlockHelper blockHelper;
 	private Block selected;
-
+	
 	public Camera cam;
 	
-	public EntityPlayer(World world, Camera cam, BlockHelper blockHelper)
+	public EntityPlayer(World world, Camera cam)
 	{
 		super(world);
 		
 		this.cam = cam;
-		this.blockHelper = blockHelper;
 
 		selectBlock(1);
 	}
@@ -245,41 +243,42 @@ public class EntityPlayer extends Entity
 		}
 	}
 	
-    public boolean canPlaceBlock()
-    {
-    	int blockInteractionRange = 5;
-        float distanceToDesiredPlacement = new Vector3f((float)posX, (float)posY, (float)posZ).distance(BlockHelper.toVector(blockHelper.getPointedBlockLocationInWorldSpace()));
-		return distanceToDesiredPlacement > 1.25 && distanceToDesiredPlacement < blockInteractionRange + 1;
-    }
-
 	public void breakBlock()
 	{
-		PickedBlock pickedBlock = blockHelper.pickBlock();
-		if(pickedBlock != null)
+		RayTrace rayTrace = pickBlock();
+		if(rayTrace != null)
 		{
-			System.out.println("Removing block at " + pickedBlock.getBlockLocation());
-			world.removeBlock(pickedBlock.getBlockLocation());
+			System.out.println("Removing block at [" + rayTrace.blockX + ", " + rayTrace.blockY + ", " + rayTrace.blockZ + "]");
+			world.removeBlock(rayTrace.blockX, rayTrace.blockY, rayTrace.blockZ);
 		}
+	}
+	
+	public RayTrace pickBlock()
+	{
+		float blockReachDistance = 4.5f;
+        Vector3f origin = new Vector3f((float)posX, (float)posY, (float)posZ);
+        Vector3f look = cam.getDirection().normalize().mult(blockReachDistance).add(new Vector3f((float)posX, (float)posY, (float)posZ));
+		return world.rayTraceBlocks(origin, look);
 	}
 	
 	public void placeBlock()
 	{
-    	PickedBlock pickedBlock = blockHelper.pickBlock();
-    	if(pickedBlock != null)
-    	{
-    		Block block = pickedBlock.getBlock();
-			if(block != null && block.isActionBlock())
-    		{
-    			block.onBlockActivated(world, pickedBlock);
-    		}
-			else if(canPlaceBlock())
-    		{
-				pickedBlock = blockHelper.pickNeighborBlock();
-    			world.setBlock(pickedBlock, selected);
-//    			System.out.println("Setting block at " + pickedBlock.getBlockLocation());
-    			System.out.println("world.setBlock(" + pickedBlock.getBlockLocation().x + ", " + pickedBlock.getBlockLocation().y + ", " + pickedBlock.getBlockLocation().z + ", Block." + pickedBlock.getBlock().toString().replace("Block","").toLowerCase() + ");");
-    		}
-    	}
+		RayTrace rayTrace = pickBlock();
+		if(rayTrace != null)
+		{
+			Block selectedBlock = world.getBlock(rayTrace.blockX, rayTrace.blockY, rayTrace.blockZ);
+			if(selectedBlock != null)
+			{
+				if(selectedBlock.isActionBlock())
+				{
+					selectedBlock.onBlockActivated(world, rayTrace.blockX, rayTrace.blockY, rayTrace.blockZ);
+				}
+				else
+				{
+					world.setBlock(rayTrace, selected);
+				}
+			}
+		}
 	}
 	
 	public void moveUp(boolean isPressed)
