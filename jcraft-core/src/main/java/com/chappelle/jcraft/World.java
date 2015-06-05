@@ -32,6 +32,7 @@ public class World implements BitSerializable
 	private Random random = new Random();
 	private AudioNode music;
 	private Camera cam;
+	private List<Entity> entities = new ArrayList<Entity>();
 	
 	public World(Profiler profiler, CubesSettings settings, Vector3Int chunksCount, AssetManager assetManager, Camera cam)
 	{
@@ -48,6 +49,11 @@ public class World implements BitSerializable
         music.setLooping(true);
 	}
 
+	public void addEntity(Entity entity)
+	{
+		entities.add(entity);
+	}
+	
 	/**
 	 * Plays a sound given the full path to the sound file.
 	 * Sound file paths can be found in {@code SoundConstants}.

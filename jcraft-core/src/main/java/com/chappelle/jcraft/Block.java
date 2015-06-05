@@ -6,6 +6,7 @@ import com.chappelle.jcraft.blocks.BlockGlowstone;
 import com.chappelle.jcraft.blocks.BlockGrass;
 import com.chappelle.jcraft.blocks.BlockIce;
 import com.chappelle.jcraft.blocks.BlockLadder;
+import com.chappelle.jcraft.blocks.BlockSand;
 import com.chappelle.jcraft.blocks.BlockStone;
 import com.chappelle.jcraft.blocks.BlockTorch;
 import com.chappelle.jcraft.blocks.SoundConstants;
@@ -114,6 +115,7 @@ public class Block
 	public static final Block ice = new BlockIce(6).setStepSound(SoundConstants.STEP_STONE_4);
 	public static final Block ladder = new BlockLadder(7).setStepSound(SoundConstants.STEP_WOOD_4);
 	public static final Block glowstone = new BlockGlowstone(8).setLightValue(15).setStepSound(SoundConstants.STEP_STONE_3);
+	public static final Block sand = new BlockSand(9).setStepSound(SoundConstants.DIG_SAND_2);
 	
 	private BlockShape[] shapes = new BlockShape[] { new BlockShape_Cube() };
 	private BlockSkin[] skins;
