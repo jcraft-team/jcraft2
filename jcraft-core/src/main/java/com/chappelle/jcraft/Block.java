@@ -399,6 +399,11 @@ public class Block
 		}
 	}
 	
+	public boolean canPlaceBlockAt(World world, int x, int y, int z)
+	{
+		return world.getBlock(x, y, z) == null;
+	}
+	
 	/**
 	 * Checks if a vector is within the Y and Z bounds of the block.
 	 */

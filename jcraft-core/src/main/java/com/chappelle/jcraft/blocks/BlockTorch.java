@@ -33,11 +33,19 @@ public class BlockTorch extends Block
     @Override
     public void onBlockPlaced(World world, Vector3Int location, Block.Face face, Vector3f cameraDirectionUnitVector)
     {
-        BlockState blockState = world.getBlockState(location);
-        blockState.put(VAR_ORIENTATION, face);
-//        blockState.put(VAR_ATTACHED_BLOCK, location.subtract(Vector3Int.fromVector3f(contactNormal)));
-        blockState.put(VAR_ATTACHED_BLOCK, BlockNavigator.getNeighborBlockLocalLocation(location, face));
-        world.playSound(SoundConstants.DIG_WOOD, 4);
+    	Vector3Int neighborBlockLocation = BlockNavigator.getNeighborBlockLocalLocation(location, BlockNavigator.getOppositeFace(face));
+    	Block attachedBlock = world.getBlock(neighborBlockLocation);
+    	if(attachedBlock.blockId == this.blockId)
+    	{
+    		world.removeBlock(location);
+    	}
+    	else
+    	{
+    		BlockState blockState = world.getBlockState(location);
+    		blockState.put(VAR_ORIENTATION, face);
+    		blockState.put(VAR_ATTACHED_BLOCK, neighborBlockLocation);
+    		world.playSound(SoundConstants.DIG_WOOD, 4);
+    	}
     }
     
 	@Override

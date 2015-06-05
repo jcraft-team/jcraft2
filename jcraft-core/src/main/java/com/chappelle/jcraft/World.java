@@ -417,7 +417,7 @@ public class World implements BitSerializable
         Vector3Int location = new Vector3Int(rayTrace.blockX, rayTrace.blockY, rayTrace.blockZ);
         Vector3Int newBlockLocation = BlockNavigator.getNeighborBlockLocalLocation(location, rayTrace.sideHit);
         Block.Face placementFace = rayTrace.sideHit;
-        if (blockToPlace.isValidPlacementFace(placementFace))
+        if (blockToPlace.isValidPlacementFace(placementFace) && blockToPlace.canPlaceBlockAt(this, newBlockLocation.x, newBlockLocation.y, newBlockLocation.z))
         {
             setBlock(newBlockLocation, blockToPlace);
             blockToPlace.onBlockPlaced(this, newBlockLocation, placementFace, getCameraDirectionAsUnitVector(cam.getDirection()));
