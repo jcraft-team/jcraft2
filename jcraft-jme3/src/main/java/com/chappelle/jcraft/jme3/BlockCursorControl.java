@@ -2,6 +2,7 @@ package com.chappelle.jcraft.jme3;
 
 import com.chappelle.jcraft.Block;
 import com.chappelle.jcraft.EntityPlayer;
+import com.chappelle.jcraft.Vector3Int;
 import com.chappelle.jcraft.World;
 import com.chappelle.jcraft.util.AABB;
 import com.chappelle.jcraft.util.RayTrace;
@@ -26,6 +27,7 @@ public class BlockCursorControl extends NodeControl
 	private Vector3f minPoint = new Vector3f(0, 0, 0);
 	private Vector3f maxPoint = new Vector3f(1, 1, 1);
 	private EntityPlayer player;
+	private Vector3Int previousLocation = new Vector3Int();
 	
 	public BlockCursorControl(World world, EntityPlayer player, AssetManager assetManager)
 	{
@@ -61,28 +63,33 @@ public class BlockCursorControl extends NodeControl
 			}
 			else
 			{
-				Block block = world.getBlock(rayTrace.blockX, rayTrace.blockY, rayTrace.blockZ);
-				if(block != null)
+				if(previousLocation.x != rayTrace.blockX || previousLocation.y != rayTrace.blockY || previousLocation.z != rayTrace.blockZ)
 				{
-					blockCursor.setCullHint(Spatial.CullHint.Never);
+					previousLocation.set(rayTrace.blockX, rayTrace.blockY, rayTrace.blockZ);
 					
-					AABB bb = block.getSelectedBoundingBox(world, rayTrace.blockX, rayTrace.blockY, rayTrace.blockZ);
-					if(bb != null)
+					Block block = world.getBlock(rayTrace.blockX, rayTrace.blockY, rayTrace.blockZ);
+					if(block != null)
 					{
-						bb.offset(-rayTrace.blockX, -rayTrace.blockY, -rayTrace.blockZ);
-						minPoint.set((float)bb.minX, (float)bb.minY, (float)bb.minZ);
-						maxPoint.set((float)bb.maxX, (float)bb.maxY, (float)bb.maxZ);
-						box.updateGeometry(minPoint, maxPoint);
-						blockCursor.setLocalTranslation(rayTrace.blockX, rayTrace.blockY, rayTrace.blockZ);
+						blockCursor.setCullHint(Spatial.CullHint.Never);
+						
+						AABB bb = block.getSelectedBoundingBox(world, rayTrace.blockX, rayTrace.blockY, rayTrace.blockZ);
+						if(bb != null)
+						{
+							bb.offset(-rayTrace.blockX, -rayTrace.blockY, -rayTrace.blockZ);
+							minPoint.set((float)bb.minX, (float)bb.minY, (float)bb.minZ);
+							maxPoint.set((float)bb.maxX, (float)bb.maxY, (float)bb.maxZ);
+							box.updateGeometry(minPoint, maxPoint);
+							blockCursor.setLocalTranslation(rayTrace.blockX, rayTrace.blockY, rayTrace.blockZ);
+						}
+						else
+						{
+							blockCursor.setCullHint(Spatial.CullHint.Always);
+						}
 					}
 					else
 					{
 						blockCursor.setCullHint(Spatial.CullHint.Always);
 					}
-				}
-				else
-				{
-					blockCursor.setCullHint(Spatial.CullHint.Always);
 				}
 			}
 		}

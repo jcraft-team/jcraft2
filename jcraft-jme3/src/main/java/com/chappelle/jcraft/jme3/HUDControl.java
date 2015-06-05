@@ -180,7 +180,7 @@ public class HUDControl extends AbstractControl
 			if(rayTrace != null)
 			{
 				Block block = world.getBlock(rayTrace.blockX, rayTrace.blockY, rayTrace.blockZ);
-				pointedBlockLabel.setText("Pointed Block: " + (block == null ? "Air" : block) + " at " + rayTrace);
+				pointedBlockLabel.setText("Pointed Block: " + (block == null ? "Air" : block) + " at [" + rayTrace.blockX + ", " + rayTrace.blockY + ", " + rayTrace.blockZ + "]");
 				if(block != null)
 				{
 					pointedBoundingBoxLabel.setText("Pointed Bounding Box: " + block.getCollisionBoundingBox(world, rayTrace.blockX, rayTrace.blockY, rayTrace.blockZ));
