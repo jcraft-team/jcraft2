@@ -1,9 +1,11 @@
 package com.chappelle.jcraft.jme3;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 import com.chappelle.jcraft.BlockChunkListener;
+import com.chappelle.jcraft.Chunk;
 import com.chappelle.jcraft.CubesSettings;
 import com.chappelle.jcraft.Vector3Int;
 import com.chappelle.jcraft.World;
@@ -17,7 +19,7 @@ import com.jme3.scene.control.Control;
 public class BlockTerrainControl extends AbstractControl
 {
 	private CubesSettings settings;
-	private BlockChunkControl[][][] chunks;
+	private List<BlockChunkControl> chunks = new ArrayList<>();
 	private ArrayList<BlockChunkListener> chunkListeners = new ArrayList<BlockChunkListener>();
 	private JCraft app;
 	public World world;
@@ -29,51 +31,11 @@ public class BlockTerrainControl extends AbstractControl
 		this.settings = settings;
 		this.app = app;
 		this.profiler = app.getProfiler();
-		initializeChunks(world, chunksCount);
 	}
 
 	public BlockTerrainControl(CubesSettings settings, Vector3Int chunksCount)
 	{
 		this(null, settings, chunksCount);
-	}
-
-	private void initializeChunks(World world, Vector3Int chunksCount)
-	{
-		chunks = new BlockChunkControl[chunksCount.getX()][chunksCount.getY()][chunksCount.getZ()];
-		for(int x = 0; x < chunks.length; x++)
-		{
-			for(int y = 0; y < chunks[0].length; y++)
-			{
-				for(int z = 0; z < chunks[0][0].length; z++)
-				{
-					chunks[x][y][z] = new BlockChunkControl(this, world.chunks[x][y][z]);
-				}
-			}
-		}
-	}
-
-	@Override
-	public void setSpatial(Spatial spatial)
-	{
-		Spatial oldSpatial = this.spatial;
-		super.setSpatial(spatial);
-		for(int x = 0; x < chunks.length; x++)
-		{
-			for(int y = 0; y < chunks[0].length; y++)
-			{
-				for(int z = 0; z < chunks[0][0].length; z++)
-				{
-					if(spatial == null)
-					{
-						oldSpatial.removeControl(chunks[x][y][z]);
-					}
-					else
-					{
-						spatial.addControl(chunks[x][y][z]);
-					}
-				}
-			}
-		}
 	}
 
 	@Override
@@ -87,13 +49,14 @@ public class BlockTerrainControl extends AbstractControl
 		else
 		{
 			// Runs in a separate thread
-			app.enqueue(new Callable<Boolean>()
+			app.enqueue(new Callable<Void>()
 			{
 				@Override
-				public Boolean call() throws Exception
+				public Void call() throws Exception
 				{
 					world.calculateLight();
-					return updateSpatial();
+					updateSpatial();
+					return null;
 				}
 			});
 		}
@@ -111,45 +74,22 @@ public class BlockTerrainControl extends AbstractControl
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
-	public boolean updateSpatial()
+	public void updateSpatial()
 	{
 		profiler.startSection("chunkBuilding");
-		boolean wasUpdatedNeeded = false;
-		for(int x = 0; x < chunks.length; x++)
+		Chunk addedChunk = world.addedChunks.poll();
+		while(addedChunk != null)
 		{
-			for(int y = 0; y < chunks[0].length; y++)
-			{
-				for(int z = 0; z < chunks[0][0].length; z++)
-				{
-					BlockChunkControl chunkControl = chunks[x][y][z];
-					if(chunkControl.updateSpatial())
-					{
-						wasUpdatedNeeded = true;
-						for(int i = 0; i < chunkListeners.size(); i++)
-						{
-							BlockChunkListener blockTerrainListener = chunkListeners.get(i);
-							blockTerrainListener.onSpatialUpdated(chunkControl.chunk);
-						}
-					}
-				}
-			}
+			BlockChunkControl control = new BlockChunkControl(this, addedChunk);
+			this.spatial.addControl(control);
+			chunks.add(control);
+			addedChunk = world.addedChunks.poll();
+		}
+		for(BlockChunkControl chunk : chunks)
+		{
+			chunk.updateSpatial();
 		}
 		profiler.endSection();
-		return wasUpdatedNeeded;
-	}
-
-	public void updateBlockMaterial()
-	{
-		for(int x = 0; x < chunks.length; x++)
-		{
-			for(int y = 0; y < chunks[0].length; y++)
-			{
-				for(int z = 0; z < chunks[0][0].length; z++)
-				{
-					chunks[x][y][z].updateBlockMaterial();
-				}
-			}
-		}
 	}
 
 	public void addChunkListener(BlockChunkListener blockChunkListener)
@@ -165,11 +105,6 @@ public class BlockTerrainControl extends AbstractControl
 	public CubesSettings getSettings()
 	{
 		return settings;
-	}
-
-	public BlockChunkControl[][][] getChunks()
-	{
-		return chunks;
 	}
 
 	@Override

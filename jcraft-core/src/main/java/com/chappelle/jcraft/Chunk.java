@@ -19,10 +19,10 @@ public class Chunk implements BitSerializable
     public boolean needsMeshUpdate;
     public World world;
     
-    public Chunk(World world, int x, int y, int z)
+    public Chunk(World world, int x, int z)
     {
     	this.world = world;
-    	location.set(x, y, z);
+    	location.set(x, 0, z);
     	blockLocation.set(location.mult(16, 256, 16));
     	blockTypes = new int[16][256][16];
     	blocks_IsOnSurface = new boolean[16][256][16];

@@ -2,7 +2,11 @@ package com.chappelle.jcraft;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Queue;
 import java.util.Random;
 
 import com.chappelle.jcraft.blocks.SoundConstants;
@@ -24,7 +28,10 @@ import com.jme3.renderer.Camera;
 public class World implements BitSerializable
 {
 	private CubesSettings settings;
-	public Chunk[][][] chunks;
+	public Map<Long, Chunk> chunks = new HashMap<Long, Chunk>();
+	public Queue<Chunk> addedChunks = new LinkedList<Chunk>();
+	public Queue<Chunk> removedChunks = new LinkedList<Chunk>();
+	
 	private ArrayList<BlockChunkListener> chunkListeners = new ArrayList<BlockChunkListener>();
 	private LightManager lightMgr;
 	private Profiler profiler;
@@ -41,7 +48,6 @@ public class World implements BitSerializable
 		this.assetManager = assetManager;
 		this.lightMgr = new FloodFillLightManager(this);
 		this.cam = cam;
-		initializeChunks(chunksCount);
 		
         music = new AudioNode(assetManager, SoundConstants.MUSIC_CALM1);
         music.setReverbEnabled(false);
@@ -82,23 +88,6 @@ public class World implements BitSerializable
         result.setVolume(.3f);
         return result;
     }
-
-	private void initializeChunks(Vector3Int chunksCount)
-	{
-		chunks = new Chunk[chunksCount.getX()][chunksCount.getY()][chunksCount.getZ()];
-		for(int x = 0; x < chunks.length; x++)
-		{
-			for(int y = 0; y < chunks[0].length; y++)
-			{
-				for(int z = 0; z < chunks[0][0].length; z++)
-				{
-					Chunk chunk = new Chunk(this, x, y, z);
-					chunks[x][y][z] = chunk;
-					lightMgr.initChunkSunlight(chunk);
-				}
-			}
-		}
-	}
 
 	public Block getBlock(int x, int y, int z)
 	{
@@ -218,28 +207,23 @@ public class World implements BitSerializable
 			return null;
 		}
 		Vector3Int chunkLocation = getChunkLocation(blockLocation);
-		if(isValidChunkLocation(chunkLocation))
+		Chunk chunk = chunks.get(ChunkCoordIntPair.chunkXZ2Int(chunkLocation.getX(), chunkLocation.getZ()));
+		if(chunk == null)
 		{
-			return chunks[chunkLocation.getX()][chunkLocation.getY()][chunkLocation.getZ()];
+			chunk = new Chunk(this, chunkLocation.x, chunkLocation.z);
+			lightMgr.initChunkSunlight(chunk);
+			chunks.put(ChunkCoordIntPair.chunkXZ2Int(chunkLocation.x, chunkLocation.z), chunk);
+			addedChunks.add(chunk);
 		}
-		return null;
+		return chunk;
 	}
 
 	public Chunk getChunkNeighbor(Chunk chunk, Direction direction)
 	{
 		Vector3Int chunkLocation = chunk.location.add(direction.getVector());
-		if(isValidChunkLocation(chunkLocation))
-		{
-			return chunks[chunkLocation.getX()][chunkLocation.getY()][chunkLocation.getZ()];
-		}
-		return null;
+		return chunks.get(ChunkCoordIntPair.chunkXZ2Int(chunkLocation.getX(), chunkLocation.getZ()));
 	}
 	
-	private boolean isValidChunkLocation(Vector3Int location)
-	{
-		return Util.isValidIndex(chunks, location);
-	}
-
 	private Vector3Int getChunkLocation(Vector3Int blockLocation)
 	{
 		Vector3Int chunkLocation = new Vector3Int();
@@ -274,12 +258,6 @@ public class World implements BitSerializable
 	{
 		return settings;
 	}
-
-	public Chunk[][][] getChunks()
-	{
-		return chunks;
-	}
-
 
 	public void setBlocksFromHeightmap(Vector3Int location, int[][] heightmap, Block block)
 	{
@@ -352,38 +330,38 @@ public class World implements BitSerializable
 	@Override
 	public void write(BitOutputStream outputStream)
 	{
-		outputStream.writeInteger(chunks.length);
-		outputStream.writeInteger(chunks[0].length);
-		outputStream.writeInteger(chunks[0][0].length);
-		for(int x = 0; x < chunks.length; x++)
-		{
-			for(int y = 0; y < chunks[0].length; y++)
-			{
-				for(int z = 0; z < chunks[0][0].length; z++)
-				{
-					chunks[x][y][z].write(outputStream);
-				}
-			}
-		}
+//		outputStream.writeInteger(chunks.length);
+//		outputStream.writeInteger(chunks[0].length);
+//		outputStream.writeInteger(chunks[0][0].length);
+//		for(int x = 0; x < chunks.length; x++)
+//		{
+//			for(int y = 0; y < chunks[0].length; y++)
+//			{
+//				for(int z = 0; z < chunks[0][0].length; z++)
+//				{
+//					chunks[x][y][z].write(outputStream);
+//				}
+//			}
+//		}
 	}
 
 	@Override
 	public void read(BitInputStream inputStream) throws IOException
 	{
-		int chunksCountX = inputStream.readInteger();
-		int chunksCountY = inputStream.readInteger();
-		int chunksCountZ = inputStream.readInteger();
-		initializeChunks(new Vector3Int(chunksCountX, chunksCountY, chunksCountZ));
-		for(int x = 0; x < chunksCountX; x++)
-		{
-			for(int y = 0; y < chunksCountY; y++)
-			{
-				for(int z = 0; z < chunksCountZ; z++)
-				{
-					chunks[x][y][z].read(inputStream);
-				}
-			}
-		}
+//		int chunksCountX = inputStream.readInteger();
+//		int chunksCountY = inputStream.readInteger();
+//		int chunksCountZ = inputStream.readInteger();
+//		initializeChunks(new Vector3Int(chunksCountX, chunksCountY, chunksCountZ));
+//		for(int x = 0; x < chunksCountX; x++)
+//		{
+//			for(int y = 0; y < chunksCountY; y++)
+//			{
+//				for(int z = 0; z < chunksCountZ; z++)
+//				{
+//					chunks[x][y][z].read(inputStream);
+//				}
+//			}
+//		}
 	}
 	
 	public int getLight(Vector3Int blockLocation)
