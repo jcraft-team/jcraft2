@@ -18,6 +18,7 @@ public class Chunk implements BitSerializable
     private LightMap lights;
     public boolean needsMeshUpdate;
     public World world;
+    private Vector3Int temp = new Vector3Int();
     
     public Chunk(World world, int x, int z)
     {
@@ -103,6 +104,12 @@ public class Chunk implements BitSerializable
         return neighborLocation;
     }
 
+    public void setBlock(int x, int y, int z, Block block)
+    {
+    	temp.set(x, y, z);
+    	setBlock(temp, block);
+    }
+    
     public void setBlock(Vector3Int location, Block block){
         if(isValidBlockLocation(location)){
             blockTypes[location.getX()][location.getY()][location.getZ()] = block.blockId;

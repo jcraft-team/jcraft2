@@ -2,10 +2,8 @@ package com.chappelle.jcraft;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Queue;
 import java.util.Random;
 
@@ -28,9 +26,9 @@ import com.jme3.renderer.Camera;
 public class World implements BitSerializable
 {
 	private CubesSettings settings;
-	public Map<Long, Chunk> chunks = new HashMap<Long, Chunk>();
+	
+	private ChunkProvider chunkProvider;
 	public Queue<Chunk> addedChunks = new LinkedList<Chunk>();
-	public Queue<Chunk> removedChunks = new LinkedList<Chunk>();
 	
 	private ArrayList<BlockChunkListener> chunkListeners = new ArrayList<BlockChunkListener>();
 	private LightManager lightMgr;
@@ -40,9 +38,13 @@ public class World implements BitSerializable
 	private AudioNode music;
 	private Camera cam;
 	private List<Entity> entities = new ArrayList<Entity>();
+	private EntityPlayer player;
+	private Vector3Int playerLocTemp = new Vector3Int();
 	
-	public World(Profiler profiler, CubesSettings settings, Vector3Int chunksCount, AssetManager assetManager, Camera cam)
+	public World(ChunkProvider chunkProvider, Profiler profiler, CubesSettings settings, AssetManager assetManager, Camera cam)
 	{
+		this.chunkProvider = chunkProvider;
+		this.chunkProvider.setWorld(this);
 		this.profiler = profiler;
 		this.settings = settings;
 		this.assetManager = assetManager;
@@ -55,6 +57,42 @@ public class World implements BitSerializable
         music.setLooping(true);
 	}
 
+	public void update(float tpf)
+	{
+		generateNearbyChunks();
+	}
+
+	private void generateNearbyChunks()
+	{
+		int x = (int)player.posX + 16;
+		playerLocTemp.set(x, 0, (int)player.posZ);
+		getChunk(playerLocTemp, true);
+
+		int z = (int)player.posZ + 16;
+		playerLocTemp.set((int)player.posX, 0, z);
+		getChunk(playerLocTemp, true);
+
+		playerLocTemp.set(x, 0, z);
+		getChunk(playerLocTemp, true);
+
+		x = (int)player.posX + 32;
+		playerLocTemp.set(x, 0, (int)player.posZ);
+		getChunk(playerLocTemp, true);
+
+		z = (int)player.posZ + 32;
+		playerLocTemp.set((int)player.posX, 0, z);
+		getChunk(playerLocTemp, true);
+
+		playerLocTemp.set(x, 0, z);
+		getChunk(playerLocTemp, true);
+	}
+	
+	public void setPlayer(EntityPlayer player)
+	{
+		this.player = player;
+		getChunk(new Vector3Int(MathUtils.floor_double(player.posX), MathUtils.floor_double(player.posY), MathUtils.floor_double(player.posZ)), true);
+	}
+	
 	public void addEntity(Entity entity)
 	{
 		entities.add(entity);
@@ -127,7 +165,7 @@ public class World implements BitSerializable
 
 	public void setBlock(Vector3Int location, Block block)
 	{
-		BlockTerrain_LocalBlockState localBlockState = getLocalBlockState(location);
+		BlockTerrain_LocalBlockState localBlockState = getLocalBlockState(location, true);
 		if(localBlockState != null)
 		{
 			lightMgr.setBlockLight(location, block.lightValue);
@@ -187,11 +225,16 @@ public class World implements BitSerializable
 
 	public BlockTerrain_LocalBlockState getLocalBlockState(Vector3Int blockLocation)
 	{
+		return getLocalBlockState(blockLocation, false);
+	}
+	
+	public BlockTerrain_LocalBlockState getLocalBlockState(Vector3Int blockLocation, boolean generateIfNeeded)
+	{
 		if(blockLocation.hasNegativeCoordinate())
 		{
 			return null;
 		}
-		Chunk chunk = getChunk(blockLocation);
+		Chunk chunk = getChunk(blockLocation, generateIfNeeded);
 		if(chunk != null)
 		{
 			Vector3Int localBlockLocation = getLocalBlockLocation(blockLocation, chunk);
@@ -202,26 +245,34 @@ public class World implements BitSerializable
 
 	public Chunk getChunk(Vector3Int blockLocation)
 	{
+		return getChunk(blockLocation, false);
+	}
+	
+	public Chunk getChunk(Vector3Int blockLocation, boolean generateIfNeeded)
+	{
 		if(blockLocation.hasNegativeCoordinate())
 		{
 			return null;
 		}
 		Vector3Int chunkLocation = getChunkLocation(blockLocation);
-		Chunk chunk = chunks.get(ChunkCoordIntPair.chunkXZ2Int(chunkLocation.getX(), chunkLocation.getZ()));
-		if(chunk == null)
+		Chunk cachedChunk = chunkProvider.getChunk(chunkLocation.x, chunkLocation.z);
+		if(!generateIfNeeded || cachedChunk != null)
 		{
-			chunk = new Chunk(this, chunkLocation.x, chunkLocation.z);
-			lightMgr.initChunkSunlight(chunk);
-			chunks.put(ChunkCoordIntPair.chunkXZ2Int(chunkLocation.x, chunkLocation.z), chunk);
-			addedChunks.add(chunk);
+			return cachedChunk;
 		}
-		return chunk;
+		else
+		{
+			Chunk chunk = chunkProvider.generateChunk(chunkLocation.x, chunkLocation.z);
+			lightMgr.initChunkSunlight(chunk);
+			addedChunks.add(chunk);
+			return chunk;
+		}
 	}
 
 	public Chunk getChunkNeighbor(Chunk chunk, Direction direction)
 	{
 		Vector3Int chunkLocation = chunk.location.add(direction.getVector());
-		return chunks.get(ChunkCoordIntPair.chunkXZ2Int(chunkLocation.getX(), chunkLocation.getZ()));
+		return chunkProvider.getChunk(chunkLocation.getX(), chunkLocation.getZ());
 	}
 	
 	private Vector3Int getChunkLocation(Vector3Int blockLocation)

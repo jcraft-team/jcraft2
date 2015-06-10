@@ -7,7 +7,6 @@ import java.util.concurrent.Callable;
 import com.chappelle.jcraft.BlockChunkListener;
 import com.chappelle.jcraft.Chunk;
 import com.chappelle.jcraft.CubesSettings;
-import com.chappelle.jcraft.Vector3Int;
 import com.chappelle.jcraft.World;
 import com.chappelle.jcraft.profiler.Profiler;
 import com.jme3.renderer.RenderManager;
@@ -25,41 +24,28 @@ public class BlockTerrainControl extends AbstractControl
 	public World world;
 	private Profiler profiler;
 
-	public BlockTerrainControl(JCraft app, CubesSettings settings, Vector3Int chunksCount)
+	public BlockTerrainControl(JCraft app, CubesSettings settings, World world)
 	{
-		this.world = new World(app.getProfiler(), settings, chunksCount, app.getAssetManager(), app.getCamera());
+		this.world = world;
 		this.settings = settings;
 		this.app = app;
 		this.profiler = app.getProfiler();
 	}
 
-	public BlockTerrainControl(CubesSettings settings, Vector3Int chunksCount)
-	{
-		this(null, settings, chunksCount);
-	}
-
 	@Override
-	protected void controlUpdate(float lastTimePerFrame)
+	protected void controlUpdate(final float lastTimePerFrame)
 	{
-		if(app == null)
+		app.enqueue(new Callable<Void>()
 		{
-			world.calculateLight();
-			updateSpatial();
-		}
-		else
-		{
-			// Runs in a separate thread
-			app.enqueue(new Callable<Void>()
+			@Override
+			public Void call() throws Exception
 			{
-				@Override
-				public Void call() throws Exception
-				{
-					world.calculateLight();
-					updateSpatial();
-					return null;
-				}
-			});
-		}
+				world.update(lastTimePerFrame);
+				world.calculateLight();
+				updateSpatial();
+				return null;
+			}
+		});
 	}
 
 	@Override
@@ -110,7 +96,7 @@ public class BlockTerrainControl extends AbstractControl
 	@Override
 	public BlockTerrainControl clone()
 	{
-		BlockTerrainControl blockTerrain = new BlockTerrainControl(app, settings, new Vector3Int());
+		BlockTerrainControl blockTerrain = new BlockTerrainControl(app, settings, this.world);
 		blockTerrain.world.setBlocksFromTerrain(this.world);
 		return blockTerrain;
 	}

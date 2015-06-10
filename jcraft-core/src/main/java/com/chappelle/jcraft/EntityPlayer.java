@@ -31,6 +31,7 @@ public class EntityPlayer extends Entity
 		super(world);
 		
 		this.cam = cam;
+		world.setPlayer(this);
 
 		selectBlock(1);
 	}
