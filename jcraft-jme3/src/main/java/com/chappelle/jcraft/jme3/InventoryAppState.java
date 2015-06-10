@@ -43,9 +43,6 @@ public class InventoryAppState extends AbstractAppState implements ScreenControl
         String slotId = drpbl1.getId();
         String itemId = drgbl.getId();
         
-        System.out.println("To ID: " + slotId);
-        System.out.println("Item: " + itemId);
-        
         ItemStackLocation location = locations.get(itemId);
         if(location == null)
         {
@@ -241,8 +238,8 @@ public class InventoryAppState extends AbstractAppState implements ScreenControl
         {
             if ("close".equals(name))
             {
-//                nifty.fromXml("Interface/hud.xml", "hud", stateManager.getState(RunningAppState.class).getHUDControl());
-//                inputManager.setCursorVisible(false);
+                nifty.fromXml("Interface/hud.xml", "hud", JCraft.getInstance().getHUD());
+                inputManager.setCursorVisible(false);
 //                playerControl.setEnabled(true);
                 JCraft.getInstance().getFlyByCamera().setEnabled(true);
                 

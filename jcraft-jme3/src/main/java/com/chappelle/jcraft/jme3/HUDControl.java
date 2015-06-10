@@ -5,6 +5,10 @@ import com.chappelle.jcraft.Chunk;
 import com.chappelle.jcraft.EntityPlayer;
 import com.chappelle.jcraft.Vector3Int;
 import com.chappelle.jcraft.World;
+import com.chappelle.jcraft.blocks.Sprite;
+import com.chappelle.jcraft.inventory.Inventory;
+import com.chappelle.jcraft.inventory.InventoryListener;
+import com.chappelle.jcraft.inventory.ItemStack;
 import com.chappelle.jcraft.util.RayTrace;
 import com.jme3.asset.AssetManager;
 import com.jme3.font.BitmapFont;
@@ -17,7 +21,19 @@ import com.jme3.scene.Spatial.CullHint;
 import com.jme3.scene.control.AbstractControl;
 import com.jme3.system.AppSettings;
 
-public class HUDControl extends AbstractControl
+import de.lessvoid.nifty.Nifty;
+import de.lessvoid.nifty.builder.ControlBuilder;
+import de.lessvoid.nifty.builder.ImageBuilder;
+import de.lessvoid.nifty.builder.PanelBuilder;
+import de.lessvoid.nifty.builder.TextBuilder;
+import de.lessvoid.nifty.controls.Draggable;
+import de.lessvoid.nifty.controls.Droppable;
+import de.lessvoid.nifty.effects.EffectEventId;
+import de.lessvoid.nifty.elements.Element;
+import de.lessvoid.nifty.screen.Screen;
+import de.lessvoid.nifty.screen.ScreenController;
+
+public class HUDControl extends AbstractControl implements ScreenController, InventoryListener
 {
 	private Node debugNode;
 	private Node guiNode;
@@ -38,6 +54,12 @@ public class HUDControl extends AbstractControl
 	private BitmapText pointedBoundingBoxLabel;
 	private EntityPlayer player;
 	private World world;
+    private Nifty nifty;
+    private PanelBuilder panelBuilder;
+    private ControlBuilder slotBuilder;
+    private ControlBuilder itemBuilder;
+    private Screen screen;
+    private boolean inventoryDirty = true;
 	
 	public HUDControl(JCraft app, AppSettings appSettings, EntityPlayer player)
 	{
@@ -48,6 +70,53 @@ public class HUDControl extends AbstractControl
 		this.assetManager = app.getAssetManager();
 		this.settings = appSettings;
 		this.player = player;
+	}
+	
+	public void positionElements()
+	{
+        float x = settings.getWidth() / 2 - guiFont.getCharSet().getRenderedSize() / 3 * 2;
+        float y = settings.getHeight() / 2 + crosshairs.getLineHeight() / 2;
+        crosshairs.setLocalTranslation(x, y, 0);
+        
+        x = 10;
+        y = settings.getHeight() - 10;
+        playerLocationLabel.setLocalTranslation(x, y, 0);
+
+        x = 10;
+        y -= 25;
+        boundingBoxLabel.setLocalTranslation(x, y, 0);
+
+        x = 10;
+        y -= 25;
+        pointedBoundingBoxLabel.setLocalTranslation(x, y, 0);
+
+        x = 10;
+        y-= 25;
+        blockLocationLabel.setLocalTranslation(x, y, 0);
+        
+        x = 10;
+        y-= 25;
+        chunkLocationLabel.setLocalTranslation(x, y, 0);
+        
+        x = 10;
+        y-= 25;
+        lightLevelLabel.setLocalTranslation(x, y, 0);
+        
+        x = 10;
+        y-= 25;
+        walkingOnLabel.setLocalTranslation(x, y, 0);
+        
+        x = 10;
+        y-= 25;
+        selectedBlockLabel.setLocalTranslation(x, y, 0);
+        
+        x = 10;
+        y-= 25;
+        pointedBlockLabel.setLocalTranslation(x, y, 0);
+        
+        x = 10;
+        y-= 25;
+        facingLabel.setLocalTranslation(x, y, 0);
 	}
 	
 	@Override
@@ -63,96 +132,69 @@ public class HUDControl extends AbstractControl
             crosshairs = new BitmapText(guiFont, false);
             crosshairs.setSize(guiFont.getCharSet().getRenderedSize() * 2);
             crosshairs.setText("+");
-            float x = settings.getWidth() / 2 - guiFont.getCharSet().getRenderedSize() / 3 * 2;
-            float y = settings.getHeight() / 2 + crosshairs.getLineHeight() / 2;
-            crosshairs.setLocalTranslation(x, y, 0);
             guiNode.attachChild(crosshairs);
 
             playerLocationLabel = new BitmapText(guiFont, false);
             playerLocationLabel.setSize(guiFont.getCharSet().getRenderedSize());
             playerLocationLabel.setText("Player location: ");
-            x = 10;
-            y = settings.getHeight() - 10;
-            playerLocationLabel.setLocalTranslation(x, y, 0);
             debugNode.attachChild(playerLocationLabel);
 
             boundingBoxLabel = new BitmapText(guiFont, false);
             boundingBoxLabel.setSize(guiFont.getCharSet().getRenderedSize());
             boundingBoxLabel.setText("Bounding Box: ");
-            x = 10;
-            y -= 25;
-            boundingBoxLabel.setLocalTranslation(x, y, 0);
             debugNode.attachChild(boundingBoxLabel);
             
             pointedBoundingBoxLabel = new BitmapText(guiFont, false);
             pointedBoundingBoxLabel.setSize(guiFont.getCharSet().getRenderedSize());
             pointedBoundingBoxLabel.setText("Pointed Bounding Box: ");
-            x = 10;
-            y -= 25;
-            pointedBoundingBoxLabel.setLocalTranslation(x, y, 0);
             debugNode.attachChild(pointedBoundingBoxLabel);
             
             blockLocationLabel = new BitmapText(guiFont, false);
             blockLocationLabel.setSize(guiFont.getCharSet().getRenderedSize());
             blockLocationLabel.setText("Block location: ");
-            x = 10;
-            y-= 25;
-            blockLocationLabel.setLocalTranslation(x, y, 0);
             debugNode.attachChild(blockLocationLabel);
 
             chunkLocationLabel = new BitmapText(guiFont, false);
             chunkLocationLabel.setSize(guiFont.getCharSet().getRenderedSize());
             chunkLocationLabel.setText("Chunk location: ");
-            x = 10;
-            y-= 25;
-            chunkLocationLabel.setLocalTranslation(x, y, 0);
             debugNode.attachChild(chunkLocationLabel);
 
             lightLevelLabel = new BitmapText(guiFont, false);
             lightLevelLabel.setSize(guiFont.getCharSet().getRenderedSize());
             lightLevelLabel.setText("Light Level: ");
-            x = 10;
-            y-= 25;
-            lightLevelLabel.setLocalTranslation(x, y, 0);
             debugNode.attachChild(lightLevelLabel);
 
             walkingOnLabel = new BitmapText(guiFont, false);
             walkingOnLabel.setSize(guiFont.getCharSet().getRenderedSize());
             walkingOnLabel.setText("Walking On: ");
-            x = 10;
-            y-= 25;
-            walkingOnLabel.setLocalTranslation(x, y, 0);
             debugNode.attachChild(walkingOnLabel);
 
             selectedBlockLabel = new BitmapText(guiFont, false);
             selectedBlockLabel.setSize(guiFont.getCharSet().getRenderedSize());
             selectedBlockLabel.setText("Selected Block: ");
-            x = 10;
-            y-= 25;
-            selectedBlockLabel.setLocalTranslation(x, y, 0);
             debugNode.attachChild(selectedBlockLabel);
 
             pointedBlockLabel = new BitmapText(guiFont, false);
             pointedBlockLabel.setSize(guiFont.getCharSet().getRenderedSize());
             pointedBlockLabel.setText("Pointed Block: ");
-            x = 10;
-            y-= 25;
-            pointedBlockLabel.setLocalTranslation(x, y, 0);
             debugNode.attachChild(pointedBlockLabel);
             
             facingLabel = new BitmapText(guiFont, false);
             facingLabel.setSize(guiFont.getCharSet().getRenderedSize());
             facingLabel.setText("Facing: ");
-            x = 10;
-            y-= 25;
-            facingLabel .setLocalTranslation(x, y, 0);
             debugNode.attachChild(facingLabel);
+            
+            positionElements();
+            
+            this.nifty = this.app.getNifty();
+            player.getInventory().addListener(this);
         }	
 	}
 	
 	@Override
 	protected void controlUpdate(float tpf)
 	{
+		populateInventoryItems();
 		if(app.debugEnabled)
 		{
 			debugNode.setCullHint(CullHint.Never);
@@ -202,8 +244,123 @@ public class HUDControl extends AbstractControl
 		return block == null ? "Air" : block.getClass().getSimpleName();
 	}
 
+	private void populateInventoryItems()
+    {
+        if (inventoryDirty)
+        {
+            ItemStack[] items = player.getInventory().getItemStacks();
+            for (int i = Inventory.INVENTORY_SIZE; i < items.length; i++)
+            {
+                Element itemSlot = screen.findElementByName("itemSlot" + i);
+                if (itemSlot != null)
+                {
+                    Element e = itemSlot.findElementByName("item" + i);
+                    ItemStack item = items[i];
+                    if (item != null)
+                    {
+                        if(e == null)
+                        {
+                            itemBuilder = new ControlBuilder("item");
+                            itemBuilder.id("item" + i);
+                            itemBuilder.parameter("count", Integer.toString(item.getCount()));
+                            e = itemBuilder.build(nifty, screen, itemSlot);
+                        }
+                        final Sprite sprite = item.getBlock().getSprite();
+                        ImageBuilder imageBuilder = new ImageBuilder()
+                        {
+
+                            {
+                                filename("Textures/FaithfulBlocks.png");
+                                imageMode("subImage:" + sprite.getX() + "," + sprite.getY() + "," + sprite.getWidth() + "," + sprite.getHeight());
+                                width("50");
+                                height("50");
+
+                            }
+                        };
+                        imageBuilder.build(nifty, screen, e);
+
+                        TextBuilder textBuilder = new TextBuilder();
+                        textBuilder.style("nifty-label");
+                        textBuilder.font("Interface/Fonts/ArialBlack.fnt");
+                        textBuilder.textVAlignBottom();
+                        textBuilder.textHAlignRight();
+                        textBuilder.text(Integer.toString(item.getCount()));
+                        textBuilder.alignCenter();
+                        textBuilder.build(nifty, screen, e);
+                    }
+                    else
+                    {
+                        Element blockItem = itemSlot.findElementByName("item" + i);
+                        if(blockItem != null)
+                        {
+                            blockItem.setVisible(false);
+                            blockItem.markForRemoval();
+                        }
+
+                    }
+                }
+            }
+            Element slot = screen.findElementByName("itemSlot" + player.getInventory().getSelectedIndex());
+            if(slot != null)
+            {
+                slot.startEffect(EffectEventId.onCustom);
+            }
+            inventoryDirty = false;
+        }
+    }
+
 	@Override
 	protected void controlRender(RenderManager rm, ViewPort vp)
 	{
 	}
+
+    public void bind(Nifty nifty, Screen screen)
+    {
+        this.nifty = nifty;
+        this.screen = screen;
+    }
+
+    public void onStartScreen()
+    {
+        screen = nifty.getCurrentScreen();
+
+        for (int col = Inventory.INVENTORY_SIZE; col < player.getInventory().getItemStacks().length; col++)
+        {
+            panelBuilder = new PanelBuilder("");
+            panelBuilder.id("hudItemColumn" + col);
+            panelBuilder.childLayoutVertical();
+            Element column = panelBuilder.build(nifty, screen, screen.findElementByName("hudItemSlots"));
+            slotBuilder = new ControlBuilder("itemSlot");
+            slotBuilder.id("itemSlot" + col);
+            slotBuilder.build(nifty, screen, column);
+        }
+        populateInventoryItems();
+    }
+
+    public void onEndScreen()
+    {
+        inventoryDirty = true;
+    }
+
+    public boolean accept(Droppable drpbl, Draggable drgbl, Droppable drpbl1)
+    {
+        return true;
+    }
+
+    public void onInventoryChanged()
+    {
+        inventoryDirty = true;
+    }
+
+    public void onSelectionChanged(int oldIndex, int newIndex)
+    {
+        if(oldIndex >= 0)
+        {
+            Element oldSlot = screen.findElementByName("itemSlot" + oldIndex);
+            oldSlot.stopEffect(EffectEventId.onCustom);
+        }
+        Element slot = screen.findElementByName("itemSlot" + newIndex);
+        slot.startEffect(EffectEventId.onCustom);
+    }
+
 }

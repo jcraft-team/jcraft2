@@ -8,8 +8,8 @@ import com.chappelle.jcraft.Block;
 import com.chappelle.jcraft.ChunkProvider;
 import com.chappelle.jcraft.CubesSettings;
 import com.chappelle.jcraft.EntityPlayer;
-import com.chappelle.jcraft.TestChunkProvider;
 import com.chappelle.jcraft.GameSettings;
+import com.chappelle.jcraft.TestChunkProvider;
 import com.chappelle.jcraft.Vector3Int;
 import com.chappelle.jcraft.World;
 import com.chappelle.jcraft.profiler.Profiler;
@@ -27,15 +27,15 @@ import com.jme3.input.controls.Trigger;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.niftygui.NiftyJmeDisplay;
+import com.jme3.renderer.Camera;
+import com.jme3.renderer.ViewPort;
 import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Node;
 import com.jme3.system.AppSettings;
 
 import de.lessvoid.nifty.Nifty;
-import de.lessvoid.nifty.screen.Screen;
-import de.lessvoid.nifty.screen.ScreenController;
 
-public class JCraft extends SimpleApplication implements ActionListener, ScreenController
+public class JCraft extends SimpleApplication implements ActionListener
 {
 	private static final int JUMP_TIME_INTERVAL = 200;
 	private final Vector3Int terrainSize = new Vector3Int(16, 10, 16);
@@ -53,6 +53,7 @@ public class JCraft extends SimpleApplication implements ActionListener, ScreenC
 	private EntityPlayer player;
 	public World world;
 	private Profiler profiler;
+	private HUDControl hud;
 	
 	/**
 	 * Used for enabling flying by double pressing space
@@ -114,11 +115,10 @@ public class JCraft extends SimpleApplication implements ActionListener, ScreenC
 
 		//Setup player
 		player = new EntityPlayer(world, cam);
-		HUDControl2 hud = makeHUD2(player);
+		hud = makeHUD2(player);
 		player.preparePlayerToSpawn();
 		rootNode.addControl(new PlayerControl(this, player));
 
-//		rootNode.addControl(makeHUD());
 		rootNode.addControl(hud);
 		rootNode.addControl(new BlockCursorControl(world, player, assetManager));
 
@@ -139,21 +139,19 @@ public class JCraft extends SimpleApplication implements ActionListener, ScreenC
 
 	private void initializeGUI()
 	{
-		niftyDisplay = new NiftyJmeDisplay(assetManager, inputManager, audioRenderer, guiViewPort);
-        nifty = niftyDisplay.getNifty();
+		Camera niftyCamera = new Camera(cam.getWidth(), cam.getHeight());
+		ViewPort niftyViewPort = renderManager.createPostView("Nifty View", niftyCamera);//Nifty gets it's own view port so we can still write to gui node
+		niftyDisplay = new NiftyJmeDisplay(assetManager, inputManager, audioRenderer, niftyViewPort);
+		nifty = niftyDisplay.getNifty();
+
+	    niftyViewPort.addProcessor(niftyDisplay);
         nifty.addXml("Interface/hud.xml");
         nifty.addXml("Interface/inventory.xml");
-        guiViewPort.addProcessor(niftyDisplay);                    
 	}
 
-//	private HUDControl makeHUD()
-//	{
-//		return new HUDControl(this, settings, player);
-//	}
-	
-	private HUDControl2 makeHUD2(EntityPlayer player2)
+	private HUDControl makeHUD2(EntityPlayer player)
 	{
-		return new HUDControl2(this, player);
+		return new HUDControl(this, settings, player);
 	}
 	
 	private void toggleDebug()
@@ -353,6 +351,11 @@ public class JCraft extends SimpleApplication implements ActionListener, ScreenC
         }
 	}
 	
+	public HUDControl getHUD()
+	{
+		return hud;
+	}
+	
     public BitmapFont getGuiFont()
     {
         return guiFont;
@@ -407,8 +410,7 @@ public class JCraft extends SimpleApplication implements ActionListener, ScreenC
 		setSettings(settings);
 		restart(); // restart the context to apply changes
 		
-//		rootNode.removeControl(HUDControl.class);//FIXME
-//		rootNode.addControl(makeHUD());
+		hud.positionElements();
 		
 		StatsAppState stats = stateManager.getState(StatsAppState.class);
 		stateManager.detach(stats);
@@ -426,26 +428,5 @@ public class JCraft extends SimpleApplication implements ActionListener, ScreenC
 		JCraft app = new JCraft(gameSettings);
 		app.setShowSettings(gameSettings.showSettings);
 		app.start();
-	}
-
-	@Override
-	public void bind(Nifty arg0, Screen arg1)
-	{
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onEndScreen()
-	{
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onStartScreen()
-	{
-		// TODO Auto-generated method stub
-		
 	}
 }

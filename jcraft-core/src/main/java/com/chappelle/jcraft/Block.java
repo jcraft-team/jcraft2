@@ -1,18 +1,6 @@
 package com.chappelle.jcraft;
 
-import com.chappelle.jcraft.blocks.BlockCoal;
-import com.chappelle.jcraft.blocks.BlockDoor;
-import com.chappelle.jcraft.blocks.BlockGlass;
-import com.chappelle.jcraft.blocks.BlockGlowstone;
-import com.chappelle.jcraft.blocks.BlockGrass;
-import com.chappelle.jcraft.blocks.BlockGravel;
-import com.chappelle.jcraft.blocks.BlockIce;
-import com.chappelle.jcraft.blocks.BlockLadder;
-import com.chappelle.jcraft.blocks.BlockSand;
-import com.chappelle.jcraft.blocks.BlockStone;
-import com.chappelle.jcraft.blocks.BlockTorch;
-import com.chappelle.jcraft.blocks.SoundConstants;
-import com.chappelle.jcraft.blocks.Sprite;
+import com.chappelle.jcraft.blocks.*;
 import com.chappelle.jcraft.shapes.BlockShape_Cube;
 import com.chappelle.jcraft.util.AABB;
 import com.chappelle.jcraft.util.MathUtils;
@@ -121,7 +109,7 @@ public class Block
 	public static final Block sand = new BlockSand(9).setStepSound(SoundConstants.DIG_SAND_2);
 	public static final Block coal = new BlockCoal(10);
 	public static final Block gravel = new BlockGravel(11);
-	public static final Block diamond = new BlockGravel(12);
+	public static final Block diamond = new BlockDiamond(12);
 	
 	private BlockShape[] shapes = new BlockShape[] { new BlockShape_Cube() };
 	private BlockSkin[] skins;
