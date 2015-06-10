@@ -2,6 +2,8 @@ package com.chappelle.jcraft;
 
 import java.util.List;
 
+import com.chappelle.jcraft.inventory.Inventory;
+import com.chappelle.jcraft.inventory.ItemStack;
 import com.chappelle.jcraft.util.AABB;
 import com.chappelle.jcraft.util.MathUtils;
 import com.chappelle.jcraft.util.RayTrace;
@@ -22,9 +24,10 @@ public class EntityPlayer extends Entity
 	private static final float FAST_FLYSPEED = 0.15F;
 	private float flySpeed = NORMAL_FLYSPEED;
 
-	private Block selected;
+	private ItemStack selected;
 	
 	public Camera cam;
+	private Inventory inventory;
 	
 	public EntityPlayer(World world, Camera cam)
 	{
@@ -33,6 +36,29 @@ public class EntityPlayer extends Entity
 		this.cam = cam;
 		world.setPlayer(this);
 
+		initInventory();
+	}
+
+	public Inventory getInventory()
+	{
+		return inventory;
+	}
+	
+	private void initInventory()
+	{
+		inventory = new Inventory();
+		for(int i = 1; i < 250; i++)
+		{
+			Block block = Block.blocksList[i];
+			if(block != null)
+			{
+				inventory.add(block, 64);
+			}
+			else
+			{
+				break;
+			}
+		}
 		selectBlock(1);
 	}
 	
@@ -276,7 +302,7 @@ public class EntityPlayer extends Entity
 				}
 				else
 				{
-					world.setBlock(rayTrace, selected);
+					world.setBlock(rayTrace, selected.getBlock());
 				}
 			}
 		}
@@ -327,16 +353,16 @@ public class EntityPlayer extends Entity
 	
 	public void selectBlock(int index)
 	{
-		selected = Block.blocksList[index];
+		selected = inventory.selectItem(index);
 		if(selected != null)
 		{
-			System.out.println("Selected block is " + selected.getClass().getName());
+			System.out.println("Selected block is " + selected.getBlock().getClass().getName());
 		}
 	}
 	
 	public Block getSelectedBlock()
 	{
-		return selected;
+		return selected == null ? null : selected.getBlock();
 	}
 	
 	public void preparePlayerToSpawn()

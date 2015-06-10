@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<nifty-controls>
+    <controlDefinition name="itemSlot">
+        <control name="droppable" backgroundColor="#AAAf" width="64px" height="64px" margin="3px,3px,3px,3px" childLayout="center">
+            <effect>
+               <onCustom name="border" border="4px,4px,4px,4px" color="#FFFF00" timeType="infinite"/>
+            </effect>                            
+        </control>
+    </controlDefinition>
+    <controlDefinition name="item">
+        <control name="draggable" background-color="#aaaf" width="64px" height="64px" childLayout="center" valign="top">
+            <image id="#itemImage" valign="center" width="100%"/>
+            <text id="#itemText" style="nifty-label" text="$count" valign="center" width="100%"></text>                
+        </control>
+    </controlDefinition>    
+</nifty-controls>

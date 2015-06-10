@@ -1,15 +1,18 @@
 package com.chappelle.jcraft;
 
+import com.chappelle.jcraft.blocks.BlockCoal;
 import com.chappelle.jcraft.blocks.BlockDoor;
 import com.chappelle.jcraft.blocks.BlockGlass;
 import com.chappelle.jcraft.blocks.BlockGlowstone;
 import com.chappelle.jcraft.blocks.BlockGrass;
+import com.chappelle.jcraft.blocks.BlockGravel;
 import com.chappelle.jcraft.blocks.BlockIce;
 import com.chappelle.jcraft.blocks.BlockLadder;
 import com.chappelle.jcraft.blocks.BlockSand;
 import com.chappelle.jcraft.blocks.BlockStone;
 import com.chappelle.jcraft.blocks.BlockTorch;
 import com.chappelle.jcraft.blocks.SoundConstants;
+import com.chappelle.jcraft.blocks.Sprite;
 import com.chappelle.jcraft.shapes.BlockShape_Cube;
 import com.chappelle.jcraft.util.AABB;
 import com.chappelle.jcraft.util.MathUtils;
@@ -116,6 +119,9 @@ public class Block
 	public static final Block ladder = new BlockLadder(7).setStepSound(SoundConstants.STEP_WOOD_4);
 	public static final Block glowstone = new BlockGlowstone(8).setLightValue(15).setStepSound(SoundConstants.STEP_STONE_3);
 	public static final Block sand = new BlockSand(9).setStepSound(SoundConstants.DIG_SAND_2);
+	public static final Block coal = new BlockCoal(10);
+	public static final Block gravel = new BlockGravel(11);
+	public static final Block diamond = new BlockGravel(12);
 	
 	private BlockShape[] shapes = new BlockShape[] { new BlockShape_Cube() };
 	private BlockSkin[] skins;
@@ -128,6 +134,7 @@ public class Block
 	public static final float DEFAULT_SLIPPERINESS = 0.85F;
 	
 	public int lightValue;
+	private Sprite sprite;
 	
 	public Block(int blockId, BlockSkin... skins)
 	{
@@ -136,6 +143,18 @@ public class Block
 		this.slipperiness = DEFAULT_SLIPPERINESS;
 		blocksList[blockId] = this;
 		this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
+		
+        int skinIndex = 0;
+        if(skins.length < 5)
+        {
+            skinIndex = 0;
+        }
+        else
+        {
+            skinIndex = 4;
+        }
+        BlockSkin_TextureLocation textureLocation = skins[skinIndex].getTextureLocation();
+        sprite = new Sprite(textureLocation.getColumn()*32, textureLocation.getRow()*32, 32, 32);
 	}
 	
 	/**
@@ -436,5 +455,14 @@ public class Block
 	{
 		return v == null ? false : v.x >= this.minX && v.x <= this.maxX && v.z >= this.minY && v.y <= this.maxY;
 	}
-	
+
+	public int getStackSize()
+	{
+		return 64;
+	}
+
+	public Sprite getSprite()
+	{
+		return sprite;
+	}
 }

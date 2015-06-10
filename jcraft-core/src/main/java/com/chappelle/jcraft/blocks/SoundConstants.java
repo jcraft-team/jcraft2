@@ -43,6 +43,7 @@ public interface SoundConstants
     final String DIG_GRASS_3 = "Sounds/effects/dig/grass3.ogg";
     final String DIG_GRASS_4 = "Sounds/effects/dig/grass4.ogg";
     
+    final String DIG_GRAVEL = "Sounds/effects/dig/gravel";
     final String DIG_GRAVEL_1 = "Sounds/effects/dig/gravel1.ogg";
     final String DIG_GRAVEL_2 = "Sounds/effects/dig/gravel2.ogg";
     final String DIG_GRAVEL_3 = "Sounds/effects/dig/gravel3.ogg";

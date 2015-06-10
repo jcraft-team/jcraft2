@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<nifty xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://nifty-gui.lessvoid.com/nifty-gui" xsi:schemaLocation="https://raw.githubusercontent.com/void256/nifty-gui/1.4/nifty-core/src/main/resources/nifty.xsd https://raw.githubusercontent.com/void256/nifty-gui/1.4/nifty-core/src/main/resources/nifty.xsd">
+    <useControls filename="nifty-default-controls.xml"/>
+    <useControls filename="Interface/inventoryControls.xml"/>
+    <useStyles filename="nifty-default-styles.xml"/>
+    <screen id="inventoryScreen" controller="com.chappelle.jcraft.jme3.InventoryAppState">
+        <layer id="layer0" childLayout="center">
+            <panel id="inventoryPanel" childLayout="vertical" backgroundColor="#C6C6C6">
+                <panel id="inventorySlots" childLayout="horizontal"/>
+                <panel id="equippedSlots" childLayout="horizontal" marginTop="25px"/>                
+                <!--
+                    <effect>
+                       <onActive name="border" border="10px" color="#C6C6C6" timeType="infinite"/>
+                     </effect>                
+                     -->
+            </panel>
+        </layer>
+    </screen>
+</nifty>

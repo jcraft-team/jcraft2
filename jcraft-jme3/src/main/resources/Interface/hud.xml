@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<nifty xmlns="http://nifty-gui.sourceforge.net/nifty-1.3.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://nifty-gui.sourceforge.net/nifty-1.3.xsd">
+    <useStyles filename="nifty-default-styles.xml" />
+    <useControls filename="nifty-default-controls.xml" />
+    <screen id="hud" controller="com.chappelle.jcraft.jme3.HUDControl2">
+        <layer id="GLayer1" childLayout="absolute">
+            <panel id="GPanel0" height="*" width="*" align="left" childLayout="absolute" y="3" paddingLeft="10px" x="2">
+                <control name="label" id="location" text="GLabel0" height="25px" font="aurulent-sans-16.fnt" width="312px" textHAlign="left" y="10" x="1"/>
+                <control name="label" id="direction" text="GLabel0" height="25px" font="aurulent-sans-16.fnt" width="312px" textHAlign="left" y="35" x="1"/>
+                <control name="label" id="pointed" text="GLabel0" height="25px" font="aurulent-sans-16.fnt" width="312px" textHAlign="left" y="60" x="1"/>
+                <control name="label" id="fps" text="GLabel0" height="25px" font="aurulent-sans-16.fnt" width="312px" textHAlign="left" y="85" x="1"/>
+                <control name="label" id="chunks" text="GLabel0" height="25px" font="aurulent-sans-16.fnt" width="312px" textHAlign="left" y="110" x="1"/>
+                <control name="label" id="light" text="GLabel0" height="25px" font="aurulent-sans-16.fnt" width="312px" textHAlign="left" y="135" x="1"/>
+            </panel>
+        </layer>
+        <layer id="itemLayer" childLayout="vertical">
+            <panel id="panel_top" width="100%" height="85%" childLayout="vertical">
+            <!-- spacer -->
+            </panel>
+            <panel id="panel_bottom" width="100%" height="15%" childLayout="center">
+                <panel id="inventoryPanel" childLayout="center" backgroundColor="#C6C6C6" width="625px" height="55px">
+                    <panel id="hudItemSlots" childLayout="horizontal">
+
+
+                    </panel>
+
+                    <effect>
+                       <onActive name="border" border="10px" color="#C6C6C6" timeType="infinite"/>
+                    </effect>
+                </panel>
+            </panel>
+        </layer>
+    </screen>
+</nifty>

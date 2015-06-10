@@ -26,23 +26,30 @@ import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme3.input.controls.Trigger;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
+import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Node;
 import com.jme3.system.AppSettings;
 
-public class JCraft extends SimpleApplication implements ActionListener
+import de.lessvoid.nifty.Nifty;
+import de.lessvoid.nifty.screen.Screen;
+import de.lessvoid.nifty.screen.ScreenController;
+
+public class JCraft extends SimpleApplication implements ActionListener, ScreenController
 {
 	private static final int JUMP_TIME_INTERVAL = 200;
 	private final Vector3Int terrainSize = new Vector3Int(16, 10, 16);
 	private int terrainIndex = terrainSize.x/16;
 
 	private static JCraft jcraft;
-	
+	private Nifty nifty;
+	private NiftyJmeDisplay niftyDisplay;
 	public boolean debugEnabled = false;
 	private GameSettings gameSettings;
 	private CubesSettings cubesSettings;
 	private BlockTerrainControl blockTerrain;
 	private Node terrainNode = new Node("terrain");
+	private InventoryAppState inventoryAppState;
 	private EntityPlayer player;
 	public World world;
 	private Profiler profiler;
@@ -67,6 +74,21 @@ public class JCraft extends SimpleApplication implements ActionListener
 		settings.setFrameRate(gameSettings.frameRate);
 	}
 
+	public AppSettings getAppSettings()
+	{
+		return settings;
+	}
+	
+	public Nifty getNifty()
+	{
+		return nifty;
+	}
+	
+	public EntityPlayer getPlayer()
+	{
+		return player;
+	}
+	
 	public Profiler getProfiler()
 	{
 		return profiler;
@@ -80,6 +102,8 @@ public class JCraft extends SimpleApplication implements ActionListener
 	@Override
 	public void simpleInitApp()
 	{
+		initializeGUI();
+
 		cam.setFrustumPerspective(45f, (float)cam.getWidth()/cam.getHeight(), 0.01f, 1000f);
 		initControls();
 		initBlockTerrain();
@@ -90,10 +114,12 @@ public class JCraft extends SimpleApplication implements ActionListener
 
 		//Setup player
 		player = new EntityPlayer(world, cam);
+		HUDControl2 hud = makeHUD2(player);
 		player.preparePlayerToSpawn();
 		rootNode.addControl(new PlayerControl(this, player));
 
-		rootNode.addControl(makeHUD());
+//		rootNode.addControl(makeHUD());
+		rootNode.addControl(hud);
 		rootNode.addControl(new BlockCursorControl(world, player, assetManager));
 
 		profiler.startSection("root");
@@ -104,11 +130,30 @@ public class JCraft extends SimpleApplication implements ActionListener
 		System.out.println("See key bindings in JCraft class for other controls");
 		System.out.println("****************************************************************************");
 		System.out.println("\r\n\r\n");
+		
+		
+		this.inventoryAppState = new InventoryAppState();
+		stateManager.attach(inventoryAppState);
+		nifty.fromXml("Interface/hud.xml", "hud", hud);
 	}
 
-	private HUDControl makeHUD()
+	private void initializeGUI()
 	{
-		return new HUDControl(this, settings, player);
+		niftyDisplay = new NiftyJmeDisplay(assetManager, inputManager, audioRenderer, guiViewPort);
+        nifty = niftyDisplay.getNifty();
+        nifty.addXml("Interface/hud.xml");
+        nifty.addXml("Interface/inventory.xml");
+        guiViewPort.addProcessor(niftyDisplay);                    
+	}
+
+//	private HUDControl makeHUD()
+//	{
+//		return new HUDControl(this, settings, player);
+//	}
+	
+	private HUDControl2 makeHUD2(EntityPlayer player2)
+	{
+		return new HUDControl2(this, player);
 	}
 	
 	private void toggleDebug()
@@ -163,6 +208,7 @@ public class JCraft extends SimpleApplication implements ActionListener
         addMapping("f1", new KeyTrigger(KeyInput.KEY_F1));
         addMapping("f3", new KeyTrigger(KeyInput.KEY_F3));
         addMapping("f4", new KeyTrigger(KeyInput.KEY_F4));
+        addMapping("e", new KeyTrigger(KeyInput.KEY_E));
 	}
 
 	private void initBlockTerrain()
@@ -284,6 +330,15 @@ public class JCraft extends SimpleApplication implements ActionListener
         {
         	toggleToFullscreen();
         }
+        else if("e".equals(name) && !isPressed)
+        {
+            nifty.fromXml("Interface/inventory.xml", "inventoryScreen", inventoryAppState);
+            inputManager.setCursorVisible(true);
+            
+//            player.setEnabled(false);
+            flyCam.setEnabled(false);
+
+        }
         else if("g".equals(name) && !isPressed)
         {
         	player.toggleGravity();
@@ -352,8 +407,8 @@ public class JCraft extends SimpleApplication implements ActionListener
 		setSettings(settings);
 		restart(); // restart the context to apply changes
 		
-		rootNode.removeControl(HUDControl.class);
-		rootNode.addControl(makeHUD());
+//		rootNode.removeControl(HUDControl.class);//FIXME
+//		rootNode.addControl(makeHUD());
 		
 		StatsAppState stats = stateManager.getState(StatsAppState.class);
 		stateManager.detach(stats);
@@ -371,5 +426,26 @@ public class JCraft extends SimpleApplication implements ActionListener
 		JCraft app = new JCraft(gameSettings);
 		app.setShowSettings(gameSettings.showSettings);
 		app.start();
+	}
+
+	@Override
+	public void bind(Nifty arg0, Screen arg1)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onEndScreen()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onStartScreen()
+	{
+		// TODO Auto-generated method stub
+		
 	}
 }
