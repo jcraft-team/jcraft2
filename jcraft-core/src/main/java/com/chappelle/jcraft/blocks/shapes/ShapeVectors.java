@@ -1,4 +1,4 @@
-package com.chappelle.jcraft.shapes;
+package com.chappelle.jcraft.blocks.shapes;
 
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;

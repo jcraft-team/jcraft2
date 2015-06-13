@@ -37,8 +37,8 @@ public class CubesSettings
 
 	public void setDefaultBlockMaterial(String textureFilePath)
 	{
-		setBlockMaterial(new BlockChunk_Material(assetManager, textureFilePath, true));
-		setUnshadedBlockMaterial(new BlockChunk_Material(assetManager, textureFilePath, false));
+		setBlockMaterial(new ChunkMaterial(assetManager, textureFilePath, true));
+		setUnshadedBlockMaterial(new ChunkMaterial(assetManager, textureFilePath, false));
 	}
 	
 	public void setBlockMaterial(Material blockMaterial)

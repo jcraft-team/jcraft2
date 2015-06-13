@@ -1,6 +1,6 @@
 package com.chappelle.jcraft.util;
 
-import com.chappelle.jcraft.Block;
+import com.chappelle.jcraft.blocks.Block;
 import com.jme3.math.Vector3f;
 
 public class RayTrace

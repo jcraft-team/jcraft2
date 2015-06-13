@@ -3,7 +3,7 @@ package com.chappelle.jcraft.inventory;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.chappelle.jcraft.Block;
+import com.chappelle.jcraft.blocks.Block;
 
 public class Inventory 
 {

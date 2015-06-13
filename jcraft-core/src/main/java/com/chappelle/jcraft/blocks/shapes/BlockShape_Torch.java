@@ -1,11 +1,11 @@
-package com.chappelle.jcraft.shapes;
+package com.chappelle.jcraft.blocks.shapes;
 
 import java.util.List;
 
-import com.chappelle.jcraft.Block;
-import com.chappelle.jcraft.BlockShape;
-import com.chappelle.jcraft.BlockSkin_TextureLocation;
 import com.chappelle.jcraft.Vector3Int;
+import com.chappelle.jcraft.blocks.Block;
+import com.chappelle.jcraft.blocks.BlockShape;
+import com.chappelle.jcraft.blocks.BlockSkin_TextureLocation;
 import com.chappelle.jcraft.blocks.BlockTorch;
 import com.chappelle.jcraft.world.chunk.Chunk;
 import com.jme3.math.FastMath;

@@ -2,6 +2,7 @@ package com.chappelle.jcraft;
 
 import java.util.List;
 
+import com.chappelle.jcraft.blocks.Block;
 import com.chappelle.jcraft.inventory.Inventory;
 import com.chappelle.jcraft.inventory.ItemStack;
 import com.chappelle.jcraft.util.AABB;

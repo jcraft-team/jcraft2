@@ -1,4 +1,4 @@
-package com.chappelle.jcraft.shapes;
+package com.chappelle.jcraft.blocks.shapes;
 
 public class BlockShape_Cube extends BlockShape_Cuboid
 {

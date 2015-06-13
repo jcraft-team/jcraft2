@@ -1,8 +1,12 @@
-package com.chappelle.jcraft;
+package com.chappelle.jcraft.blocks;
 
 import java.util.List;
 
+import com.chappelle.jcraft.CubesSettings;
+import com.chappelle.jcraft.Direction;
+import com.chappelle.jcraft.Vector3Int;
 import com.chappelle.jcraft.lighting.LightMap;
+import com.chappelle.jcraft.util.BlockNavigator;
 import com.chappelle.jcraft.world.World;
 import com.chappelle.jcraft.world.chunk.Chunk;
 import com.jme3.math.Vector2f;

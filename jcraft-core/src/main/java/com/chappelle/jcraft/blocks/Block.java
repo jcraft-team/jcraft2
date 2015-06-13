@@ -1,7 +1,7 @@
-package com.chappelle.jcraft;
+package com.chappelle.jcraft.blocks;
 
-import com.chappelle.jcraft.blocks.*;
-import com.chappelle.jcraft.shapes.BlockShape_Cube;
+import com.chappelle.jcraft.Vector3Int;
+import com.chappelle.jcraft.blocks.shapes.BlockShape_Cube;
 import com.chappelle.jcraft.util.AABB;
 import com.chappelle.jcraft.util.MathUtils;
 import com.chappelle.jcraft.util.RayTrace;

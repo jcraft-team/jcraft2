@@ -1,7 +1,8 @@
-package com.chappelle.jcraft;
+package com.chappelle.jcraft.blocks;
 
 import java.util.Iterator;
 
+import com.chappelle.jcraft.Vector3Int;
 import com.chappelle.jcraft.world.chunk.Chunk;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;

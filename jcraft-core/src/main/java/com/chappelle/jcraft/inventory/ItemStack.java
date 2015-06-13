@@ -1,6 +1,6 @@
 package com.chappelle.jcraft.inventory;
 
-import com.chappelle.jcraft.Block;
+import com.chappelle.jcraft.blocks.Block;
 
 
 public class ItemStack 

@@ -3,8 +3,8 @@ package com.chappelle.jcraft.world.chunk;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.chappelle.jcraft.Block;
 import com.chappelle.jcraft.Vector3Int;
+import com.chappelle.jcraft.blocks.Block;
 import com.chappelle.jcraft.world.World;
 
 public class FlatChunkProvider implements ChunkProvider

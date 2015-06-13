@@ -3,9 +3,9 @@ package com.chappelle.jcraft.lighting;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import com.chappelle.jcraft.Block;
 import com.chappelle.jcraft.Direction;
 import com.chappelle.jcraft.Vector3Int;
+import com.chappelle.jcraft.blocks.Block;
 import com.chappelle.jcraft.world.World;
 import com.chappelle.jcraft.world.chunk.Chunk;
 

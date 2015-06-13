@@ -2,8 +2,10 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.chappelle.jcraft;
+package com.chappelle.jcraft.world;
 
+import com.chappelle.jcraft.Vector3Int;
+import com.chappelle.jcraft.blocks.Block;
 import com.chappelle.jcraft.world.chunk.Chunk;
 
 /**

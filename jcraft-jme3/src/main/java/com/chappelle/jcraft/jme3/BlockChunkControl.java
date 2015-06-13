@@ -1,7 +1,7 @@
 package com.chappelle.jcraft.jme3;
 
-import com.chappelle.jcraft.MeshGenerator;
 import com.chappelle.jcraft.Vector3Int;
+import com.chappelle.jcraft.blocks.MeshGenerator;
 import com.chappelle.jcraft.world.chunk.Chunk;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;

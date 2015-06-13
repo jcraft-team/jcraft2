@@ -1,10 +1,7 @@
 package com.chappelle.jcraft.blocks;
 
-import com.chappelle.jcraft.Block;
-import com.chappelle.jcraft.BlockSkin;
-import com.chappelle.jcraft.BlockSkin_TextureLocation;
 import com.chappelle.jcraft.Vector3Int;
-import com.chappelle.jcraft.shapes.BlockShape_Flower;
+import com.chappelle.jcraft.blocks.shapes.BlockShape_Flower;
 import com.chappelle.jcraft.util.AABB;
 import com.chappelle.jcraft.world.World;
 import com.jme3.math.Vector3f;
