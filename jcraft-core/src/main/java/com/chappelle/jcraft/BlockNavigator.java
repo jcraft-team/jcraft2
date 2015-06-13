@@ -4,6 +4,7 @@
  */
 package com.chappelle.jcraft;
 
+import com.chappelle.jcraft.world.World;
 import com.jme3.math.Vector3f;
 
 /**

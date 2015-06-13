@@ -4,8 +4,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import com.chappelle.jcraft.Chunk;
-import com.chappelle.jcraft.World;
+import com.chappelle.jcraft.world.World;
+import com.chappelle.jcraft.world.chunk.Chunk;
 
 public class CubesSerializer{
     

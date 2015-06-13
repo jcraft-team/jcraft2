@@ -4,10 +4,10 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 import com.chappelle.jcraft.Block;
-import com.chappelle.jcraft.Chunk;
 import com.chappelle.jcraft.Direction;
 import com.chappelle.jcraft.Vector3Int;
-import com.chappelle.jcraft.World;
+import com.chappelle.jcraft.world.World;
+import com.chappelle.jcraft.world.chunk.Chunk;
 
 public class FloodFillLightManager implements LightManager
 {

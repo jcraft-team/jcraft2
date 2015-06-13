@@ -5,16 +5,17 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.chappelle.jcraft.Block;
-import com.chappelle.jcraft.ChunkProvider;
 import com.chappelle.jcraft.CubesSettings;
 import com.chappelle.jcraft.EntityPlayer;
 import com.chappelle.jcraft.GameSettings;
-import com.chappelle.jcraft.TestChunkProvider;
 import com.chappelle.jcraft.Vector3Int;
-import com.chappelle.jcraft.World;
 import com.chappelle.jcraft.profiler.Profiler;
 import com.chappelle.jcraft.profiler.ProfilerResult;
 import com.chappelle.jcraft.util.AABB;
+import com.chappelle.jcraft.world.World;
+import com.chappelle.jcraft.world.chunk.ChunkProvider;
+import com.chappelle.jcraft.world.chunk.FlatChunkProvider;
+import com.chappelle.jcraft.world.chunk.TestChunkProvider;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.StatsAppState;
 import com.jme3.font.BitmapFont;
@@ -214,7 +215,8 @@ public class JCraft extends SimpleApplication implements ActionListener
 		cubesSettings = new CubesSettings(this);
 		cubesSettings.setDefaultBlockMaterial("Textures/FaithfulBlocks.png");
 
-		ChunkProvider chunkProvider = new TestChunkProvider();
+//		ChunkProvider chunkProvider = new TestChunkProvider();
+		ChunkProvider chunkProvider = new FlatChunkProvider(5);
 		world = new World(chunkProvider, profiler, cubesSettings, assetManager, cam);
 		blockTerrain = new BlockTerrainControl(this, cubesSettings, world);
 		terrainNode.addControl(blockTerrain);

@@ -4,6 +4,8 @@
  */
 package com.chappelle.jcraft;
 
+import com.chappelle.jcraft.world.chunk.Chunk;
+
 /**
  *
  * @author Carl

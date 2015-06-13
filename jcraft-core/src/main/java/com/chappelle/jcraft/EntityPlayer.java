@@ -7,6 +7,7 @@ import com.chappelle.jcraft.inventory.ItemStack;
 import com.chappelle.jcraft.util.AABB;
 import com.chappelle.jcraft.util.MathUtils;
 import com.chappelle.jcraft.util.RayTrace;
+import com.chappelle.jcraft.world.World;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 

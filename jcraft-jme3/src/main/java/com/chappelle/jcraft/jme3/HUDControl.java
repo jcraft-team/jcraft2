@@ -1,15 +1,15 @@
 package com.chappelle.jcraft.jme3;
 
 import com.chappelle.jcraft.Block;
-import com.chappelle.jcraft.Chunk;
 import com.chappelle.jcraft.EntityPlayer;
 import com.chappelle.jcraft.Vector3Int;
-import com.chappelle.jcraft.World;
 import com.chappelle.jcraft.blocks.Sprite;
 import com.chappelle.jcraft.inventory.Inventory;
 import com.chappelle.jcraft.inventory.InventoryListener;
 import com.chappelle.jcraft.inventory.ItemStack;
 import com.chappelle.jcraft.util.RayTrace;
+import com.chappelle.jcraft.world.World;
+import com.chappelle.jcraft.world.chunk.Chunk;
 import com.jme3.asset.AssetManager;
 import com.jme3.font.BitmapFont;
 import com.jme3.font.BitmapText;

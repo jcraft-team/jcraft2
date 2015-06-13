@@ -1,7 +1,7 @@
 package com.chappelle.jcraft.lighting;
 
-import com.chappelle.jcraft.Chunk;
 import com.chappelle.jcraft.Vector3Int;
+import com.chappelle.jcraft.world.chunk.Chunk;
 
 public interface LightManager
 {

@@ -5,6 +5,8 @@ import com.chappelle.jcraft.shapes.BlockShape_Cube;
 import com.chappelle.jcraft.util.AABB;
 import com.chappelle.jcraft.util.MathUtils;
 import com.chappelle.jcraft.util.RayTrace;
+import com.chappelle.jcraft.world.World;
+import com.chappelle.jcraft.world.chunk.Chunk;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 
@@ -210,7 +212,7 @@ public class Block
 		return 0;
 	}
 
-	public boolean isRemovable()
+	public boolean isBreakable()
 	{
 		return true;
 	}

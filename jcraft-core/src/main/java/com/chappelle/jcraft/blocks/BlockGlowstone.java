@@ -4,7 +4,7 @@ import com.chappelle.jcraft.Block;
 import com.chappelle.jcraft.BlockSkin;
 import com.chappelle.jcraft.BlockSkin_TextureLocation;
 import com.chappelle.jcraft.Vector3Int;
-import com.chappelle.jcraft.World;
+import com.chappelle.jcraft.world.World;
 import com.jme3.math.Vector3f;
 
 public class BlockGlowstone extends Block

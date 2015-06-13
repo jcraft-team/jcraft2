@@ -1,12 +1,19 @@
-package com.chappelle.jcraft;
+package com.chappelle.jcraft.world.chunk;
 
 import java.io.IOException;
 
+import com.chappelle.jcraft.Block;
+import com.chappelle.jcraft.BlockNavigator;
+import com.chappelle.jcraft.BlockState;
+import com.chappelle.jcraft.Util;
+import com.chappelle.jcraft.Vector3Int;
+import com.chappelle.jcraft.Block.Face;
 import com.chappelle.jcraft.lighting.LightMap;
 import com.chappelle.jcraft.lighting.LightType;
 import com.chappelle.jcraft.network.BitInputStream;
 import com.chappelle.jcraft.network.BitOutputStream;
 import com.chappelle.jcraft.network.BitSerializable;
+import com.chappelle.jcraft.world.World;
 
 public class Chunk implements BitSerializable
 {

@@ -3,9 +3,9 @@ package com.chappelle.jcraft.blocks;
 import com.chappelle.jcraft.Block;
 import com.chappelle.jcraft.BlockSkin;
 import com.chappelle.jcraft.BlockSkin_TextureLocation;
-import com.chappelle.jcraft.Chunk;
 import com.chappelle.jcraft.Vector3Int;
-import com.chappelle.jcraft.World;
+import com.chappelle.jcraft.world.World;
+import com.chappelle.jcraft.world.chunk.Chunk;
 import com.jme3.math.Vector3f;
 
 public class BlockGrass extends Block

@@ -1,4 +1,4 @@
-package com.chappelle.jcraft;
+package com.chappelle.jcraft.world.chunk;
 
 public class ChunkCoordIntPair
 {

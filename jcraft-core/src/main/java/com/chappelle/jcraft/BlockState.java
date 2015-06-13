@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.chappelle.jcraft.world.chunk.Chunk;
+
 public class BlockState implements Serializable
 {
     private Map<Short, Object> blockState;

@@ -1,4 +1,6 @@
-package com.chappelle.jcraft;
+package com.chappelle.jcraft.world.chunk;
+
+import com.chappelle.jcraft.world.World;
 
 public interface ChunkProvider
 {

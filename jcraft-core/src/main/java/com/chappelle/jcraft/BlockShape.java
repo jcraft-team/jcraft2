@@ -3,6 +3,8 @@ package com.chappelle.jcraft;
 import java.util.List;
 
 import com.chappelle.jcraft.lighting.LightMap;
+import com.chappelle.jcraft.world.World;
+import com.chappelle.jcraft.world.chunk.Chunk;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 

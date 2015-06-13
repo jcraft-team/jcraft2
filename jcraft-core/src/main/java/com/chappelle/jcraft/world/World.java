@@ -1,4 +1,4 @@
-package com.chappelle.jcraft;
+package com.chappelle.jcraft.world;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -7,6 +7,16 @@ import java.util.List;
 import java.util.Queue;
 import java.util.Random;
 
+import com.chappelle.jcraft.Block;
+import com.chappelle.jcraft.BlockNavigator;
+import com.chappelle.jcraft.BlockState;
+import com.chappelle.jcraft.BlockTerrain_LocalBlockState;
+import com.chappelle.jcraft.CubesSettings;
+import com.chappelle.jcraft.Direction;
+import com.chappelle.jcraft.Entity;
+import com.chappelle.jcraft.EntityPlayer;
+import com.chappelle.jcraft.Noise;
+import com.chappelle.jcraft.Vector3Int;
 import com.chappelle.jcraft.blocks.SoundConstants;
 import com.chappelle.jcraft.lighting.FloodFillLightManager;
 import com.chappelle.jcraft.lighting.LightManager;
@@ -18,6 +28,8 @@ import com.chappelle.jcraft.profiler.Profiler;
 import com.chappelle.jcraft.util.AABB;
 import com.chappelle.jcraft.util.MathUtils;
 import com.chappelle.jcraft.util.RayTrace;
+import com.chappelle.jcraft.world.chunk.Chunk;
+import com.chappelle.jcraft.world.chunk.ChunkProvider;
 import com.jme3.asset.AssetManager;
 import com.jme3.audio.AudioNode;
 import com.jme3.math.Vector3f;
@@ -30,7 +42,6 @@ public class World implements BitSerializable
 	private ChunkProvider chunkProvider;
 	public Queue<Chunk> addedChunks = new LinkedList<Chunk>();
 	
-	private ArrayList<BlockChunkListener> chunkListeners = new ArrayList<BlockChunkListener>();
 	private LightManager lightMgr;
 	private Profiler profiler;
 	private AssetManager assetManager;
@@ -257,7 +268,7 @@ public class World implements BitSerializable
 		if(localBlockState != null)
 		{
 			Block block = localBlockState.getBlock();
-			if(block.isRemovable())
+			if(block.isBreakable())
 			{
 				lightMgr.removeBlockLight(location);
 				lightMgr.rebuildSunlight(localBlockState.getChunk());
@@ -369,16 +380,6 @@ public class World implements BitSerializable
 		int localZ = (blockLocation.getZ() - chunk.getBlockLocation().getZ());
 		localLocation.set(localX, localY, localZ);
 		return localLocation;
-	}
-
-	public void addChunkListener(BlockChunkListener blockChunkListener)
-	{
-		chunkListeners.add(blockChunkListener);
-	}
-
-	public void removeChunkListener(BlockChunkListener blockChunkListener)
-	{
-		chunkListeners.remove(blockChunkListener);
 	}
 
 	public CubesSettings getSettings()

@@ -4,7 +4,7 @@ import com.chappelle.jcraft.Block;
 import com.chappelle.jcraft.BlockSkin;
 import com.chappelle.jcraft.BlockSkin_TextureLocation;
 import com.chappelle.jcraft.Vector3Int;
-import com.chappelle.jcraft.World;
+import com.chappelle.jcraft.world.World;
 import com.jme3.math.Vector3f;
 
 public class BlockBedrock extends Block
@@ -25,5 +25,11 @@ public class BlockBedrock extends Block
 	public void onEntityWalking(World world, Vector3Int location)
 	{
 		world.playSound(SoundConstants.DIG_STONE, 4);
+	}
+	
+	@Override
+	public boolean isBreakable()
+	{
+		return false;
 	}
 }
