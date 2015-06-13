@@ -19,7 +19,8 @@ public class BlockChunk_Material extends Material
         texture.setMagFilter(Texture.MagFilter.Nearest);
         texture.setMinFilter(Texture.MinFilter.NearestNoMipMaps);
         setTexture("ColorMap", texture);
-        setBoolean("VertexColor",false);
+        setBoolean("VertexColor",useVertextColor);
         getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
+        setFloat("AlphaDiscardThreshold", 0.1f);
     }
 }

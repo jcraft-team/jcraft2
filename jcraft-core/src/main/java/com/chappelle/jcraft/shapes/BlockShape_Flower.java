@@ -17,38 +17,41 @@ public class BlockShape_Flower extends BlockShape
     {
         Vector3f blockLocation3f = new Vector3f(blockLocation.getX(), blockLocation.getY(), blockLocation.getZ());
 
+        float halfWidth = 0.25f;
+        float height = 0.7f;
+        
     	addFaceIndices(indices, positions.size());
-        positions.add(blockLocation3f.add(new Vector3f(0, 0, 0)));
-        positions.add(blockLocation3f.add(new Vector3f(1, 0, 1)));
-        positions.add(blockLocation3f.add(new Vector3f(0, 1, 0)));
-        positions.add(blockLocation3f.add(new Vector3f(1, 1, 1)));
+        positions.add(blockLocation3f.add(new Vector3f(0.5f - halfWidth, 0, 0.5f - halfWidth)));
+        positions.add(blockLocation3f.add(new Vector3f(0.5f + halfWidth, 0, 0.5f + halfWidth)));
+        positions.add(blockLocation3f.add(new Vector3f(0.5f - halfWidth, height, 0.5f - halfWidth)));
+        positions.add(blockLocation3f.add(new Vector3f(0.5f + halfWidth, height, 0.5f + halfWidth)));
         addSquareNormals(normals, -1, 0, -1);
         addTextureCoordinates(chunk, textureCoordinates, block.getSkin(chunk, blockLocation, Block.Face.Left).getTextureLocation());
         addLighting(chunk, blockLocation, Block.Face.Left);
 
         addFaceIndices(indices, positions.size());
-        positions.add(blockLocation3f.add(new Vector3f(1, 0, 1)));
-        positions.add(blockLocation3f.add(new Vector3f(0, 0, 0)));
-        positions.add(blockLocation3f.add(new Vector3f(1, 1, 1)));
-        positions.add(blockLocation3f.add(new Vector3f(0, 1, 0)));
+        positions.add(blockLocation3f.add(new Vector3f(0.5f + halfWidth, 0, 0.5f + halfWidth)));
+        positions.add(blockLocation3f.add(new Vector3f(0.5f - halfWidth, 0, 0.5f - halfWidth)));
+        positions.add(blockLocation3f.add(new Vector3f(0.5f + halfWidth, height, 0.5f + halfWidth)));
+        positions.add(blockLocation3f.add(new Vector3f(0.5f - halfWidth, height, 0.5f - halfWidth)));
         addSquareNormals(normals, 1, 0, -1);
         addTextureCoordinates(chunk, textureCoordinates, block.getSkin(chunk, blockLocation, Block.Face.Right).getTextureLocation());
         addLighting(chunk, blockLocation, Block.Face.Right);
 
         addFaceIndices(indices, positions.size());
-        positions.add(blockLocation3f.add(new Vector3f(0, 0, 1)));
-        positions.add(blockLocation3f.add(new Vector3f(1, 0, 0)));
-        positions.add(blockLocation3f.add(new Vector3f(0, 1, 1)));
-        positions.add(blockLocation3f.add(new Vector3f(1, 1, 0)));
+        positions.add(blockLocation3f.add(new Vector3f(0.5f - halfWidth, 0, 0.5f + halfWidth)));
+        positions.add(blockLocation3f.add(new Vector3f(0.5f + halfWidth, 0, 0.5f - halfWidth)));
+        positions.add(blockLocation3f.add(new Vector3f(0.5f - halfWidth, height, 0.5f + halfWidth)));
+        positions.add(blockLocation3f.add(new Vector3f(0.5f + halfWidth, height, 0.5f - halfWidth)));
         addSquareNormals(normals, 1, 0, 1);
         addTextureCoordinates(chunk, textureCoordinates,block.getSkin(chunk, blockLocation, Block.Face.Front).getTextureLocation());
         addLighting(chunk, blockLocation, Block.Face.Front);
 
         addFaceIndices(indices, positions.size());
-        positions.add(blockLocation3f.add(new Vector3f(1, 0, 0)));
-        positions.add(blockLocation3f.add(new Vector3f(0, 0, 1)));
-        positions.add(blockLocation3f.add(new Vector3f(1, 1, 0)));
-        positions.add(blockLocation3f.add(new Vector3f(0, 1, 1)));
+        positions.add(blockLocation3f.add(new Vector3f(0.5f + halfWidth, 0, 0.5f - halfWidth)));
+        positions.add(blockLocation3f.add(new Vector3f(0.5f - halfWidth, 0, 0.5f + halfWidth)));
+        positions.add(blockLocation3f.add(new Vector3f(0.5f + halfWidth, height, 0.5f - halfWidth)));
+        positions.add(blockLocation3f.add(new Vector3f(0.5f - halfWidth, height, 0.5f + halfWidth)));
         addSquareNormals(normals, -1, 0, 1);
         addTextureCoordinates(chunk, textureCoordinates, block.getSkin(chunk, blockLocation, Block.Face.Back).getTextureLocation());
         addLighting(chunk, blockLocation, Block.Face.Back);

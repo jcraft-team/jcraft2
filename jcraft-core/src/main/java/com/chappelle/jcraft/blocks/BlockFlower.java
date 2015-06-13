@@ -37,6 +37,18 @@ public class BlockFlower extends Block
 	}
 
 	@Override
+	public boolean isTransparent()
+	{
+		return true;
+	}
+
+	@Override
+	public boolean useNeighborLight()
+	{
+		return false;
+	}
+
+	@Override
 	public boolean smothersBottomBlock()
 	{
 		return false;
