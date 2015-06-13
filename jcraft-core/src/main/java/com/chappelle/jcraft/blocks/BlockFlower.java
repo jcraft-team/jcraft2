@@ -11,9 +11,9 @@ import com.jme3.math.Vector3f;
 
 public class BlockFlower extends Block
 {
-	public BlockFlower(int blockId)
+	public BlockFlower(int blockId, int textureCol, int textureRow)
 	{
-		super(blockId, new BlockSkin[] { new BlockSkin(new BlockSkin_TextureLocation(12, 0), true) });
+		super(blockId, new BlockSkin[] { new BlockSkin(new BlockSkin_TextureLocation(textureCol, textureRow), true) });
 		setShapes(new BlockShape_Flower());
 	}
 

@@ -214,8 +214,10 @@ public class TestChunkProvider implements ChunkProvider
 		chunk.setBlock(6, 11, 10, Block.grass);
 		chunk.setBlock(6, 12, 9, Block.grass);
 
-//		chunk.setBlock(1, 10, 1, Block.flower);
-		chunk.setBlock(0, 10, 0, Block.flower);
+		chunk.setBlock(0, 10, 0, Block.plantRed);
+		chunk.setBlock(1, 10, 0, Block.plantYellow);
+		chunk.setBlock(0, 10, 1, Block.mushroomBrown);
+		chunk.setBlock(0, 10, 2, Block.mushroomRed);
 		return chunk;
 	}
 

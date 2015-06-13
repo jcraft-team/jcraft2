@@ -112,8 +112,11 @@ public class Block
 	public static final Block diamond = new BlockDiamond(12);
 	public static final Block bedrock = new BlockBedrock(13);
 	public static final Block gold = new BlockGold(14);
-	public static final Block flower = new BlockFlower(15);
-	public static final Block water = new BlockWater(16);
+	public static final Block plantRed = new BlockFlower(15, 12, 0);
+	public static final Block plantYellow = new BlockFlower(16, 13, 0);
+	public static final Block mushroomBrown = new BlockFlower(17, 13, 1);
+	public static final Block mushroomRed = new BlockFlower(18, 12, 1);
+	public static final Block water = new BlockWater(19);
 	
 	private BlockShape[] shapes = new BlockShape[] { new BlockShape_Cube() };
 	private BlockSkin[] skins;
