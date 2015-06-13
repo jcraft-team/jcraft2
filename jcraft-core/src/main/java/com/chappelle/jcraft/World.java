@@ -142,21 +142,17 @@ public class World implements BitSerializable
 		return null;
 	}
 
-	public void setBlockArea(Vector3Int location, Vector3Int size, Block block)
-	{
-		Vector3Int tmpLocation = new Vector3Int();
-		for(int x = 0; x < size.getX(); x++)
-		{
-			for(int y = 0; y < size.getY(); y++)
-			{
-				for(int z = 0; z < size.getZ(); z++)
-				{
-					tmpLocation.set(location.getX() + x, location.getY() + y, location.getZ() + z);
-					setBlock(tmpLocation, block);
-				}
-			}
-		}
-	}
+    public void setBlock(RayTrace rayTrace, Block blockToPlace)
+    {
+        Vector3Int location = new Vector3Int(rayTrace.blockX, rayTrace.blockY, rayTrace.blockZ);
+        Vector3Int newBlockLocation = BlockNavigator.getNeighborBlockLocalLocation(location, rayTrace.sideHit);
+        Block.Face placementFace = rayTrace.sideHit;
+        if (blockToPlace.isValidPlacementFace(placementFace) && blockToPlace.canPlaceBlockAt(this, newBlockLocation.x, newBlockLocation.y, newBlockLocation.z))
+        {
+            setBlock(newBlockLocation, blockToPlace);
+            blockToPlace.onBlockPlaced(this, newBlockLocation, placementFace, getCameraDirectionAsUnitVector(cam.getDirection()));
+        }
+    }
 
 	public void setBlock(int x, int y, int z, Block block)
 	{
@@ -174,6 +170,86 @@ public class World implements BitSerializable
 			localBlockState.setBlock(block);
 		}
 	}
+	
+	public void setBlockArea(Vector3Int location, Vector3Int size, Block block)
+	{
+		Vector3Int tmpLocation = new Vector3Int();
+		for(int x = 0; x < size.getX(); x++)
+		{
+			for(int y = 0; y < size.getY(); y++)
+			{
+				for(int z = 0; z < size.getZ(); z++)
+				{
+					tmpLocation.set(location.getX() + x, location.getY() + y, location.getZ() + z);
+					setBlock(tmpLocation, block);
+				}
+			}
+		}
+	}
+	
+	public void setBlocksFromHeightmap(Vector3Int location, int[][] heightmap, Block block)
+	{
+		Vector3Int tmpLocation = new Vector3Int();
+		Vector3Int tmpSize = new Vector3Int();
+		for(int x = 0; x < heightmap.length; x++)
+		{
+			for(int z = 0; z < heightmap[0].length; z++)
+			{
+				tmpLocation.set(location.getX() + x, location.getY(), location.getZ() + z);
+				tmpSize.set(1, heightmap[x][z], 1);
+				setBlockArea(tmpLocation, tmpSize, block);
+			}
+		}
+	}
+
+	public void setBlocksFromNoise(Vector3Int location, Vector3Int size, float roughness, Block block)
+	{
+		Noise noise = new Noise(null, roughness, size.getX(), size.getZ());
+		noise.initialise();
+		float gridMinimum = noise.getMinimum();
+		float gridLargestDifference = (noise.getMaximum() - gridMinimum);
+		float[][] grid = noise.getGrid();
+		for(int x = 0; x < grid.length; x++)
+		{
+			float[] row = grid[x];
+			for(int z = 0; z < row.length; z++)
+			{
+				/*---Calculation of block height has been summarized to minimize the java heap---
+				float gridGroundHeight = (row[z] - gridMinimum);
+				float blockHeightInPercents = ((gridGroundHeight * 100) / gridLargestDifference);
+				int blockHeight = ((int) ((blockHeightInPercents / 100) * size.getY())) + 1;
+				---*/
+				int blockHeight = (((int) (((((row[z] - gridMinimum) * 100) / gridLargestDifference) / 100) * size
+						.getY())) + 1);
+				Vector3Int tmpLocation = new Vector3Int();
+				for(int y = 0; y < blockHeight; y++)
+				{
+					tmpLocation.set(location.getX() + x, location.getY() + y, location.getZ() + z);
+					setBlock(tmpLocation, block);
+				}
+			}
+		}
+	}
+
+	public void setBlocksForMaximumFaces(Vector3Int location, Vector3Int size, Block block)
+	{
+		Vector3Int tmpLocation = new Vector3Int();
+		for(int x = 0; x < size.getX(); x++)
+		{
+			for(int y = 0; y < size.getY(); y++)
+			{
+				for(int z = 0; z < size.getZ(); z++)
+				{
+					if(((x ^ y ^ z) & 1) == 1)
+					{
+						tmpLocation.set(location.getX() + x, location.getY() + y, location.getZ() + z);
+						setBlock(tmpLocation, block);
+					}
+				}
+			}
+		}
+	}
+
 
 	public void removeBlock(Vector3Int location)
 	{
@@ -310,68 +386,6 @@ public class World implements BitSerializable
 		return settings;
 	}
 
-	public void setBlocksFromHeightmap(Vector3Int location, int[][] heightmap, Block block)
-	{
-		Vector3Int tmpLocation = new Vector3Int();
-		Vector3Int tmpSize = new Vector3Int();
-		for(int x = 0; x < heightmap.length; x++)
-		{
-			for(int z = 0; z < heightmap[0].length; z++)
-			{
-				tmpLocation.set(location.getX() + x, location.getY(), location.getZ() + z);
-				tmpSize.set(1, heightmap[x][z], 1);
-				setBlockArea(tmpLocation, tmpSize, block);
-			}
-		}
-	}
-
-	public void setBlocksFromNoise(Vector3Int location, Vector3Int size, float roughness, Block block)
-	{
-		Noise noise = new Noise(null, roughness, size.getX(), size.getZ());
-		noise.initialise();
-		float gridMinimum = noise.getMinimum();
-		float gridLargestDifference = (noise.getMaximum() - gridMinimum);
-		float[][] grid = noise.getGrid();
-		for(int x = 0; x < grid.length; x++)
-		{
-			float[] row = grid[x];
-			for(int z = 0; z < row.length; z++)
-			{
-				/*---Calculation of block height has been summarized to minimize the java heap---
-				float gridGroundHeight = (row[z] - gridMinimum);
-				float blockHeightInPercents = ((gridGroundHeight * 100) / gridLargestDifference);
-				int blockHeight = ((int) ((blockHeightInPercents / 100) * size.getY())) + 1;
-				---*/
-				int blockHeight = (((int) (((((row[z] - gridMinimum) * 100) / gridLargestDifference) / 100) * size
-						.getY())) + 1);
-				Vector3Int tmpLocation = new Vector3Int();
-				for(int y = 0; y < blockHeight; y++)
-				{
-					tmpLocation.set(location.getX() + x, location.getY() + y, location.getZ() + z);
-					setBlock(tmpLocation, block);
-				}
-			}
-		}
-	}
-
-	public void setBlocksForMaximumFaces(Vector3Int location, Vector3Int size, Block block)
-	{
-		Vector3Int tmpLocation = new Vector3Int();
-		for(int x = 0; x < size.getX(); x++)
-		{
-			for(int y = 0; y < size.getY(); y++)
-			{
-				for(int z = 0; z < size.getZ(); z++)
-				{
-					if(((x ^ y ^ z) & 1) == 1)
-					{
-						tmpLocation.set(location.getX() + x, location.getY() + y, location.getZ() + z);
-						setBlock(tmpLocation, block);
-					}
-				}
-			}
-		}
-	}
 
 	public void setBlocksFromTerrain(World world)
 	{
@@ -447,18 +461,6 @@ public class World implements BitSerializable
     	profiler.endSection();
     }
 
-    public void setBlock(RayTrace rayTrace, Block blockToPlace)
-    {
-        Vector3Int location = new Vector3Int(rayTrace.blockX, rayTrace.blockY, rayTrace.blockZ);
-        Vector3Int newBlockLocation = BlockNavigator.getNeighborBlockLocalLocation(location, rayTrace.sideHit);
-        Block.Face placementFace = rayTrace.sideHit;
-        if (blockToPlace.isValidPlacementFace(placementFace) && blockToPlace.canPlaceBlockAt(this, newBlockLocation.x, newBlockLocation.y, newBlockLocation.z))
-        {
-            setBlock(newBlockLocation, blockToPlace);
-            blockToPlace.onBlockPlaced(this, newBlockLocation, placementFace, getCameraDirectionAsUnitVector(cam.getDirection()));
-        }
-    }
-    
     public List<AABB> getCollidingBoundingBoxes(Entity entity, AABB boundingBox)
     {
     	List<AABB> boundingBoxes = new ArrayList<AABB>();
