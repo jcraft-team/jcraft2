@@ -38,10 +38,15 @@ public class World implements BitSerializable
 	private CubesSettings settings;
 	
 	private ChunkProvider chunkProvider;
-	public Queue<Chunk> addedChunks = new LinkedList<Chunk>();
+	
+	/** Chunks added here will be rendered in the following tick(one per tick)*/ 
+	public Queue<Chunk> chunkRenderQueue = new LinkedList<Chunk>();
+
+	/** Chunks generated this tick. We queue them up and copy them to the render queue after the lighting data is ready*/
+	private List<Chunk> generatedChunks = new ArrayList<Chunk>();
 	
 	private LightManager lightMgr;
-	private Profiler profiler;
+	public Profiler profiler;
 	private AssetManager assetManager;
 	private Random random = new Random();
 	private AudioNode music;
@@ -49,6 +54,8 @@ public class World implements BitSerializable
 	private List<Entity> entities = new ArrayList<Entity>();
 	private EntityPlayer player;
 	private Vector3Int playerLocTemp = new Vector3Int();
+	private int chunkGenTicks;
+	private ChunkGenerationRunnable gen = new ChunkGenerationRunnable();
 	
 	public World(ChunkProvider chunkProvider, Profiler profiler, CubesSettings settings, AssetManager assetManager, Camera cam)
 	{
@@ -66,34 +73,56 @@ public class World implements BitSerializable
         music.setLooping(true);
 	}
 
+	private class ChunkGenerationRunnable implements Runnable
+	{
+		public boolean isRunning;
+		
+		public void run()
+		{
+			isRunning = true;
+			generateNearbyChunks();
+			for(Chunk chunk : generatedChunks)
+			{
+				lightMgr.initChunkSunlight(chunk);
+			}
+			chunkRenderQueue.addAll(generatedChunks);
+			generatedChunks.clear();
+			isRunning = false;
+		}
+	}
+	
 	public void update(float tpf)
 	{
-		generateNearbyChunks();
+		if(chunkGenTicks > 30)
+		{
+			if(!gen.isRunning)
+			{
+				chunkGenTicks = 0;
+				new Thread(gen).start();
+			}
+		}
+		chunkGenTicks++;
 	}
 
-	private void generateNearbyChunks()
+	/**
+	 * Generates a radius of chunks around the player
+	 */
+	public void generateNearbyChunks()
 	{
-		int x = (int)player.posX + 16;
-		playerLocTemp.set(x, 0, (int)player.posZ);
-		getChunk(playerLocTemp, true);
-
-		int z = (int)player.posZ + 16;
-		playerLocTemp.set((int)player.posX, 0, z);
-		getChunk(playerLocTemp, true);
-
-		playerLocTemp.set(x, 0, z);
-		getChunk(playerLocTemp, true);
-
-		x = (int)player.posX + 32;
-		playerLocTemp.set(x, 0, (int)player.posZ);
-		getChunk(playerLocTemp, true);
-
-		z = (int)player.posZ + 32;
-		playerLocTemp.set((int)player.posX, 0, z);
-		getChunk(playerLocTemp, true);
-
-		playerLocTemp.set(x, 0, z);
-		getChunk(playerLocTemp, true);
+		int radius = 5;
+		int x = (int)player.posX - 16*radius;
+		int z = (int)player.posZ - 16*radius;
+		for(int i = 0; i < radius*2; i++)
+		{
+			for(int j = 0; j < radius*2; j++)
+			{
+				playerLocTemp.set(x + 16*i, 0, z + 16*j);
+				if(!playerLocTemp.hasNegativeCoordinate())
+				{
+					getChunk(playerLocTemp, true);
+				}
+			}
+		}
 	}
 	
 	public void setPlayer(EntityPlayer player)
@@ -348,12 +377,16 @@ public class World implements BitSerializable
 		else
 		{
 			Chunk chunk = chunkProvider.generateChunk(chunkLocation.x, chunkLocation.z);
-			lightMgr.initChunkSunlight(chunk);
-			addedChunks.add(chunk);
+			onChunkGenerated(chunk);
 			return chunk;
 		}
 	}
 
+	private void onChunkGenerated(Chunk chunk)
+	{
+		generatedChunks.add(chunk);
+	}
+	
 	public Chunk getChunkNeighbor(Chunk chunk, Direction direction)
 	{
 		Vector3Int chunkLocation = chunk.location.add(direction.getVector());

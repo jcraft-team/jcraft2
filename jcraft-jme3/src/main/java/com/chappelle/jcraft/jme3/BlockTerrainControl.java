@@ -60,14 +60,14 @@ public class BlockTerrainControl extends AbstractControl
 
 	public void updateSpatial()
 	{
-		profiler.startSection("chunkBuilding");
-		Chunk addedChunk = world.addedChunks.poll();
+		profiler.startSection("ChunkSpatial");
+		Chunk addedChunk = world.chunkRenderQueue.poll();
 		while(addedChunk != null)
 		{
 			BlockChunkControl control = new BlockChunkControl(this, addedChunk);
 			this.spatial.addControl(control);
 			chunks.add(control);
-			addedChunk = world.addedChunks.poll();
+			addedChunk = world.chunkRenderQueue.poll();
 		}
 		for(BlockChunkControl chunk : chunks)
 		{

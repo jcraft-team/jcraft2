@@ -36,6 +36,17 @@ public class Chunk implements BitSerializable
     	blockState = new BlockState[16][256][16];
     	lights = new LightMap(new Vector3Int(16, 256, 16), location);
     }
+
+    public Chunk(World world, int x, int z, int[][][] blockTypes, boolean[][][] blocks_IsOnSurface)
+    {
+    	this.world = world;
+    	location.set(x, 0, z);
+    	blockLocation.set(location.mult(16, 256, 16));
+    	this.blockTypes = blockTypes;
+    	this.blocks_IsOnSurface = blocks_IsOnSurface;
+    	blockState = new BlockState[16][256][16];
+    	lights = new LightMap(new Vector3Int(16, 256, 16), location);
+    }
     
     public Vector3Int getBlockLocation()
     {

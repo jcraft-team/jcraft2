@@ -13,8 +13,7 @@ import com.chappelle.jcraft.profiler.Profiler;
 import com.chappelle.jcraft.profiler.ProfilerResult;
 import com.chappelle.jcraft.util.AABB;
 import com.chappelle.jcraft.world.World;
-import com.chappelle.jcraft.world.chunk.ChunkProvider;
-import com.chappelle.jcraft.world.chunk.FlatChunkProvider;
+import com.chappelle.jcraft.world.chunk.*;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.StatsAppState;
 import com.jme3.font.BitmapFont;
@@ -117,6 +116,8 @@ public class JCraft extends SimpleApplication implements ActionListener
 		player = new EntityPlayer(world, cam);
 		hud = makeHUD2(player);
 		player.preparePlayerToSpawn();
+		player.moveEntity(1000, 0, 1000);
+		world.generateNearbyChunks();
 		rootNode.addControl(new PlayerControl(this, player));
 
 		rootNode.addControl(hud);
@@ -215,7 +216,7 @@ public class JCraft extends SimpleApplication implements ActionListener
 		cubesSettings.setDefaultBlockMaterial("Textures/FaithfulBlocks.png");
 
 //		ChunkProvider chunkProvider = new TestChunkProvider();
-		ChunkProvider chunkProvider = new FlatChunkProvider(5);
+		ChunkProvider chunkProvider = new FlatChunkProvider(10);
 		world = new World(chunkProvider, profiler, cubesSettings, assetManager, cam);
 		blockTerrain = new BlockTerrainControl(this, cubesSettings, world);
 		terrainNode.addControl(blockTerrain);

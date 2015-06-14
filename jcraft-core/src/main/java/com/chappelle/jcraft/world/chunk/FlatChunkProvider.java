@@ -3,7 +3,6 @@ package com.chappelle.jcraft.world.chunk;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.chappelle.jcraft.Vector3Int;
 import com.chappelle.jcraft.blocks.Block;
 import com.chappelle.jcraft.world.World;
 
@@ -31,17 +30,29 @@ public class FlatChunkProvider implements ChunkProvider
 		this.world = world;
 	}
 	
-	private void setBlockArea(Chunk chunk, Vector3Int size, Block block)
+	private void setBedrock(int[][][] blockTypes)
 	{
-		Vector3Int tmpLocation = new Vector3Int();
-		for(int x = 0; x < size.getX(); x++)
+		for(int x = 0; x < 16; x++)
 		{
-			for(int y = 0; y < size.getY(); y++)
+			for(int z = 0; z < 16; z++)
 			{
-				for(int z = 0; z < size.getZ(); z++)
+				blockTypes[x][0][z] = Block.bedrock.blockId;
+			}
+		}
+	}
+	private void fillChunkWithBlocks(int[][][] blockTypes, boolean[][][] blocks_IsOnSurface, Block block)
+	{
+		for(int x = 0; x < 16; x++)
+		{
+			for(int y = 0; y < height; y++)
+			{
+				for(int z = 0; z < 16; z++)
 				{
-					tmpLocation.set(x, y, z);
-					chunk.setBlock(tmpLocation, block);
+					blockTypes[x][y][z] = block.blockId;
+					if(y == height - 1)
+					{
+						blocks_IsOnSurface[x][y][z] = true;
+					}
 				}
 			}
 		}
@@ -50,10 +61,14 @@ public class FlatChunkProvider implements ChunkProvider
 	@Override
 	public Chunk generateChunk(int x, int z)
 	{
-		Chunk chunk = new Chunk(world, x, z);
+		world.profiler.startSection("ChunkGen");
+		int[][][] blockTypes = new int[16][256][16];
+		boolean[][][] blocks_IsOnSurface = new boolean[16][256][16];
+		fillChunkWithBlocks(blockTypes, blocks_IsOnSurface, Block.grass);
+		setBedrock(blockTypes);
+		Chunk chunk = new Chunk(world, x, z, blockTypes, blocks_IsOnSurface);
 		chunks.put(ChunkCoordIntPair.chunkXZ2Int(x, z), chunk);
-		setBlockArea(chunk, new Vector3Int(16, height, 16), Block.grass);
-		setBlockArea(chunk, new Vector3Int(16, 1, 16), Block.bedrock);
+		world.profiler.endSection();
 		return chunk;
 	}
 
