@@ -2,6 +2,7 @@ package com.chappelle.jcraft.world.chunk;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import com.chappelle.jcraft.blocks.Block;
 import com.chappelle.jcraft.world.World;
@@ -10,6 +11,7 @@ public class FlatChunkProvider implements ChunkProvider
 {
 	private Map<Long, Chunk> chunks = new HashMap<Long, Chunk>();
 	
+	private Random rand = new Random();
 	private World world;
 	
 	private int height;
@@ -55,6 +57,137 @@ public class FlatChunkProvider implements ChunkProvider
 					}
 				}
 			}
+		}
+		addOres(blockTypes);
+	}
+
+	private void addOres(int[][][] blockTypes)
+	{
+		//Coal
+		for(int i = 0; i < 6; i++)
+		{
+			int x = rand.nextInt(16);
+			int y = rand.nextInt(height-1);
+			int z = rand.nextInt(16);
+			
+			blockTypes[x][y][z] = Block.coal.blockId;
+			addCluster(x, y, z, blockTypes, 0.25f, 0.05f, Block.coal.blockId);
+		}
+
+		//Smooth stone
+		for(int i = 0; i < 10; i++)
+		{
+			int x = rand.nextInt(16);
+			int y = rand.nextInt(height-1);
+			int z = rand.nextInt(16);
+			
+			blockTypes[x][y][z] = Block.smoothStone.blockId;
+			addCluster(x, y, z, blockTypes, 0.2f, 0.6f, Block.smoothStone.blockId);
+		}
+
+		//Gold
+		for(int i = 0; i < 1; i++)
+		{
+			int x = rand.nextInt(16);
+			int y = rand.nextInt(height-1);
+			int z = rand.nextInt(16);
+			
+			blockTypes[x][y][z] = Block.gold.blockId;
+			addCluster(x, y, z, blockTypes, 0.2f, 0.05f, Block.gold.blockId);
+		}
+
+		//Diamond
+		for(int i = 0; i < 1; i++)
+		{
+			int x = rand.nextInt(16);
+			int y = rand.nextInt(height-1);
+			int z = rand.nextInt(16);
+			
+			blockTypes[x][y][z] = Block.diamond.blockId;
+			addCluster(x, y, z, blockTypes, 0.2f, 0.05f, Block.diamond.blockId);
+		}
+
+		//Iron
+		for(int i = 0; i < 5; i++)
+		{
+			int x = rand.nextInt(16);
+			int y = rand.nextInt(height-1);
+			int z = rand.nextInt(16);
+			
+			blockTypes[x][y][z] = Block.iron.blockId;
+			addCluster(x, y, z, blockTypes, 0.3f, 0.05f, Block.iron.blockId);
+		}
+
+		//Redstone
+		for(int i = 0; i < 2; i++)
+		{
+			int x = rand.nextInt(16);
+			int y = rand.nextInt(height-1);
+			int z = rand.nextInt(16);
+			
+			blockTypes[x][y][z] = Block.redstone.blockId;
+			addCluster(x, y, z, blockTypes, 0.3f, 0.05f, Block.redstone.blockId);
+		}
+	}
+	
+	private void addCluster(int x, int y, int z, int[][][] blockTypes, float probability, float dropOff, int blockId)
+	{
+		int newX = (x+1)&15;
+		int newY = y;
+		int newZ = z;
+		
+		blockTypes[newX][newY][newZ] = blockId;
+		if(rand.nextFloat() < probability)
+		{
+			addCluster(newX, newY, newZ, blockTypes, probability*dropOff, dropOff, blockId);
+		}
+		newX = x;
+		newY = (y+1)&(height-1);
+		newZ = z;
+		
+		blockTypes[newX][newY][newZ] = blockId;
+		if(rand.nextFloat() < probability)
+		{
+			addCluster(newX, newY, newZ, blockTypes, probability*dropOff, dropOff, blockId);
+		}
+
+		newX = x;
+		newY = y;
+		newZ = (z+1)&15;
+		
+		blockTypes[newX][newY][newZ] = blockId;
+		if(rand.nextFloat() < probability)
+		{
+			addCluster(newX, newY, newZ, blockTypes, probability*dropOff, dropOff, blockId);
+		}
+
+		newX = (x-1)&15;
+		newY = y;
+		newZ = z;
+		
+		blockTypes[newX][newY][newZ] = blockId;
+		if(rand.nextFloat() < probability)
+		{
+			addCluster(newX, newY, newZ, blockTypes, probability*dropOff, dropOff, blockId);
+		}
+		newX = x;
+		newY = (y-1)&(height-1);
+		newZ = z;
+		
+		blockTypes[newX][newY][newZ] = blockId;
+		if(rand.nextFloat() < probability)
+		{
+			addCluster(newX, newY, newZ, blockTypes, probability*dropOff, dropOff, blockId);
+		}
+		
+		newX = x;
+		newY = y;
+		newZ = (z-1)&15;
+		
+		blockTypes[newX][newY][newZ] = Block.coal.blockId;
+		if(rand.nextFloat() < probability)
+		{
+			addCluster(newX, newY, newZ, blockTypes, probability*dropOff, dropOff, blockId);
 		}
 	}
 

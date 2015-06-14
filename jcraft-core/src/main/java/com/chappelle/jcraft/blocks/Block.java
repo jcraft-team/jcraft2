@@ -104,7 +104,7 @@ public class Block
 	public static final Block glass = new BlockGlass(2).setStepSound(SoundConstants.STEP_STONE_1);
 	public static final Block door = new BlockDoor(3, true).setStepSound(SoundConstants.STEP_WOOD_1);
 	public static final Block torch = new BlockTorch(4).setLightValue(14);
-	public static final Block stone = new BlockStone(5).setStepSound(SoundConstants.STEP_STONE_1);
+	public static final Block cobbleStone = new BlockStone(5, 0, 1).setStepSound(SoundConstants.STEP_STONE_1);
 	public static final Block ice = new BlockIce(6).setStepSound(SoundConstants.STEP_STONE_4);
 	public static final Block ladder = new BlockLadder(7).setStepSound(SoundConstants.STEP_WOOD_4);
 	public static final Block glowstone = new BlockGlowstone(8).setLightValue(15).setStepSound(SoundConstants.STEP_STONE_3);
@@ -135,6 +135,9 @@ public class Block
 	public static final Block woolLightBlue = new BlockWool(33, 2, 11);
 	public static final Block woolMagenta = new BlockWool(34, 2, 12);
 	public static final Block woolOrange = new BlockWool(35, 2, 13);
+	public static final Block smoothStone = new BlockStone(36, 1, 0).setStepSound(SoundConstants.STEP_STONE_1);
+	public static final Block redstone = new BlockRedstoneOre(37).setStepSound(SoundConstants.STEP_STONE_1);
+	public static final Block iron = new BlockIronOre(38).setStepSound(SoundConstants.STEP_STONE_1);
 	
 	private BlockShape[] shapes = new BlockShape[] { new BlockShape_Cube() };
 	private BlockSkin[] skins;
