@@ -1,6 +1,7 @@
 package com.chappelle.jcraft.jme3;
 
 import java.io.File;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -13,7 +14,9 @@ import com.chappelle.jcraft.profiler.Profiler;
 import com.chappelle.jcraft.profiler.ProfilerResult;
 import com.chappelle.jcraft.util.AABB;
 import com.chappelle.jcraft.world.World;
-import com.chappelle.jcraft.world.chunk.*;
+import com.chappelle.jcraft.world.chunk.ChunkProvider;
+import com.chappelle.jcraft.world.chunk.FlatChunkProvider;
+import com.chappelle.jcraft.world.chunk.OreFeatureGenerator;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.StatsAppState;
 import com.jme3.font.BitmapFont;
@@ -53,6 +56,7 @@ public class JCraft extends SimpleApplication implements ActionListener
 	public World world;
 	private Profiler profiler;
 	private HUDControl hud;
+	public ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1);//DO NOT INCREASE THE THREADS!!!. BlockShape is not thread-safe so you WILL have problems with that until that is changed
 	
 	/**
 	 * Used for enabling flying by double pressing space
@@ -217,7 +221,7 @@ public class JCraft extends SimpleApplication implements ActionListener
 
 //		ChunkProvider chunkProvider = new TestChunkProvider();
 		long seed = System.currentTimeMillis();
-		int height = 100;
+		int height = 225;
 		ChunkProvider chunkProvider = new FlatChunkProvider(height).addFeatureGenerator(new OreFeatureGenerator(seed, height));
 		world = new World(chunkProvider, profiler, cubesSettings, assetManager, cam, seed);
 		blockTerrain = new BlockTerrainControl(this, cubesSettings, world);
@@ -379,6 +383,7 @@ public class JCraft extends SimpleApplication implements ActionListener
 	public void destroy()
 	{
 		super.destroy();
+		executor.shutdown();
 		gameSettings.save();
 
 		if(profiler.profilingEnabled)

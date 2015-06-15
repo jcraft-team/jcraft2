@@ -209,4 +209,15 @@ public class Chunk implements BitSerializable
         }
         needsMeshUpdate = true;
     }
+    
+    public Chunk clone()
+    {
+    	return new Chunk(world, location.x, location.z, blockTypes.clone(), blocks_IsOnSurface.clone());
+    }
+    
+    @Override
+    public String toString()
+    {
+    	return "Chunk " + location;
+    }
 }

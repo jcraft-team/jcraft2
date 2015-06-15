@@ -26,11 +26,11 @@ public class MeshGenerator
 	{
 		MeshData meshData = new MeshData();
 		Vector3Int tmpLocation = new Vector3Int();
-		for(int x = 0; x < 32; x++)
+		for(int x = 0; x < 16; x++)
 		{
 			for(int y = 0; y < 256; y++)
 			{
-				for(int z = 0; z < 32; z++)
+				for(int z = 0; z < 16; z++)
 				{
 					tmpLocation.set(x, y, z);
 					Block block = blockChunk.getBlock(tmpLocation);

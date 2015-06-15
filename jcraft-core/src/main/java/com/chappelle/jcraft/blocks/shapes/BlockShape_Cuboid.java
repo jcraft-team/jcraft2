@@ -119,11 +119,14 @@ public class BlockShape_Cuboid extends BlockShape
     }
 
     @Override
-    protected boolean canBeMerged(Block.Face face){
+    protected boolean canBeMerged(Block.Face face)
+    {
         boolean isAllowed = true;
         Block.Face oppositeFace = BlockNavigator.getOppositeFace(face);
-        for(int i=0;i<extents.length;i++){
-            if((i != oppositeFace.ordinal()) && (extents[i] != 0.5f)){
+        for(int i=0; i<extents.length; i++)
+        {
+            if((i != oppositeFace.ordinal()) && (extents[i] != 0.5f))
+            {
                 isAllowed = false;
                 break;
             }

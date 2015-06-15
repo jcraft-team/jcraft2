@@ -2,7 +2,6 @@ package com.chappelle.jcraft.jme3;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 import com.chappelle.jcraft.CubesSettings;
 import com.chappelle.jcraft.profiler.Profiler;
@@ -33,17 +32,20 @@ public class BlockTerrainControl extends AbstractControl
 	@Override
 	protected void controlUpdate(final float lastTimePerFrame)
 	{
-		app.enqueue(new Callable<Void>()
-		{
-			@Override
-			public Void call() throws Exception
-			{
-				world.update(lastTimePerFrame);
-				world.calculateLight();
-				updateSpatial();
-				return null;
-			}
-		});
+		world.update(lastTimePerFrame);
+		world.calculateLight();
+		updateSpatial();
+//		app.enqueue(new Callable<Void>()
+//		{
+//			@Override
+//			public Void call() throws Exception
+//			{
+//				world.update(lastTimePerFrame);
+//				world.calculateLight();
+//				updateSpatial();
+//				return null;
+//			}
+//		});
 	}
 
 	@Override
