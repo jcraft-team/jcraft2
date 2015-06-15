@@ -3,16 +3,19 @@ package com.chappelle.jcraft.world.chunk;
 import java.util.Random;
 
 import com.chappelle.jcraft.blocks.Block;
+import com.chappelle.jcraft.util.MathUtils;
 import com.chappelle.jcraft.world.Noise;
 
-public class NoiseChunkProvider extends BaseChunkProvider
+public class PerlinNoiseChunkProvider extends BaseChunkProvider
 {
 	private final Random rand;
 	private final float roughness;
-	private int flatChunkHeight;
+	private final int flatChunkHeight;
+	private final long seed;
 	
-	public NoiseChunkProvider(long seed, float roughness, int flatChunkHeight)
+	public PerlinNoiseChunkProvider(long seed, float roughness, int flatChunkHeight)
 	{
+		this.seed = seed;
 		this.roughness = roughness;
 		this.rand = new Random(seed);
 		this.flatChunkHeight = flatChunkHeight;
@@ -36,27 +39,30 @@ public class NoiseChunkProvider extends BaseChunkProvider
 			}
 		}
 
-		int magnitude = 4;
-		generateFromNoise(blockTypes, blocks_IsOnSurface, Block.grass, 0, 0, 16, 16, magnitude);
-		
-		if(rand.nextInt(5) == 0)
+		PerlinNoise pNoise = new PerlinNoise(seed);
+		for(int x = 0; x < 16; x++)
 		{
-			magnitude = 5;
-			generateFromNoise(blockTypes, blocks_IsOnSurface, Block.smoothStone, rand.nextInt(10), rand.nextInt(10), rand.nextInt(8) + 8, rand.nextInt(8) + 8, magnitude);
+			for(int z = 0; z < 16; z++)
+			{
+				int noise = MathUtils.floor_double(pNoise.noise(x, z));
+				
+			}
 		}
-	}
-
-	private void generateFromNoise(int[][][] blockTypes, boolean[][][] blocks_IsOnSurface, Block block, int xMin, int zMin, int xMax, int zMax, int magnitude)
-	{
-		Noise noise = new Noise(rand, roughness, xMax, zMax);
+		
+		
+		
+		
+		
+		
+		Noise noise = new Noise(rand, roughness, 16, 16);
 		noise.initialise();
 		float gridMinimum = noise.getMinimum();
 		float gridLargestDifference = (noise.getMaximum() - gridMinimum);
 		float[][] grid = noise.getGrid();
-		for(int x = xMin; x < grid.length; x++)
+		for(int x = 0; x < grid.length; x++)
 		{
 			float[] row = grid[x];
-			for(int z = zMin; z < row.length; z++)
+			for(int z = 0; z < row.length; z++)
 			{
 				/*---Calculation of block height has been summarized to minimize the java heap---
 				float gridGroundHeight = (row[z] - gridMinimum);
@@ -64,29 +70,10 @@ public class NoiseChunkProvider extends BaseChunkProvider
 				int blockHeight = ((int) ((blockHeightInPercents / 100) * size.getY())) + 1;
 				---*/
 				float gridGroundHeight = (row[z] - gridMinimum);
-				int blockHeight = flatChunkHeight + (((int) ((((gridGroundHeight * 100) / gridLargestDifference) / 100) * magnitude)) + 1);
+				int blockHeight = flatChunkHeight + (((int) ((((gridGroundHeight * 100) / gridLargestDifference) / 100) * 5)) + 1);
 				for(int y = 0; y < blockHeight; y++)
 				{
-					if(block.blockId == Block.smoothStone.blockId)
-					{
-						int randVal = rand.nextInt(8);
-						if(randVal == 0)
-						{
-							blockTypes[x][y][z] = Block.coal.blockId;
-						}
-						else if(randVal == 1)
-						{
-							blockTypes[x][y][z] = Block.gravel.blockId;
-						}
-						else
-						{
-							blockTypes[x][y][z] = block.blockId;
-						}
-					}
-					else
-					{
-						blockTypes[x][y][z] = block.blockId;
-					}
+					blockTypes[x][y][z] = block.blockId;
 					if(y == blockHeight - 1)
 					{
 						blocks_IsOnSurface[x][y][z] = true;

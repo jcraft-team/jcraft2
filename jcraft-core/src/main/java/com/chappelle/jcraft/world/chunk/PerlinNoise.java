@@ -2,13 +2,9 @@ package com.chappelle.jcraft.world.chunk;
 
 // Copyright 2001 Ken Perlin
 
-/**
- *
- */
 public final class PerlinNoise
 {
-
-	public static int seed = 100;
+	private long seed = 100;
 
 	private static final int P = 8;
 	private static final int B = 1 << P;
@@ -18,17 +14,18 @@ public final class PerlinNoise
 	private static final int N = 1 << NP;
 	// private static final int NM = N-1;
 
-	private static int p[] = new int[B + B + 2];
-	private static double g2[][] = new double[B + B + 2][2];
-	private static double g1[] = new double[B + B + 2];
-	// private static int start = 1;
-	private static double[][] points = new double[32][3];
+	private int p[] = new int[B + B + 2];
+	private double g2[][] = new double[B + B + 2][2];
+	private double g1[] = new double[B + B + 2];
+	// private int start = 1;
+	private double[][] points = new double[32][3];
 
-	static
+	public PerlinNoise(long seed)
 	{
+		this.seed = seed;
 		init();
 	}
-
+	
 	private static double lerp(double t, double a, double b)
 	{
 		return a + t * (b - a);
@@ -39,7 +36,7 @@ public final class PerlinNoise
 		return t * t * (3 - t - t);
 	}
 
-	public static double noise(double x)
+	public double noise(double x)
 	{
 
 		int bx0, bx1;
@@ -57,7 +54,7 @@ public final class PerlinNoise
 		return lerp(sx, u, v);
 	}
 
-	public static double noise(double x, double y)
+	public double noise(double x, double y)
 	{
 
 		int bx0, bx1, by0, by1, b00, b10, b01, b11;
@@ -102,7 +99,7 @@ public final class PerlinNoise
 		return lerp(sy, a, b);
 	}
 
-	static double noise(double x, double y, double z)
+	double noise(double x, double y, double z)
 	{
 
 		int bx, by, bz, b0, b1, b00, b10, b01, b11;
@@ -182,12 +179,12 @@ public final class PerlinNoise
 		return lerp(sz, c, d);
 	}
 
-	private static double[] G(int i)
+	private double[] G(int i)
 	{
 		return points[i % 32];
 	}
 
-	private static void init()
+	private void init()
 	{
 		int i, j, k;
 		double u, v, w, U, V, W, Hi, Lo;
@@ -276,5 +273,18 @@ public final class PerlinNoise
 		s = Math.sqrt(v[0] * v[0] + v[1] * v[1]);
 		v[0] = v[0] / s;
 		v[1] = v[1] / s;
+	}
+	
+	public static void main(String[] args)
+	{
+		PerlinNoise noise = new PerlinNoise(100);
+		System.out.println(noise.noise(1.5, 2.4));
+		System.out.println(noise.noise(5, 6));
+		System.out.println(noise.noise(3, 2));
+		System.out.println(noise.noise(3, 2));
+		System.out.println(noise.noise(3, 6));
+		System.out.println(noise.noise(100, 2));
+		System.out.println(noise.noise(300, 2));
+		System.out.println(noise.noise(309, 2));
 	}
 }

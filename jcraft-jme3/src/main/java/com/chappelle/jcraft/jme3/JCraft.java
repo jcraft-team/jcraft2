@@ -229,8 +229,8 @@ public class JCraft extends SimpleApplication implements ActionListener
 		System.out.println("Using world seed: " + seed);
 		int height = 225;
 //		ChunkProvider chunkProvider = new TestChunkProvider();
-//		ChunkProvider chunkProvider = new FlatChunkProvider(height).addFeatureGenerator(new OreFeatureGenerator(seed, height));
-		ChunkProvider chunkProvider = new NoiseChunkProvider(seed, 0.0001f, height).addFeatureGenerator(new OreFeatureGenerator(seed, height));
+		ChunkProvider chunkProvider = new FlatChunkProvider(height).addFeatureGenerator(new OreFeatureGenerator(seed, height));
+//		ChunkProvider chunkProvider = new NoiseChunkProvider(seed, 0.01f, height).addFeatureGenerator(new OreFeatureGenerator(seed, height));
 		world = new World(chunkProvider, profiler, cubesSettings, assetManager, cam, seed);
 		blockTerrain = new BlockTerrainControl(this, cubesSettings, world);
 		terrainNode.addControl(blockTerrain);
