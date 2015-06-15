@@ -108,7 +108,7 @@ public class JCraft extends SimpleApplication implements ActionListener
 	{
 		initializeGUI();
 
-		cam.setFrustumPerspective(45f, (float)cam.getWidth()/cam.getHeight(), 0.01f, 1000f);
+		cam.setFrustumPerspective(45f, (float)cam.getWidth()/cam.getHeight(), 0.01f, 500f);
 		initControls();
 		initBlockTerrain();
 		cam.lookAtDirection(new Vector3f(1, 0, 1), Vector3f.UNIT_Y);
@@ -236,7 +236,7 @@ public class JCraft extends SimpleApplication implements ActionListener
 
 	private ChunkProvider makeChunkProvider(long seed)
 	{
-		int height = 225;
+		int height = 230;
 		
 		SimpleChunkProvider chunkProvider = new SimpleChunkProvider();
 		chunkProvider.addFeatureGenerator(new FlatFeatureGenerator(Block.grass, height));

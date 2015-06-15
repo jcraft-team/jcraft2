@@ -3,6 +3,7 @@ package com.chappelle.jcraft.world.chunk;
 import java.io.IOException;
 
 import com.chappelle.jcraft.BlockState;
+import com.chappelle.jcraft.Direction;
 import com.chappelle.jcraft.Vector3Int;
 import com.chappelle.jcraft.blocks.Block;
 import com.chappelle.jcraft.lighting.LightMap;
@@ -109,7 +110,12 @@ public class Chunk implements BitSerializable
         }
         return null;
     }
-
+    
+    public Chunk getChunkNeighbor(Direction dir)
+    {
+    	return world.getChunkNeighbor(this, dir);
+    }
+    
     public boolean isBlockOnSurface(Vector3Int location)
     {
         return blocks_IsOnSurface[location.getX()][location.getY()][location.getZ()];

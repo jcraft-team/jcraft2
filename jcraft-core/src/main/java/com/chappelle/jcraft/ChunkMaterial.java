@@ -22,5 +22,6 @@ public class ChunkMaterial extends Material
         setBoolean("VertexColor",useVertextColor);
         getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
         setFloat("AlphaDiscardThreshold", 0.1f);
+//        getAdditionalRenderState().setWireframe(true);
     }
 }

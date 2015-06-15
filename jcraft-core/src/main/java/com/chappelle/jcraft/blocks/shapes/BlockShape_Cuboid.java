@@ -142,4 +142,15 @@ public class BlockShape_Cuboid extends BlockShape
         return isAllowed;
     }
     
+    
+    public static void main(String[] args)
+    {
+    	BlockShape_Cuboid shape = new BlockShape_Cuboid(new float[] { 0.4f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f });
+    	System.out.println("Front: " + shape.canBeMerged(Block.Face.Front));
+    	System.out.println("Back: " + shape.canBeMerged(Block.Face.Back));
+    	System.out.println("Left: " + shape.canBeMerged(Block.Face.Left));
+    	System.out.println("Right: " + shape.canBeMerged(Block.Face.Right));
+    	System.out.println("Top: " + shape.canBeMerged(Block.Face.Top));
+    	System.out.println("Bottom: " + shape.canBeMerged(Block.Face.Bottom));
+    }
 }

@@ -15,6 +15,14 @@ public abstract class BlockShape
 {
 	public abstract void addTo(MeshData meshData, Chunk chunk, Block block, Vector3Int blockLocation, boolean isTransparent);
 
+	/**
+	 * Determines if a Shape's face should be added to the mesh. Checks neighbor blocks and across chunk boundaries if necessary.
+	 * @param chunk The chunk containing this BlockShape
+	 * @param blockLocation The location of the block
+	 * @param face The block face in question
+	 * @param isTransparent Flag indicating whether this is the transparent geometry or not
+	 * @return true if the face should be added, false otherwise
+	 */
 	protected boolean shouldFaceBeAdded(Chunk chunk, Vector3Int blockLocation, Block.Face face, boolean isTransparent)
 	{
 		if(chunk == null)
@@ -27,16 +35,58 @@ public abstract class BlockShape
 			BlockSkin blockSkin = block.getSkin(chunk, blockLocation, face);
 			if(blockSkin.isTransparent() == isTransparent)
 			{
+				Chunk neighborChunk = null;
+				Block neighborBlock = null;
 				Vector3Int neighborBlockLocation = BlockNavigator.getNeighborBlockLocalLocation(blockLocation, face);
-				Block neighborBlock = chunk.getBlock(neighborBlockLocation);
+				neighborBlock = chunk.getBlock(neighborBlockLocation);
+				if(neighborBlock == null)//Check neighboring chunks
+				{
+					if(neighborBlockLocation.x < 0)
+					{
+						neighborChunk = chunk.getChunkNeighbor(Direction.LEFT);
+						if(neighborChunk != null)
+						{
+							neighborBlock = neighborChunk.getBlock(neighborBlockLocation.setX(15));
+						}
+					}
+					else if(neighborBlockLocation.x > 15)
+					{
+						neighborChunk = chunk.getChunkNeighbor(Direction.RIGHT);
+						if(neighborChunk != null)
+						{
+							neighborBlock = neighborChunk.getBlock(neighborBlockLocation.setX(0));
+						}
+					}
+					else if(neighborBlockLocation.z < 0)
+					{
+						neighborChunk = chunk.getChunkNeighbor(Direction.BACK);
+						if(neighborChunk != null)
+						{
+							neighborBlock = neighborChunk.getBlock(neighborBlockLocation.setZ(15));
+						}
+					}
+					else if(neighborBlockLocation.z > 15)
+					{
+						neighborChunk = chunk.getChunkNeighbor(Direction.FRONT);
+						if(neighborChunk != null)
+						{
+							neighborBlock = neighborChunk.getBlock(neighborBlockLocation.setZ(0));
+						}
+					}
+				}
+				
 				if(neighborBlock != null)
 				{
-					BlockSkin neighborBlockSkin = neighborBlock.getSkin(chunk, blockLocation, face);
+					if(neighborChunk == null)
+					{
+						neighborChunk = chunk;
+					}
+					BlockSkin neighborBlockSkin = neighborBlock.getSkin(neighborChunk, blockLocation, face);
 					if(blockSkin.isTransparent() != neighborBlockSkin.isTransparent())
 					{
 						return true;
 					}
-					BlockShape neighborShape = neighborBlock.getShape(chunk, neighborBlockLocation);
+					BlockShape neighborShape = neighborBlock.getShape(neighborChunk, neighborBlockLocation);
 					return (!(canBeMerged(face) && neighborShape.canBeMerged(BlockNavigator.getOppositeFace(face))));
 				}
 				return true;

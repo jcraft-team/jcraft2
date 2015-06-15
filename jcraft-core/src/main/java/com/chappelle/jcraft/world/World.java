@@ -395,6 +395,14 @@ public class World implements BitSerializable
 	private void onChunkGenerated(Chunk chunk)
 	{
 		generatedChunks.add(chunk);
+		for(Direction dir : Direction.values())
+		{
+			Chunk neighbor = getChunkNeighbor(chunk, dir);
+			if(neighbor != null)
+			{
+				neighbor.markDirty();
+			}
+		}
 	}
 	
 	public Chunk getChunkNeighbor(Chunk chunk, Direction direction)
