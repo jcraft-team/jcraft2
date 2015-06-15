@@ -17,8 +17,7 @@ public class MeshGenerator
 	{
 		MeshData meshData = new MeshData();
 		BlockShape blockShape = block.getShape(null, null);
-		blockShape.prepare(false, meshData);
-		blockShape.addTo(null, block, new Vector3Int());
+		blockShape.addTo(meshData, null, block, new Vector3Int(), false);
 		return generateMesh(meshData);//TODO:
 	}
 	
@@ -37,8 +36,7 @@ public class MeshGenerator
 					if(block != null)
 					{
 						BlockShape blockShape = block.getShape(blockChunk, tmpLocation);
-						blockShape.prepare(isTransparent, meshData);
-						blockShape.addTo(blockChunk, block, tmpLocation);
+						blockShape.addTo(meshData, blockChunk, block, tmpLocation, isTransparent);
 					}
 				}
 			}

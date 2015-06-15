@@ -7,6 +7,7 @@ import com.chappelle.jcraft.blocks.Block;
 import com.chappelle.jcraft.blocks.BlockShape;
 import com.chappelle.jcraft.blocks.BlockSkin_TextureLocation;
 import com.chappelle.jcraft.blocks.BlockTorch;
+import com.chappelle.jcraft.blocks.MeshData;
 import com.chappelle.jcraft.world.chunk.Chunk;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
@@ -18,8 +19,14 @@ public class BlockShape_Torch extends BlockShape
     public BlockShape_Torch(){}
     
     @Override
-    public void addTo(Chunk chunk, Block block, Vector3Int blockLocation)
+    public void addTo(MeshData meshData, Chunk chunk, Block block, Vector3Int blockLocation, boolean isTransparent)
     {
+    	List<Vector3f> positions = meshData.positionsList;
+    	List<Short> indices = meshData.indicesList;
+    	List<Float> normals = meshData.normalsList;
+    	List<Float> colors = meshData.colorList;
+    	List<Vector2f> textureCoordinates = meshData.textureCoordinatesList;
+
         //This is so that when we add to the blockLocation origin, the rotation is centered
         float height = 0.58f;
         float width = 0.1f;
@@ -66,7 +73,7 @@ public class BlockShape_Torch extends BlockShape
 
 
         //Add to mesh
-        if (shouldFaceBeAdded(chunk, blockLocation, Block.Face.Top))
+        if (shouldFaceBeAdded(chunk, blockLocation, Block.Face.Top, isTransparent))
         {
             addFaceIndices(indices, positions.size());
             positions.add(faceLoc_Top_BottomLeft);
@@ -76,9 +83,9 @@ public class BlockShape_Torch extends BlockShape
             addSquareNormals(normals, 0, 1, 0);
 
             addTopTextureCoordinates(chunk, textureCoordinates, block.getSkin(chunk, blockLocation, Block.Face.Top).getTextureLocation());
-            addLighting(chunk, blockLocation, Block.Face.Top);            
+            addLighting(colors, chunk, blockLocation, Block.Face.Top);            
         }
-        if (shouldFaceBeAdded(chunk, blockLocation, Block.Face.Bottom))
+        if (shouldFaceBeAdded(chunk, blockLocation, Block.Face.Bottom, isTransparent))
         {
             addFaceIndices(indices, positions.size());
             positions.add(faceLoc_Bottom_BottomRight);
@@ -87,9 +94,9 @@ public class BlockShape_Torch extends BlockShape
             positions.add(faceLoc_Bottom_TopLeft);
             addSquareNormals(normals, 0, -1, 0);
             addTextureCoordinates(chunk, textureCoordinates, block.getSkin(chunk, blockLocation, Block.Face.Bottom).getTextureLocation());
-            addLighting(chunk, blockLocation, Block.Face.Bottom);
+            addLighting(colors, chunk, blockLocation, Block.Face.Bottom);
         }
-        if (shouldFaceBeAdded(chunk, blockLocation, Block.Face.Left))
+        if (shouldFaceBeAdded(chunk, blockLocation, Block.Face.Left, isTransparent))
         {
             addFaceIndices(indices, positions.size());
             positions.add(faceLoc_Bottom_TopLeft);
@@ -98,9 +105,9 @@ public class BlockShape_Torch extends BlockShape
             positions.add(faceLoc_Top_BottomLeft);
             addSquareNormals(normals, -1, 0, 0);
             addTextureCoordinates(chunk, textureCoordinates, block.getSkin(chunk, blockLocation, Block.Face.Left).getTextureLocation());
-            addLighting(chunk, blockLocation, Block.Face.Left);
+            addLighting(colors, chunk, blockLocation, Block.Face.Left);
         }
-        if (shouldFaceBeAdded(chunk, blockLocation, Block.Face.Right))
+        if (shouldFaceBeAdded(chunk, blockLocation, Block.Face.Right, isTransparent))
         {
             addFaceIndices(indices, positions.size());
             positions.add(faceLoc_Bottom_BottomRight);
@@ -109,9 +116,9 @@ public class BlockShape_Torch extends BlockShape
             positions.add(faceLoc_Top_TopRight);
             addSquareNormals(normals, 1, 0, 0);
             addTextureCoordinates(chunk, textureCoordinates, block.getSkin(chunk, blockLocation, Block.Face.Right).getTextureLocation());
-            addLighting(chunk, blockLocation, Block.Face.Right);
+            addLighting(colors, chunk, blockLocation, Block.Face.Right);
         }
-        if (shouldFaceBeAdded(chunk, blockLocation, Block.Face.Front))
+        if (shouldFaceBeAdded(chunk, blockLocation, Block.Face.Front, isTransparent))
         {
             addFaceIndices(indices, positions.size());
             positions.add(faceLoc_Bottom_BottomLeft);
@@ -120,9 +127,9 @@ public class BlockShape_Torch extends BlockShape
             positions.add(faceLoc_Top_BottomRight);
             addSquareNormals(normals, 0, 0, 1);
             addTextureCoordinates(chunk, textureCoordinates, block.getSkin(chunk, blockLocation, Block.Face.Front).getTextureLocation());
-            addLighting(chunk, blockLocation, Block.Face.Front);
+            addLighting(colors, chunk, blockLocation, Block.Face.Front);
         }
-        if (shouldFaceBeAdded(chunk, blockLocation, Block.Face.Back))
+        if (shouldFaceBeAdded(chunk, blockLocation, Block.Face.Back, isTransparent))
         {
             addFaceIndices(indices, positions.size());
             positions.add(faceLoc_Bottom_TopRight);
@@ -131,7 +138,7 @@ public class BlockShape_Torch extends BlockShape
             positions.add(faceLoc_Top_TopLeft);
             addSquareNormals(normals, 0, 0, -1);
             addTextureCoordinates(chunk, textureCoordinates, block.getSkin(chunk, blockLocation, Block.Face.Back).getTextureLocation());
-            addLighting(chunk, blockLocation, Block.Face.Back);
+            addLighting(colors, chunk, blockLocation, Block.Face.Back);
         }
     }
 
@@ -211,7 +218,7 @@ public class BlockShape_Torch extends BlockShape
     }
 
     @Override
-    protected boolean shouldFaceBeAdded(Chunk chunk, Vector3Int blockLocation, Block.Face face)
+    protected boolean shouldFaceBeAdded(Chunk chunk, Vector3Int blockLocation, Block.Face face, boolean isTransparent)
     {
         return true;
     }

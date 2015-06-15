@@ -6,6 +6,7 @@ import com.chappelle.jcraft.Vector3Int;
 import com.chappelle.jcraft.blocks.Block;
 import com.chappelle.jcraft.blocks.BlockShape;
 import com.chappelle.jcraft.blocks.BlockSkin_TextureLocation;
+import com.chappelle.jcraft.blocks.MeshData;
 import com.chappelle.jcraft.world.chunk.Chunk;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
@@ -13,8 +14,14 @@ import com.jme3.math.Vector3f;
 public class BlockShape_Flower extends BlockShape
 {
     @Override
-    public void addTo(Chunk chunk, Block block, Vector3Int blockLocation)
+    public void addTo(MeshData meshData, Chunk chunk, Block block, Vector3Int blockLocation, boolean isTransparent)
     {
+    	List<Vector3f> positions = meshData.positionsList;
+    	List<Short> indices = meshData.indicesList;
+    	List<Float> normals = meshData.normalsList;
+    	List<Float> colors = meshData.colorList;
+    	List<Vector2f> textureCoordinates = meshData.textureCoordinatesList;
+
         Vector3f blockLocation3f = new Vector3f(blockLocation.getX(), blockLocation.getY(), blockLocation.getZ());
 
         float halfWidth = 0.25f;
@@ -27,7 +34,7 @@ public class BlockShape_Flower extends BlockShape
         positions.add(blockLocation3f.add(new Vector3f(0.5f + halfWidth, height, 0.5f + halfWidth)));
         addSquareNormals(normals, -1, 0, -1);
         addTextureCoordinates(chunk, textureCoordinates, block.getSkin(chunk, blockLocation, Block.Face.Left).getTextureLocation());
-        addLighting(chunk, blockLocation, Block.Face.Left);
+        addLighting(colors, chunk, blockLocation, Block.Face.Left);
 
         addFaceIndices(indices, positions.size());
         positions.add(blockLocation3f.add(new Vector3f(0.5f + halfWidth, 0, 0.5f + halfWidth)));
@@ -36,7 +43,7 @@ public class BlockShape_Flower extends BlockShape
         positions.add(blockLocation3f.add(new Vector3f(0.5f - halfWidth, height, 0.5f - halfWidth)));
         addSquareNormals(normals, 1, 0, -1);
         addTextureCoordinates(chunk, textureCoordinates, block.getSkin(chunk, blockLocation, Block.Face.Right).getTextureLocation());
-        addLighting(chunk, blockLocation, Block.Face.Right);
+        addLighting(colors, chunk, blockLocation, Block.Face.Right);
 
         addFaceIndices(indices, positions.size());
         positions.add(blockLocation3f.add(new Vector3f(0.5f - halfWidth, 0, 0.5f + halfWidth)));
@@ -45,7 +52,7 @@ public class BlockShape_Flower extends BlockShape
         positions.add(blockLocation3f.add(new Vector3f(0.5f + halfWidth, height, 0.5f - halfWidth)));
         addSquareNormals(normals, 1, 0, 1);
         addTextureCoordinates(chunk, textureCoordinates,block.getSkin(chunk, blockLocation, Block.Face.Front).getTextureLocation());
-        addLighting(chunk, blockLocation, Block.Face.Front);
+        addLighting(colors, chunk, blockLocation, Block.Face.Front);
 
         addFaceIndices(indices, positions.size());
         positions.add(blockLocation3f.add(new Vector3f(0.5f + halfWidth, 0, 0.5f - halfWidth)));
@@ -54,7 +61,7 @@ public class BlockShape_Flower extends BlockShape
         positions.add(blockLocation3f.add(new Vector3f(0.5f - halfWidth, height, 0.5f + halfWidth)));
         addSquareNormals(normals, -1, 0, 1);
         addTextureCoordinates(chunk, textureCoordinates, block.getSkin(chunk, blockLocation, Block.Face.Back).getTextureLocation());
-        addLighting(chunk, blockLocation, Block.Face.Back);
+        addLighting(colors, chunk, blockLocation, Block.Face.Back);
     }
 
     private void addFaceIndices(List<Short> indices, int offset){

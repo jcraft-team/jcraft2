@@ -10,30 +10,12 @@ import com.chappelle.jcraft.util.BlockNavigator;
 import com.chappelle.jcraft.world.World;
 import com.chappelle.jcraft.world.chunk.Chunk;
 import com.jme3.math.Vector2f;
-import com.jme3.math.Vector3f;
 
 public abstract class BlockShape
 {
-	private boolean isTransparent;
-	protected List<Vector3f> positions;
-	protected List<Short> indices;
-	protected List<Float> normals;
-	protected List<Float> colors;
-	protected List<Vector2f> textureCoordinates;
+	public abstract void addTo(MeshData meshData, Chunk chunk, Block block, Vector3Int blockLocation, boolean isTransparent);
 
-	public void prepare(boolean isTransparent, MeshData meshData)
-	{
-		this.positions = meshData.positionsList;
-		this.indices = meshData.indicesList;
-		this.normals = meshData.normalsList;
-		this.textureCoordinates = meshData.textureCoordinatesList;
-		this.colors = meshData.colorList;
-		this.isTransparent = isTransparent;
-	}
-
-	public abstract void addTo(Chunk chunk, Block block, Vector3Int blockLocation);
-
-	protected boolean shouldFaceBeAdded(Chunk chunk, Vector3Int blockLocation, Block.Face face)
+	protected boolean shouldFaceBeAdded(Chunk chunk, Vector3Int blockLocation, Block.Face face, boolean isTransparent)
 	{
 		if(chunk == null)
 		{
@@ -74,7 +56,7 @@ public abstract class BlockShape
 		return new Vector2f(x, y);
 	}
 	
-    protected void addLighting(Chunk chunk, Vector3Int location, Block.Face face)
+    protected void addLighting(List<Float> colors, Chunk chunk, Vector3Int location, Block.Face face)
     {
     	float light = 1.0f;
     	if(chunk != null)

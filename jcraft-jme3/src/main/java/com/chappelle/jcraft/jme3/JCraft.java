@@ -56,7 +56,7 @@ public class JCraft extends SimpleApplication implements ActionListener
 	public World world;
 	private Profiler profiler;
 	private HUDControl hud;
-	public ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1);//DO NOT INCREASE THE THREADS!!!. BlockShape is not thread-safe so you WILL have problems with that until that is changed
+	public ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(4);
 	
 	/**
 	 * Used for enabling flying by double pressing space

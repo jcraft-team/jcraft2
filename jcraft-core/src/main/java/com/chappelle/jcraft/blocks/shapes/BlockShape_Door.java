@@ -7,6 +7,7 @@ import com.chappelle.jcraft.blocks.Block;
 import com.chappelle.jcraft.blocks.BlockDoor;
 import com.chappelle.jcraft.blocks.BlockShape;
 import com.chappelle.jcraft.blocks.BlockSkin_TextureLocation;
+import com.chappelle.jcraft.blocks.MeshData;
 import com.chappelle.jcraft.util.BlockNavigator;
 import com.chappelle.jcraft.world.chunk.Chunk;
 import com.jme3.math.Vector2f;
@@ -32,8 +33,14 @@ public class BlockShape_Door extends BlockShape
     }
     
     @Override
-    public void addTo(Chunk chunk, Block block, Vector3Int blockLocation)
+    public void addTo(MeshData meshData, Chunk chunk, Block block, Vector3Int blockLocation, boolean isTransparent)
     {
+    	List<Vector3f> positions = meshData.positionsList;
+    	List<Short> indices = meshData.indicesList;
+    	List<Float> normals = meshData.normalsList;
+    	List<Float> colors = meshData.colorList;
+    	List<Vector2f> textureCoordinates = meshData.textureCoordinatesList;
+
         Vector3f orientation = (Vector3f) chunk.getBlockStateValue(blockLocation, BlockDoor.VAR_ORIENTATION);
         
         Block.Face homeFace = BlockNavigator.getOppositeFace(Block.Face.fromNormal(orientation));
@@ -81,7 +88,7 @@ public class BlockShape_Door extends BlockShape
         vectors.add(blockLocation3f);
         vectors.add(offsetVector);
         
-        if(shouldFaceBeAdded(chunk, blockLocation, Block.Face.Top)){
+        if(shouldFaceBeAdded(chunk, blockLocation, Block.Face.Top, isTransparent)){
             addFaceIndices(indices, positions.size());
             positions.add(faceLoc_Top_BottomLeft);
             positions.add(faceLoc_Top_BottomRight);
@@ -90,9 +97,9 @@ public class BlockShape_Door extends BlockShape
             addSquareNormals(normals, 0, 1, 0);
             
             addTopBottomTextureCoordinates(chunk, textureCoordinates, block.getSkin(chunk, blockLocation, Block.Face.Top).getTextureLocation());
-            addLighting(chunk, blockLocation, Block.Face.Top);
+            addLighting(colors, chunk, blockLocation, Block.Face.Top);
         }
-        if(shouldFaceBeAdded(chunk, blockLocation, Block.Face.Bottom)){
+        if(shouldFaceBeAdded(chunk, blockLocation, Block.Face.Bottom, isTransparent)){
             addFaceIndices(indices, positions.size());
             positions.add(faceLoc_Bottom_BottomRight);
             positions.add(faceLoc_Bottom_BottomLeft);
@@ -100,9 +107,9 @@ public class BlockShape_Door extends BlockShape
             positions.add(faceLoc_Bottom_TopLeft);
             addSquareNormals(normals, 0, -1, 0);
             addTopBottomTextureCoordinates(chunk, textureCoordinates, block.getSkin(chunk, blockLocation, Block.Face.Bottom).getTextureLocation());
-            addLighting(chunk, blockLocation, Block.Face.Bottom);
+            addLighting(colors, chunk, blockLocation, Block.Face.Bottom);
         }
-        if(shouldFaceBeAdded(chunk, blockLocation, Block.Face.Left)){
+        if(shouldFaceBeAdded(chunk, blockLocation, Block.Face.Left, isTransparent)){
             addFaceIndices(indices, positions.size());
             positions.add(faceLoc_Bottom_TopLeft);
             positions.add(faceLoc_Bottom_BottomLeft);
@@ -147,9 +154,9 @@ public class BlockShape_Door extends BlockShape
             		addBackTextureCoordinates(chunk, textureCoordinates,block.getSkin(chunk, blockLocation, Block.Face.Front).getTextureLocation());
             	}
             }
-            addLighting(chunk, blockLocation, Block.Face.Left);
+            addLighting(colors, chunk, blockLocation, Block.Face.Left);
         }
-        if(shouldFaceBeAdded(chunk, blockLocation, Block.Face.Right)){
+        if(shouldFaceBeAdded(chunk, blockLocation, Block.Face.Right, isTransparent)){
             addFaceIndices(indices, positions.size());
             positions.add(faceLoc_Bottom_BottomRight);
             positions.add(faceLoc_Bottom_TopRight);
@@ -195,9 +202,9 @@ public class BlockShape_Door extends BlockShape
             		addFrontTextureCoordinates(chunk, textureCoordinates,block.getSkin(chunk, blockLocation, Block.Face.Front).getTextureLocation());
             	}
             }
-            addLighting(chunk, blockLocation, Block.Face.Right);
+            addLighting(colors, chunk, blockLocation, Block.Face.Right);
         }
-        if(shouldFaceBeAdded(chunk, blockLocation, Block.Face.Front)){
+        if(shouldFaceBeAdded(chunk, blockLocation, Block.Face.Front, isTransparent)){
             addFaceIndices(indices, positions.size());
             positions.add(faceLoc_Bottom_BottomLeft);
             positions.add(faceLoc_Bottom_BottomRight);
@@ -242,9 +249,9 @@ public class BlockShape_Door extends BlockShape
             		addHingeTextureCoordinates(chunk, textureCoordinates,block.getSkin(chunk, blockLocation, Block.Face.Front).getTextureLocation());
             	}
             }
-            addLighting(chunk, blockLocation, Block.Face.Front);
+            addLighting(colors, chunk, blockLocation, Block.Face.Front);
         }
-        if(shouldFaceBeAdded(chunk, blockLocation, Block.Face.Back)){
+        if(shouldFaceBeAdded(chunk, blockLocation, Block.Face.Back, isTransparent)){
             addFaceIndices(indices, positions.size());
             positions.add(faceLoc_Bottom_TopRight);
             positions.add(faceLoc_Bottom_TopLeft);
@@ -289,7 +296,7 @@ public class BlockShape_Door extends BlockShape
             		addFrameTextureCoordinates(chunk, textureCoordinates,block.getSkin(chunk, blockLocation, Block.Face.Front).getTextureLocation());
             	}
             }
-            addLighting(chunk, blockLocation, Block.Face.Back);
+            addLighting(colors, chunk, blockLocation, Block.Face.Back);
         }
     }
 
