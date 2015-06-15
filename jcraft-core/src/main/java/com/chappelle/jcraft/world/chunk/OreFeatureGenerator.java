@@ -18,27 +18,27 @@ public class OreFeatureGenerator implements ChunkFeatureGenerator
 		this.rand = new Random(seed);
 		
 		BlockGenConfig coalConfig = new BlockGenConfig();
-		coalConfig.setMinCluster(1).setMaxCluster(10).setInitialClusterProbability(0.25f).setClusterProbabilityDropOff(0.05f);
+		coalConfig.setMinCluster((int)(height*0.05)).setMaxCluster((int)(height*0.2)).setInitialClusterProbability(0.25f).setClusterProbabilityDropOff(0.05f);
 		blockGenConfigs.put(Block.coal.blockId, coalConfig);
 
 		BlockGenConfig smoothStoneConfig = new BlockGenConfig();
-		smoothStoneConfig.setMinCluster(1).setMaxCluster(15).setInitialClusterProbability(0.4f).setClusterProbabilityDropOff(0.6f);
+		smoothStoneConfig.setMinCluster((int)(height*0.2)).setMaxCluster((int)(height*0.5)).setInitialClusterProbability(0.4f).setClusterProbabilityDropOff(0.6f);
 		blockGenConfigs.put(Block.smoothStone.blockId, smoothStoneConfig);
 
 		BlockGenConfig goldConfig = new BlockGenConfig();
-		goldConfig.setMinCluster(0).setMaxCluster(2).setInitialClusterProbability(0.2f).setClusterProbabilityDropOff(0.05f);
+		goldConfig.setMinCluster((int)(height*0.01)).setMaxCluster((int)(height*0.1)).setInitialClusterProbability(0.2f).setClusterProbabilityDropOff(0.05f);
 		blockGenConfigs.put(Block.gold.blockId, goldConfig);
 
 		BlockGenConfig diamondConfig = new BlockGenConfig();
-		diamondConfig.setMinCluster(0).setMaxCluster(2).setInitialClusterProbability(0.1f).setClusterProbabilityDropOff(0.05f);
+		diamondConfig.setMinCluster((int)(height*0.01)).setMaxCluster((int)(height*0.05)).setInitialClusterProbability(0.1f).setClusterProbabilityDropOff(0.05f);
 		blockGenConfigs.put(Block.diamond.blockId, diamondConfig);
 
 		BlockGenConfig ironConfig = new BlockGenConfig();
-		ironConfig.setMinCluster(1).setMaxCluster(10).setInitialClusterProbability(0.4f).setClusterProbabilityDropOff(0.05f);
+		ironConfig.setMinCluster((int)(height*0.05)).setMaxCluster((int)(height*0.3)).setInitialClusterProbability(0.4f).setClusterProbabilityDropOff(0.05f);
 		blockGenConfigs.put(Block.iron.blockId, ironConfig);
 
 		BlockGenConfig redstoneConfig = new BlockGenConfig();
-		redstoneConfig.setMinCluster(1).setMaxCluster(5).setInitialClusterProbability(0.3f).setClusterProbabilityDropOff(0.05f);
+		redstoneConfig.setMinCluster((int)(height*0.05)).setMaxCluster((int)(height*0.15)).setInitialClusterProbability(0.3f).setClusterProbabilityDropOff(0.05f);
 		blockGenConfigs.put(Block.redstone.blockId, redstoneConfig);
 	}
 	

@@ -221,6 +221,12 @@ public class JCraft extends SimpleApplication implements ActionListener
 
 //		ChunkProvider chunkProvider = new TestChunkProvider();
 		long seed = System.currentTimeMillis();
+		String seedStr = System.getProperty("seed");
+		if(seedStr != null)
+		{
+			seed = Long.parseLong(seedStr);
+		}
+		System.out.println("Using world seed: " + seed);
 		int height = 225;
 		ChunkProvider chunkProvider = new FlatChunkProvider(height).addFeatureGenerator(new OreFeatureGenerator(seed, height));
 		world = new World(chunkProvider, profiler, cubesSettings, assetManager, cam, seed);
