@@ -87,6 +87,14 @@ public class World implements BitSerializable
 			for(Chunk chunk : generatedChunks)
 			{
 				lightMgr.initChunkSunlight(chunk);
+//				for(Direction dir : Direction.values())
+//				{
+//					Chunk neighbor = getChunkNeighbor(chunk, dir);
+//					if(neighbor != null)
+//					{
+//						lightMgr.rebuildSunlight(neighbor);
+//					}
+//				}
 			}
 			chunkRenderQueue.addAll(generatedChunks);
 			generatedChunks.clear();

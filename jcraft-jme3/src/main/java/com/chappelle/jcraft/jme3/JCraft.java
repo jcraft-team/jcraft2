@@ -15,9 +15,8 @@ import com.chappelle.jcraft.profiler.ProfilerResult;
 import com.chappelle.jcraft.util.AABB;
 import com.chappelle.jcraft.world.World;
 import com.chappelle.jcraft.world.chunk.ChunkProvider;
-import com.chappelle.jcraft.world.chunk.FlatChunkProvider;
-import com.chappelle.jcraft.world.chunk.NoiseChunkProvider;
-import com.chappelle.jcraft.world.chunk.OreFeatureGenerator;
+import com.chappelle.jcraft.world.chunk.SimpleChunkProvider;
+import com.chappelle.jcraft.world.chunk.gen.*;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.StatsAppState;
 import com.jme3.font.BitmapFont;
@@ -220,6 +219,7 @@ public class JCraft extends SimpleApplication implements ActionListener
 		cubesSettings = new CubesSettings(this);
 		cubesSettings.setDefaultBlockMaterial("Textures/FaithfulBlocks.png");
 
+		
 		long seed = System.currentTimeMillis();
 		String seedStr = System.getProperty("seed");
 		if(seedStr != null)
@@ -227,17 +227,26 @@ public class JCraft extends SimpleApplication implements ActionListener
 			seed = Long.parseLong(seedStr);
 		}
 		System.out.println("Using world seed: " + seed);
-		int height = 225;
-//		ChunkProvider chunkProvider = new TestChunkProvider();
-		ChunkProvider chunkProvider = new FlatChunkProvider(height).addFeatureGenerator(new OreFeatureGenerator(seed, height));
-//		ChunkProvider chunkProvider = new NoiseChunkProvider(seed, 0.01f, height).addFeatureGenerator(new OreFeatureGenerator(seed, height));
-		world = new World(chunkProvider, profiler, cubesSettings, assetManager, cam, seed);
+		world = new World(makeChunkProvider(seed), profiler, cubesSettings, assetManager, cam, seed);
 		blockTerrain = new BlockTerrainControl(this, cubesSettings, world);
 		terrainNode.addControl(blockTerrain);
 		terrainNode.setShadowMode(RenderQueue.ShadowMode.CastAndReceive);
 		rootNode.attachChild(terrainNode);
 	}
 
+	private ChunkProvider makeChunkProvider(long seed)
+	{
+		int height = 225;
+		
+		SimpleChunkProvider chunkProvider = new SimpleChunkProvider();
+		chunkProvider.addFeatureGenerator(new FlatFeatureGenerator(Block.grass, height));
+		chunkProvider.addFeatureGenerator(new NoiseFeatureGenerator(seed, 0.0001f, height));
+		chunkProvider.addFeatureGenerator(new OreFeatureGenerator(seed, height));
+		chunkProvider.addFeatureGenerator(new TreeFeatureGenerator(seed));
+		chunkProvider.addFeatureGenerator(new PlantFeatureGenerator(seed));
+//		chunkProvider.addFeatureGenerator(new WaterFeatureGenerator(seed));
+		return chunkProvider;
+	}
 	@Override
 	public void simpleUpdate(float tpf)
 	{

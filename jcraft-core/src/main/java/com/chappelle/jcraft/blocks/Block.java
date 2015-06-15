@@ -138,6 +138,8 @@ public class Block
 	public static final Block smoothStone = new BlockStone(36, 1, 0).setStepSound(SoundConstants.STEP_STONE_1);
 	public static final Block redstone = new BlockRedstoneOre(37).setStepSound(SoundConstants.STEP_STONE_1);
 	public static final Block iron = new BlockIronOre(38).setStepSound(SoundConstants.STEP_STONE_1);
+	public static final Block wood = new BlockLog(39).setStepSound(SoundConstants.STEP_WOOD_1);
+	public static final Block leaves = new BlockLeaves(40).setStepSound(SoundConstants.STEP_GRASS_1);
 	
 	private BlockShape[] shapes = new BlockShape[] { new BlockShape_Cube() };
 	private BlockSkin[] skins;

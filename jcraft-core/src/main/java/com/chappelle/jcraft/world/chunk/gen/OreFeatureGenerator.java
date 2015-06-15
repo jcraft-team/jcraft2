@@ -1,10 +1,11 @@
-package com.chappelle.jcraft.world.chunk;
+package com.chappelle.jcraft.world.chunk.gen;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
 import com.chappelle.jcraft.blocks.Block;
+import com.chappelle.jcraft.world.chunk.ChunkFeatureGenerator;
 
 public class OreFeatureGenerator implements ChunkFeatureGenerator
 {
@@ -21,6 +22,10 @@ public class OreFeatureGenerator implements ChunkFeatureGenerator
 		coalConfig.setMinCluster((int)(height*0.05)).setMaxCluster((int)(height*0.2)).setInitialClusterProbability(0.25f).setClusterProbabilityDropOff(0.05f);
 		blockGenConfigs.put(Block.coal.blockId, coalConfig);
 
+		BlockGenConfig gravelConfig = new BlockGenConfig();
+		gravelConfig.setMinCluster((int)(height*0.05)).setMaxCluster((int)(height*0.2)).setInitialClusterProbability(0.25f).setClusterProbabilityDropOff(0.05f);
+		blockGenConfigs.put(Block.gravel.blockId, gravelConfig);
+		
 		BlockGenConfig smoothStoneConfig = new BlockGenConfig();
 		smoothStoneConfig.setMinCluster((int)(height*0.2)).setMaxCluster((int)(height*0.5)).setInitialClusterProbability(0.4f).setClusterProbabilityDropOff(0.6f);
 		blockGenConfigs.put(Block.smoothStone.blockId, smoothStoneConfig);
@@ -43,7 +48,7 @@ public class OreFeatureGenerator implements ChunkFeatureGenerator
 	}
 	
 	@Override
-	public void addFeatures(int[][][] blockTypes)
+	public void addFeatures(int[][][] blockTypes, boolean[][][] blocks_IsOnSurface)
 	{
 		for(Map.Entry<Integer, BlockGenConfig> entry : blockGenConfigs.entrySet())
 		{

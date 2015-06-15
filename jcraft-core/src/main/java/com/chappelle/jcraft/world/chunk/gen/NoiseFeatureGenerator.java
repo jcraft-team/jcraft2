@@ -1,17 +1,18 @@
-package com.chappelle.jcraft.world.chunk;
+package com.chappelle.jcraft.world.chunk.gen;
 
 import java.util.Random;
 
 import com.chappelle.jcraft.blocks.Block;
 import com.chappelle.jcraft.world.Noise;
+import com.chappelle.jcraft.world.chunk.ChunkFeatureGenerator;
 
-public class NoiseChunkProvider extends BaseChunkProvider
+public class NoiseFeatureGenerator implements ChunkFeatureGenerator
 {
 	private final Random rand;
 	private final float roughness;
 	private int flatChunkHeight;
 	
-	public NoiseChunkProvider(long seed, float roughness, int flatChunkHeight)
+	public NoiseFeatureGenerator(long seed, float roughness, int flatChunkHeight)
 	{
 		this.roughness = roughness;
 		this.rand = new Random(seed);
@@ -19,7 +20,7 @@ public class NoiseChunkProvider extends BaseChunkProvider
 	}
 	
 	@Override
-	protected void doFillChunkWithBlocks(int[][][] blockTypes, boolean[][][] blocks_IsOnSurface, Block block)
+	public void addFeatures(int[][][] blockTypes, boolean[][][] blocks_IsOnSurface)
 	{
 		for(int x = 0; x < 16; x++)
 		{
@@ -27,7 +28,7 @@ public class NoiseChunkProvider extends BaseChunkProvider
 			{
 				for(int z = 0; z < 16; z++)
 				{
-					blockTypes[x][y][z] = block.blockId;
+					blockTypes[x][y][z] = Block.grass.blockId;
 					if(y == flatChunkHeight - 1)
 					{
 						blocks_IsOnSurface[x][y][z] = true;
@@ -39,11 +40,11 @@ public class NoiseChunkProvider extends BaseChunkProvider
 		int magnitude = 4;
 		generateFromNoise(blockTypes, blocks_IsOnSurface, Block.grass, 0, 0, 16, 16, magnitude);
 		
-		if(rand.nextInt(5) == 0)
-		{
-			magnitude = 5;
-			generateFromNoise(blockTypes, blocks_IsOnSurface, Block.smoothStone, rand.nextInt(10), rand.nextInt(10), rand.nextInt(8) + 8, rand.nextInt(8) + 8, magnitude);
-		}
+//		if(rand.nextInt(5) == 0)
+//		{
+//			magnitude = 5;
+//			generateFromNoise(blockTypes, blocks_IsOnSurface, Block.smoothStone, rand.nextInt(10), rand.nextInt(10), rand.nextInt(8) + 8, rand.nextInt(8) + 8, magnitude);
+//		}
 	}
 
 	private void generateFromNoise(int[][][] blockTypes, boolean[][][] blocks_IsOnSurface, Block block, int xMin, int zMin, int xMax, int zMax, int magnitude)
