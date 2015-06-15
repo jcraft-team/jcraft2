@@ -216,8 +216,10 @@ public class JCraft extends SimpleApplication implements ActionListener
 		cubesSettings.setDefaultBlockMaterial("Textures/FaithfulBlocks.png");
 
 //		ChunkProvider chunkProvider = new TestChunkProvider();
-		ChunkProvider chunkProvider = new FlatChunkProvider(10);
-		world = new World(chunkProvider, profiler, cubesSettings, assetManager, cam);
+		long seed = System.currentTimeMillis();
+		int height = 100;
+		ChunkProvider chunkProvider = new FlatChunkProvider(height).addFeatureGenerator(new OreFeatureGenerator(seed, height));
+		world = new World(chunkProvider, profiler, cubesSettings, assetManager, cam, seed);
 		blockTerrain = new BlockTerrainControl(this, cubesSettings, world);
 		terrainNode.addControl(blockTerrain);
 		terrainNode.setShadowMode(RenderQueue.ShadowMode.CastAndReceive);

@@ -35,6 +35,8 @@ import com.jme3.renderer.Camera;
 
 public class World implements BitSerializable
 {
+	private long seed;
+	
 	private CubesSettings settings;
 	
 	private ChunkProvider chunkProvider;
@@ -57,7 +59,7 @@ public class World implements BitSerializable
 	private int chunkGenTicks;
 	private ChunkGenerationRunnable gen = new ChunkGenerationRunnable();
 	
-	public World(ChunkProvider chunkProvider, Profiler profiler, CubesSettings settings, AssetManager assetManager, Camera cam)
+	public World(ChunkProvider chunkProvider, Profiler profiler, CubesSettings settings, AssetManager assetManager, Camera cam, long seed)
 	{
 		this.chunkProvider = chunkProvider;
 		this.chunkProvider.setWorld(this);
@@ -66,6 +68,7 @@ public class World implements BitSerializable
 		this.assetManager = assetManager;
 		this.lightMgr = new FloodFillLightManager(this);
 		this.cam = cam;
+		this.seed = seed;
 		
         music = new AudioNode(assetManager, SoundConstants.MUSIC_CALM1);
         music.setReverbEnabled(false);
@@ -753,5 +756,11 @@ public class World implements BitSerializable
 			}
 		}
 		return null;
+    }
+    
+
+    public long getSeed()
+    {
+    	return seed;
     }
 }
