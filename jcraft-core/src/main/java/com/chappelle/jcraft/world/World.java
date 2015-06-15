@@ -260,8 +260,7 @@ public class World implements BitSerializable
 				float blockHeightInPercents = ((gridGroundHeight * 100) / gridLargestDifference);
 				int blockHeight = ((int) ((blockHeightInPercents / 100) * size.getY())) + 1;
 				---*/
-				int blockHeight = (((int) (((((row[z] - gridMinimum) * 100) / gridLargestDifference) / 100) * size
-						.getY())) + 1);
+				int blockHeight = (((int) (((((row[z] - gridMinimum) * 100) / gridLargestDifference) / 100) * size.getY())) + 1);
 				Vector3Int tmpLocation = new Vector3Int();
 				for(int y = 0; y < blockHeight; y++)
 				{

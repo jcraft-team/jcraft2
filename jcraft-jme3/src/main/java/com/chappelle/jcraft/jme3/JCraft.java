@@ -16,6 +16,7 @@ import com.chappelle.jcraft.util.AABB;
 import com.chappelle.jcraft.world.World;
 import com.chappelle.jcraft.world.chunk.ChunkProvider;
 import com.chappelle.jcraft.world.chunk.FlatChunkProvider;
+import com.chappelle.jcraft.world.chunk.NoiseChunkProvider;
 import com.chappelle.jcraft.world.chunk.OreFeatureGenerator;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.StatsAppState;
@@ -219,7 +220,6 @@ public class JCraft extends SimpleApplication implements ActionListener
 		cubesSettings = new CubesSettings(this);
 		cubesSettings.setDefaultBlockMaterial("Textures/FaithfulBlocks.png");
 
-//		ChunkProvider chunkProvider = new TestChunkProvider();
 		long seed = System.currentTimeMillis();
 		String seedStr = System.getProperty("seed");
 		if(seedStr != null)
@@ -228,7 +228,9 @@ public class JCraft extends SimpleApplication implements ActionListener
 		}
 		System.out.println("Using world seed: " + seed);
 		int height = 225;
-		ChunkProvider chunkProvider = new FlatChunkProvider(height).addFeatureGenerator(new OreFeatureGenerator(seed, height));
+//		ChunkProvider chunkProvider = new TestChunkProvider();
+//		ChunkProvider chunkProvider = new FlatChunkProvider(height).addFeatureGenerator(new OreFeatureGenerator(seed, height));
+		ChunkProvider chunkProvider = new NoiseChunkProvider(seed, 0.0001f, height).addFeatureGenerator(new OreFeatureGenerator(seed, height));
 		world = new World(chunkProvider, profiler, cubesSettings, assetManager, cam, seed);
 		blockTerrain = new BlockTerrainControl(this, cubesSettings, world);
 		terrainNode.addControl(blockTerrain);
