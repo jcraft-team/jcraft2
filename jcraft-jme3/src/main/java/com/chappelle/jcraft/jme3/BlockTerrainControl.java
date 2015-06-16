@@ -35,17 +35,6 @@ public class BlockTerrainControl extends AbstractControl
 		world.update(lastTimePerFrame);
 		world.calculateLight();
 		updateSpatial();
-//		app.enqueue(new Callable<Void>()
-//		{
-//			@Override
-//			public Void call() throws Exception
-//			{
-//				world.update(lastTimePerFrame);
-//				world.calculateLight();
-//				updateSpatial();
-//				return null;
-//			}
-//		});
 	}
 
 	@Override
@@ -64,12 +53,11 @@ public class BlockTerrainControl extends AbstractControl
 	{
 		profiler.startSection("ChunkSpatial");
 		Chunk addedChunk = world.chunkRenderQueue.poll();
-		while(addedChunk != null)
+		if(addedChunk != null)//Game runs smoother when we load 1 chunk per frame for some reason
 		{
 			BlockChunkControl control = new BlockChunkControl(this, addedChunk);
 			this.spatial.addControl(control);
 			chunks.add(control);
-			addedChunk = world.chunkRenderQueue.poll();
 		}
 		for(BlockChunkControl chunk : chunks)
 		{

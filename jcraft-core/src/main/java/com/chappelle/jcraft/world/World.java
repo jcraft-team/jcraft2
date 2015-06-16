@@ -322,8 +322,58 @@ public class World implements BitSerializable
 	                    neighbor.onNeighborRemoved(this, location, neighborLocation);
 	                }
 	            }
+	            
+	            //Here we mark neighbor chunks dirty if we broke a block on the border. This is needed
+	            //since we don't render block faces that are covered therefore breaking a block could
+	            //expose what looks like a hole in the world. Rebuilding the neighbor fixes it
+	            if(isChunkBorder(localBlockState.getLocalBlockLocation()))
+	            {
+	            	markNeighborChunksDirty(localBlockState.getChunk(), localBlockState.getLocalBlockLocation());
+	            }
 			}
 		}
+	}
+
+	private void markNeighborChunksDirty(Chunk chunk, Vector3Int location)
+	{
+		if(location.x == 0)
+		{
+			Chunk neighbor = getChunkNeighbor(chunk, Direction.LEFT);
+			if(neighbor != null)
+			{
+				neighbor.markDirty();
+			}
+		}
+		else if(location.x == 15)
+		{
+			Chunk neighbor = getChunkNeighbor(chunk, Direction.RIGHT);
+			if(neighbor != null)
+			{
+				neighbor.markDirty();
+			}
+		}
+		if(location.z == 0)
+		{
+			Chunk neighbor = getChunkNeighbor(chunk, Direction.BACK);
+			if(neighbor != null)
+			{
+				neighbor.markDirty();
+			}
+		}
+		else if(location.z == 15)
+		{
+			Chunk neighbor = getChunkNeighbor(chunk, Direction.FRONT);
+			if(neighbor != null)
+			{
+				neighbor.markDirty();
+			}
+		}
+	}
+
+	private boolean isChunkBorder(Vector3Int location)
+	{
+		return location.x == 15 || location.x == 0 ||
+				location.z == 15 || location.z == 0;
 	}
 
 	public void removeBlockArea(Vector3Int location, Vector3Int size)

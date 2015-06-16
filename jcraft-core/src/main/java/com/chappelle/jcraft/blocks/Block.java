@@ -142,7 +142,12 @@ public class Block
 	public static final Block wood = new BlockLog(39).setStepSound(SoundConstants.STEP_WOOD_1);
 	public static final Block leaves = new BlockLeaves(40).setStepSound(SoundConstants.STEP_GRASS_1);
 	public static final Block tallGrass = new BlockTallGrass(41, 7, 2);
+	
+	/**
+	 * Light values are multiplied by each of these color components
+	 */
 	public ColorRGBA color = new ColorRGBA(1, 1, 1, 1);
+
 	private BlockShape[] shapes = new BlockShape[] { new BlockShape_Cube() };
 	private BlockSkin[] skins;
 
