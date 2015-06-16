@@ -225,7 +225,7 @@ public class EntityPlayer extends Entity
 		
 		posX = (this.boundingBox.minX + this.boundingBox.maxX) / 2.0f;
 		posZ = (this.boundingBox.minZ + this.boundingBox.maxZ) / 2.0f;
-		posY = this.boundingBox.minY + this.yOffset - this.ySize;
+		posY = (this.boundingBox.minY + this.yOffset - this.ySize);
 		
 		updateWalkDistance();
 	}

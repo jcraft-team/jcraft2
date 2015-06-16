@@ -10,6 +10,36 @@
   <description>JCraft JMonkey Engine 3</description>
 	<dependencies>
 		<dependency>
+			<groupId>com.jme3</groupId>
+			<artifactId>skycontrol</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.jme3</groupId>
+			<artifactId>skycontrol-assets</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.jme3</groupId>
+			<artifactId>utilities-debug-assets</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.jme3</groupId>
+			<artifactId>utilities-debug</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.jme3</groupId>
+			<artifactId>jme3-jbullet</artifactId>
+			<version>${jme.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.jme3</groupId>
+			<artifactId>jme3-effects</artifactId>
+			<version>${jme.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>com.chappelle</groupId>
 			<artifactId>jcraft-core</artifactId>
 			<version>0.0.1-SNAPSHOT</version>

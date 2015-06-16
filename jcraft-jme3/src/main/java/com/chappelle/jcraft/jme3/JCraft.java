@@ -16,7 +16,11 @@ import com.chappelle.jcraft.util.AABB;
 import com.chappelle.jcraft.world.World;
 import com.chappelle.jcraft.world.chunk.ChunkProvider;
 import com.chappelle.jcraft.world.chunk.SimpleChunkProvider;
-import com.chappelle.jcraft.world.chunk.gen.*;
+import com.chappelle.jcraft.world.chunk.gen.BlockOreFeature;
+import com.chappelle.jcraft.world.chunk.gen.FlatFeature;
+import com.chappelle.jcraft.world.chunk.gen.NoiseFeature;
+import com.chappelle.jcraft.world.chunk.gen.PlantFeature;
+import com.chappelle.jcraft.world.chunk.gen.TreeFeature;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.StatsAppState;
 import com.jme3.font.BitmapFont;
@@ -125,6 +129,8 @@ public class JCraft extends SimpleApplication implements ActionListener
 		// Setup sky
 		viewPort.setBackgroundColor(new ColorRGBA((float) 128 / 255, (float) 173 / 255, (float) 254 / 255, 1));
 
+		stateManager.attach(new EnvironmentAppState());
+		
 		// Setup player
 		player = new EntityPlayer(world, cam);
 		hud = makeHUD2(player);

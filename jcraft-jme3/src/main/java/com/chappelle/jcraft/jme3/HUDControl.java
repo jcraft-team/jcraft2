@@ -52,6 +52,7 @@ public class HUDControl extends AbstractControl implements ScreenController, Inv
 	private BitmapText pointedBlockLabel;
 	private BitmapText boundingBoxLabel;
 	private BitmapText pointedBoundingBoxLabel;
+	private BitmapText timeLabel;
 	private EntityPlayer player;
 	private World world;
     private Nifty nifty;
@@ -117,6 +118,10 @@ public class HUDControl extends AbstractControl implements ScreenController, Inv
         x = 10;
         y-= 25;
         facingLabel.setLocalTranslation(x, y, 0);
+
+        x = 10;
+        y-= 25;
+        timeLabel.setLocalTranslation(x, y, 0);
 	}
 	
 	@Override
@@ -183,6 +188,11 @@ public class HUDControl extends AbstractControl implements ScreenController, Inv
             facingLabel.setSize(guiFont.getCharSet().getRenderedSize());
             facingLabel.setText("Facing: ");
             debugNode.attachChild(facingLabel);
+
+            timeLabel = new BitmapText(guiFont, false);
+            timeLabel.setSize(guiFont.getCharSet().getRenderedSize());
+            timeLabel.setText("Time: ");
+            debugNode.attachChild(timeLabel);
             
             positionElements();
             
@@ -204,6 +214,16 @@ public class HUDControl extends AbstractControl implements ScreenController, Inv
 			Vector3Int blockLoc = new Vector3Int((int)player.posX, (int)player.posY, (int)player.posZ);
 			blockLocationLabel.setText("Block location: " + blockLoc);
 			facingLabel.setText("Facing: " + player.cam.getDirection());
+			
+			EnvironmentAppState env = JCraft.getInstance().getStateManager().getState(EnvironmentAppState.class);
+			if(env != null)
+			{
+				timeLabel.setText("Time: " + env.getTimeOfDay().getHour());
+			}
+			else
+			{
+				timeLabel.setText("Time: ?");
+			}
 			if(blockLoc != null && blockLoc.y < 256)
 			{
 				Vector3Int walkedOnBlockLocation = blockLoc.subtract(0, 2, 0);
