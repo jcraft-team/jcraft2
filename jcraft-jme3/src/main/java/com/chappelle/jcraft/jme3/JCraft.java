@@ -32,7 +32,10 @@ import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.ViewPort;
 import com.jme3.renderer.queue.RenderQueue;
+import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
+import com.jme3.scene.SceneGraphVisitor;
+import com.jme3.scene.Spatial;
 import com.jme3.system.AppSettings;
 
 import de.lessvoid.nifty.Nifty;
@@ -41,7 +44,7 @@ public class JCraft extends SimpleApplication implements ActionListener
 {
 	private static final int JUMP_TIME_INTERVAL = 200;
 	private final Vector3Int terrainSize = new Vector3Int(16, 10, 16);
-	private int terrainIndex = terrainSize.x/16;
+	private int terrainIndex = terrainSize.x / 16;
 
 	private static JCraft jcraft;
 	private Nifty nifty;
@@ -56,19 +59,23 @@ public class JCraft extends SimpleApplication implements ActionListener
 	public World world;
 	private Profiler profiler;
 	private HUDControl hud;
-	
-	private static final int THREAD_COUNT = 1;//Lighting bugs occurr less when we use 1 thread(need to fix lighting so we can increase this)
+	private boolean wireframe;
+
+	private static final int THREAD_COUNT = 1;// Lighting bugs occurr less when
+												// we use 1 thread(need to fix
+												// lighting so we can increase
+												// this)
 	public ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(THREAD_COUNT);
-	
+
 	/**
 	 * Used for enabling flying by double pressing space
 	 */
 	private long lastJumpPressed;
-	
+
 	public JCraft(GameSettings gameSettings)
 	{
 		jcraft = this;
-		
+
 		this.gameSettings = gameSettings;
 		debugEnabled = gameSettings.debugEnabled;
 		this.profiler = new Profiler();
@@ -84,41 +91,41 @@ public class JCraft extends SimpleApplication implements ActionListener
 	{
 		return settings;
 	}
-	
+
 	public Nifty getNifty()
 	{
 		return nifty;
 	}
-	
+
 	public EntityPlayer getPlayer()
 	{
 		return player;
 	}
-	
+
 	public Profiler getProfiler()
 	{
 		return profiler;
 	}
-	
+
 	public static JCraft getInstance()
 	{
 		return jcraft;
 	}
-	
+
 	@Override
 	public void simpleInitApp()
 	{
 		initializeGUI();
 
-		cam.setFrustumPerspective(45f, (float)cam.getWidth()/cam.getHeight(), 0.01f, 500f);
+		cam.setFrustumPerspective(45f, (float) cam.getWidth() / cam.getHeight(), 0.01f, 500f);
 		initControls();
 		initBlockTerrain();
 		cam.lookAtDirection(new Vector3f(1, 0, 1), Vector3f.UNIT_Y);
-		
-		//Setup sky
-		viewPort.setBackgroundColor(new ColorRGBA((float)128/255, (float)173/255, (float)254/255, 1));
 
-		//Setup player
+		// Setup sky
+		viewPort.setBackgroundColor(new ColorRGBA((float) 128 / 255, (float) 173 / 255, (float) 254 / 255, 1));
+
+		// Setup player
 		player = new EntityPlayer(world, cam);
 		hud = makeHUD2(player);
 		player.preparePlayerToSpawn();
@@ -131,14 +138,13 @@ public class JCraft extends SimpleApplication implements ActionListener
 
 		profiler.startSection("root");
 		updateStatsView();
-		
+
 		System.out.println("****************************************************************************");
 		System.out.println("Press F1 for fullscreen, F3 to toggle debug, F4 to toggle profiler.");
 		System.out.println("See key bindings in JCraft class for other controls");
 		System.out.println("****************************************************************************");
 		System.out.println("\r\n\r\n");
-		
-		
+
 		this.inventoryAppState = new InventoryAppState();
 		stateManager.attach(inventoryAppState);
 		nifty.fromXml("Interface/hud.xml", "hud", hud);
@@ -147,31 +153,44 @@ public class JCraft extends SimpleApplication implements ActionListener
 	private void initializeGUI()
 	{
 		Camera niftyCamera = new Camera(cam.getWidth(), cam.getHeight());
-		ViewPort niftyViewPort = renderManager.createPostView("Nifty View", niftyCamera);//Nifty gets it's own view port so we can still write to gui node
+		ViewPort niftyViewPort = renderManager.createPostView("Nifty View", niftyCamera);// Nifty
+																							// gets
+																							// it's
+																							// own
+																							// view
+																							// port
+																							// so
+																							// we
+																							// can
+																							// still
+																							// write
+																							// to
+																							// gui
+																							// node
 		niftyDisplay = new NiftyJmeDisplay(assetManager, inputManager, audioRenderer, niftyViewPort);
 		nifty = niftyDisplay.getNifty();
 
-	    niftyViewPort.addProcessor(niftyDisplay);
-        nifty.addXml("Interface/hud.xml");
-        nifty.addXml("Interface/inventory.xml");
+		niftyViewPort.addProcessor(niftyDisplay);
+		nifty.addXml("Interface/hud.xml");
+		nifty.addXml("Interface/inventory.xml");
 	}
 
 	private HUDControl makeHUD2(EntityPlayer player)
 	{
 		return new HUDControl(this, settings, player);
 	}
-	
+
 	private void toggleDebug()
 	{
 		debugEnabled = !debugEnabled;
 		updateStatsView();
 	}
-	
+
 	private void toggleProfiling()
 	{
 		profiler.profilingEnabled = !profiler.profilingEnabled;
 	}
-	
+
 	private void updateStatsView()
 	{
 		stateManager.getState(StatsAppState.class).setDisplayStatView(debugEnabled);
@@ -183,7 +202,7 @@ public class JCraft extends SimpleApplication implements ActionListener
 		inputManager.addMapping(action, trigger);
 		inputManager.addListener(this, action);
 	}
-	
+
 	private void initControls()
 	{
 		addMapping("move_left", new KeyTrigger(KeyInput.KEY_A));
@@ -195,25 +214,26 @@ public class JCraft extends SimpleApplication implements ActionListener
 		addMapping("n", new KeyTrigger(KeyInput.KEY_N));
 		addMapping("RightClick", new MouseButtonTrigger(MouseInput.BUTTON_RIGHT));
 		addMapping("LeftClick", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
-        addMapping("1", new KeyTrigger(KeyInput.KEY_1));
-        addMapping("2", new KeyTrigger(KeyInput.KEY_2));
-        addMapping("3", new KeyTrigger(KeyInput.KEY_3));
-        addMapping("4", new KeyTrigger(KeyInput.KEY_4));
-        addMapping("5", new KeyTrigger(KeyInput.KEY_5));
-        addMapping("6", new KeyTrigger(KeyInput.KEY_6));
-        addMapping("7", new KeyTrigger(KeyInput.KEY_7));
-        addMapping("8", new KeyTrigger(KeyInput.KEY_8));
-        addMapping("9", new KeyTrigger(KeyInput.KEY_9));
-        addMapping("0", new KeyTrigger(KeyInput.KEY_0));
-        addMapping("t", new KeyTrigger(KeyInput.KEY_T));
-        addMapping("g", new KeyTrigger(KeyInput.KEY_G));
-        addMapping("u", new KeyTrigger(KeyInput.KEY_U));
-        addMapping("lshift", new KeyTrigger(KeyInput.KEY_LSHIFT));
-        addMapping("lctrl", new KeyTrigger(KeyInput.KEY_LCONTROL));
-        addMapping("f1", new KeyTrigger(KeyInput.KEY_F1));
-        addMapping("f3", new KeyTrigger(KeyInput.KEY_F3));
-        addMapping("f4", new KeyTrigger(KeyInput.KEY_F4));
-        addMapping("e", new KeyTrigger(KeyInput.KEY_E));
+		addMapping("1", new KeyTrigger(KeyInput.KEY_1));
+		addMapping("2", new KeyTrigger(KeyInput.KEY_2));
+		addMapping("3", new KeyTrigger(KeyInput.KEY_3));
+		addMapping("4", new KeyTrigger(KeyInput.KEY_4));
+		addMapping("5", new KeyTrigger(KeyInput.KEY_5));
+		addMapping("6", new KeyTrigger(KeyInput.KEY_6));
+		addMapping("7", new KeyTrigger(KeyInput.KEY_7));
+		addMapping("8", new KeyTrigger(KeyInput.KEY_8));
+		addMapping("9", new KeyTrigger(KeyInput.KEY_9));
+		addMapping("0", new KeyTrigger(KeyInput.KEY_0));
+		addMapping("t", new KeyTrigger(KeyInput.KEY_T));
+		addMapping("g", new KeyTrigger(KeyInput.KEY_G));
+		addMapping("u", new KeyTrigger(KeyInput.KEY_U));
+		addMapping("lshift", new KeyTrigger(KeyInput.KEY_LSHIFT));
+		addMapping("lctrl", new KeyTrigger(KeyInput.KEY_LCONTROL));
+		addMapping("f1", new KeyTrigger(KeyInput.KEY_F1));
+		addMapping("f3", new KeyTrigger(KeyInput.KEY_F3));
+		addMapping("f4", new KeyTrigger(KeyInput.KEY_F4));
+		addMapping("f5", new KeyTrigger(KeyInput.KEY_F5));
+		addMapping("e", new KeyTrigger(KeyInput.KEY_E));
 	}
 
 	private void initBlockTerrain()
@@ -221,7 +241,6 @@ public class JCraft extends SimpleApplication implements ActionListener
 		cubesSettings = new CubesSettings(this);
 		cubesSettings.setDefaultBlockMaterial("Textures/FaithfulBlocks.png");
 
-		
 		long seed = System.currentTimeMillis();
 		String seedStr = System.getProperty("seed");
 		if(seedStr != null)
@@ -239,24 +258,23 @@ public class JCraft extends SimpleApplication implements ActionListener
 	private ChunkProvider makeChunkProvider(long seed)
 	{
 		int height = 230;
-		
+
 		SimpleChunkProvider chunkProvider = new SimpleChunkProvider();
 		chunkProvider.addFeature(new FlatFeature(Block.grass, height));
 		chunkProvider.addFeature(new NoiseFeature(seed, 0.0001f, height));
 		chunkProvider.addFeature(new BlockOreFeature(seed, height));
 		chunkProvider.addFeature(new TreeFeature(seed));
 		chunkProvider.addFeature(new PlantFeature(seed));
-//		chunkProvider.addFeatureGenerator(new WaterFeatureGenerator(seed));
+		// chunkProvider.addFeatureGenerator(new WaterFeatureGenerator(seed));
 		return chunkProvider;
 	}
+
 	@Override
 	public void simpleUpdate(float tpf)
 	{
 		AABB.getAABBPool().cleanPool();
 	}
 
-
-	
 	@Override
 	public void onAction(String name, boolean isPressed, float lastTimePerFrame)
 	{
@@ -310,94 +328,113 @@ public class JCraft extends SimpleApplication implements ActionListener
 		{
 			player.breakBlock();
 		}
-        else if("1".equals(name) && !isPressed)
-        {
-        	player.selectBlock(1);
-        }
-        else if("2".equals(name) && !isPressed)
-        {
-        	player.selectBlock(2);
-        }
-        else if("3".equals(name) && !isPressed)
-        {
-        	player.selectBlock(3);
-        }
-        else if("4".equals(name) && !isPressed)
-        {
-        	player.selectBlock(4);
-        }
-        else if("5".equals(name) && !isPressed)
-        {
-        	player.selectBlock(5);
-        }
-        else if("6".equals(name) && !isPressed)
-        {
-        	player.selectBlock(6);
-        }
-        else if("7".equals(name) && !isPressed)
-        {
-        	player.selectBlock(7);
-        }
-        else if("8".equals(name) && !isPressed)
-        {
-        	player.selectBlock(8);
-        }
-        else if("9".equals(name) && !isPressed)
-        {
-        	player.selectBlock(9);
-        }
-        else if("t".equals(name) && !isPressed)
-        {
-        	blockTerrain.world.setBlocksFromNoise(new Vector3Int(terrainIndex*16, 0, 0), terrainSize, 0.8f, Block.grass);
-        	terrainIndex++;
-        }
-        else if("f1".equals(name) && !isPressed)
-        {
-        	toggleToFullscreen();
-        }
-        else if("e".equals(name) && !isPressed)
-        {
-            nifty.fromXml("Interface/inventory.xml", "inventoryScreen", inventoryAppState);
-            inputManager.setCursorVisible(true);
-            
-//            player.setEnabled(false);
-            flyCam.setEnabled(false);
+		else if("1".equals(name) && !isPressed)
+		{
+			player.selectBlock(1);
+		}
+		else if("2".equals(name) && !isPressed)
+		{
+			player.selectBlock(2);
+		}
+		else if("3".equals(name) && !isPressed)
+		{
+			player.selectBlock(3);
+		}
+		else if("4".equals(name) && !isPressed)
+		{
+			player.selectBlock(4);
+		}
+		else if("5".equals(name) && !isPressed)
+		{
+			player.selectBlock(5);
+		}
+		else if("6".equals(name) && !isPressed)
+		{
+			player.selectBlock(6);
+		}
+		else if("7".equals(name) && !isPressed)
+		{
+			player.selectBlock(7);
+		}
+		else if("8".equals(name) && !isPressed)
+		{
+			player.selectBlock(8);
+		}
+		else if("9".equals(name) && !isPressed)
+		{
+			player.selectBlock(9);
+		}
+		else if("t".equals(name) && !isPressed)
+		{
+			blockTerrain.world.setBlocksFromNoise(new Vector3Int(terrainIndex * 16, 0, 0), terrainSize, 0.8f,
+					Block.grass);
+			terrainIndex++;
+		}
+		else if("f1".equals(name) && !isPressed)
+		{
+			toggleToFullscreen();
+		}
+		else if("e".equals(name) && !isPressed)
+		{
+			nifty.fromXml("Interface/inventory.xml", "inventoryScreen", inventoryAppState);
+			inputManager.setCursorVisible(true);
 
-        }
-        else if("g".equals(name) && !isPressed)
-        {
-        	player.toggleGravity();
-        }
-        else if("f3".equals(name) && !isPressed)
-        {
-        	toggleDebug();
-        }
-        else if("f4".equals(name) && !isPressed)
-        {
-        	toggleProfiling();
-        }
+			// player.setEnabled(false);
+			flyCam.setEnabled(false);
+
+		}
+		else if("g".equals(name) && !isPressed)
+		{
+			player.toggleGravity();
+		}
+		else if("f3".equals(name) && !isPressed)
+		{
+			toggleDebug();
+		}
+		else if("f4".equals(name) && !isPressed)
+		{
+			toggleProfiling();
+		}
+		else if("f5".equals(name) && !isPressed)
+		{
+			wireframe = !wireframe;
+			rootNode.depthFirstTraversal(new SceneGraphVisitor()
+			{
+				public void visit(Spatial spatial)
+				{
+					if(spatial instanceof Geometry)
+					{
+						Geometry g = (Geometry)spatial;
+						if(!"blockCursor".equals(g.getName()))//Don't toggle the block cursor
+						{
+							g.getMaterial().getAdditionalRenderState().setWireframe(wireframe);
+						}
+					}
+				}
+			});
+		}
 	}
-	
+
 	public HUDControl getHUD()
 	{
 		return hud;
 	}
-	
-    public BitmapFont getGuiFont()
-    {
-        return guiFont;
-    }
 
-    public void setGuiFont(BitmapFont guiFont)
-    {
-        this.guiFont = guiFont;
-    }
-    
-    public CubesSettings getCubesSettings()
-    {
-    	return cubesSettings;
-    }
-    
+	public BitmapFont getGuiFont()
+	{
+		return guiFont;
+	}
+
+	public void setGuiFont(BitmapFont guiFont)
+	{
+		this.guiFont = guiFont;
+	}
+
+	public CubesSettings getCubesSettings()
+	{
+		return cubesSettings;
+	}
+
 	@Override
 	public void destroy()
 	{
@@ -417,17 +454,19 @@ public class JCraft extends SimpleApplication implements ActionListener
 		System.out.println("**********************************************");
 		System.out.println("************* Profiler results ***************");
 		System.out.println("**********************************************");
-		profiler.endSection();//needed to close the root profiling section
+		profiler.endSection();// needed to close the root profiling section
 		for(ProfilerResult result : profiler.getProfilingData("root"))
 		{
 			System.out.println(result.section + " [" + result.elapsedTime + "," + result.maxTime + "]");
 		}
 	}
 
-	//WARNING: This may be buggy. See http://hub.jmonkeyengine.org/t/error-switching-to-fullscreen-using-the-documented-code-sample/32750
+	// WARNING: This may be buggy. See
+	// http://hub.jmonkeyengine.org/t/error-switching-to-fullscreen-using-the-documented-code-sample/32750
 	public void toggleToFullscreen()
 	{
-		java.awt.GraphicsDevice device = java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+		java.awt.GraphicsDevice device = java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment()
+				.getDefaultScreenDevice();
 		java.awt.DisplayMode[] modes = device.getDisplayModes();
 
 		int i = modes.length - 1;
@@ -437,15 +476,15 @@ public class JCraft extends SimpleApplication implements ActionListener
 		settings.setFullscreen(device.isFullScreenSupported());
 		setSettings(settings);
 		restart(); // restart the context to apply changes
-		
+
 		hud.positionElements();
-		
+
 		StatsAppState stats = stateManager.getState(StatsAppState.class);
 		stateManager.detach(stats);
 		stats = new StatsAppState(guiNode, guiFont);
 		stateManager.attach(stats);
 	}
-	
+
 	public static void main(String[] args)
 	{
 		Logger.getLogger("").setLevel(Level.SEVERE);

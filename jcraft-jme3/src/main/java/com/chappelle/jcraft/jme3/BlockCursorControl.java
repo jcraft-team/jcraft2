@@ -40,7 +40,7 @@ public class BlockCursorControl extends NodeControl
     public void setNode(Node node)
     {
     	box = new Box(minPoint, maxPoint);
-        blockCursor = new Geometry("wireframe cube", box);
+        blockCursor = new Geometry("blockCursor", box);
         Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         mat.getAdditionalRenderState().setWireframe(true);
         mat.setColor("Color", ColorRGBA.Yellow);
