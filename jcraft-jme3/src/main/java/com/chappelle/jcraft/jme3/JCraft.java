@@ -56,7 +56,9 @@ public class JCraft extends SimpleApplication implements ActionListener
 	public World world;
 	private Profiler profiler;
 	private HUDControl hud;
-	public ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(4);
+	
+	private static final int THREAD_COUNT = 1;//Lighting bugs occurr less when we use 1 thread(need to fix lighting so we can increase this)
+	public ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(THREAD_COUNT);
 	
 	/**
 	 * Used for enabling flying by double pressing space
