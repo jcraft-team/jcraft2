@@ -7,6 +7,7 @@ import com.chappelle.jcraft.util.MathUtils;
 import com.chappelle.jcraft.util.RayTrace;
 import com.chappelle.jcraft.world.World;
 import com.chappelle.jcraft.world.chunk.Chunk;
+import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 
@@ -140,7 +141,8 @@ public class Block
 	public static final Block iron = new BlockIronOre(38).setStepSound(SoundConstants.STEP_STONE_1);
 	public static final Block wood = new BlockLog(39).setStepSound(SoundConstants.STEP_WOOD_1);
 	public static final Block leaves = new BlockLeaves(40).setStepSound(SoundConstants.STEP_GRASS_1);
-	
+	public static final Block tallGrass = new BlockTallGrass(41, 7, 2);
+	public ColorRGBA color = new ColorRGBA(1, 1, 1, 1);
 	private BlockShape[] shapes = new BlockShape[] { new BlockShape_Cube() };
 	private BlockSkin[] skins;
 
@@ -157,6 +159,7 @@ public class Block
 	public Block(int blockId, BlockSkin... skins)
 	{
 		this.skins = skins;
+		
 		this.blockId = blockId;
 		this.slipperiness = DEFAULT_SLIPPERINESS;
 		blocksList[blockId] = this;

@@ -108,10 +108,16 @@ public abstract class BlockShape
 	
     protected void addLighting(List<Float> colors, Chunk chunk, Vector3Int location, Block.Face face)
     {
+    	float r = 1.0f;
+    	float g = 1.0f;
+    	float b = 1.0f;
     	float light = 1.0f;
     	if(chunk != null)
     	{
     		Block block = chunk.getBlock(location);
+    		r = block.color.r;
+    		g = block.color.g;
+    		b = block.color.b;
     		if(block.lightValue > 0)
     		{
     			light = (float)block.lightValue/LightMap.MAX_LIGHT;
@@ -236,24 +242,24 @@ public abstract class BlockShape
     			}
     		}
     	}
-    	colors.add(light);
-    	colors.add(light);
-    	colors.add(light);
+    	colors.add(light*r);
+    	colors.add(light*g);
+    	colors.add(light*b);
     	colors.add(1.0f);
     	
-    	colors.add(light);
-    	colors.add(light);
-    	colors.add(light);
+    	colors.add(light*r);
+    	colors.add(light*g);
+    	colors.add(light*b);
     	colors.add(1.0f);
     	
-    	colors.add(light);
-    	colors.add(light);
-    	colors.add(light);
+    	colors.add(light*r);
+    	colors.add(light*g);
+    	colors.add(light*b);
     	colors.add(1.0f);
     	
-    	colors.add(light);
-    	colors.add(light);
-    	colors.add(light);
+    	colors.add(light*r);
+    	colors.add(light*g);
+    	colors.add(light*b);
     	colors.add(1.0f);
     }
 	

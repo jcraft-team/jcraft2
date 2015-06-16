@@ -8,7 +8,7 @@ import com.chappelle.jcraft.world.chunk.ChunkFeatureGenerator;
 public class PlantFeatureGenerator implements ChunkFeatureGenerator
 {
 	private Random rand;
-	private int[] plants = new int[]{Block.plantRed.blockId, Block.plantYellow.blockId, Block.mushroomBrown.blockId, Block.mushroomRed.blockId};
+	private int[] plants = new int[]{Block.plantRed.blockId, Block.plantYellow.blockId, Block.mushroomBrown.blockId, Block.mushroomRed.blockId, Block.tallGrass.blockId};
 	
 	public PlantFeatureGenerator(long seed)
 	{
@@ -26,7 +26,7 @@ public class PlantFeatureGenerator implements ChunkFeatureGenerator
 				{
 					if(blocks_IsOnSurface[x][y][z] && blockTypes[x][y][z] == Block.grass.blockId)
 					{
-						if(rand.nextInt(50) == 25)
+						if(rand.nextInt(25) == 20)
 						{
 							generatePlant(blockTypes, x, y, z);
 						}
