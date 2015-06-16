@@ -239,11 +239,11 @@ public class JCraft extends SimpleApplication implements ActionListener
 		int height = 230;
 		
 		SimpleChunkProvider chunkProvider = new SimpleChunkProvider();
-		chunkProvider.addFeatureGenerator(new FlatFeatureGenerator(Block.grass, height));
-		chunkProvider.addFeatureGenerator(new NoiseFeatureGenerator(seed, 0.0001f, height));
-		chunkProvider.addFeatureGenerator(new OreFeatureGenerator(seed, height));
-		chunkProvider.addFeatureGenerator(new TreeFeatureGenerator(seed));
-		chunkProvider.addFeatureGenerator(new PlantFeatureGenerator(seed));
+		chunkProvider.addFeature(new FlatFeature(Block.grass, height));
+		chunkProvider.addFeature(new NoiseFeature(seed, 0.0001f, height));
+		chunkProvider.addFeature(new BlockOreFeature(seed, height));
+		chunkProvider.addFeature(new TreeFeature(seed));
+		chunkProvider.addFeature(new PlantFeature(seed));
 //		chunkProvider.addFeatureGenerator(new WaterFeatureGenerator(seed));
 		return chunkProvider;
 	}

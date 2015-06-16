@@ -5,15 +5,15 @@ import java.util.Map;
 import java.util.Random;
 
 import com.chappelle.jcraft.blocks.Block;
-import com.chappelle.jcraft.world.chunk.ChunkFeatureGenerator;
+import com.chappelle.jcraft.world.chunk.Feature;
 
-public class OreFeatureGenerator implements ChunkFeatureGenerator
+public class BlockOreFeature implements Feature
 {
 	private Random rand;
 	private int height;
 	private Map<Integer, BlockGenConfig> blockGenConfigs = new HashMap<Integer, BlockGenConfig>();
 	
-	public OreFeatureGenerator(long seed, int height)
+	public BlockOreFeature(long seed, int height)
 	{
 		this.height = height;
 		this.rand = new Random(seed);
@@ -48,7 +48,7 @@ public class OreFeatureGenerator implements ChunkFeatureGenerator
 	}
 	
 	@Override
-	public void addFeatures(int[][][] blockTypes, boolean[][][] blocks_IsOnSurface)
+	public void generate(int[][][] blockTypes, boolean[][][] blocks_IsOnSurface)
 	{
 		for(Map.Entry<Integer, BlockGenConfig> entry : blockGenConfigs.entrySet())
 		{

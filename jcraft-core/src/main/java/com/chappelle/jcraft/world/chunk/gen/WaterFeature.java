@@ -3,19 +3,22 @@ package com.chappelle.jcraft.world.chunk.gen;
 import java.util.Random;
 
 import com.chappelle.jcraft.blocks.Block;
-import com.chappelle.jcraft.world.chunk.ChunkFeatureGenerator;
+import com.chappelle.jcraft.world.chunk.Feature;
 
-public class WaterFeatureGenerator implements ChunkFeatureGenerator
+/**
+ * THIS IS A WORK IN PROGRESS
+ */
+public class WaterFeature implements Feature
 {
 	private Random rand;
 	
-	public WaterFeatureGenerator(long seed)
+	public WaterFeature(long seed)
 	{
 		this.rand = new Random(seed);
 	}
 
 	@Override
-	public void addFeatures(int[][][] blockTypes, boolean[][][] blocks_IsOnSurface)
+	public void generate(int[][][] blockTypes, boolean[][][] blocks_IsOnSurface)
 	{
 		for(int x = 0; x < 16; x++)
 		{

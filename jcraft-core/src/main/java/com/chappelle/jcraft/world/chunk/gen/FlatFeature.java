@@ -1,21 +1,21 @@
 package com.chappelle.jcraft.world.chunk.gen;
 
 import com.chappelle.jcraft.blocks.Block;
-import com.chappelle.jcraft.world.chunk.ChunkFeatureGenerator;
+import com.chappelle.jcraft.world.chunk.Feature;
 
-public class FlatFeatureGenerator implements ChunkFeatureGenerator
+public class FlatFeature implements Feature
 {
 	private int height;
 	private Block block;
 	
-	public FlatFeatureGenerator(Block block, int height)
+	public FlatFeature(Block block, int height)
 	{
 		this.height = height;
 		this.block = block;
 	}
 	
 	@Override
-	public void addFeatures(int[][][] blockTypes, boolean[][][] blocks_IsOnSurface)
+	public void generate(int[][][] blockTypes, boolean[][][] blocks_IsOnSurface)
 	{
 		for(int x = 0; x < 16; x++)
 		{

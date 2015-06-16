@@ -4,15 +4,15 @@ import java.util.Random;
 
 import com.chappelle.jcraft.blocks.Block;
 import com.chappelle.jcraft.world.Noise;
-import com.chappelle.jcraft.world.chunk.ChunkFeatureGenerator;
+import com.chappelle.jcraft.world.chunk.Feature;
 
-public class NoiseFeatureGenerator implements ChunkFeatureGenerator
+public class NoiseFeature implements Feature
 {
 	private final Random rand;
 	private final float roughness;
 	private int flatChunkHeight;
 	
-	public NoiseFeatureGenerator(long seed, float roughness, int flatChunkHeight)
+	public NoiseFeature(long seed, float roughness, int flatChunkHeight)
 	{
 		this.roughness = roughness;
 		this.rand = new Random(seed);
@@ -20,7 +20,7 @@ public class NoiseFeatureGenerator implements ChunkFeatureGenerator
 	}
 	
 	@Override
-	public void addFeatures(int[][][] blockTypes, boolean[][][] blocks_IsOnSurface)
+	public void generate(int[][][] blockTypes, boolean[][][] blocks_IsOnSurface)
 	{
 		for(int x = 0; x < 16; x++)
 		{

@@ -13,7 +13,7 @@ public class SimpleChunkProvider implements ChunkProvider
 	
 	private World world;
 	
-	private List<ChunkFeatureGenerator> featureGenerators = new ArrayList<ChunkFeatureGenerator>();
+	private List<Feature> features = new ArrayList<Feature>();
 	
 	@Override
 	public Chunk getChunk(int x, int z)
@@ -32,9 +32,9 @@ public class SimpleChunkProvider implements ChunkProvider
 		world.profiler.startSection("ChunkGen");
 		int[][][] blockTypes = new int[16][256][16];
 		boolean[][][] blocks_IsOnSurface = new boolean[16][256][16];
-		for(ChunkFeatureGenerator gen : featureGenerators)
+		for(Feature gen : features)
 		{
-			gen.addFeatures(blockTypes, blocks_IsOnSurface);
+			gen.generate(blockTypes, blocks_IsOnSurface);
 		}
 		Chunk chunk = new Chunk(world, x, z, blockTypes, blocks_IsOnSurface);
 		chunks.put(ChunkCoordIntPair.chunkXZ2Int(x, z), chunk);
@@ -42,9 +42,9 @@ public class SimpleChunkProvider implements ChunkProvider
 		return chunk;
 	}
 
-	public ChunkProvider addFeatureGenerator(ChunkFeatureGenerator featureGenerator)
+	public ChunkProvider addFeature(Feature featureGenerator)
 	{
-		this.featureGenerators.add(featureGenerator);
+		this.features.add(featureGenerator);
 		return this;
 	}
 }

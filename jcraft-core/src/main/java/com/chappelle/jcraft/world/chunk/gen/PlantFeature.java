@@ -3,20 +3,20 @@ package com.chappelle.jcraft.world.chunk.gen;
 import java.util.Random;
 
 import com.chappelle.jcraft.blocks.Block;
-import com.chappelle.jcraft.world.chunk.ChunkFeatureGenerator;
+import com.chappelle.jcraft.world.chunk.Feature;
 
-public class PlantFeatureGenerator implements ChunkFeatureGenerator
+public class PlantFeature implements Feature
 {
 	private Random rand;
 	private int[] plants = new int[]{Block.plantRed.blockId, Block.plantYellow.blockId, Block.mushroomBrown.blockId, Block.mushroomRed.blockId, Block.tallGrass.blockId};
 	
-	public PlantFeatureGenerator(long seed)
+	public PlantFeature(long seed)
 	{
 		this.rand = new Random(seed);
 	}
 
 	@Override
-	public void addFeatures(int[][][] blockTypes, boolean[][][] blocks_IsOnSurface)
+	public void generate(int[][][] blockTypes, boolean[][][] blocks_IsOnSurface)
 	{
 		for(int x = 0; x < 16; x++)
 		{
