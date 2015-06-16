@@ -204,7 +204,7 @@ public class HUDControl extends AbstractControl implements ScreenController, Inv
 			Vector3Int blockLoc = new Vector3Int((int)player.posX, (int)player.posY, (int)player.posZ);
 			blockLocationLabel.setText("Block location: " + blockLoc);
 			facingLabel.setText("Facing: " + player.cam.getDirection());
-			if(blockLoc != null)
+			if(blockLoc != null && blockLoc.y < 256)
 			{
 				Vector3Int walkedOnBlockLocation = blockLoc.subtract(0, 2, 0);
 				if(walkedOnBlockLocation != null)
