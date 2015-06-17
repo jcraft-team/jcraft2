@@ -13,7 +13,7 @@ public class FloodFillLightManager implements LightManager
 {
 	private boolean sunlightEnabled = true;
 	
-	private World terrain;
+	private World world;
 	private Queue<LightNode> lightAdditionQueue;
 	private Queue<LightRemovalNode> lightRemovalQueue;
 	private Queue<LightNode> sunlightAdditionQueue;
@@ -21,7 +21,7 @@ public class FloodFillLightManager implements LightManager
 	
 	public FloodFillLightManager(World terrain)
 	{
-		this.terrain = terrain;
+		this.world = terrain;
 		lightAdditionQueue = new LinkedList<>();
 		lightRemovalQueue = new LinkedList<>();
 		sunlightAdditionQueue = new LinkedList<>();
@@ -67,7 +67,7 @@ public class FloodFillLightManager implements LightManager
 			}
 			else
 			{
-				propagateRemovedBlockLights(terrain.getChunkNeighbor(chunk, Direction.LEFT), lightLevel, location.setX(15));
+				propagateRemovedBlockLights(world.getChunkNeighbor(chunk, Direction.LEFT), lightLevel, location.setX(15));
 			}
 			
 
@@ -81,7 +81,7 @@ public class FloodFillLightManager implements LightManager
 			}
 			else
 			{
-				propagateRemovedBlockLights(terrain.getChunkNeighbor(chunk, Direction.RIGHT), lightLevel, location.setX(0));
+				propagateRemovedBlockLights(world.getChunkNeighbor(chunk, Direction.RIGHT), lightLevel, location.setX(0));
 			}
 			
 			//Negative Y neighbor
@@ -112,7 +112,7 @@ public class FloodFillLightManager implements LightManager
 			}
 			else
 			{
-				propagateRemovedBlockLights(terrain.getChunkNeighbor(chunk, Direction.BACK), lightLevel, location.setZ(15));
+				propagateRemovedBlockLights(world.getChunkNeighbor(chunk, Direction.BACK), lightLevel, location.setZ(15));
 			}
 			
 			//Positive Z neighbor
@@ -125,7 +125,7 @@ public class FloodFillLightManager implements LightManager
 			}
 			else
 			{
-				propagateRemovedBlockLights(terrain.getChunkNeighbor(chunk, Direction.FRONT), lightLevel, location.setZ(0));
+				propagateRemovedBlockLights(world.getChunkNeighbor(chunk, Direction.FRONT), lightLevel, location.setZ(0));
 			}
 			node = lightRemovalQueue.poll();
 		}
@@ -168,7 +168,7 @@ public class FloodFillLightManager implements LightManager
 			}
 			else
 			{
-				propagateAddedBlockLights(terrain.getChunkNeighbor(chunk, Direction.LEFT), location.setX(15), lightLevel);
+				propagateAddedBlockLights(world.getChunkNeighbor(chunk, Direction.LEFT), location.setX(15), lightLevel);
 			}
 			
 
@@ -182,7 +182,7 @@ public class FloodFillLightManager implements LightManager
 			}
 			else
 			{
-				propagateAddedBlockLights(terrain.getChunkNeighbor(chunk, Direction.RIGHT), location.setX(0), lightLevel);
+				propagateAddedBlockLights(world.getChunkNeighbor(chunk, Direction.RIGHT), location.setX(0), lightLevel);
 			}
 			
 			//Negative Y neighbor
@@ -213,7 +213,7 @@ public class FloodFillLightManager implements LightManager
 			}
 			else
 			{
-				propagateAddedBlockLights(terrain.getChunkNeighbor(chunk, Direction.BACK), location.setZ(15), lightLevel);
+				propagateAddedBlockLights(world.getChunkNeighbor(chunk, Direction.BACK), location.setZ(15), lightLevel);
 			}
 			
 			//Positive Z neighbor
@@ -226,7 +226,7 @@ public class FloodFillLightManager implements LightManager
 			}
 			else
 			{
-				propagateAddedBlockLights(terrain.getChunkNeighbor(chunk, Direction.FRONT), location.setZ(0), lightLevel);
+				propagateAddedBlockLights(world.getChunkNeighbor(chunk, Direction.FRONT), location.setZ(0), lightLevel);
 			}
 			node = lightAdditionQueue.poll();	
 		}
@@ -261,7 +261,7 @@ public class FloodFillLightManager implements LightManager
 			}
 			else
 			{
-				propagateAddedSunlight(terrain.getChunkNeighbor(chunk, Direction.LEFT), location.setX(15), lightLevel);
+				propagateAddedSunlight(world.getChunkNeighbor(chunk, Direction.LEFT), location.setX(15), lightLevel);
 			}
 
 			//Positive X neighbor
@@ -274,7 +274,7 @@ public class FloodFillLightManager implements LightManager
 			}
 			else
 			{
-				propagateAddedSunlight(terrain.getChunkNeighbor(chunk, Direction.RIGHT), location.setX(0), lightLevel);
+				propagateAddedSunlight(world.getChunkNeighbor(chunk, Direction.RIGHT), location.setX(0), lightLevel);
 			}
 			
 			
@@ -317,7 +317,7 @@ public class FloodFillLightManager implements LightManager
 			}
 			else
 			{
-				propagateAddedSunlight(terrain.getChunkNeighbor(chunk, Direction.BACK), location.setZ(15), lightLevel);
+				propagateAddedSunlight(world.getChunkNeighbor(chunk, Direction.BACK), location.setZ(15), lightLevel);
 			}
 			
 			//Positive Z neighbor
@@ -330,7 +330,7 @@ public class FloodFillLightManager implements LightManager
 			}
 			else
 			{
-				propagateAddedSunlight(terrain.getChunkNeighbor(chunk, Direction.FRONT), location.setZ(0), lightLevel);
+				propagateAddedSunlight(world.getChunkNeighbor(chunk, Direction.FRONT), location.setZ(0), lightLevel);
 			}
 			
 			node = sunlightAdditionQueue.poll();
@@ -367,7 +367,7 @@ public class FloodFillLightManager implements LightManager
 			}
 			else
 			{
-				propagateRemovedSunlight(terrain.getChunkNeighbor(chunk, Direction.LEFT), lightLevel, location.setX(15));
+				propagateRemovedSunlight(world.getChunkNeighbor(chunk, Direction.LEFT), lightLevel, location.setX(15));
 			}
 
 			//Positive X neighbor
@@ -380,7 +380,7 @@ public class FloodFillLightManager implements LightManager
 			}
 			else
 			{
-				propagateRemovedSunlight(terrain.getChunkNeighbor(chunk, Direction.RIGHT), lightLevel, location.setX(0));
+				propagateRemovedSunlight(world.getChunkNeighbor(chunk, Direction.RIGHT), lightLevel, location.setX(0));
 			}
 			
 			//Negative Y neighbor
@@ -420,7 +420,7 @@ public class FloodFillLightManager implements LightManager
 			}
 			else
 			{
-				propagateRemovedSunlight(terrain.getChunkNeighbor(chunk, Direction.BACK), lightLevel, location.setZ(15));
+				propagateRemovedSunlight(world.getChunkNeighbor(chunk, Direction.BACK), lightLevel, location.setZ(15));
 			}
 			
 			//Positive Z neighbor
@@ -433,7 +433,7 @@ public class FloodFillLightManager implements LightManager
 			}
 			else
 			{
-				propagateRemovedSunlight(terrain.getChunkNeighbor(chunk, Direction.FRONT), lightLevel, location.setZ(0));
+				propagateRemovedSunlight(world.getChunkNeighbor(chunk, Direction.FRONT), lightLevel, location.setZ(0));
 			}
 			node = sunlightRemovalQueue.poll();
 		}
@@ -470,8 +470,8 @@ public class FloodFillLightManager implements LightManager
 	@Override
 	public void addSunlight(Vector3Int location)
 	{
-		Chunk chunk = terrain.getChunk(location);
-		Vector3Int localBlockLocation = terrain.getLocalBlockLocation(location, chunk);
+		Chunk chunk = world.getChunkFromBlockCoordinates(location.x, location.z);
+		Vector3Int localBlockLocation = world.getLocalBlockLocation(location, chunk);
 		
 		chunk.setLight(localBlockLocation.x, localBlockLocation.y, localBlockLocation.z, LightType.SKY, LightMap.MAX_LIGHT);
 		sunlightAdditionQueue.add(new LightNode(localBlockLocation, chunk));
@@ -480,8 +480,8 @@ public class FloodFillLightManager implements LightManager
 	@Override
 	public void setBlockLight(Vector3Int location, int light)
 	{
-		Chunk chunk = terrain.getChunk(location);
-		Vector3Int localBlockLocation = terrain.getLocalBlockLocation(location, chunk);
+		Chunk chunk = world.getChunkFromBlockCoordinates(location.x, location.z);
+		Vector3Int localBlockLocation = world.getLocalBlockLocation(location, chunk);
 		chunk.setLight(localBlockLocation.x, localBlockLocation.y, localBlockLocation.z, LightType.BLOCK, light);
 		lightAdditionQueue.add(new LightNode(localBlockLocation, chunk));
 	}
@@ -489,8 +489,8 @@ public class FloodFillLightManager implements LightManager
 	@Override
 	public void removeBlockLight(Vector3Int location)
 	{
-		Chunk chunk = terrain.getChunk(location);
-		Vector3Int localBlockLocation = terrain.getLocalBlockLocation(location, chunk);
+		Chunk chunk = world.getChunkFromBlockCoordinates(location.x, location.z);
+		Vector3Int localBlockLocation = world.getLocalBlockLocation(location, chunk);
 		short val = (short)chunk.getLight(localBlockLocation.x, localBlockLocation.y, localBlockLocation.z, LightType.BLOCK);
 		
 		lightRemovalQueue.add(new LightRemovalNode(localBlockLocation, val, chunk));
@@ -501,8 +501,8 @@ public class FloodFillLightManager implements LightManager
 	@Override
 	public void removeSunlight(Vector3Int location)
 	{
-		Chunk chunk = terrain.getChunk(location);
-		Vector3Int localBlockLocation = terrain.getLocalBlockLocation(location, chunk);
+		Chunk chunk = world.getChunkFromBlockCoordinates(location.x, location.z);
+		Vector3Int localBlockLocation = world.getLocalBlockLocation(location, chunk);
 		short val = (short)chunk.getLight(localBlockLocation.x, localBlockLocation.y, localBlockLocation.z, LightType.SKY);
 		
 		sunlightRemovalQueue.add(new LightRemovalNode(localBlockLocation, val, chunk));

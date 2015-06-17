@@ -135,8 +135,6 @@ public class JCraft extends SimpleApplication implements ActionListener
 		player = new EntityPlayer(world, cam);
 		hud = makeHUD2(player);
 		player.preparePlayerToSpawn();
-		player.moveEntity(1000, 0, 1000);
-		world.generateNearbyChunks();
 		rootNode.addControl(new PlayerControl(this, player));
 
 		rootNode.addControl(hud);

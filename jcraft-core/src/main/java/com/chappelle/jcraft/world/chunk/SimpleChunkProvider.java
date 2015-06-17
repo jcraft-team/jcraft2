@@ -1,6 +1,7 @@
 package com.chappelle.jcraft.world.chunk;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,18 @@ public class SimpleChunkProvider implements ChunkProvider
 	public Chunk getChunk(int x, int z)
 	{
 		return chunks.get(ChunkCoordIntPair.chunkXZ2Int(x, z));
+	}
+
+	@Override
+	public Collection<Chunk> getLoadedChunks()
+	{
+		return new ArrayList<Chunk>(chunks.values());
+	}
+
+	@Override
+	public void removeChunk(int x, int z)
+	{
+		chunks.remove(ChunkCoordIntPair.chunkXZ2Int(x, z));
 	}
 
 	public void setWorld(World world)

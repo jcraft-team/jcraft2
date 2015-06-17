@@ -43,6 +43,7 @@ public class World implements BitSerializable
 	
 	/** Chunks added here will be rendered in the following tick(one per tick)*/ 
 	public Queue<Chunk> chunkRenderQueue = new LinkedList<Chunk>();
+	public Queue<Chunk> chunkUnloadQueue = new LinkedList<Chunk>();
 
 	/** Chunks generated this tick. We queue them up and copy them to the render queue after the lighting data is ready*/
 	private List<Chunk> generatedChunks = new ArrayList<Chunk>();
@@ -55,9 +56,14 @@ public class World implements BitSerializable
 	private Camera cam;
 	private List<Entity> entities = new ArrayList<Entity>();
 	private EntityPlayer player;
-	private Vector3Int playerLocTemp = new Vector3Int();
 	private int chunkGenTicks;
 	private ChunkGenerationRunnable gen = new ChunkGenerationRunnable();
+	
+	/**Number of blocks to load around the player, represents the radius in moore neighborhood algorithm */
+	private static final int CHUNK_LOAD_RADIUS = 10;
+	
+	/**Chunk distance threshold for determining which chunks to unload. Uses manhattan block distance. Calculated to be outside of the CHUNK_LOAD_RADIUS*/
+	private static final int CHUNK_UNLOAD_RADIUS = CHUNK_LOAD_RADIUS*16*2+100;
 	
 	public World(ChunkProvider chunkProvider, Profiler profiler, CubesSettings settings, AssetManager assetManager, Camera cam, long seed)
 	{
@@ -83,7 +89,7 @@ public class World implements BitSerializable
 		public void run()
 		{
 			isRunning = true;
-			generateNearbyChunks();
+			getNearbyChunks(CHUNK_LOAD_RADIUS);
 			for(Chunk chunk : generatedChunks)
 			{
 				lightMgr.initChunkSunlight(chunk);
@@ -110,36 +116,48 @@ public class World implements BitSerializable
 			{
 				chunkGenTicks = 0;
 				new Thread(gen).start();
+				
+				unloadFarChunks();
 			}
 		}
 		chunkGenTicks++;
 	}
 
-	/**
-	 * Generates a radius of chunks around the player
-	 */
-	public void generateNearbyChunks()
+	private void unloadFarChunks()
 	{
-		int radius = 5;
-		int x = (int)player.posX - 16*radius;
-		int z = (int)player.posZ - 16*radius;
-		for(int i = 0; i < radius*2; i++)
+		for(Chunk chunk : chunkProvider.getLoadedChunks())
 		{
-			for(int j = 0; j < radius*2; j++)
+			double xDiff = chunk.blockLocation.x - player.posX;
+			double zDiff = chunk.blockLocation.z - player.posZ;
+			double dist = Math.abs(xDiff) + Math.abs(zDiff);//Manhattan block distance for performance
+			if(dist > CHUNK_UNLOAD_RADIUS)
 			{
-				playerLocTemp.set(x + 16*i, 0, z + 16*j);
-				if(!playerLocTemp.hasNegativeCoordinate())
-				{
-					getChunk(playerLocTemp, true);
-				}
+				chunkUnloadQueue.add(chunk);
+				chunkProvider.removeChunk(chunk.location.x, chunk.location.z);
 			}
 		}
+	}
+
+	/**
+	 * Generates a radius of chunks around the player if they don't already exist
+	 */
+	public List<Chunk> getNearbyChunks(int radius)
+	{
+		return getPlayerChunk().getChunkNeighborhood(radius, true);
+	}
+
+	/**
+	 * Returns the Chunk the player is standing on, will generate one if needed
+	 */
+	public Chunk getPlayerChunk()
+	{
+		return getChunkFromBlockCoordinates(MathUtils.floor_double(player.posX), MathUtils.floor_double(player.posZ), true);
 	}
 	
 	public void setPlayer(EntityPlayer player)
 	{
 		this.player = player;
-		getChunk(new Vector3Int(MathUtils.floor_double(player.posX), MathUtils.floor_double(player.posY), MathUtils.floor_double(player.posZ)), true);
+		getChunkFromBlockCoordinates(MathUtils.floor_double(player.posX), MathUtils.floor_double(player.posZ), true);
 	}
 	
 	public void addEntity(Entity entity)
@@ -408,7 +426,7 @@ public class World implements BitSerializable
 		{
 			return null;
 		}
-		Chunk chunk = getChunk(blockLocation, generateIfNeeded);
+		Chunk chunk = getChunkFromBlockCoordinates(blockLocation.x, blockLocation.z, generateIfNeeded);
 		if(chunk != null)
 		{
 			Vector3Int localBlockLocation = getLocalBlockLocation(blockLocation, chunk);
@@ -417,18 +435,18 @@ public class World implements BitSerializable
 		return null;
 	}
 
-	public Chunk getChunk(Vector3Int blockLocation)
+	public Chunk getChunkFromBlockCoordinates(int blockX, int blockZ)
 	{
-		return getChunk(blockLocation, false);
+		return getChunkFromBlockCoordinates(blockX, blockZ, false);
 	}
 	
-	public Chunk getChunk(Vector3Int blockLocation, boolean generateIfNeeded)
+	public Chunk getChunkFromBlockCoordinates(int blockX, int blockZ, boolean generateIfNeeded)
 	{
-		if(blockLocation.hasNegativeCoordinate())
+		if(blockX < 0 || blockZ < 0)
 		{
 			return null;
 		}
-		Vector3Int chunkLocation = getChunkLocation(blockLocation);
+		Vector3Int chunkLocation = getChunkFromBlockLocation(blockX, blockZ);
 		Chunk cachedChunk = chunkProvider.getChunk(chunkLocation.x, chunkLocation.z);
 		if(!generateIfNeeded || cachedChunk != null)
 		{
@@ -437,6 +455,25 @@ public class World implements BitSerializable
 		else
 		{
 			Chunk chunk = chunkProvider.generateChunk(chunkLocation.x, chunkLocation.z);
+			onChunkGenerated(chunk);
+			return chunk;
+		}
+	}
+	
+	public Chunk getChunkFromChunkCoordinates(int chunkX, int chunkZ, boolean generateIfNeeded)
+	{
+		if(chunkX < 0 || chunkZ < 0)
+		{
+			return null;
+		}
+		Chunk cachedChunk = chunkProvider.getChunk(chunkX, chunkZ);
+		if(!generateIfNeeded || cachedChunk != null)
+		{
+			return cachedChunk;
+		}
+		else
+		{
+			Chunk chunk = chunkProvider.generateChunk(chunkX, chunkZ);
 			onChunkGenerated(chunk);
 			return chunk;
 		}
@@ -461,13 +498,18 @@ public class World implements BitSerializable
 		return chunkProvider.getChunk(chunkLocation.getX(), chunkLocation.getZ());
 	}
 	
-	private Vector3Int getChunkLocation(Vector3Int blockLocation)
+	/**
+	 * Returns the Chunk location given the world block x and z
+	 * @param x
+	 * @param z
+	 * @return
+	 */
+	private Vector3Int getChunkFromBlockLocation(int x, int z)
 	{
 		Vector3Int chunkLocation = new Vector3Int();
-		int chunkX = (blockLocation.getX() / 16);
-		int chunkY = (blockLocation.getY() / 256);
-		int chunkZ = (blockLocation.getZ() / 16);
-		chunkLocation.set(chunkX, chunkY, chunkZ);
+		int chunkX = (x / 16);
+		int chunkZ = (z / 16);
+		chunkLocation.set(chunkX, 0, chunkZ);
 		return chunkLocation;
 	}
 
@@ -535,7 +577,7 @@ public class World implements BitSerializable
         {
             return -1;
         }
-        Chunk chunk = getChunk(blockLocation);
+        Chunk chunk = getChunkFromBlockCoordinates(blockLocation.x, blockLocation.z);
         if (chunk != null)
         {
             Vector3Int localBlockLocation = getLocalBlockLocation(blockLocation, chunk);

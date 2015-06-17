@@ -166,19 +166,38 @@ public class Vector3Int
 	}
 
 	@Override
-	public boolean equals(Object object)
-	{
-		if(object instanceof Vector3Int)
-		{
-			Vector3Int vector3Int = (Vector3Int) object;
-			return ((x == vector3Int.getX()) && (y == vector3Int.getY()) && (z == vector3Int.getZ()));
-		}
-		return false;
-	}
-
-	@Override
 	public String toString()
 	{
 		return "[Vector3Int x=" + x + " y=" + y + " z=" + z + "]";
+	}
+
+	@Override
+	public int hashCode()
+	{
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + x;
+		result = prime * result + y;
+		result = prime * result + z;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if(this == obj)
+			return true;
+		if(obj == null)
+			return false;
+		if(getClass() != obj.getClass())
+			return false;
+		Vector3Int other = (Vector3Int) obj;
+		if(x != other.x)
+			return false;
+		if(y != other.y)
+			return false;
+		if(z != other.z)
+			return false;
+		return true;
 	}
 }

@@ -1,6 +1,8 @@
 package com.chappelle.jcraft.world.chunk;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.chappelle.jcraft.BlockState;
 import com.chappelle.jcraft.Direction;
@@ -18,7 +20,7 @@ import com.chappelle.jcraft.world.World;
 public class Chunk implements BitSerializable
 {
     public Vector3Int location = new Vector3Int();
-    private Vector3Int blockLocation = new Vector3Int();
+    public Vector3Int blockLocation = new Vector3Int();
     private int[][][] blockTypes;
     private boolean[][][] blocks_IsOnSurface;
     private BlockState[][][] blockState;
@@ -116,6 +118,37 @@ public class Chunk implements BitSerializable
     	return world.getChunkNeighbor(this, dir);
     }
     
+    /**
+     * Returns the chunk neighbors with a radius of r excluding the current chunk. This is a Moore Neighborhood as in http://mathworld.wolfram.com/MooreNeighborhood.html
+     * @param r The radius
+     * @return A list of neighboring Chunks with a radius of r
+     */
+    public List<Chunk> getChunkNeighborhood(int r, boolean generateIfNeeded)
+    {
+    	List<Chunk> result = new ArrayList<Chunk>();
+		//Iterates starting in top left corner, then down, then across to the right
+		int x = location.x - r;
+		int z = location.z + r;
+		int gridWidth = r*2 + 1;
+		for(int xMod = 0; xMod < gridWidth; xMod++)
+		{
+			for(int zMod = 0; zMod < gridWidth; zMod++)
+			{
+				int chunkX = x+xMod;
+				int chunkZ = z-zMod;
+				if(!(chunkX == location.x && chunkZ == location.z))//Exclude this chunk from result
+				{
+					Chunk chunk = world.getChunkFromChunkCoordinates(chunkX, chunkZ, generateIfNeeded);
+					if(chunk != null)
+					{
+						result.add(chunk);
+					}
+				}
+			}
+		}
+    	return result;
+    }
+
     public boolean isBlockOnSurface(Vector3Int location)
     {
         return blocks_IsOnSurface[location.getX()][location.getY()][location.getZ()];
@@ -145,7 +178,7 @@ public class Chunk implements BitSerializable
         updateBlockInformation(location);
         for(int i=0;i<Block.Face.values().length;i++){
             Vector3Int neighborLocation = getNeighborBlockGlobalLocation(location, Block.Face.values()[i]);
-            Chunk chunk = world.getChunk(neighborLocation);
+            Chunk chunk = world.getChunkFromBlockCoordinates(neighborLocation.x, neighborLocation.z);
             if(chunk != null){
                 chunk.updateBlockInformation(neighborLocation.subtract(chunk.getBlockLocation()));
             }
@@ -226,4 +259,34 @@ public class Chunk implements BitSerializable
     {
     	return "Chunk " + location;
     }
+
+	@Override
+	public int hashCode()
+	{
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((location == null) ? 0 : location.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if(this == obj)
+			return true;
+		if(obj == null)
+			return false;
+		if(getClass() != obj.getClass())
+			return false;
+		Chunk other = (Chunk) obj;
+		if(location == null)
+		{
+			if(other.location != null)
+				return false;
+		}
+		else if(!location.equals(other.location))
+			return false;
+		return true;
+	}
+
 }

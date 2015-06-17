@@ -39,6 +39,12 @@ public class BlockChunkControl extends AbstractControl
 		node.setLocalTranslation(new Vector3f(blockLocation.getX(), blockLocation.getY(), blockLocation.getZ()));
 	}
 
+	public void detachNode()
+	{
+		Node parent = node.getParent();
+		parent.detachChild(node);
+	}
+	
 	public boolean updateSpatial()
 	{
 		if(chunk.needsMeshUpdate)

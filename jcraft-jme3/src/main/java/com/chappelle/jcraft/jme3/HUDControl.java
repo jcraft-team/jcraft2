@@ -232,7 +232,7 @@ public class HUDControl extends AbstractControl implements ScreenController, Inv
 					lightLevelLabel.setText("Light Level: " + world.getLight(blockLoc));
 					walkingOnLabel.setText("Walking On: " + toString(world.getBlock(walkedOnBlockLocation)));
 				}
-				Chunk chunk = world.getChunk(blockLoc);
+				Chunk chunk = world.getChunkFromBlockCoordinates(blockLoc.x, blockLoc.z);
 				if(chunk != null)
 				{
 					chunkLocationLabel.setText("Chunk location: " + chunk.location);
