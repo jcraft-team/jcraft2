@@ -68,7 +68,7 @@ public class World implements BitSerializable
 	
 	public ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(THREAD_COUNT);
 
-	private ChunkGenerationRunnable gen = new ChunkGenerationRunnable();
+	private ChunkGenerationRunnable gen;
 	private ChunkUnloadRunnable chunkUnloader = new ChunkUnloadRunnable();
 	
 	/**Number of blocks to load around the player, represents the radius in moore neighborhood algorithm */
@@ -84,6 +84,7 @@ public class World implements BitSerializable
 		this.profiler = profiler;
 		this.settings = settings;
 		this.assetManager = assetManager;
+		this.gen = new ChunkGenerationRunnable(new FloodFillLightManager(this));
 		this.lightMgr = new FloodFillLightManager(this);
 		this.cam = cam;
 		this.seed = seed;
@@ -95,6 +96,40 @@ public class World implements BitSerializable
 	}
 
 	private class ChunkGenerationRunnable implements Runnable
+	{
+		public boolean isRunning;
+		
+		private final LightManager sunlightManager;
+		
+		public ChunkGenerationRunnable(LightManager sunlightManager)
+		{
+			this.sunlightManager = sunlightManager;
+		}
+		
+		public void run()
+		{
+			isRunning = true;
+			getNearbyChunks(CHUNK_LOAD_RADIUS);
+			for(Chunk chunk : generatedChunks)
+			{
+				sunlightManager.initChunkSunlight(chunk);
+//				for(Direction dir : Direction.values())
+//				{
+//					Chunk neighbor = getChunkNeighbor(chunk, dir);
+//					if(neighbor != null)
+//					{
+//						lightMgr.rebuildSunlight(neighbor);
+//					}
+//				}
+			}
+			sunlightManager.calculateLight();//Need a separate LightManager to ensure light is built before rendering
+			chunkRenderQueue.addAll(generatedChunks);
+			generatedChunks.clear();
+			isRunning = false;
+		}
+	}
+
+	private class ChunkUnloadRunnable implements Runnable
 	{
 		public boolean isRunning;
 		
@@ -112,32 +147,6 @@ public class World implements BitSerializable
 					chunkProvider.removeChunk(chunk.location.x, chunk.location.z);
 				}
 			}
-			isRunning = false;
-		}
-	}
-
-	private class ChunkUnloadRunnable implements Runnable
-	{
-		public boolean isRunning;
-		
-		public void run()
-		{
-			isRunning = true;
-			getNearbyChunks(CHUNK_LOAD_RADIUS);
-			for(Chunk chunk : generatedChunks)
-			{
-				lightMgr.initChunkSunlight(chunk);
-//				for(Direction dir : Direction.values())
-//				{
-//					Chunk neighbor = getChunkNeighbor(chunk, dir);
-//					if(neighbor != null)
-//					{
-//						lightMgr.rebuildSunlight(neighbor);
-//					}
-//				}
-			}
-			chunkRenderQueue.addAll(generatedChunks);
-			generatedChunks.clear();
 			isRunning = false;
 		}
 	}
