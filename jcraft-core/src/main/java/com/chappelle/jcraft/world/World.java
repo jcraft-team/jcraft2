@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.Random;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 import com.chappelle.jcraft.BlockState;
 import com.chappelle.jcraft.CubesSettings;
@@ -57,7 +58,18 @@ public class World implements BitSerializable
 	private List<Entity> entities = new ArrayList<Entity>();
 	private EntityPlayer player;
 	private int chunkGenTicks;
+	private int chunkUnloadTicks;
+	
+	// Lighting bugs occurr less when
+	// we use 1 thread(need to fix
+	// lighting so we can increase
+	// this)
+	private static final int THREAD_COUNT = 2;
+	
+	public ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(THREAD_COUNT);
+
 	private ChunkGenerationRunnable gen = new ChunkGenerationRunnable();
+	private ChunkUnloadRunnable chunkUnloader = new ChunkUnloadRunnable();
 	
 	/**Number of blocks to load around the player, represents the radius in moore neighborhood algorithm */
 	private static final int CHUNK_LOAD_RADIUS = 10;
@@ -83,6 +95,28 @@ public class World implements BitSerializable
 	}
 
 	private class ChunkGenerationRunnable implements Runnable
+	{
+		public boolean isRunning;
+		
+		public void run()
+		{
+			isRunning = true;
+			for(Chunk chunk : chunkProvider.getLoadedChunks())
+			{
+				double xDiff = chunk.blockLocation.x - player.posX;
+				double zDiff = chunk.blockLocation.z - player.posZ;
+				double dist = Math.abs(xDiff) + Math.abs(zDiff);//Manhattan block distance for performance
+				if(dist > CHUNK_UNLOAD_RADIUS)
+				{
+					chunkUnloadQueue.add(chunk);
+					chunkProvider.removeChunk(chunk.location.x, chunk.location.z);
+				}
+			}
+			isRunning = false;
+		}
+	}
+
+	private class ChunkUnloadRunnable implements Runnable
 	{
 		public boolean isRunning;
 		
@@ -115,27 +149,22 @@ public class World implements BitSerializable
 			if(!gen.isRunning)
 			{
 				chunkGenTicks = 0;
-				new Thread(gen).start();
 				
-				unloadFarChunks();
+				executor.submit(gen);
 			}
 		}
 		chunkGenTicks++;
-	}
-
-	private void unloadFarChunks()
-	{
-		for(Chunk chunk : chunkProvider.getLoadedChunks())
+		
+		if(chunkUnloadTicks > 60)
 		{
-			double xDiff = chunk.blockLocation.x - player.posX;
-			double zDiff = chunk.blockLocation.z - player.posZ;
-			double dist = Math.abs(xDiff) + Math.abs(zDiff);//Manhattan block distance for performance
-			if(dist > CHUNK_UNLOAD_RADIUS)
+			if(!chunkUnloader.isRunning)
 			{
-				chunkUnloadQueue.add(chunk);
-				chunkProvider.removeChunk(chunk.location.x, chunk.location.z);
+				chunkUnloadTicks = 0;
+				
+				executor.submit(chunkUnloader);
 			}
 		}
+		chunkUnloadTicks++;
 	}
 
 	/**

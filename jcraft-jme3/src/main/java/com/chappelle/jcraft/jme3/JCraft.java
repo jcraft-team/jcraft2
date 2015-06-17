@@ -1,7 +1,6 @@
 package com.chappelle.jcraft.jme3;
 
 import java.io.File;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -64,12 +63,6 @@ public class JCraft extends SimpleApplication implements ActionListener
 	private Profiler profiler;
 	private HUDControl hud;
 	private boolean wireframe;
-
-	private static final int THREAD_COUNT = 1;// Lighting bugs occurr less when
-												// we use 1 thread(need to fix
-												// lighting so we can increase
-												// this)
-	public ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(THREAD_COUNT);
 
 	/**
 	 * Used for enabling flying by double pressing space
@@ -443,7 +436,7 @@ public class JCraft extends SimpleApplication implements ActionListener
 	public void destroy()
 	{
 		super.destroy();
-		executor.shutdown();
+		world.executor.shutdown();
 		gameSettings.save();
 
 		if(profiler.profilingEnabled)

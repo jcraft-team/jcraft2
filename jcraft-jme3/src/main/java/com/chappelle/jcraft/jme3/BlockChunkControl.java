@@ -51,8 +51,8 @@ public class BlockChunkControl extends AbstractControl
 		{
 			if(opaqueMeshFuture == null && transparentMeshFuture == null)
 			{
-				opaqueMeshFuture = JCraft.getInstance().executor.submit(opaqueMeshBuilder);
-				transparentMeshFuture = JCraft.getInstance().executor.submit(transparentMeshBuilder);
+				opaqueMeshFuture = terrain.world.executor.submit(opaqueMeshBuilder);
+				transparentMeshFuture = terrain.world.executor.submit(transparentMeshBuilder);
 			}
 			else
 			{
