@@ -363,11 +363,13 @@ public class World implements BitSerializable
 			Block block = localBlockState.getBlock();
 			if(block.isBreakable())
 			{
+				Chunk chunk = localBlockState.getChunk();
 				lightMgr.removeBlockLight(location);
-				lightMgr.rebuildSunlight(localBlockState.getChunk());
+				lightMgr.rebuildSunlight(chunk);
 				localBlockState.removeBlock();
 				block.onBlockRemoved(this, location);
 				
+				rebuildNeighborsSunlight(chunk);
 	            //Notify neighbors of block removal
 	            for (Block.Face face : Block.Face.values())
 	            {
@@ -384,9 +386,17 @@ public class World implements BitSerializable
 	            //expose what looks like a hole in the world. Rebuilding the neighbor fixes it
 	            if(isChunkBorder(localBlockState.getLocalBlockLocation()))
 	            {
-	            	markNeighborChunksDirty(localBlockState.getChunk(), localBlockState.getLocalBlockLocation());
+	            	markNeighborChunksDirty(chunk, localBlockState.getLocalBlockLocation());
 	            }
 			}
+		}
+	}
+
+	private void rebuildNeighborsSunlight(Chunk chunk)
+	{
+		for(Chunk chunkNeighbor : chunk.getChunkNeighborhood(1, false))
+		{
+			lightMgr.rebuildSunlight(chunkNeighbor);
 		}
 	}
 
