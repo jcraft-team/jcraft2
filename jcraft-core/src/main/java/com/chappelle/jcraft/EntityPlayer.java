@@ -9,6 +9,8 @@ import com.chappelle.jcraft.util.AABB;
 import com.chappelle.jcraft.util.MathUtils;
 import com.chappelle.jcraft.util.RayTrace;
 import com.chappelle.jcraft.world.World;
+import com.jme3.math.FastMath;
+import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 
@@ -21,6 +23,12 @@ public class EntityPlayer extends Entity
 	private boolean backward;
 	private boolean left;
 	private boolean right;
+
+	//Temporary quaternion for limiting camera rotation
+	private Quaternion tmpQuat = new Quaternion();
+
+	//Temporary array for limiting camera rotation
+	private float[] angles = new float[3];
 
 	private static final float NORMAL_FLYSPEED = 0.05F;
 	private static final float FAST_FLYSPEED = 0.15F;
@@ -114,6 +122,9 @@ public class EntityPlayer extends Entity
 	{
 		Vector3f camDir = cam.getDirection().mult(tpf);
 		Vector3f camLeft = cam.getLeft().mult(tpf);
+
+		limitCameraRotation();
+		
 		if(forward)
 		{
 			addVelocity(camDir.x, 0, camDir.z);
@@ -144,6 +155,21 @@ public class EntityPlayer extends Entity
 			{
 				addVelocity(0, -flySpeed, 0);
 			}
+		}
+	}
+
+	private void limitCameraRotation()
+	{
+		cam.getRotation().toAngles(angles);
+		if(angles[0] > FastMath.HALF_PI)
+		{
+			angles[0] = FastMath.HALF_PI;
+			cam.setRotation(tmpQuat.fromAngles(angles));
+		}
+		else if(angles[0] < -FastMath.HALF_PI)
+		{
+			angles[0] = -FastMath.HALF_PI;
+			cam.setRotation(tmpQuat.fromAngles(angles));
 		}
 	}
 
