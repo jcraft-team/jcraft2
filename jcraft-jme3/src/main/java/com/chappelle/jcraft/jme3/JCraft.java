@@ -254,7 +254,7 @@ public class JCraft extends SimpleApplication implements ActionListener
 
 	private ChunkProvider makeChunkProvider(long seed)
 	{
-		int height = 230;
+		int height = 100;
 
 		SimpleChunkProvider chunkProvider = new SimpleChunkProvider();
 		chunkProvider.addFeature(new FlatFeature(Block.grass, height));

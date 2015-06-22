@@ -17,6 +17,11 @@ import com.jme3.renderer.Camera;
 public class EntityPlayer extends Entity
 {
 	private static final float MAX_SPEED = 0.08f;
+	private static final float WALK_SPEED = 1.0f;
+	private static final float NORMAL_FLYSPEED = 2.0f;
+	private static final float FAST_FLYSPEED = 5.0f;
+	private float flySpeed = NORMAL_FLYSPEED;
+
 	private boolean up;
 	private boolean down;
 	private boolean forward;
@@ -29,10 +34,6 @@ public class EntityPlayer extends Entity
 
 	//Temporary array for limiting camera rotation
 	private float[] angles = new float[3];
-
-	private static final float NORMAL_FLYSPEED = 0.05F;
-	private static final float FAST_FLYSPEED = 0.15F;
-	private float flySpeed = NORMAL_FLYSPEED;
 
 	private ItemStack selected;
 	
@@ -120,8 +121,13 @@ public class EntityPlayer extends Entity
 
 	private void moveAccordingToUserInputs(float tpf)
 	{
-		Vector3f camDir = cam.getDirection().mult(tpf);
-		Vector3f camLeft = cam.getLeft().mult(tpf);
+		float speed = WALK_SPEED;
+		if(isFlying)
+		{
+			speed = flySpeed;
+		}
+		Vector3f camDir = cam.getDirection().mult(tpf*speed);
+		Vector3f camLeft = cam.getLeft().mult(tpf*speed);
 
 		limitCameraRotation();
 		
@@ -145,15 +151,13 @@ public class EntityPlayer extends Entity
 		}
 		if(isFlying)
 		{
-			//FIXME: need to handle X and Z for flying.
-//			addVelocity(Math.signum(motionX)*flySpeed, 0, Math.signum(motionZ)*flySpeed);
 			if(up)
 			{
-				addVelocity(0, flySpeed, 0);
+				addVelocity(0, flySpeed/10, 0);
 			}
 			if(down)
 			{
-				addVelocity(0, -flySpeed, 0);
+				addVelocity(0, -flySpeed/10, 0);
 			}
 		}
 	}
