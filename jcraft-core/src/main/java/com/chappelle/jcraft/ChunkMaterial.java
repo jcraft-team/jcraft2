@@ -14,7 +14,7 @@ public class ChunkMaterial extends Material
 	
     public ChunkMaterial(AssetManager assetManager, String blockTextureFilePath, boolean useVertextColor)
     {
-        super(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        super(assetManager, "MatDefs/Blocks.j3md");
         Texture texture = assetManager.loadTexture(blockTextureFilePath);
         texture.setMagFilter(Texture.MagFilter.Nearest);
         texture.setMinFilter(Texture.MinFilter.NearestNoMipMaps);
