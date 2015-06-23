@@ -118,7 +118,10 @@ public class JCraft extends SimpleApplication implements ActionListener
 		// Setup sky
 		viewPort.setBackgroundColor(new ColorRGBA((float) 128 / 255, (float) 173 / 255, (float) 254 / 255, 1));
 
-		stateManager.attach(new EnvironmentAppState());
+		if(gameSettings.skyEnabled)
+		{
+			stateManager.attach(new EnvironmentAppState());
+		}
 		
 		// Setup player
 		player = new EntityPlayer(world, cam);

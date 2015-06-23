@@ -15,6 +15,7 @@ public class GameSettings
 	public int frameRate = -1;//-1 is unlimited
 	public boolean debugEnabled;
 	public boolean profilingEnabled;
+	public boolean skyEnabled;
 	
 	private File optionsFile;
 	
@@ -61,6 +62,10 @@ public class GameSettings
 						{
 							this.profilingEnabled = Boolean.parseBoolean(lineParts[1]);
 						}
+						else if (lineParts[0].equals("skyEnabled"))
+						{
+							this.skyEnabled = Boolean.parseBoolean(lineParts[1]);
+						}
 					}
 					catch(Exception e)
 					{
@@ -86,6 +91,7 @@ public class GameSettings
 			printWriter.println("frameRate=" + frameRate);
 			printWriter.println("debugEnabled=" + debugEnabled);
 			printWriter.println("profilingEnabled=" + profilingEnabled);
+			printWriter.println("skyEnabled=" + skyEnabled);
 		}
 		catch(IOException e)
 		{
