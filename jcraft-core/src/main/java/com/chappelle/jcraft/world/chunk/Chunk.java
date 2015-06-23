@@ -23,7 +23,6 @@ public class Chunk implements BitSerializable
     public Vector3Int blockLocation = new Vector3Int();
     private int[][][] blockTypes;
     private int[][] heightMap;
-    private boolean[][][] blocks_IsOnSurface;
     private BlockState[][][] blockState;
     private LightMap lights;
     public boolean needsMeshUpdate;
@@ -36,7 +35,6 @@ public class Chunk implements BitSerializable
     	location.set(x, 0, z);
     	blockLocation.set(location.mult(16, 256, 16));
     	blockTypes = new int[16][256][16];
-    	blocks_IsOnSurface = new boolean[16][256][16];
     	heightMap = new int[16][16];
     	blockState = new BlockState[16][256][16];
     	lights = new LightMap(new Vector3Int(16, 256, 16), location);
@@ -48,17 +46,7 @@ public class Chunk implements BitSerializable
     	location.set(x, 0, z);
     	blockLocation.set(location.mult(16, 256, 16));
     	this.blockTypes = blockTypes;
-    	blocks_IsOnSurface = new boolean[16][256][16];
     	
-		for(int hx = 0; hx < 16; hx++)
-		{
-			for(int hz = 0; hz < 16; hz++)
-			{
-				int heightVal = heightMap[hx][hz];
-				blocks_IsOnSurface[hx][heightVal][hz]	= true;
-			}
-		}
-
     	blockState = new BlockState[16][256][16];
     	lights = new LightMap(new Vector3Int(16, 256, 16), location);
     }
@@ -163,7 +151,12 @@ public class Chunk implements BitSerializable
 
     public boolean isBlockOnSurface(Vector3Int location)
     {
-        return blocks_IsOnSurface[location.getX()][location.getY()][location.getZ()];
+    	if(location.y == 255)
+    	{
+    		return true;
+    	}
+    	Block topBlock = getBlock(location.add(0, 1, 0));
+		return topBlock == null || !topBlock.smothersBottomBlock();
     }
 
     private Vector3Int getNeighborBlockGlobalLocation(Vector3Int location, Block.Face face){
@@ -198,8 +191,8 @@ public class Chunk implements BitSerializable
     }
     
     private void updateBlockInformation(Vector3Int location){
-        Block neighborBlock_Top = world.getBlock(getNeighborBlockGlobalLocation(location, Block.Face.Top));
-        blocks_IsOnSurface[location.getX()][location.getY()][location.getZ()] = (neighborBlock_Top == null || !neighborBlock_Top.smothersBottomBlock());
+//        Block neighborBlock_Top = world.getBlock(getNeighborBlockGlobalLocation(location, Block.Face.Top));
+//        blocks_IsOnSurface[location.getX()][location.getY()][location.getZ()] = (neighborBlock_Top == null || !neighborBlock_Top.smothersBottomBlock());
     }
 
     private boolean isValidBlockLocation(Vector3Int location){

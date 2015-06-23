@@ -43,63 +43,63 @@ public class Simplex3DFeature implements Feature
                     	int place = Block.grass.blockId;
                     	if(c>.05)
                     	{
-                    		int b = y % 15;
-                    		if(b == 0)
-                    		{
-                    			place = Block.woolBlack.blockId;
-                    		}
-                    		if(b == 1)
-                    		{
-                    			place = Block.snow.blockId;
-                    		}
-                    		if(b == 2)
-                    		{
-                    			place = Block.woolBlue.blockId;
-                    		}
-                    		if(b == 3)
-                    		{
-                    			place = Block.woolRed.blockId;
-                    		}
-                    		if(b == 4)
-                    		{
-                    			place = Block.woolCyan.blockId;
-                    		}
-                    		if(b == 5)
-                    		{
-                    			place = Block.woolGray.blockId;
-                    		}
-                    		if(b == 6)
-                    		{
-                    			place = Block.woolLightBlue.blockId;
-                    		}
-                    		if(b == 7)
-                    		{
-                    			place = Block.woolLime.blockId;
-                    		}
-                    		if(b == 8)
-                    		{
-                    			place = Block.woolMagenta.blockId;
-                    		}
-                    		if(b == 9)
-                    		{
-                    			place = Block.woolOrange.blockId;
-                    		}
-                    		if(b == 10)
-                    		{
-                    			place = Block.woolPink.blockId;
-                    		}
-                    		if(b == 11)
-                    		{
-                    			place = Block.woolPurple.blockId;
-                    		}
-                    		if(b == 12)
-                    		{
-                    			place = Block.woolSilver.blockId;
-                    		}
-                    		if(b == 13)
-                    		{
-                    			place = Block.woolWhite.blockId;
-                    		}
+//                    		int b = y % 15;
+//                    		if(b == 0)
+//                    		{
+//                    			place = Block.woolBlack.blockId;
+//                    		}
+//                    		if(b == 1)
+//                    		{
+//                    			place = Block.snow.blockId;
+//                    		}
+//                    		if(b == 2)
+//                    		{
+//                    			place = Block.woolBlue.blockId;
+//                    		}
+//                    		if(b == 3)
+//                    		{
+//                    			place = Block.woolRed.blockId;
+//                    		}
+//                    		if(b == 4)
+//                    		{
+//                    			place = Block.woolCyan.blockId;
+//                    		}
+//                    		if(b == 5)
+//                    		{
+//                    			place = Block.woolGray.blockId;
+//                    		}
+//                    		if(b == 6)
+//                    		{
+//                    			place = Block.woolLightBlue.blockId;
+//                    		}
+//                    		if(b == 7)
+//                    		{
+//                    			place = Block.woolLime.blockId;
+//                    		}
+//                    		if(b == 8)
+//                    		{
+//                    			place = Block.woolMagenta.blockId;
+//                    		}
+//                    		if(b == 9)
+//                    		{
+//                    			place = Block.woolOrange.blockId;
+//                    		}
+//                    		if(b == 10)
+//                    		{
+//                    			place = Block.woolPink.blockId;
+//                    		}
+//                    		if(b == 11)
+//                    		{
+//                    			place = Block.woolPurple.blockId;
+//                    		}
+//                    		if(b == 12)
+//                    		{
+//                    			place = Block.woolSilver.blockId;
+//                    		}
+//                    		if(b == 13)
+//                    		{
+//                    			place = Block.woolWhite.blockId;
+//                    		}
                     		blockTypes[x][y][z] = place;
                     	}
                     	if(c > .4)
