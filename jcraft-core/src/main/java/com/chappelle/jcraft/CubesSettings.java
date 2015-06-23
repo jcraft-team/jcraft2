@@ -8,7 +8,6 @@ public class CubesSettings
 {
 	private AssetManager assetManager;
 	private Material blockMaterial;
-	private Material unshadedBlockMaterial;
 	private int texturesCountX = 16;
 	private int texturesCountY = 16;
 
@@ -37,8 +36,7 @@ public class CubesSettings
 
 	public void setDefaultBlockMaterial(String textureFilePath)
 	{
-		setBlockMaterial(new ChunkMaterial(assetManager, textureFilePath, true));
-		setUnshadedBlockMaterial(new ChunkMaterial(assetManager, textureFilePath, false));
+		setBlockMaterial(ChunkMaterial.makeUnshadedMaterial(assetManager, textureFilePath));
 	}
 	
 	public void setBlockMaterial(Material blockMaterial)
@@ -60,15 +58,5 @@ public class CubesSettings
 	{
 		this.texturesCountX = texturesCountX;
 		this.texturesCountY = texturesCountY;
-	}
-
-	public Material getUnshadedBlockMaterial()
-	{
-		return unshadedBlockMaterial;
-	}
-
-	public void setUnshadedBlockMaterial(Material unshadedBlockMaterial)
-	{
-		this.unshadedBlockMaterial = unshadedBlockMaterial;
 	}
 }
