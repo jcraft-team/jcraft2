@@ -47,7 +47,7 @@ public class SimpleChunkProvider implements ChunkProvider
 		boolean[][][] blocks_IsOnSurface = new boolean[16][256][16];
 		for(Feature gen : features)
 		{
-			gen.generate(blockTypes, blocks_IsOnSurface);
+			gen.generate(x, z, blockTypes, blocks_IsOnSurface);
 		}
 		Chunk chunk = new Chunk(world, x, z, blockTypes, blocks_IsOnSurface);
 		chunks.put(ChunkCoordIntPair.chunkXZ2Int(x, z), chunk);

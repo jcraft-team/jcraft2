@@ -277,14 +277,18 @@ public final class PerlinNoise
 	
 	public static void main(String[] args)
 	{
-		PerlinNoise noise = new PerlinNoise(100);
-		System.out.println(noise.noise(1.5, 2.4));
-		System.out.println(noise.noise(5, 6));
-		System.out.println(noise.noise(3, 2));
-		System.out.println(noise.noise(3, 2));
-		System.out.println(noise.noise(3, 6));
-		System.out.println(noise.noise(100, 2));
-		System.out.println(noise.noise(300, 2));
-		System.out.println(noise.noise(309, 2));
+		PerlinNoise noise = new PerlinNoise(123485203975L);
+		noise.init();
+		for(int x=0; x<16;x++)
+		{
+			for(int z=0; z<16;z++)
+			{
+				double noiseVal = (1/15.0f)*noise.noise(x/16.0f, z/16.0f) + 
+						(2/15.0f)*noise.noise(2*x/16.0f, 2*z/16.0f) + 
+						(4/15.0f)*noise.noise(4*x/16.0f, 4*z/16.0f) + 
+						(8/15.0f)*noise.noise(8*x/16.0f, 8*z/16.0f);
+				System.out.println(noiseVal/10000);
+			}
+		}
 	}
 }

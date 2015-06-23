@@ -20,7 +20,7 @@ public class NoiseFeature implements Feature
 	}
 	
 	@Override
-	public void generate(int[][][] blockTypes, boolean[][][] blocks_IsOnSurface)
+	public void generate(int chunkX, int chunkZ, int[][][] blockTypes, boolean[][][] blocks_IsOnSurface)
 	{
 		for(int x = 0; x < 16; x++)
 		{
