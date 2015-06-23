@@ -19,6 +19,7 @@ import com.chappelle.jcraft.world.chunk.gen.BlockOreFeature;
 import com.chappelle.jcraft.world.chunk.gen.FlatFeature;
 import com.chappelle.jcraft.world.chunk.gen.NoiseFeature;
 import com.chappelle.jcraft.world.chunk.gen.PlantFeature;
+import com.chappelle.jcraft.world.chunk.gen.Simplex2DFeature;
 import com.chappelle.jcraft.world.chunk.gen.TreeFeature;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.StatsAppState;
@@ -257,9 +258,11 @@ public class JCraft extends SimpleApplication implements ActionListener
 		int height = 100;
 
 		SimpleChunkProvider chunkProvider = new SimpleChunkProvider();
-		chunkProvider.addFeature(new FlatFeature(Block.grass, height));
-		chunkProvider.addFeature(new NoiseFeature(seed, 0.0001f, height));
-		chunkProvider.addFeature(new BlockOreFeature(seed, height));
+		chunkProvider.addFeature(new Simplex2DFeature(seed, 0.004f, 0.33f, 3));
+		
+//		chunkProvider.addFeature(new FlatFeature(Block.grass, height));
+//		chunkProvider.addFeature(new NoiseFeature(seed, 0.0001f, height));
+//		chunkProvider.addFeature(new BlockOreFeature(seed, height));
 		chunkProvider.addFeature(new TreeFeature(seed));
 		chunkProvider.addFeature(new PlantFeature(seed));
 		// chunkProvider.addFeatureGenerator(new WaterFeatureGenerator(seed));

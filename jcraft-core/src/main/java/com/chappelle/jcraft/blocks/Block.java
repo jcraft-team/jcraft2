@@ -142,6 +142,7 @@ public class Block
 	public static final Block wood = new BlockLog(39).setStepSound(SoundConstants.STEP_WOOD_1);
 	public static final Block leaves = new BlockLeaves(40).setStepSound(SoundConstants.STEP_GRASS_1);
 	public static final Block tallGrass = new BlockTallGrass(41, 7, 2);
+	public static final Block snow = new BlockSnow(42);
 	
 	/**
 	 * Light values are multiplied by each of these color components
