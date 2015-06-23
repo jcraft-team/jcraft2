@@ -35,8 +35,10 @@ public class Inventory
     {
         if(isValidIndex(toIndex))
         {
-            inventory[toIndex] = inventory[fromIndex];
-            inventory[fromIndex] = null;
+        	ItemStack movedItem = inventory[fromIndex];
+        	ItemStack replacedItem = inventory[toIndex];
+            inventory[toIndex] = movedItem;
+        	inventory[fromIndex] = replacedItem;
         }
         fireInventoryChanged();        
     }
