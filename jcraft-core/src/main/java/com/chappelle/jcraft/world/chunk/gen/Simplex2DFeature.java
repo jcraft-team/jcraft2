@@ -32,9 +32,8 @@ public class Simplex2DFeature implements Feature
 	}
 	
 	@Override
-	public void generate(int chunkX, int chunkZ, int[][][] blockTypes, boolean[][][] blocks_IsOnSurface)
+	public void generate(int chunkX, int chunkZ, int[][][] blockTypes, int[][] heightMap)
 	{
-		int[][] height = new int[16][16];
 		int xOffset = chunkX*16;
 		int zOffset = chunkZ*16;
 		for(int x = 0; x < 16; x++)
@@ -44,7 +43,7 @@ public class Simplex2DFeature implements Feature
 				blockTypes[x][0][z] = Block.bedrock.blockId;
 				Double c = sumOctave(iterations, x+xOffset, z+zOffset, persistence, simplexScale);
 				c = normalize(c, 1, 256);
-				height[x][z] = MathUtils.floor_double(c);
+				heightMap[x][z] = MathUtils.floor_double(c);
 				for (int y = 1; y < c; y++)
 				{
                    int blockToPlace = Block.grass.blockId;
@@ -99,14 +98,6 @@ public class Simplex2DFeature implements Feature
                     }
                     blockTypes[x][y][z] = place;
                 }
-			}
-		}
-		for(int x = 0; x < 16; x++)
-		{
-			for(int z = 0; z < 16; z++)
-			{
-				int heightVal = height[x][z];
-				blocks_IsOnSurface[x][heightVal][z]	= true;
 			}
 		}
 	}

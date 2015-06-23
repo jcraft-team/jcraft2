@@ -44,12 +44,12 @@ public class SimpleChunkProvider implements ChunkProvider
 	{
 		world.profiler.startSection("ChunkGen");
 		int[][][] blockTypes = new int[16][256][16];
-		boolean[][][] blocks_IsOnSurface = new boolean[16][256][16];
+		int[][] heightMap = new int[16][16];
 		for(Feature gen : features)
 		{
-			gen.generate(x, z, blockTypes, blocks_IsOnSurface);
+			gen.generate(x, z, blockTypes, heightMap);
 		}
-		Chunk chunk = new Chunk(world, x, z, blockTypes, blocks_IsOnSurface);
+		Chunk chunk = new Chunk(world, x, z, blockTypes, heightMap);
 		chunks.put(ChunkCoordIntPair.chunkXZ2Int(x, z), chunk);
 		world.profiler.endSection();
 		return chunk;

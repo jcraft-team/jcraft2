@@ -11,7 +11,7 @@ public interface Feature
 	 * @param chunkX The x coordinate of the chunk
 	 * @param chunkZ The y coordinate of the chunk
 	 * @param blockTypes The array of block types in a chunk
-	 * @param blocks_IsOnSurface The surface flags
+	 * @param heightMap
 	 */
-	void generate(int chunkX, int chunkZ, int[][][] blockTypes, boolean[][][] blocks_IsOnSurface);
+	void generate(int chunkX, int chunkZ, int[][][] blockTypes, int[][] heightMap);
 }

@@ -20,7 +20,7 @@ public class NoiseFeature implements Feature
 	}
 	
 	@Override
-	public void generate(int chunkX, int chunkZ, int[][][] blockTypes, boolean[][][] blocks_IsOnSurface)
+	public void generate(int chunkX, int chunkZ, int[][][] blockTypes, int[][] heightMap)
 	{
 		for(int x = 0; x < 16; x++)
 		{
@@ -28,17 +28,14 @@ public class NoiseFeature implements Feature
 			{
 				for(int z = 0; z < 16; z++)
 				{
+					heightMap[x][z] = flatChunkHeight - 1;
 					blockTypes[x][y][z] = Block.grass.blockId;
-					if(y == flatChunkHeight - 1)
-					{
-						blocks_IsOnSurface[x][y][z] = true;
-					}
 				}
 			}
 		}
 
 		int magnitude = 4;
-		generateFromNoise(blockTypes, blocks_IsOnSurface, Block.grass, 0, 0, 16, 16, magnitude);
+		generateFromNoise(blockTypes, heightMap, Block.grass, 0, 0, 16, 16, magnitude);
 		
 //		if(rand.nextInt(5) == 0)
 //		{
@@ -47,7 +44,7 @@ public class NoiseFeature implements Feature
 //		}
 	}
 
-	private void generateFromNoise(int[][][] blockTypes, boolean[][][] blocks_IsOnSurface, Block block, int xMin, int zMin, int xMax, int zMax, int magnitude)
+	private void generateFromNoise(int[][][] blockTypes, int[][] heightMap, Block block, int xMin, int zMin, int xMax, int zMax, int magnitude)
 	{
 		Noise noise = new Noise(rand, roughness, xMax, zMax);
 		noise.initialise();
@@ -66,6 +63,7 @@ public class NoiseFeature implements Feature
 				---*/
 				float gridGroundHeight = (row[z] - gridMinimum);
 				int blockHeight = flatChunkHeight + (((int) ((((gridGroundHeight * 100) / gridLargestDifference) / 100) * magnitude)) + 1);
+				heightMap[x][z] = blockHeight;
 				for(int y = 0; y < blockHeight; y++)
 				{
 					if(block.blockId == Block.smoothStone.blockId)
@@ -87,10 +85,6 @@ public class NoiseFeature implements Feature
 					else
 					{
 						blockTypes[x][y][z] = block.blockId;
-					}
-					if(y == blockHeight - 1)
-					{
-						blocks_IsOnSurface[x][y][z] = true;
 					}
 				}
 			}

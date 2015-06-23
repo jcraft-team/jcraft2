@@ -15,7 +15,7 @@ public class TreeFeature implements Feature
 	}
 
 	@Override
-	public void generate(int chunkX, int chunkZ, int[][][] blockTypes, boolean[][][] blocks_IsOnSurface)
+	public void generate(int chunkX, int chunkZ, int[][][] blockTypes, int[][] heightMap)
 	{
 		for(int x = 3; x < 13; x++)
 		{
@@ -23,12 +23,11 @@ public class TreeFeature implements Feature
 			{
 				for(int z = 3; z < 13; z++)
 				{
-					if(blocks_IsOnSurface[x][y][z] && blockTypes[x][y][z] == Block.grass.blockId)
+					if(heightMap[x][z] == y && blockTypes[x][y][z] == Block.grass.blockId)
 					{
 						if(rand.nextInt(100) == 50)
 						{
-							blocks_IsOnSurface[x][y][z] = false;
-							generateTree(blockTypes, x, y, z);
+							heightMap[x][z] = generateTree(blockTypes, x, y, z);
 						}
 					}
 				}
@@ -36,7 +35,7 @@ public class TreeFeature implements Feature
 		}
 	}
 
-	private void generateTree(int[][][] blockTypes, int x, int y, int z)
+	private int generateTree(int[][][] blockTypes, int x, int y, int z)
 	{
 		int treeHeightMin = 4;
 		int treeHeightMax = 8;
@@ -51,6 +50,7 @@ public class TreeFeature implements Feature
 		addLeaves(blockTypes, x, treeTop+1, z);
 		addLeaves(blockTypes, x, treeTop, z);
 		addLeaves(blockTypes, x, treeTop-1, z);
+		return treeTop+1;
 	}
 	
 	private void addLeaves(int[][][] blockTypes, int x, int y, int z)

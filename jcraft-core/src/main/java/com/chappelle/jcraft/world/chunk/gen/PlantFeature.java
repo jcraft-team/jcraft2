@@ -16,7 +16,7 @@ public class PlantFeature implements Feature
 	}
 
 	@Override
-	public void generate(int chunkX, int chunkZ, int[][][] blockTypes, boolean[][][] blocks_IsOnSurface)
+	public void generate(int chunkX, int chunkZ, int[][][] blockTypes, int[][] heightMap)
 	{
 		for(int x = 0; x < 16; x++)
 		{
@@ -24,7 +24,7 @@ public class PlantFeature implements Feature
 			{
 				for(int z = 0; z < 16; z++)
 				{
-					if(blocks_IsOnSurface[x][y][z] && blockTypes[x][y][z] == Block.grass.blockId)
+					if(heightMap[x][z] == y && blockTypes[x][y][z] == Block.grass.blockId)
 					{
 						if(rand.nextInt(25) == 20)
 						{

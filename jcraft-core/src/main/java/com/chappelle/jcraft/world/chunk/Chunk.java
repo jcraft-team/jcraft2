@@ -22,6 +22,7 @@ public class Chunk implements BitSerializable
     public Vector3Int location = new Vector3Int();
     public Vector3Int blockLocation = new Vector3Int();
     private int[][][] blockTypes;
+    private int[][] heightMap;
     private boolean[][][] blocks_IsOnSurface;
     private BlockState[][][] blockState;
     private LightMap lights;
@@ -36,17 +37,28 @@ public class Chunk implements BitSerializable
     	blockLocation.set(location.mult(16, 256, 16));
     	blockTypes = new int[16][256][16];
     	blocks_IsOnSurface = new boolean[16][256][16];
+    	heightMap = new int[16][16];
     	blockState = new BlockState[16][256][16];
     	lights = new LightMap(new Vector3Int(16, 256, 16), location);
     }
 
-    public Chunk(World world, int x, int z, int[][][] blockTypes, boolean[][][] blocks_IsOnSurface)
+    public Chunk(World world, int x, int z, int[][][] blockTypes, int[][] heightMap)
     {
     	this.world = world;
     	location.set(x, 0, z);
     	blockLocation.set(location.mult(16, 256, 16));
     	this.blockTypes = blockTypes;
-    	this.blocks_IsOnSurface = blocks_IsOnSurface;
+    	blocks_IsOnSurface = new boolean[16][256][16];
+    	
+		for(int hx = 0; hx < 16; hx++)
+		{
+			for(int hz = 0; hz < 16; hz++)
+			{
+				int heightVal = heightMap[hx][hz];
+				blocks_IsOnSurface[hx][heightVal][hz]	= true;
+			}
+		}
+
     	blockState = new BlockState[16][256][16];
     	lights = new LightMap(new Vector3Int(16, 256, 16), location);
     }
@@ -251,7 +263,7 @@ public class Chunk implements BitSerializable
     
     public Chunk clone()
     {
-    	return new Chunk(world, location.x, location.z, blockTypes.clone(), blocks_IsOnSurface.clone());
+    	return new Chunk(world, location.x, location.z, blockTypes.clone(), heightMap.clone());
     }
     
     @Override

@@ -48,7 +48,7 @@ public class BlockOreFeature implements Feature
 	}
 	
 	@Override
-	public void generate(int chunkX, int chunkZ, int[][][] blockTypes, boolean[][][] blocks_IsOnSurface)
+	public void generate(int chunkX, int chunkZ, int[][][] blockTypes, int[][] heightMap)
 	{
 		for(Map.Entry<Integer, BlockGenConfig> entry : blockGenConfigs.entrySet())
 		{
