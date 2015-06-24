@@ -8,7 +8,7 @@ public class Simplex3DFeature implements Feature
     private final double simplexScale; // range from around 0.015 to around 0.001  The higher the number the more rugged and extreme the terain.
     private final float persistence;
 	private final int iterations; // Use a value of 1 to get very smooth rolling hills.  No need to go higher than 4.
-	
+	private final int height;
 	public Simplex3DFeature(long seed)
 	{
 		this(seed, 0.009f, 0.33f, 4);
@@ -19,6 +19,7 @@ public class Simplex3DFeature implements Feature
 		this.simplexScale = simplexScale;
 		this.persistence = persistence;
 		this.iterations = iterations;
+		this.height = 50;
 	}
 
 	@Override
@@ -31,7 +32,7 @@ public class Simplex3DFeature implements Feature
         {
             for (int z = 0; z < 16; z++)
             {
-                for (int y = 0; y < 120; y++)
+                for (int y = 0; y < height; y++)
                 {
                     if(y == 0)
                     {
@@ -102,14 +103,14 @@ public class Simplex3DFeature implements Feature
 //                    		}
                     		blockTypes[x][y][z] = place;
                     	}
-                    	if(c > .4)
-                    	{
-                    		blockTypes[x][y][z] = Block.gold.blockId;
-                    	}
-                    	if(c > .7 )
-                    	{
-                    		blockTypes[x][y][z] = Block.diamond.blockId;
-                    	}
+//                    	if(c > .4)
+//                    	{
+//                    		blockTypes[x][y][z] = Block.gold.blockId;
+//                    	}
+//                    	if(c > .7 )
+//                    	{
+//                    		blockTypes[x][y][z] = Block.diamond.blockId;
+//                    	}
                     }
                 }
             }

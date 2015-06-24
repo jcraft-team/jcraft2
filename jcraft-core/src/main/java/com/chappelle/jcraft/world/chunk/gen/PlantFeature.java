@@ -24,7 +24,7 @@ public class PlantFeature implements Feature
 			{
 				for(int z = 0; z < 16; z++)
 				{
-					if(heightMap[x][z] == y && blockTypes[x][y][z] == Block.grass.blockId)
+					if(blockTypes[x][y][z] == Block.grass.blockId && blockTypes[x][y+1][z] == 0)
 					{
 						if(rand.nextInt(25) == 20)
 						{

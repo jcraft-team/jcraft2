@@ -23,11 +23,14 @@ public class TreeFeature implements Feature
 			{
 				for(int z = 3; z < 13; z++)
 				{
-					if(heightMap[x][z] == y && blockTypes[x][y][z] == Block.grass.blockId)
+					if(rand.nextInt(100) == 50)
 					{
-						if(rand.nextInt(100) == 50)
+						int treeHeightMin = 4;
+						int treeHeightMax = 8;
+						int treeHeight = rand.nextInt(treeHeightMax - treeHeightMin) + treeHeightMin;
+						if(canPlaceTree(blockTypes, x, y, z, treeHeight))
 						{
-							heightMap[x][z] = generateTree(blockTypes, x, y, z);
+							heightMap[x][z] = generateTree(blockTypes, x, y, z, treeHeight);
 						}
 					}
 				}
@@ -35,11 +38,24 @@ public class TreeFeature implements Feature
 		}
 	}
 
-	private int generateTree(int[][][] blockTypes, int x, int y, int z)
+	private boolean canPlaceTree(int[][][] blockTypes, int x, int y, int z, int treeHeight)
 	{
-		int treeHeightMin = 4;
-		int treeHeightMax = 8;
-		int treeHeight = rand.nextInt(treeHeightMax - treeHeightMin) + treeHeightMin;
+		if(blockTypes[x][y][z] != Block.grass.blockId)
+		{
+			return false;
+		}
+		for(int i = y+1; i < y+treeHeight; i++)
+		{
+			if(blockTypes[x][i][z] != 0)
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private int generateTree(int[][][] blockTypes, int x, int y, int z, int treeHeight)
+	{
 		for(int i = 1; i <= treeHeight; i++)
 		{
 			blockTypes[x][y+i][z] = Block.wood.blockId;

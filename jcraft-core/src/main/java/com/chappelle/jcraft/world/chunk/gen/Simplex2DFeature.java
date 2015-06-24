@@ -11,10 +11,11 @@ public class Simplex2DFeature implements Feature
     private final double simplexScale; // range from around 0.015 to around 0.001  The higher the number the more rugged and extreme the terain.
     private final float persistence;
 	private final int iterations; // Use a value of 1 to get very smooth rolling hills.  No need to go higher than 4.
-    private final int water_level = (int) (256 * .3f);
-    private final int stone_level = (int) (256 * .5f);
-    private final int snow_level = (int) (256 * .6f);
-    private final int ice_level = (int) (256 * .75f);
+	private final int height = 80;
+    private final int water_level = (int) (height * .3f);
+    private final int stone_level = (int) (height * .5f);
+    private final int snow_level = (int) (height * .6f);
+    private final int ice_level = (int) (height * .75f);
 
 	private Random rand;
 	
@@ -42,36 +43,36 @@ public class Simplex2DFeature implements Feature
 			{
 				blockTypes[x][0][z] = Block.bedrock.blockId;
 				Double c = sumOctave(iterations, x+xOffset, z+zOffset, persistence, simplexScale);
-				c = normalize(c, 1, 256);
+				c = normalize(c, 1, height);
 				heightMap[x][z] = MathUtils.floor_double(c);
 				for (int y = 1; y < c; y++)
 				{
                    int blockToPlace = Block.grass.blockId;
-                   double randomNumber = rand.nextDouble() * 5000 ;
-                   if(randomNumber < 1000)
-                   {
-                       blockToPlace = Block.smoothStone.blockId;
-                   }
-                   if(randomNumber < 500)
-                   {
-                       blockToPlace = Block.gravel.blockId;
-                   }
-                   if(randomNumber < 350)
-                   {
-                       blockToPlace = Block.coal.blockId;
-                   }
-                   if(randomNumber < 250)
-                   {
-                       blockToPlace = Block.iron.blockId;
-                   }
-                   if(randomNumber < 50 && y < 30)
-                   {
-                       blockToPlace = Block.gold.blockId;
-                   }
-                   if(randomNumber < 10 && y < 16)
-                   {
-                       blockToPlace = Block.diamond.blockId;
-                   }
+//                   double randomNumber = rand.nextDouble() * 5000 ;
+//                   if(randomNumber < 1000)
+//                   {
+//                       blockToPlace = Block.smoothStone.blockId;
+//                   }
+//                   if(randomNumber < 500)
+//                   {
+//                       blockToPlace = Block.gravel.blockId;
+//                   }
+//                   if(randomNumber < 350)
+//                   {
+//                       blockToPlace = Block.coal.blockId;
+//                   }
+//                   if(randomNumber < 250)
+//                   {
+//                       blockToPlace = Block.iron.blockId;
+//                   }
+//                   if(randomNumber < 50 && y < 30)
+//                   {
+//                       blockToPlace = Block.gold.blockId;
+//                   }
+//                   if(randomNumber < 10 && y < 16)
+//                   {
+//                       blockToPlace = Block.diamond.blockId;
+//                   }
                    blockTypes[x][y][z] = blockToPlace;
 				}
                 if(c<water_level) // water
@@ -81,23 +82,23 @@ public class Simplex2DFeature implements Feature
                     	blockTypes[x][y][z] = Block.water.blockId;
                     }
                 }
-                for(int y = c.intValue()-2; y <= c.intValue(); y++)
-                {
-                    int place = Block.grass.blockId;
-                    if(c>stone_level)
-                    {
-                        place = Block.smoothStone.blockId;
-                    }
-                    if(c>snow_level)
-                    {
-                        place = Block.snow.blockId;
-                    }
-                    if(c>ice_level)
-                    {
-                        place = Block.ice.blockId;
-                    }
-                    blockTypes[x][y][z] = place;
-                }
+//                for(int y = c.intValue()-2; y <= c.intValue(); y++)
+//                {
+//                    int place = Block.grass.blockId;
+//                    if(c>stone_level)
+//                    {
+//                        place = Block.smoothStone.blockId;
+//                    }
+//                    if(c>snow_level)
+//                    {
+//                        place = Block.snow.blockId;
+//                    }
+//                    if(c>ice_level)
+//                    {
+//                        place = Block.ice.blockId;
+//                    }
+//                    blockTypes[x][y][z] = place;
+//                }
 			}
 		}
 	}
