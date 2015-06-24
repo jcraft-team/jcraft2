@@ -172,11 +172,11 @@ public class Chunk implements BitSerializable
     }
     
     public void setBlock(Vector3Int location, Block block){
-        if(isValidBlockLocation(location)){
+//        if(isValidBlockLocation(location)){
             blockTypes[location.getX()][location.getY()][location.getZ()] = block.blockId;
             updateBlockState(location);
             needsMeshUpdate = true;
-        }
+//        }
     }
 
     private void updateBlockState(Vector3Int location){
@@ -214,12 +214,11 @@ public class Chunk implements BitSerializable
         return getBlock(neighborLocation);
     }
     
-    public void removeBlock(Vector3Int location){
-        if(isValidBlockLocation(location)){
-            blockTypes[location.getX()][location.getY()][location.getZ()] = 0;
-            updateBlockState(location);
-            needsMeshUpdate = true;
-        }
+    public void removeBlock(Vector3Int location)
+    {
+        blockTypes[location.getX()][location.getY()][location.getZ()] = 0;
+        updateBlockState(location);
+        needsMeshUpdate = true;
     }
     
     @Override

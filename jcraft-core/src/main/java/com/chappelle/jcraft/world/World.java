@@ -64,7 +64,7 @@ public class World implements BitSerializable
 	// we use 1 thread(need to fix
 	// lighting so we can increase
 	// this)
-	private static final int THREAD_COUNT = 2;
+	private static final int THREAD_COUNT = 4;
 	
 	public ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(THREAD_COUNT);
 
@@ -361,6 +361,10 @@ public class World implements BitSerializable
 		if(localBlockState != null)
 		{
 			Block block = localBlockState.getBlock();
+			if(block == null)
+			{
+				System.out.println("NPE is here. location=" + location + " Chunk blockLocation=" + localBlockState.getChunk().blockLocation);
+			}
 			if(block.isBreakable())
 			{
 				Chunk chunk = localBlockState.getChunk();
@@ -470,10 +474,10 @@ public class World implements BitSerializable
 	
 	public BlockTerrain_LocalBlockState getLocalBlockState(Vector3Int blockLocation, boolean generateIfNeeded)
 	{
-		if(blockLocation.hasNegativeCoordinate())
-		{
-			return null;
-		}
+//		if(blockLocation.hasNegativeCoordinate())
+//		{
+//			return null;
+//		}
 		Chunk chunk = getChunkFromBlockCoordinates(blockLocation.x, blockLocation.z, generateIfNeeded);
 		if(chunk != null)
 		{
@@ -490,10 +494,6 @@ public class World implements BitSerializable
 	
 	public Chunk getChunkFromBlockCoordinates(int blockX, int blockZ, boolean generateIfNeeded)
 	{
-		if(blockX < 0 || blockZ < 0)
-		{
-			return null;
-		}
 		Vector3Int chunkLocation = getChunkFromBlockLocation(blockX, blockZ);
 		Chunk cachedChunk = chunkProvider.getChunk(chunkLocation.x, chunkLocation.z);
 		if(!generateIfNeeded || cachedChunk != null)
@@ -510,10 +510,6 @@ public class World implements BitSerializable
 	
 	public Chunk getChunkFromChunkCoordinates(int chunkX, int chunkZ, boolean generateIfNeeded)
 	{
-		if(chunkX < 0 || chunkZ < 0)
-		{
-			return null;
-		}
 		Chunk cachedChunk = chunkProvider.getChunk(chunkX, chunkZ);
 		if(!generateIfNeeded || cachedChunk != null)
 		{
@@ -557,6 +553,14 @@ public class World implements BitSerializable
 		Vector3Int chunkLocation = new Vector3Int();
 		int chunkX = (x / 16);
 		int chunkZ = (z / 16);
+		if(x < 0)
+		{
+			chunkX -= 1;
+		}
+		if(z < 0)
+		{
+			chunkZ -= 1;
+		}
 		chunkLocation.set(chunkX, 0, chunkZ);
 		return chunkLocation;
 	}
