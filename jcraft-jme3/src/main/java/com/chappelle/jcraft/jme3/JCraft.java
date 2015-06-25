@@ -257,13 +257,14 @@ public class JCraft extends SimpleApplication implements ActionListener
 		
 		SimpleChunkProvider chunkProvider = new SimpleChunkProvider();
 		chunkProvider.addFeature(new Simplex3DFeature(seed, 0.01f, 0.1f, 4, 70)); 
-		chunkProvider.addFeature(new Simplex2DFeature(seed,Block.smoothStone.blockId, Block.coal.blockId, Block.grass.blockId).setSimplexScale(0.015f).setPersistence(0.2f).setIterations(4).setHeight(60));
+		chunkProvider.addFeature(new Simplex2DFeature(seed,Block.grass.blockId).setSimplexScale(0.015f).setPersistence(0.2f).setIterations(4).setHeight(60));
 		chunkProvider.addFeature(new Simplex2DFeature(seed).setSimplexScale(0.01f).setPersistence(0.12f).setIterations(4).setHeight(60));
 		chunkProvider.addFeature(new Simplex2DFeature(seed).setSimplexScale(0.001f).setPersistence(0.2f).setIterations(4).setHeight(80));
 		chunkProvider.addFeature(new Simplex2DFeature(seed).setSimplexScale(0.001f).setPersistence(0.09f).setIterations(4).setHeight(100));
 		chunkProvider.addFeature(new BlockOreFeature(seed));
-		chunkProvider.addFeature(new PlantFeature(seed));
 		chunkProvider.addFeature(new WaterFeature(45));
+		chunkProvider.addFeature(new PlantFeature(seed));
+		chunkProvider.addFeature(new TreeFeature(seed));
  		return chunkProvider;
 	}
 
