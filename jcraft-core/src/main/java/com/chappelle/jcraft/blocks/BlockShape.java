@@ -172,7 +172,7 @@ public abstract class BlockShape
     						}
     						else
     						{
-    							chunk.getLights().getNormalizedLight(location.x, location.y, 0);
+    							light = neighborChunk.getLights().getNormalizedLight(location.x, location.y, 0);
     						}
     					}
     				}
@@ -193,7 +193,7 @@ public abstract class BlockShape
     						}
     						else
     						{
-    							chunk.getLights().getNormalizedLight(location.x, location.y, 15);
+    							light = neighborChunk.getLights().getNormalizedLight(location.x, location.y, 15);
     						}
     					}
     				}
@@ -214,7 +214,7 @@ public abstract class BlockShape
     						}
     						else
     						{
-    							chunk.getLights().getNormalizedLight(15, location.y, location.z);
+    							light = neighborChunk.getLights().getNormalizedLight(15, location.y, location.z);
     						}
     					}
     				}
@@ -235,7 +235,7 @@ public abstract class BlockShape
     						}
     						else
     						{
-    							chunk.getLights().getNormalizedLight(0, location.y, location.z);
+    							light = neighborChunk.getLights().getNormalizedLight(0, location.y, location.z);
     						}
     					}
     			}

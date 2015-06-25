@@ -21,7 +21,7 @@ public class LightMap
 	public float getNormalizedLight(int x, int y, int z)
 	{
 		float result = ((float)getLight(x, y, z)/(float)MAX_LIGHT);
-		return Math.max(0.075f, result);
+		return Math.max(0.025f, result);
 	}
 	
 	public int getLight(int x, int y, int z, LightType lightType)
