@@ -52,26 +52,24 @@ public class WaterFeature implements Feature
 			{
 				blockTypes[x][y][z] = Block.sand.blockId;
 			}
-			if(blockTypes[(x+1)&15][y][z] != Block.water.blockId)
-			{
-				addSand(blockTypes, (x+1)&15, y, z, probability*0.7f);
-			}
-			if(x > 0 && blockTypes[x-1][y][z] != Block.water.blockId)
-			{
-				addSand(blockTypes, x-1, y, z, probability*0.7f);
-			}
-			if(blockTypes[x][y][(z+1)&15] != Block.water.blockId)
-			{
-				addSand(blockTypes, x, y, (z+1)&15, probability*0.7f);
-			}
-			if(z > 0 && blockTypes[x][y][z-1] != Block.water.blockId)
-			{
-				addSand(blockTypes, x, y, z-1, probability*0.7f);
-			}
-//				if(blockTypes[x][y+1][z] != Block.water.blockId)
-//				{
-//					addSand(blockTypes, x, y+1, z, probability*0.15f);
-//				}
+			
+			//THIS IS REALLY SLOW
+//			if(blockTypes[(x+1)&15][y][z] != Block.water.blockId)
+//			{
+//				addSand(blockTypes, (x+1)&15, y, z, probability*0.7f);
+//			}
+//			if(x > 0 && blockTypes[x-1][y][z] != Block.water.blockId)
+//			{
+//				addSand(blockTypes, x-1, y, z, probability*0.7f);
+//			}
+//			if(blockTypes[x][y][(z+1)&15] != Block.water.blockId)
+//			{
+//				addSand(blockTypes, x, y, (z+1)&15, probability*0.7f);
+//			}
+//			if(z > 0 && blockTypes[x][y][z-1] != Block.water.blockId)
+//			{
+//				addSand(blockTypes, x, y, z-1, probability*0.7f);
+//			}
 		}
 	}
 }
