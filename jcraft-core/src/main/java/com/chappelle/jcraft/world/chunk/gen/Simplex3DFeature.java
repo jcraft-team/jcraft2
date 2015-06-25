@@ -11,15 +11,15 @@ public class Simplex3DFeature implements Feature
 	private final int height;
 	public Simplex3DFeature(long seed)
 	{
-		this(seed, 0.009f, 0.33f, 4);
+		this(seed, 0.009f, 0.33f, 4, 50);
 	}
 	
-	public Simplex3DFeature(long seed, float simplexScale, float persistence, int iterations)
+	public Simplex3DFeature(long seed, float simplexScale, float persistence, int iterations, int height)
 	{
 		this.simplexScale = simplexScale;
 		this.persistence = persistence;
 		this.iterations = iterations;
-		this.height = 50;
+		this.height = height;
 	}
 
 	@Override

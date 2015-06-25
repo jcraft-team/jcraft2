@@ -6,6 +6,8 @@ public class BlockGenConfig
 	private int maxCluster = 10;
 	private float initialClusterProbability = 0.5f;
 	private float clusterProbabilityDropOff = 0.05f;
+	private int minY;
+	private int maxY;
 	private int surfaceOffset = 0;
 
 	public int getMinCluster()
@@ -60,6 +62,28 @@ public class BlockGenConfig
 	public BlockGenConfig setSurfaceOffset(int surfaceOffset)
 	{
 		this.surfaceOffset = surfaceOffset;
+		return this;
+	}
+
+	public int getMinY()
+	{
+		return minY;
+	}
+
+	public BlockGenConfig setMinY(int minY)
+	{
+		this.minY = minY;
+		return this;
+	}
+
+	public int getMaxY()
+	{
+		return maxY;
+	}
+
+	public BlockGenConfig setMaxY(int maxY)
+	{
+		this.maxY = maxY;
 		return this;
 	}
 

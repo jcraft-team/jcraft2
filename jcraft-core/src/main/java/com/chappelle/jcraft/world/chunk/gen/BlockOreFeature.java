@@ -1,7 +1,5 @@
 package com.chappelle.jcraft.world.chunk.gen;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 
 import com.chappelle.jcraft.blocks.Block;
@@ -10,119 +8,134 @@ import com.chappelle.jcraft.world.chunk.Feature;
 public class BlockOreFeature implements Feature
 {
 	private Random rand;
-	private int height;
-	private Map<Integer, BlockGenConfig> blockGenConfigs = new HashMap<Integer, BlockGenConfig>();
 	
-	public BlockOreFeature(long seed, int height)
+	public BlockOreFeature(long seed)
 	{
-		this.height = height;
 		this.rand = new Random(seed);
-		
-		BlockGenConfig coalConfig = new BlockGenConfig();
-		coalConfig.setMinCluster((int)(height*0.05)).setMaxCluster((int)(height*0.2)).setInitialClusterProbability(0.25f).setClusterProbabilityDropOff(0.05f);
-		blockGenConfigs.put(Block.coal.blockId, coalConfig);
-
-		BlockGenConfig gravelConfig = new BlockGenConfig();
-		gravelConfig.setMinCluster((int)(height*0.05)).setMaxCluster((int)(height*0.2)).setInitialClusterProbability(0.25f).setClusterProbabilityDropOff(0.05f);
-		blockGenConfigs.put(Block.gravel.blockId, gravelConfig);
-		
-		BlockGenConfig smoothStoneConfig = new BlockGenConfig();
-		smoothStoneConfig.setMinCluster((int)(height*0.2)).setMaxCluster((int)(height*0.5)).setInitialClusterProbability(0.4f).setClusterProbabilityDropOff(0.6f);
-		blockGenConfigs.put(Block.smoothStone.blockId, smoothStoneConfig);
-
-		BlockGenConfig goldConfig = new BlockGenConfig();
-		goldConfig.setMinCluster((int)(height*0.01)).setMaxCluster((int)(height*0.1)).setInitialClusterProbability(0.2f).setClusterProbabilityDropOff(0.05f);
-		blockGenConfigs.put(Block.gold.blockId, goldConfig);
-
-		BlockGenConfig diamondConfig = new BlockGenConfig();
-		diamondConfig.setMinCluster((int)(height*0.01)).setMaxCluster((int)(height*0.05)).setInitialClusterProbability(0.1f).setClusterProbabilityDropOff(0.05f);
-		blockGenConfigs.put(Block.diamond.blockId, diamondConfig);
-
-		BlockGenConfig ironConfig = new BlockGenConfig();
-		ironConfig.setMinCluster((int)(height*0.05)).setMaxCluster((int)(height*0.3)).setInitialClusterProbability(0.4f).setClusterProbabilityDropOff(0.05f);
-		blockGenConfigs.put(Block.iron.blockId, ironConfig);
-
-		BlockGenConfig redstoneConfig = new BlockGenConfig();
-		redstoneConfig.setMinCluster((int)(height*0.05)).setMaxCluster((int)(height*0.15)).setInitialClusterProbability(0.3f).setClusterProbabilityDropOff(0.05f);
-		blockGenConfigs.put(Block.redstone.blockId, redstoneConfig);
 	}
 	
 	@Override
 	public void generate(int chunkX, int chunkZ, int[][][] blockTypes, int[][] heightMap)
 	{
-		for(Map.Entry<Integer, BlockGenConfig> entry : blockGenConfigs.entrySet())
+		for(int y = 0; y < 256; y++)
 		{
-			int blockId = entry.getKey();
-			BlockGenConfig config = entry.getValue();
+			int x = rand.nextInt(16);
+			int z = rand.nextInt(16);
 			
-			int clusterCount = rand.nextInt(config.getMaxCluster() - config.getMinCluster()) + config.getMinCluster();
-			for(int i = 0; i < clusterCount; i++)
+			if(y < 12)
 			{
-				int x = rand.nextInt(16);
-				int y = rand.nextInt(height-1 - config.getSurfaceOffset());
-				int z = rand.nextInt(16);
-				
-				blockTypes[x][y][z] = blockId;
-				addCluster(x, y, z, blockTypes, config.getInitialClusterProbability(), config.getClusterProbabilityDropOff(), blockId, config.getSurfaceOffset());
+				addCluster(x, y, z, blockTypes, 0.1f, 0.05f, Block.diamond.blockId);
 			}
+			
+			if(y < 50)
+			{
+				x = rand.nextInt(16);
+				z = rand.nextInt(16);
+				addCluster(x, y, z, blockTypes, 0.2f, 0.05f, Block.iron.blockId);
+			}
+			if(y < 40)
+			{
+				x = rand.nextInt(16);
+				z = rand.nextInt(16);
+				addCluster(x, y, z, blockTypes, 0.3f, 0.05f, Block.redstone.blockId);
+
+				x = rand.nextInt(16);
+				z = rand.nextInt(16);
+				addCluster(x, y, z, blockTypes, 0.4f, 0.05f, Block.iron.blockId);
+			}
+			
+			x = rand.nextInt(16);
+			z = rand.nextInt(16);
+			addCluster(x, y, z, blockTypes, 0.4f, 0.08f, Block.smoothStone.blockId);
+			
+			x = rand.nextInt(16);
+			z = rand.nextInt(16);
+			addCluster(x, y, z, blockTypes, 0.4f, 0.08f, Block.coal.blockId);
+
+			x = rand.nextInt(16);
+			z = rand.nextInt(16);
+			addCluster(x, y, z, blockTypes, 0.4f, 0.08f, Block.gravel.blockId);
 		}
 	}
 	
-	private void addCluster(int x, int y, int z, int[][][] blockTypes, float probability, float dropOff, int blockId, int surfaceOffset)
+	private void addCluster(int x, int y, int z, int[][][] blockTypes, float probability, float dropOff, int blockId)
 	{
 		int newX = (x+1)&15;
 		int newY = y;
 		int newZ = z;
-		blockTypes[newX][newY][newZ] = blockId;
-		if(rand.nextFloat() < probability)
+		if(canPlaceOre(blockTypes, newX, newY, newZ))
 		{
-			addCluster(newX, newY, newZ, blockTypes, probability*dropOff, dropOff, blockId, surfaceOffset);
+			blockTypes[newX][newY][newZ] = blockId;
+			if(rand.nextFloat() < probability)
+			{
+				addCluster(newX, newY, newZ, blockTypes, probability*dropOff, dropOff, blockId);
+			}
 		}
 
 		newX = x;
-		newY = (y+1)&(height-1-surfaceOffset);
+		newY = (y+1)&255;
 		newZ = z;
-		blockTypes[newX][newY][newZ] = blockId;
-		if(rand.nextFloat() < probability)
+		if(canPlaceOre(blockTypes, newX, newY, newZ))
 		{
-			addCluster(newX, newY, newZ, blockTypes, probability*dropOff, dropOff, blockId, surfaceOffset);
+			blockTypes[newX][newY][newZ] = blockId;
+			if(rand.nextFloat() < probability)
+			{
+				addCluster(newX, newY, newZ, blockTypes, probability*dropOff, dropOff, blockId);
+			}
 		}
 
 		newX = x;
 		newY = y;
 		newZ = (z+1)&15;
-		blockTypes[newX][newY][newZ] = blockId;
-		if(rand.nextFloat() < probability)
+		if(canPlaceOre(blockTypes, newX, newY, newZ))
 		{
-			addCluster(newX, newY, newZ, blockTypes, probability*dropOff, dropOff, blockId, surfaceOffset);
+			blockTypes[newX][newY][newZ] = blockId;
+			if(rand.nextFloat() < probability)
+			{
+				addCluster(newX, newY, newZ, blockTypes, probability*dropOff, dropOff, blockId);
+			}
 		}
 
 		newX = (x-1)&15;
 		newY = y;
 		newZ = z;
-		blockTypes[newX][newY][newZ] = blockId;
-		if(rand.nextFloat() < probability)
+		if(canPlaceOre(blockTypes, newX, newY, newZ))
 		{
-			addCluster(newX, newY, newZ, blockTypes, probability*dropOff, dropOff, blockId, surfaceOffset);
+			blockTypes[newX][newY][newZ] = blockId;
+			if(rand.nextFloat() < probability)
+			{
+				addCluster(newX, newY, newZ, blockTypes, probability*dropOff, dropOff, blockId);
+			}
 		}
 
 		newX = x;
 		newY = (y-1) < 0 ? 0 : (y-1);
 		newZ = z;
-		blockTypes[newX][newY][newZ] = blockId;
-		if(rand.nextFloat() < probability)
+		if(canPlaceOre(blockTypes, newX, newY, newZ))
 		{
-			addCluster(newX, newY, newZ, blockTypes, probability*dropOff, dropOff, blockId, surfaceOffset);
+			blockTypes[newX][newY][newZ] = blockId;
+			if(rand.nextFloat() < probability)
+			{
+				addCluster(newX, newY, newZ, blockTypes, probability*dropOff, dropOff, blockId);
+			}
 		}
 		
 		newX = x;
 		newY = y;
 		newZ = (z-1)&15;
-		blockTypes[newX][newY][newZ] = Block.coal.blockId;
-		if(rand.nextFloat() < probability)
+		if(canPlaceOre(blockTypes, newX, newY, newZ))
 		{
-			addCluster(newX, newY, newZ, blockTypes, probability*dropOff, dropOff, blockId, surfaceOffset);
+			blockTypes[newX][newY][newZ] = blockId;
+			if(rand.nextFloat() < probability)
+			{
+				addCluster(newX, newY, newZ, blockTypes, probability*dropOff, dropOff, blockId);
+			}
 		}
+	}
+
+	private boolean canPlaceOre(int[][][] blockTypes, int x, int y, int z)
+	{
+		return blockTypes[x][y][z] != 0 && blockTypes[x][y+1][z] != 0 && (blockTypes[x][y][z] == Block.grass.blockId || blockTypes[x][y][z] == Block.smoothStone.blockId || blockTypes[x][y][z] == Block.gravel.blockId);
 	}
 
 }

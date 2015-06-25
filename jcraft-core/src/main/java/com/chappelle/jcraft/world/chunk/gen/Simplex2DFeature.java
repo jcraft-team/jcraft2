@@ -8,28 +8,47 @@ import com.chappelle.jcraft.world.chunk.Feature;
 
 public class Simplex2DFeature implements Feature
 {
-    private final double simplexScale; // range from around 0.015 to around 0.001  The higher the number the more rugged and extreme the terain.
-    private final float persistence;
-	private final int iterations; // Use a value of 1 to get very smooth rolling hills.  No need to go higher than 4.
-	private final int height = 80;
-    private final int water_level = (int) (height * .3f);
-    private final int stone_level = (int) (height * .5f);
-    private final int snow_level = (int) (height * .6f);
-    private final int ice_level = (int) (height * .75f);
+    private double simplexScale;
+    private float persistence;
+	private int iterations;
+	private int height;
+    private int waterLevel;
+    private int[] blockIds;
+    private int blockCount;
+    private Random rand;
 
-	private Random rand;
-	
-	public Simplex2DFeature(long seed)
+	/**
+	 * Creates a Feature that generates terrain based on the Simplex2D noise algorithm with default values
+	 * @param seed The world seed
+	 */
+	public Simplex2DFeature(long seed, int... blockIds)
 	{
-		this(seed, 0.009f, 0.33f, 4);
+		this(seed, 0.009f, 0.33f, 4, 80, blockIds);
 	}
 	
-	public Simplex2DFeature(long seed, float simplexScale, float persistence, int iterations)
+	/**
+	 * Creates a Feature that generates terrain based on the Simplex2D noise algorithm
+	 * @param seed The world seed
+	 * @param simplexScale Range from around 0.015 to around 0.001  The higher the number the more rugged and extreme the terain.
+	 * @param persistence Persistence value used in the Simplex2D noise algorithm
+	 * @param iterations Use a value of 1 to get very smooth rolling hills.  No need to go higher than 4.
+	 * @param height The max height of the terrain
+	 */
+	public Simplex2DFeature(long seed, float simplexScale, float persistence, int iterations, int height, int... blockIds)
 	{
-		this.rand = new Random(seed);
 		this.simplexScale = simplexScale;
 		this.persistence = persistence;
 		this.iterations = iterations;
+		this.height = height;
+		this.waterLevel = (int) (height * .3f);
+		this.blockIds = blockIds;
+		if(this.blockIds == null || this.blockIds.length == 0)
+		{
+			this.blockIds = new int[]{Block.grass.blockId};
+		}
+		this.blockCount = this.blockIds.length;
+		this.rand = new Random(seed);
+		System.out.println(blockCount);
 	}
 	
 	@Override
@@ -47,58 +66,16 @@ public class Simplex2DFeature implements Feature
 				heightMap[x][z] = MathUtils.floor_double(c);
 				for (int y = 1; y < c; y++)
 				{
-                   int blockToPlace = Block.grass.blockId;
-//                   double randomNumber = rand.nextDouble() * 5000 ;
-//                   if(randomNumber < 1000)
-//                   {
-//                       blockToPlace = Block.smoothStone.blockId;
-//                   }
-//                   if(randomNumber < 500)
-//                   {
-//                       blockToPlace = Block.gravel.blockId;
-//                   }
-//                   if(randomNumber < 350)
-//                   {
-//                       blockToPlace = Block.coal.blockId;
-//                   }
-//                   if(randomNumber < 250)
-//                   {
-//                       blockToPlace = Block.iron.blockId;
-//                   }
-//                   if(randomNumber < 50 && y < 30)
-//                   {
-//                       blockToPlace = Block.gold.blockId;
-//                   }
-//                   if(randomNumber < 10 && y < 16)
-//                   {
-//                       blockToPlace = Block.diamond.blockId;
-//                   }
+                   int blockToPlace = blockIds[rand.nextInt(blockCount)];
                    blockTypes[x][y][z] = blockToPlace;
 				}
-                if(c<water_level) // water
+                if(c<waterLevel) // water
                 {
-                    for(int y=c.intValue()+1; y<=water_level; y++)
+                    for(int y=c.intValue()+1; y<=waterLevel; y++)
                     {
                     	blockTypes[x][y][z] = Block.water.blockId;
                     }
                 }
-//                for(int y = c.intValue()-2; y <= c.intValue(); y++)
-//                {
-//                    int place = Block.grass.blockId;
-//                    if(c>stone_level)
-//                    {
-//                        place = Block.smoothStone.blockId;
-//                    }
-//                    if(c>snow_level)
-//                    {
-//                        place = Block.snow.blockId;
-//                    }
-//                    if(c>ice_level)
-//                    {
-//                        place = Block.ice.blockId;
-//                    }
-//                    blockTypes[x][y][z] = place;
-//                }
 			}
 		}
 	}
@@ -128,4 +105,36 @@ public class Simplex2DFeature implements Feature
     {
         return value * (high - low) / 2 + (high + low) / 2;
     }
+
+    /**
+     * SimplexScale Range from around 0.015 to around 0.001  The higher the number the more rugged and extreme the terain.
+     */
+	public Simplex2DFeature setSimplexScale(double simplexScale)
+	{
+		this.simplexScale = simplexScale;
+		return this;
+	}
+
+	public Simplex2DFeature setPersistence(float persistence)
+	{
+		this.persistence = persistence;
+		return this;
+	}
+
+	/**
+	 * Iterations Use a value of 1 to get very smooth rolling hills.  No need to go higher than 4.
+	 */
+	public Simplex2DFeature setIterations(int iterations)
+	{
+		this.iterations = iterations;
+		return this;
+	}
+
+	public Simplex2DFeature setHeight(int height)
+	{
+		this.height = height;
+		this.waterLevel = (int)0.5f*height;
+		return this;
+	}
+	
 }

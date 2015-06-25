@@ -64,7 +64,7 @@ public class World implements BitSerializable
 	// we use 1 thread(need to fix
 	// lighting so we can increase
 	// this)
-	private static final int THREAD_COUNT = 4;
+	private static final int THREAD_COUNT = 6;
 	
 	public ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(THREAD_COUNT);
 
