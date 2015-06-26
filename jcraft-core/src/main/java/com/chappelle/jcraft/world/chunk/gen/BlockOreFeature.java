@@ -15,7 +15,7 @@ public class BlockOreFeature implements Feature
 	}
 	
 	@Override
-	public void generate(int chunkX, int chunkZ, int[][][] blockTypes, int[][] heightMap)
+	public void generate(int chunkX, int chunkZ, int[][][] blockTypes)
 	{
 		for(int y = 0; y < 256; y++)
 		{

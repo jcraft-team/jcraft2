@@ -15,7 +15,7 @@ public class FlatFeature implements Feature
 	}
 	
 	@Override
-	public void generate(int chunkX, int chunkZ, int[][][] blockTypes, int[][] heightMap)
+	public void generate(int chunkX, int chunkZ, int[][][] blockTypes)
 	{
 		for(int x = 0; x < 16; x++)
 		{
@@ -23,7 +23,6 @@ public class FlatFeature implements Feature
 			{
 				for(int z = 0; z < 16; z++)
 				{
-					heightMap[x][z] = height-1;
 					if(y == 0)
 					{
 						blockTypes[x][y][z] = Block.bedrock.blockId;

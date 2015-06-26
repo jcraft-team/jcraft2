@@ -23,7 +23,7 @@ public class Simplex3DFeature implements Feature
 	}
 
 	@Override
-	public void generate(int chunkX, int chunkZ, int[][][] blockTypes, int[][] heightMap)
+	public void generate(int chunkX, int chunkZ, int[][][] blockTypes)
 	{
 		int xOffset = chunkX*16;
 		int zOffset = chunkZ*16;

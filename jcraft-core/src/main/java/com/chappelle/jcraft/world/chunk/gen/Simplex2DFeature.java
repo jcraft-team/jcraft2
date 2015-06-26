@@ -3,7 +3,6 @@ package com.chappelle.jcraft.world.chunk.gen;
 import java.util.Random;
 
 import com.chappelle.jcraft.blocks.Block;
-import com.chappelle.jcraft.util.MathUtils;
 import com.chappelle.jcraft.world.chunk.Feature;
 
 public class Simplex2DFeature implements Feature
@@ -52,7 +51,7 @@ public class Simplex2DFeature implements Feature
 	}
 	
 	@Override
-	public void generate(int chunkX, int chunkZ, int[][][] blockTypes, int[][] heightMap)
+	public void generate(int chunkX, int chunkZ, int[][][] blockTypes)
 	{
 		int xOffset = chunkX*16;
 		int zOffset = chunkZ*16;
@@ -63,7 +62,6 @@ public class Simplex2DFeature implements Feature
 				blockTypes[x][0][z] = Block.bedrock.blockId;
 				Double c = sumOctave(iterations, x+xOffset, z+zOffset, persistence, simplexScale);
 				c = normalize(c, 1, height);
-				heightMap[x][z] = MathUtils.floor_double(c);
 				for (int y = 1; y < c; y++)
 				{
                    int blockToPlace = blockIds[rand.nextInt(blockCount)];

@@ -11,7 +11,6 @@ public interface Feature
 	 * @param chunkX The x coordinate of the chunk
 	 * @param chunkZ The y coordinate of the chunk
 	 * @param blockTypes The array of block types in a chunk
-	 * @param heightMap
 	 */
-	void generate(int chunkX, int chunkZ, int[][][] blockTypes, int[][] heightMap);
+	void generate(int chunkX, int chunkZ, int[][][] blockTypes);
 }

@@ -16,7 +16,7 @@ public class PlantFeature implements Feature
 	}
 
 	@Override
-	public void generate(int chunkX, int chunkZ, int[][][] blockTypes, int[][] heightMap)
+	public void generate(int chunkX, int chunkZ, int[][][] blockTypes)
 	{
 		for(int x = 0; x < 16; x++)
 		{

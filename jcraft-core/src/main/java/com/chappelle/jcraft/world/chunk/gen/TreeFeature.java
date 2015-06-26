@@ -15,7 +15,7 @@ public class TreeFeature implements Feature
 	}
 
 	@Override
-	public void generate(int chunkX, int chunkZ, int[][][] blockTypes, int[][] heightMap)
+	public void generate(int chunkX, int chunkZ, int[][][] blockTypes)
 	{
 		for(int x = 3; x < 13; x++)
 		{
@@ -30,7 +30,7 @@ public class TreeFeature implements Feature
 						int treeHeight = rand.nextInt(treeHeightMax - treeHeightMin) + treeHeightMin;
 						if(canPlaceTree(blockTypes, x, y, z, treeHeight))
 						{
-							heightMap[x][z] = generateTree(blockTypes, x, y, z, treeHeight);
+							generateTree(blockTypes, x, y, z, treeHeight);
 						}
 					}
 				}

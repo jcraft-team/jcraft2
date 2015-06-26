@@ -22,7 +22,6 @@ public class Chunk implements BitSerializable
     public Vector3Int location = new Vector3Int();
     public Vector3Int blockLocation = new Vector3Int();
     private int[][][] blockTypes;
-    private int[][] heightMap;
     private BlockState[][][] blockState;
     private LightMap lights;
     public boolean needsMeshUpdate;
@@ -35,19 +34,15 @@ public class Chunk implements BitSerializable
     	location.set(x, 0, z);
     	blockLocation.set(location.mult(16, 256, 16));
     	blockTypes = new int[16][256][16];
-    	heightMap = new int[16][16];
-    	blockState = new BlockState[16][256][16];
     	lights = new LightMap(new Vector3Int(16, 256, 16), location);
     }
 
-    public Chunk(World world, int x, int z, int[][][] blockTypes, int[][] heightMap)
+    public Chunk(World world, int x, int z, int[][][] blockTypes)
     {
     	this.world = world;
     	location.set(x, 0, z);
     	blockLocation.set(location.mult(16, 256, 16));
     	this.blockTypes = blockTypes;
-    	
-    	blockState = new BlockState[16][256][16];
     	lights = new LightMap(new Vector3Int(16, 256, 16), location);
     }
     
@@ -92,13 +87,22 @@ public class Chunk implements BitSerializable
 
     public BlockState getBlockState(Vector3Int location)
     {
-        BlockState state = blockState[location.getX()][location.getY()][location.getZ()];
+        BlockState state = getBlockState(location.x, location.y, location.z);
         if(state == null)
         {
             state = new BlockState(this);
             blockState[location.getX()][location.getY()][location.getZ()] = state;
         }
         return state;
+    }
+    
+    private BlockState getBlockState(int x, int y, int z)
+    {
+    	if(blockState == null)
+    	{
+    		blockState = new BlockState[16][256][16];
+    	}
+    	return blockState[x][y][z];
     }
 
     public Block getNeighborBlock_Global(Vector3Int location, Block.Face face){
@@ -255,7 +259,7 @@ public class Chunk implements BitSerializable
     
     public Chunk clone()
     {
-    	return new Chunk(world, location.x, location.z, blockTypes.clone(), heightMap.clone());
+    	return new Chunk(world, location.x, location.z, blockTypes.clone());
     }
     
     @Override

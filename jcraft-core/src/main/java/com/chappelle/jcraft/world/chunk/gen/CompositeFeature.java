@@ -18,11 +18,11 @@ public class CompositeFeature implements Feature
 	}
 	
 	@Override
-	public void generate(int chunkX, int chunkZ, int[][][] blockTypes, int[][] heightMap)
+	public void generate(int chunkX, int chunkZ, int[][][] blockTypes)
 	{
 		if(features.size() > 0)
 		{
-			features.get(rand.nextInt(features.size())).generate(chunkX, chunkZ, blockTypes, heightMap);
+			features.get(rand.nextInt(features.size())).generate(chunkX, chunkZ, blockTypes);
 		}
 	}
 
