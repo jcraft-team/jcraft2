@@ -265,6 +265,11 @@ public class JCraft extends SimpleApplication implements ActionListener
 		chunkProvider.addFeature(new WaterFeature(45));
 		chunkProvider.addFeature(new PlantFeature(seed));
 		chunkProvider.addFeature(new TreeFeature(seed));
+//		chunkProvider.addFeature(new ChessBoardFeature());
+//		chunkProvider.addFeature(new CellNoiseFlatFeature(seed));
+//		chunkProvider.addFeature(new CellNoise2DFeature(seed));
+//		chunkProvider.addFeature(new CellNoise3DFeature(seed));
+		
  		return chunkProvider;
 	}
 
