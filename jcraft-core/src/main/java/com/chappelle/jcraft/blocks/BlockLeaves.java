@@ -31,4 +31,10 @@ public class BlockLeaves extends Block
 	{
 		return true;
 	}
+
+	@Override
+	public int getBlockedSkylight()
+	{
+		return 2;
+	}
 }

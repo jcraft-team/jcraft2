@@ -29,7 +29,7 @@ import com.jme3.texture.Texture;
 
 public class EnvironmentAppState extends AbstractAppState implements ViewPortListener
 {
-    private static final float initialTimeOfDay = 0;
+    private static final float initialTimeOfDay = 12;
     private static final float timeRate = 10f;
     /**
      * width and height of rendered shadow maps (pixels per side, &gt;0)

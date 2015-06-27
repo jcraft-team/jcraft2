@@ -127,7 +127,7 @@ public abstract class BlockShape
     			LightMap lights = chunk.getLights();
     			if(!block.useNeighborLight())
     			{
-    				light = lights.getNormalizedLight(location.x, location.y, location.z);
+    				light = lights.getEffectiveLight(location.x, location.y, location.z, block, face);
     			}
     			else
     			{
@@ -136,7 +136,7 @@ public abstract class BlockShape
     					int neighborY = location.y+1;
     					if(neighborY < 256)
     					{
-    						light = lights.getNormalizedLight(location.x, neighborY, location.z);
+    						light = lights.getEffectiveLight(location.x, neighborY, location.z, block, face);
     					}
     					else
     					{
@@ -148,7 +148,7 @@ public abstract class BlockShape
     					int neighborY = location.y-1;
     					if(neighborY >= 0)
     					{
-    						light = lights.getNormalizedLight(location.x, neighborY, location.z);
+    						light = lights.getEffectiveLight(location.x, neighborY, location.z, block, face);
     					}
     					else
     					{
@@ -160,7 +160,7 @@ public abstract class BlockShape
     					int neighborZ = location.z + 1;
     					if(neighborZ < 16)
     					{
-    						light = lights.getNormalizedLight(location.x, location.y, neighborZ);
+    						light = lights.getEffectiveLight(location.x, location.y, neighborZ, block, face);
     					}
     					else
     					{
@@ -172,7 +172,7 @@ public abstract class BlockShape
     						}
     						else
     						{
-    							light = neighborChunk.getLights().getNormalizedLight(location.x, location.y, 0);
+    							light = neighborChunk.getLights().getEffectiveLight(location.x, location.y, 0, block, face);
     						}
     					}
     				}
@@ -181,7 +181,7 @@ public abstract class BlockShape
     					int neighborZ = location.z - 1;
     					if(neighborZ >= 0)
     					{
-    						light = lights.getNormalizedLight(location.x, location.y, neighborZ);
+    						light = lights.getEffectiveLight(location.x, location.y, neighborZ, block, face);
     					}
     					else
     					{
@@ -193,7 +193,7 @@ public abstract class BlockShape
     						}
     						else
     						{
-    							light = neighborChunk.getLights().getNormalizedLight(location.x, location.y, 15);
+    							light = neighborChunk.getLights().getEffectiveLight(location.x, location.y, 15, block, face);
     						}
     					}
     				}
@@ -202,7 +202,7 @@ public abstract class BlockShape
     					int neighborX = location.x - 1;
     					if(neighborX >= 0)
     					{
-    						light = lights.getNormalizedLight(neighborX, location.y, location.z);
+    						light = lights.getEffectiveLight(neighborX, location.y, location.z, block, face);
     					}
     					else
     					{
@@ -214,7 +214,7 @@ public abstract class BlockShape
     						}
     						else
     						{
-    							light = neighborChunk.getLights().getNormalizedLight(15, location.y, location.z);
+    							light = neighborChunk.getLights().getEffectiveLight(15, location.y, location.z, block, face);
     						}
     					}
     				}
@@ -223,7 +223,7 @@ public abstract class BlockShape
     					int neighborX = location.x + 1;
     					if(neighborX < 16)
     					{
-    						light = lights.getNormalizedLight(neighborX, location.y, location.z);
+    						light = lights.getEffectiveLight(neighborX, location.y, location.z, block, face);
     					}
     					else
     					{
@@ -235,13 +235,14 @@ public abstract class BlockShape
     						}
     						else
     						{
-    							light = neighborChunk.getLights().getNormalizedLight(0, location.y, location.z);
+    							light = neighborChunk.getLights().getEffectiveLight(0, location.y, location.z, block, face);
     						}
     					}
     			}
     			}
     		}
     	}
+    	
     	colors.add(light*r);
     	colors.add(light*g);
     	colors.add(light*b);
@@ -262,5 +263,4 @@ public abstract class BlockShape
     	colors.add(light*b);
     	colors.add(1.0f);
     }
-	
 }

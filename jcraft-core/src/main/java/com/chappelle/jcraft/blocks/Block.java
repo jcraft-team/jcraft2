@@ -492,4 +492,9 @@ public class Block
 	{
 		return sprite;
 	}
+	
+	public int getBlockedSkylight()
+	{
+		return 0;
+	}
 }
