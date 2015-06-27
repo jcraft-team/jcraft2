@@ -60,6 +60,8 @@ public class World implements BitSerializable
 	private int chunkGenTicks;
 	private int chunkUnloadTicks;
 	
+	public volatile int loadedChunks;
+	
 	// Lighting bugs occurr less when
 	// we use 1 thread(need to fix
 	// lighting so we can increase
@@ -75,7 +77,7 @@ public class World implements BitSerializable
 	private static final int CHUNK_LOAD_RADIUS = 10;
 	
 	/**Chunk distance threshold for determining which chunks to unload. Uses manhattan block distance. Calculated to be outside of the CHUNK_LOAD_RADIUS*/
-	private static final int CHUNK_UNLOAD_RADIUS = CHUNK_LOAD_RADIUS*16*2+100;
+	private static final int CHUNK_UNLOAD_RADIUS = CHUNK_LOAD_RADIUS*16*2+16;
 	
 	public World(ChunkProvider chunkProvider, Profiler profiler, CubesSettings settings, AssetManager assetManager, Camera cam, long seed)
 	{
@@ -145,6 +147,7 @@ public class World implements BitSerializable
 				{
 					chunkUnloadQueue.add(chunk);
 					chunkProvider.removeChunk(chunk.location.x, chunk.location.z);
+					loadedChunks--;
 				}
 			}
 			isRunning = false;
@@ -526,6 +529,7 @@ public class World implements BitSerializable
 	private void onChunkGenerated(Chunk chunk)
 	{
 		generatedChunks.add(chunk);
+		loadedChunks++;
 		for(Direction dir : Direction.values())
 		{
 			Chunk neighbor = getChunkNeighbor(chunk, dir);

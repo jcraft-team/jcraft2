@@ -123,7 +123,8 @@ public class Chunk implements BitSerializable
     }
     
     /**
-     * Returns the chunk neighbors with a radius of r excluding the current chunk. This is a Moore Neighborhood as in http://mathworld.wolfram.com/MooreNeighborhood.html
+     * Returns the chunk neighbors with a radius of r excluding the current chunk. This is a Moore Neighborhood as in http://mathworld.wolfram.com/MooreNeighborhood.html.
+     * The number of chunks in the grid will be (2*r+1)^2. So if r=10, then then it will return 441 chunks.
      * @param r The radius
      * @return A list of neighboring Chunks with a radius of r
      */

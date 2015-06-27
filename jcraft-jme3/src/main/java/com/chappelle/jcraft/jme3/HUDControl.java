@@ -53,6 +53,7 @@ public class HUDControl extends AbstractControl implements ScreenController, Inv
 	private BitmapText boundingBoxLabel;
 	private BitmapText pointedBoundingBoxLabel;
 	private BitmapText timeLabel;
+	private BitmapText loadedChunksLabel;
 	private EntityPlayer player;
 	private World world;
     private Nifty nifty;
@@ -122,6 +123,10 @@ public class HUDControl extends AbstractControl implements ScreenController, Inv
         x = 10;
         y-= 25;
         timeLabel.setLocalTranslation(x, y, 0);
+
+        x = 10;
+        y-= 25;
+        loadedChunksLabel.setLocalTranslation(x, y, 0);
 	}
 	
 	@Override
@@ -193,6 +198,11 @@ public class HUDControl extends AbstractControl implements ScreenController, Inv
             timeLabel.setSize(guiFont.getCharSet().getRenderedSize());
             timeLabel.setText("Time: ");
             debugNode.attachChild(timeLabel);
+
+            loadedChunksLabel = new BitmapText(guiFont, false);
+            loadedChunksLabel.setSize(guiFont.getCharSet().getRenderedSize());
+            loadedChunksLabel.setText("Loaded Chunks: ");
+            debugNode.attachChild(loadedChunksLabel);
             
             positionElements();
             
@@ -224,6 +234,7 @@ public class HUDControl extends AbstractControl implements ScreenController, Inv
 			{
 				timeLabel.setText("Time: ?");
 			}
+			loadedChunksLabel.setText("Loaded Chunks: " + world.loadedChunks);
 			if(blockLoc != null && blockLoc.y < 256)
 			{
 				Vector3Int walkedOnBlockLocation = blockLoc.subtract(0, 2, 0);
