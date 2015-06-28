@@ -15,7 +15,7 @@ public class FlatFeature implements Feature
 	}
 	
 	@Override
-	public void generate(int chunkX, int chunkZ, int[][][] blockTypes)
+	public void generate(int chunkX, int chunkZ, byte[][][] blockTypes)
 	{
 		for(int x = 0; x < 16; x++)
 		{

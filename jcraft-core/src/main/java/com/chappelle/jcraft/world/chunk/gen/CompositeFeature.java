@@ -18,7 +18,7 @@ public class CompositeFeature implements Feature
 	}
 	
 	@Override
-	public void generate(int chunkX, int chunkZ, int[][][] blockTypes)
+	public void generate(int chunkX, int chunkZ, byte[][][] blockTypes)
 	{
 		if(features.size() > 0)
 		{

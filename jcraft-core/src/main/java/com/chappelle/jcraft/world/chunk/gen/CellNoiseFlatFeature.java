@@ -27,7 +27,7 @@ public class CellNoiseFlatFeature implements Feature
 
 	
 	@Override
-	public void generate(int chunkX, int chunkZ, int[][][] blockTypes)
+	public void generate(int chunkX, int chunkZ, byte[][][] blockTypes)
 	{
 		int xOffset = chunkX*16;
 		int zOffset = chunkZ*16;
@@ -67,13 +67,13 @@ public class CellNoiseFlatFeature implements Feature
 		return ((ceiling - floor)*(value - minIn)) / (maxIn - minIn) + floor;
 	}
 	
-    private int getBlock(Double c)
+    private byte getBlock(Double c)
     {
-        int block = Block.woolBlack.blockId;
+        byte block = Block.woolBlack.blockId;
 		c = normalize(c, 0, 14, -1, 1);
 		
-		int c2 = c.intValue();
-		block = block + c2;
+		byte c2 = c.byteValue();
+		block = (byte)(block + c2);
         return block;
     }
 }

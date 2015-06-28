@@ -15,7 +15,7 @@ public class TreeFeature implements Feature
 	}
 
 	@Override
-	public void generate(int chunkX, int chunkZ, int[][][] blockTypes)
+	public void generate(int chunkX, int chunkZ, byte[][][] blockTypes)
 	{
 		for(int x = 3; x < 13; x++)
 		{
@@ -38,7 +38,7 @@ public class TreeFeature implements Feature
 		}
 	}
 
-	private boolean canPlaceTree(int[][][] blockTypes, int x, int y, int z, int treeHeight)
+	private boolean canPlaceTree(byte[][][] blockTypes, int x, int y, int z, int treeHeight)
 	{
 		if(blockTypes[x][y][z] != Block.grass.blockId)
 		{
@@ -54,7 +54,7 @@ public class TreeFeature implements Feature
 		return true;
 	}
 
-	private int generateTree(int[][][] blockTypes, int x, int y, int z, int treeHeight)
+	private int generateTree(byte[][][] blockTypes, int x, int y, int z, int treeHeight)
 	{
 		for(int i = 1; i <= treeHeight; i++)
 		{
@@ -69,7 +69,7 @@ public class TreeFeature implements Feature
 		return treeTop+1;
 	}
 	
-	private void addLeaves(int[][][] blockTypes, int x, int y, int z)
+	private void addLeaves(byte[][][] blockTypes, int x, int y, int z)
 	{
 		blockTypes[x][y][z+1] = Block.leaves.blockId;
 		blockTypes[x+1][y][z] = Block.leaves.blockId;

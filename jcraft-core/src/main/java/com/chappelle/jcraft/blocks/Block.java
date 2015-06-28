@@ -153,7 +153,7 @@ public class Block
 	private BlockSkin[] skins;
 
 	/** ID of the block. */
-	public final int blockId;
+	public final byte blockId;
 	
 	public String stepSound;
 	
@@ -166,7 +166,11 @@ public class Block
 	{
 		this.skins = skins;
 		
-		this.blockId = blockId;
+		if(blockId > 255)
+		{
+			throw new RuntimeException("Only block ids less than 256 are supported!");
+		}
+		this.blockId = (byte)blockId;
 		this.slipperiness = DEFAULT_SLIPPERINESS;
 		blocksList[blockId] = this;
 		this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);

@@ -14,6 +14,7 @@ import com.chappelle.jcraft.network.BitInputStream;
 import com.chappelle.jcraft.network.BitOutputStream;
 import com.chappelle.jcraft.network.BitSerializable;
 import com.chappelle.jcraft.util.BlockNavigator;
+import com.chappelle.jcraft.util.NibbleArray;
 import com.chappelle.jcraft.util.Util;
 import com.chappelle.jcraft.world.World;
 
@@ -21,29 +22,54 @@ public class Chunk implements BitSerializable
 {
     public Vector3Int location = new Vector3Int();
     public Vector3Int blockLocation = new Vector3Int();
-    private int[][][] blockTypes;
+    private byte[][][] blockTypes;
     private BlockState[][][] blockState;
     private LightMap lights;
     public boolean needsMeshUpdate;
     public World world;
     private Vector3Int temp = new Vector3Int();
+    private NibbleArray metadata;
     
+    public void destroy()
+    {
+    	blockTypes = null;
+    	lights = null;
+    	needsMeshUpdate = false;
+    	world = null;
+    	blockState = null;
+    	metadata = null;
+    }
     public Chunk(World world, int x, int z)
     {
     	this.world = world;
     	location.set(x, 0, z);
     	blockLocation.set(location.mult(16, 256, 16));
-    	blockTypes = new int[16][256][16];
+    	blockTypes = new byte[16][256][16];
     	lights = new LightMap(new Vector3Int(16, 256, 16), location);
+    	this.metadata = new NibbleArray(16*256*16);
     }
 
-    public Chunk(World world, int x, int z, int[][][] blockTypes)
+    public Chunk(World world, int x, int z, byte[][][] blockTypes)
     {
     	this.world = world;
     	location.set(x, 0, z);
     	blockLocation.set(location.mult(16, 256, 16));
     	this.blockTypes = blockTypes;
     	lights = new LightMap(new Vector3Int(16, 256, 16), location);
+    	this.metadata = new NibbleArray(16*256*16);
+    }
+    
+    public byte getMetadata(int x, int y, int z)
+    {
+    	int index = y + (z * 256) + (x * 16 * 16);
+    	return metadata.get(index);
+    }
+
+    public void setMetadata(int x, int y, int z, byte value)
+    {
+    	int index = y + (z * 256) + (x * 16 * 16);
+    	metadata.set(index, value);
+    	needsMeshUpdate = true;
     }
     
     public Vector3Int getBlockLocation()

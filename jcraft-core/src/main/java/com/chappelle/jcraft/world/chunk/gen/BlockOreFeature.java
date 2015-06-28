@@ -15,7 +15,7 @@ public class BlockOreFeature implements Feature
 	}
 	
 	@Override
-	public void generate(int chunkX, int chunkZ, int[][][] blockTypes)
+	public void generate(int chunkX, int chunkZ, byte[][][] blockTypes)
 	{
 		for(int y = 0; y < 256; y++)
 		{
@@ -58,7 +58,7 @@ public class BlockOreFeature implements Feature
 		}
 	}
 	
-	private void addCluster(int x, int y, int z, int[][][] blockTypes, float probability, float dropOff, int blockId)
+	private void addCluster(int x, int y, int z, byte[][][] blockTypes, float probability, float dropOff, byte blockId)
 	{
 		int newX = (x+1)&15;
 		int newY = y;
@@ -133,7 +133,7 @@ public class BlockOreFeature implements Feature
 		}
 	}
 
-	private boolean canPlaceOre(int[][][] blockTypes, int x, int y, int z)
+	private boolean canPlaceOre(byte[][][] blockTypes, int x, int y, int z)
 	{
 		return blockTypes[x][y][z] != 0 && blockTypes[x][y+1][z] != 0 && (blockTypes[x][y][z] == Block.grass.blockId || blockTypes[x][y][z] == Block.smoothStone.blockId || blockTypes[x][y][z] == Block.gravel.blockId);
 	}

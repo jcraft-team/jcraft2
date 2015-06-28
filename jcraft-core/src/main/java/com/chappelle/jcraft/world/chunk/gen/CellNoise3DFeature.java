@@ -27,7 +27,7 @@ public class CellNoise3DFeature implements Feature
 
 	
 	@Override
-	public void generate(int chunkX, int chunkZ, int[][][] blockTypes)
+	public void generate(int chunkX, int chunkZ, byte[][][] blockTypes)
 	{
 		int xOffset = chunkX*16;
 		int zOffset = chunkZ*16;
@@ -66,10 +66,10 @@ public class CellNoise3DFeature implements Feature
         return noise;
     }
 
-    private int getBlock(Double c)
+    private byte getBlock(Double c)
     {
     	c = Math.abs(c);
-    	int block = 0;
+    	byte block = 0;
         if(c>.28)
         {
             block = Block.woolRed.blockId;
@@ -110,6 +110,6 @@ public class CellNoise3DFeature implements Feature
         {
         	block = 0;
         }
-        return block;
+        return (byte)block;
     }
 }

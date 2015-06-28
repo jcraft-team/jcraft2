@@ -12,5 +12,5 @@ public interface Feature
 	 * @param chunkZ The y coordinate of the chunk
 	 * @param blockTypes The array of block types in a chunk
 	 */
-	void generate(int chunkX, int chunkZ, int[][][] blockTypes);
+	void generate(int chunkX, int chunkZ, byte[][][] blockTypes);
 }

@@ -10,7 +10,7 @@ public class Util
 
 	private static final float MAX_FLOAT_ROUNDING_DIFFERENCE = 0.0001f;
 
-	public static boolean isValidIndex(int[][][] array, Vector3Int index)
+	public static boolean isValidIndex(byte[][][] array, Vector3Int index)
 	{
 		return ((index.getX() >= 0) && (index.getX() < array.length) && (index.getY() >= 0)
 				&& (index.getY() < array[0].length) && (index.getZ() >= 0) && (index.getZ() < array[0][0].length));

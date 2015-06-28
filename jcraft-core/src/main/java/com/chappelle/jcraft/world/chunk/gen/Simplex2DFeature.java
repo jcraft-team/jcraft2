@@ -12,7 +12,7 @@ public class Simplex2DFeature implements Feature
 	private int iterations;
 	private int height;
     private int waterLevel;
-    private int[] blockIds;
+    private byte[] blockIds;
     private int blockCount;
     private Random rand;
 
@@ -20,7 +20,7 @@ public class Simplex2DFeature implements Feature
 	 * Creates a Feature that generates terrain based on the Simplex2D noise algorithm with default values
 	 * @param seed The world seed
 	 */
-	public Simplex2DFeature(long seed, int... blockIds)
+	public Simplex2DFeature(long seed, byte... blockIds)
 	{
 		this(seed, 0.009f, 0.33f, 4, 80, blockIds);
 	}
@@ -33,7 +33,7 @@ public class Simplex2DFeature implements Feature
 	 * @param iterations Use a value of 1 to get very smooth rolling hills.  No need to go higher than 4.
 	 * @param height The max height of the terrain
 	 */
-	public Simplex2DFeature(long seed, float simplexScale, float persistence, int iterations, int height, int... blockIds)
+	public Simplex2DFeature(long seed, float simplexScale, float persistence, int iterations, int height, byte... blockIds)
 	{
 		this.simplexScale = simplexScale;
 		this.persistence = persistence;
@@ -43,7 +43,7 @@ public class Simplex2DFeature implements Feature
 		this.blockIds = blockIds;
 		if(this.blockIds == null || this.blockIds.length == 0)
 		{
-			this.blockIds = new int[]{Block.grass.blockId};
+			this.blockIds = new byte[]{Block.grass.blockId};
 		}
 		this.blockCount = this.blockIds.length;
 		this.rand = new Random(seed);
@@ -51,7 +51,7 @@ public class Simplex2DFeature implements Feature
 	}
 	
 	@Override
-	public void generate(int chunkX, int chunkZ, int[][][] blockTypes)
+	public void generate(int chunkX, int chunkZ, byte[][][] blockTypes)
 	{
 		int xOffset = chunkX*16;
 		int zOffset = chunkZ*16;
@@ -64,7 +64,7 @@ public class Simplex2DFeature implements Feature
 				c = normalize(c, 1, height);
 				for (int y = 1; y < c; y++)
 				{
-                   int blockToPlace = blockIds[rand.nextInt(blockCount)];
+                   byte blockToPlace = blockIds[rand.nextInt(blockCount)];
                    blockTypes[x][y][z] = blockToPlace;
 				}
                 if(c<waterLevel) // water

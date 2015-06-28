@@ -31,7 +31,11 @@ public class SimpleChunkProvider implements ChunkProvider
 	@Override
 	public void removeChunk(int x, int z)
 	{
-		chunks.remove(ChunkCoordIntPair.chunkXZ2Int(x, z));
+		Chunk chunk = chunks.remove(ChunkCoordIntPair.chunkXZ2Int(x, z));
+		if(chunk != null)
+		{
+			chunk.destroy();
+		}
 	}
 
 	public void setWorld(World world)
@@ -43,7 +47,7 @@ public class SimpleChunkProvider implements ChunkProvider
 	public Chunk generateChunk(int x, int z)
 	{
 		world.profiler.startSection("ChunkGen");
-		int[][][] blockTypes = new int[16][256][16];
+		byte[][][] blockTypes = new byte[16][256][16];
 		for(Feature gen : features)
 		{
 			gen.generate(x, z, blockTypes);

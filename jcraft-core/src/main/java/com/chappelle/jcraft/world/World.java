@@ -145,9 +145,9 @@ public class World implements BitSerializable
 				double dist = Math.abs(xDiff) + Math.abs(zDiff);//Manhattan block distance for performance
 				if(dist > CHUNK_UNLOAD_RADIUS)
 				{
-					chunkUnloadQueue.add(chunk);
 					chunkProvider.removeChunk(chunk.location.x, chunk.location.z);
 					loadedChunks--;
+					chunkUnloadQueue.add(chunk);
 				}
 			}
 			isRunning = false;

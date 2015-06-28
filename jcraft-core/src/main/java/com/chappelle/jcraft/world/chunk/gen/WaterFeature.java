@@ -17,7 +17,7 @@ public class WaterFeature implements Feature
 	}
 	
 	@Override
-	public void generate(int chunkX, int chunkZ, int[][][] blockTypes)
+	public void generate(int chunkX, int chunkZ, byte[][][] blockTypes)
 	{
 		for(int x = 0; x < 16; x++)
 		{
@@ -44,7 +44,7 @@ public class WaterFeature implements Feature
 		}
 	}
 
-	private void addSand(int[][][] blockTypes, int x, int y, int z, float probability)
+	private void addSand(byte[][][] blockTypes, int x, int y, int z, float probability)
 	{
 		if(rand.nextFloat() < probability)
 		{

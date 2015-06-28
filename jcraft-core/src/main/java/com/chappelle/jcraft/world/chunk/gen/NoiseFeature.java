@@ -20,7 +20,7 @@ public class NoiseFeature implements Feature
 	}
 	
 	@Override
-	public void generate(int chunkX, int chunkZ, int[][][] blockTypes)
+	public void generate(int chunkX, int chunkZ, byte[][][] blockTypes)
 	{
 		for(int x = 0; x < 16; x++)
 		{
@@ -43,7 +43,7 @@ public class NoiseFeature implements Feature
 //		}
 	}
 
-	private void generateFromNoise(int[][][] blockTypes, Block block, int xMin, int zMin, int xMax, int zMax, int magnitude)
+	private void generateFromNoise(byte[][][] blockTypes, Block block, int xMin, int zMin, int xMax, int zMax, int magnitude)
 	{
 		Noise noise = new Noise(rand, roughness, xMax, zMax);
 		noise.initialise();

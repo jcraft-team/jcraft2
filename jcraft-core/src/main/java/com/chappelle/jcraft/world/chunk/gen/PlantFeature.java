@@ -8,7 +8,7 @@ import com.chappelle.jcraft.world.chunk.Feature;
 public class PlantFeature implements Feature
 {
 	private Random rand;
-	private int[] plants = new int[]{Block.plantRed.blockId, Block.plantYellow.blockId, Block.mushroomBrown.blockId, Block.mushroomRed.blockId, Block.tallGrass.blockId};
+	private byte[] plants = new byte[]{Block.plantRed.blockId, Block.plantYellow.blockId, Block.mushroomBrown.blockId, Block.mushroomRed.blockId, Block.tallGrass.blockId};
 	
 	public PlantFeature(long seed)
 	{
@@ -16,7 +16,7 @@ public class PlantFeature implements Feature
 	}
 
 	@Override
-	public void generate(int chunkX, int chunkZ, int[][][] blockTypes)
+	public void generate(int chunkX, int chunkZ, byte[][][] blockTypes)
 	{
 		for(int x = 0; x < 16; x++)
 		{
@@ -36,7 +36,7 @@ public class PlantFeature implements Feature
 		}
 	}
 
-	private void generatePlant(int[][][] blockTypes, int x, int y, int z)
+	private void generatePlant(byte[][][] blockTypes, int x, int y, int z)
 	{
 		blockTypes[x][y+1][z] = plants[rand.nextInt(plants.length)];
 	}

@@ -11,7 +11,7 @@ public class ChessBoardFeature implements Feature
 	}
 	
 	@Override
-	public void generate(int chunkX, int chunkZ, int[][][] blockTypes)
+	public void generate(int chunkX, int chunkZ, byte[][][] blockTypes)
 	{
 		for(int x = 0; x < 16; x++)
 		{
@@ -19,7 +19,7 @@ public class ChessBoardFeature implements Feature
 			{
 				for(int z = 0; z < 16; z++)
 				{
-			        int block = Block.woolBlack.blockId;
+			        byte block = Block.woolBlack.blockId;
 			        if(z %2 == 0)
 			        {
 			            if(x % 2 == 0) block = Block.woolWhite.blockId;

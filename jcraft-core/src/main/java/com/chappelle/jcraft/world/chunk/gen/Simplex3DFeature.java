@@ -23,7 +23,7 @@ public class Simplex3DFeature implements Feature
 	}
 
 	@Override
-	public void generate(int chunkX, int chunkZ, int[][][] blockTypes)
+	public void generate(int chunkX, int chunkZ, byte[][][] blockTypes)
 	{
 		int xOffset = chunkX*16;
 		int zOffset = chunkZ*16;
@@ -41,7 +41,7 @@ public class Simplex3DFeature implements Feature
                     else
                     {
                     	Double c = sumOctave(iterations, x+xOffset, y, z+zOffset, persistence, simplexScale);
-                    	int place = Block.grass.blockId;
+                    	byte place = Block.grass.blockId;
                     	if(c>.05)
                     	{
 //                    		int b = y % 15;
