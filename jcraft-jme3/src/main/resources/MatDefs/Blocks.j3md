@@ -1,6 +1,7 @@
 MaterialDef Blocks {
 
     MaterialParameters {
+    	Float dayNightLighting;
         Texture2D ColorMap
         Texture2D LightMap
         Color Color (Color)

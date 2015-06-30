@@ -45,6 +45,15 @@ public class BlockChunkControl extends AbstractControl
 		parent.detachChild(node);
 	}
 	
+	public void setDayNightLighting(float dayNightLighting)
+	{
+		if(optimizedGeometry_Opaque != null && optimizedGeometry_Transparent != null)
+		{
+			this.optimizedGeometry_Opaque.getMaterial().setFloat("dayNightLighting", dayNightLighting);
+			this.optimizedGeometry_Transparent.getMaterial().setFloat("dayNightLighting", dayNightLighting);
+		}
+	}
+	
 	public boolean updateSpatial()
 	{
 		if(chunk.needsMeshUpdate)

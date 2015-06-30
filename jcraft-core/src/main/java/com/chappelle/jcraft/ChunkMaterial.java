@@ -36,6 +36,7 @@ public class ChunkMaterial extends Material
     private static void setupMaterial(ChunkMaterial material)
     {
     	material.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
+    	material.setFloat("dayNightLighting", 1.0f);
     	material.setFloat("AlphaDiscardThreshold", 0.1f);
     }
     

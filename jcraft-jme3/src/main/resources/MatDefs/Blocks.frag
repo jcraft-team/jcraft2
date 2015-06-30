@@ -9,25 +9,28 @@
 uniform vec4 m_Color;
 uniform sampler2D m_ColorMap;
 uniform sampler2D m_LightMap;
+uniform float m_dayNightLighting;
 
 varying vec2 texCoord1;
 varying vec2 texCoord2;
 
 varying vec4 vertColor;
+varying float light;
 
+attribute vec3 inNormal;
 void main(){
     vec4 color = vec4(1.0);
-
+	
     #ifdef HAS_COLORMAP
         color *= texture2D(m_ColorMap, texCoord1);     
     #endif
 
-    #ifdef HAS_VERTEXCOLOR
-        color *= vertColor;
-    #endif
-
     #ifdef HAS_COLOR
         color *= m_Color;
+    #endif
+
+    #ifdef HAS_VERTEXCOLOR
+        color *= vertColor;
     #endif
 
     #ifdef HAS_LIGHTMAP
@@ -43,6 +46,6 @@ void main(){
            discard;
         }
     #endif
-
+    
     gl_FragColor = color;
 }
