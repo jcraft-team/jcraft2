@@ -50,63 +50,6 @@ public class BlockTerrainControl extends AbstractControl
 	{
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
-
-	float[] lighting = new float[]
-			{
-			0.1f, //12am 
-			0.1f, //1am
-			0.1f, //2am
-			0.1f, //3am
-			0.2f, //4am
-			0.4f, //5am
-			0.5f, //6am
-			0.65f, //7am
-			0.75f,//8am
-			0.85f,//9am
-			1.0f,//10am
-			1.0f,//11am
-			1.0f,//12pm
-			1.0f,//1pm
-			1.0f,//2pm
-			1.0f,//3pm
-			1.0f,//4pm
-			0.9f,//5pm
-			0.8f,//6pm
-			0.7f,//7pm
-			0.5f,//8pm
-			0.1f,//9pm
-			0.1f,//10pm
-			0.1f};//11pm
-	
-	private float calculateDayNightLighting(float hour)
-	{
-		int morningStart = 6;
-		int morningEnd = 8;
-		int nightStart = 17;
-		int nightEnd = 19;
-		float darkest = 0.2f;
-		if(hour < morningEnd && hour > morningStart)//Transition to daylight between 6 and 8
-		{
-			float denominator = morningEnd - morningStart;
-			float progress = hour - morningStart;
-			return Math.max(progress/denominator, darkest);
-		}
-		else if(hour > nightStart && hour < nightEnd)//Transition to night
-		{
-			float denominator = nightEnd - nightStart;
-			float progress = hour - nightStart;
-			return Math.max(1.0f-progress/denominator, darkest);
-		}
-		else if(hour > morningEnd && hour < nightStart)
-		{
-			return 1.0f;
-		}
-		else
-		{
-			return darkest;
-		}
-		
-	}
 	
 	public void updateSpatial()
 	{
@@ -116,7 +59,7 @@ public class BlockTerrainControl extends AbstractControl
 		if(env != null)
 		{
 			float hour = env.getTimeOfDay().getHour();
-			float dayNightLighting = calculateDayNightLighting(hour);
+			float dayNightLighting = world.calculateDayNightLighting(hour);
 			for(BlockChunkControl chunk : chunks.values())
 			{
 				chunk.setDayNightLighting(dayNightLighting);

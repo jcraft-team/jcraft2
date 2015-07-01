@@ -245,11 +245,6 @@ public class Block
 		return null;
 	}
 
-	public boolean isValidPlacementFace(Face face)
-	{
-		return true;
-	}
-
 	public void onBlockPlaced(World world, Vector3Int location, Block.Face face, Vector3f cameraDirectionAsUnitVector)
 	{
 		// TODO Auto-generated method stub
@@ -289,16 +284,6 @@ public class Block
 		return AABB.getAABBPool().getAABB((double) x + this.minX, (double) y + this.minY, (double) z + this.minZ, (double) x + this.maxX, (double) y + this.maxY, (double) z + this.maxZ);
 	}
 
-    public boolean smothersBottomBlock()
-    {
-        return true;
-    }
-    
-    public boolean isSolid()
-    {
-    	return true;
-    }
-
     /**
      * Returns true if light should pass through this block, false otherwise
      */
@@ -307,6 +292,11 @@ public class Block
 		return false;
 	}
 
+	public boolean isOpaqueCube()
+	{
+		return true;
+	}
+	
 	public Block setLightValue(int lightValue)
 	{
 		this.lightValue = lightValue;
@@ -461,6 +451,21 @@ public class Block
 	public boolean canPlaceBlockAt(World world, int x, int y, int z)
 	{
 		return world.getBlock(x, y, z) == null;
+	}
+	
+	public boolean canPlaceBlockOn(World world, int x, int y, int z, Block.Face face)
+	{
+		Block block = world.getBlock(x, y, z);
+		if(block == null)
+		{
+			return false;
+		}
+		return isValidPlacementFace(face) && block.isOpaqueCube();
+	}
+	
+	public boolean isValidPlacementFace(Block.Face face)
+	{
+		return true;
 	}
 	
 	/**

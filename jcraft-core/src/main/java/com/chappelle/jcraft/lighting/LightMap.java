@@ -1,7 +1,6 @@
 package com.chappelle.jcraft.lighting;
 
 import com.chappelle.jcraft.Vector3Int;
-import com.chappelle.jcraft.blocks.Block;
 
 public class LightMap
 {
@@ -19,11 +18,6 @@ public class LightMap
 		this.chunkLocation = chunkLocation;
 	}
 	
-	public int getEffectiveLight(int x, int y, int z, Block block, Block.Face face)
-	{
-		return getLight(x, y, z, LightType.BLOCK);
-	}
-
 	public int getLight(int x, int y, int z, LightType lightType)
 	{
 		if(lightType == LightType.BLOCK)
@@ -38,16 +32,6 @@ public class LightMap
 		int blocklight = getBlocklight(x, y, z);
 		int sunlight = getSunlight(x, y, z); 
 		return Math.max(blocklight, sunlight);
-	}
-	
-	private int getSunlight(int x, int y, int z)
-	{
-		return (light[y][z][x] >> 4) & 0xF;	// Get the bits XXXX0000
-	}
-	
-	private int getBlocklight(int x, int y, int z)
-	{
-		return light[y][z][x] & 0xF;	// Get the bits 0000XXXX
 	}
 	
 	public void setLight(int x, int y, int z, LightType type, int lightVal)
@@ -77,6 +61,17 @@ public class LightMap
 			}
 		}
 	}
+
+	private int getSunlight(int x, int y, int z)
+	{
+		return (light[y][z][x] >> 4) & 0xF;	// Get the bits XXXX0000
+	}
+	
+	private int getBlocklight(int x, int y, int z)
+	{
+		return light[y][z][x] & 0xF;	// Get the bits 0000XXXX
+	}
+	
 	@Override
 	public String toString()
 	{

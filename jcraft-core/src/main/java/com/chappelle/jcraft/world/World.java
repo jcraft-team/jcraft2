@@ -74,7 +74,7 @@ public class World implements BitSerializable
 	private ChunkUnloadRunnable chunkUnloader = new ChunkUnloadRunnable();
 	
 	/**Number of blocks to load around the player, represents the radius in moore neighborhood algorithm */
-	private static final int CHUNK_LOAD_RADIUS = 10;
+	private static final int CHUNK_LOAD_RADIUS = 1;
 	
 	/**Chunk distance threshold for determining which chunks to unload. Uses manhattan block distance. Calculated to be outside of the CHUNK_LOAD_RADIUS*/
 	private static final int CHUNK_UNLOAD_RADIUS = CHUNK_LOAD_RADIUS*16*2+16;
@@ -115,14 +115,6 @@ public class World implements BitSerializable
 			for(Chunk chunk : generatedChunks)
 			{
 				sunlightManager.initChunkSunlight(chunk);
-//				for(Direction dir : Direction.values())
-//				{
-//					Chunk neighbor = getChunkNeighbor(chunk, dir);
-//					if(neighbor != null)
-//					{
-//						lightMgr.rebuildSunlight(neighbor);
-//					}
-//				}
 			}
 			sunlightManager.calculateLight();//Need a separate LightManager to ensure light is built before rendering
 			chunkRenderQueue.addAll(generatedChunks);
@@ -255,7 +247,7 @@ public class World implements BitSerializable
         Vector3Int location = new Vector3Int(rayTrace.blockX, rayTrace.blockY, rayTrace.blockZ);
         Vector3Int newBlockLocation = BlockNavigator.getNeighborBlockLocalLocation(location, rayTrace.sideHit);
         Block.Face placementFace = rayTrace.sideHit;
-        if (blockToPlace.isValidPlacementFace(placementFace) && blockToPlace.canPlaceBlockAt(this, newBlockLocation.x, newBlockLocation.y, newBlockLocation.z))
+        if (blockToPlace.canPlaceBlockOn(this, location.x, location.y, location.z, rayTrace.sideHit) && blockToPlace.canPlaceBlockAt(this, newBlockLocation.x, newBlockLocation.y, newBlockLocation.z))
         {
             setBlock(newBlockLocation, blockToPlace);
             blockToPlace.onBlockPlaced(this, newBlockLocation, placementFace, getCameraDirectionAsUnitVector(cam.getDirection()));
@@ -273,7 +265,10 @@ public class World implements BitSerializable
 		if(localBlockState != null)
 		{
 			lightMgr.setBlockLight(location, block.lightValue);
-			lightMgr.removeSunlight(location);
+			if(!block.isTransparent())
+			{
+				lightMgr.removeSunlight(location);
+			}
 			
 			localBlockState.setBlock(block);
 		}
@@ -640,6 +635,11 @@ public class World implements BitSerializable
             return chunk.getLights().getLight(localBlockLocation.x, localBlockLocation.y, localBlockLocation.z);
         }
 		return 0;
+	}
+	
+	public float calculateDayNightLighting(float hour)
+	{
+		return lightMgr.calculateDayNightLighting(hour);
 	}
 	
     public BlockState getBlockState(Vector3Int location)

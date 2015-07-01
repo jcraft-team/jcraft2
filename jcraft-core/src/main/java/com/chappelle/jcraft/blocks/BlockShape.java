@@ -109,21 +109,21 @@ public abstract class BlockShape
 	
     protected void addLighting(List<Float> colors, Chunk chunk, Vector3Int location, Block.Face face)
     {
-    	int light = 15;
+    	int blockLight = 15;
     	int skyLight = 15;
     	if(chunk != null)
     	{
     		Block block = chunk.getBlock(location);
     		if(block.lightValue > 0)
     		{
-    			light = block.lightValue;
+    			blockLight = block.lightValue;
     		}
     		else
     		{
     			LightMap lights = chunk.getLights();
     			if(!block.useNeighborLight())
     			{
-    				light = lights.getEffectiveLight(location.x, location.y, location.z, block, face);
+    				blockLight = lights.getLight(location.x, location.y, location.z, LightType.BLOCK);
     				skyLight = lights.getLight(location.x, location.y, location.z, LightType.SKY);
     			}
     			else
@@ -133,12 +133,12 @@ public abstract class BlockShape
     					int neighborY = location.y+1;
     					if(neighborY < 256)
     					{
-    						light = lights.getEffectiveLight(location.x, neighborY, location.z, block, face);
+    						blockLight = lights.getLight(location.x, neighborY, location.z, LightType.BLOCK);
     						skyLight = lights.getLight(location.x, neighborY, location.z, LightType.SKY);
     					}
     					else
     					{
-    						light = 0;
+    						blockLight = 0;
     					}
     				}
     				else if(face == Block.Face.Bottom)
@@ -146,12 +146,12 @@ public abstract class BlockShape
     					int neighborY = location.y-1;
     					if(neighborY >= 0)
     					{
-    						light = lights.getEffectiveLight(location.x, neighborY, location.z, block, face);
+    						blockLight = lights.getLight(location.x, neighborY, location.z, LightType.BLOCK);
     						skyLight = lights.getLight(location.x, neighborY, location.z, LightType.SKY);
     					}
     					else
     					{
-    						light = 0;
+    						blockLight = 0;
     					}
     				}
     				else if(face == Block.Face.Front)
@@ -159,7 +159,7 @@ public abstract class BlockShape
     					int neighborZ = location.z + 1;
     					if(neighborZ < 16)
     					{
-    						light = lights.getEffectiveLight(location.x, location.y, neighborZ, block, face);
+    						blockLight = lights.getLight(location.x, location.y, neighborZ, LightType.BLOCK);
     						skyLight = lights.getLight(location.x, location.y, neighborZ, LightType.SKY);
     					}
     					else
@@ -168,11 +168,11 @@ public abstract class BlockShape
     						Chunk neighborChunk = terrain.getChunkNeighbor(chunk, Direction.FRONT);
     						if(neighborChunk == null)
     						{
-    							light = 0;
+    							blockLight = 0;
     						}
     						else
     						{
-    							light = neighborChunk.getLights().getEffectiveLight(location.x, location.y, 0, block, face);
+    							blockLight = neighborChunk.getLights().getLight(location.x, location.y, 0, LightType.BLOCK);
     							skyLight = neighborChunk.getLights().getLight(location.x, location.y, 0, LightType.SKY);
     						}
     					}
@@ -182,7 +182,7 @@ public abstract class BlockShape
     					int neighborZ = location.z - 1;
     					if(neighborZ >= 0)
     					{
-    						light = lights.getEffectiveLight(location.x, location.y, neighborZ, block, face);
+    						blockLight = lights.getLight(location.x, location.y, neighborZ, LightType.BLOCK);
     						skyLight = lights.getLight(location.x, location.y, neighborZ, LightType.SKY);
     					}
     					else
@@ -191,11 +191,11 @@ public abstract class BlockShape
     						Chunk neighborChunk = terrain.getChunkNeighbor(chunk, Direction.BACK);
     						if(neighborChunk == null)
     						{
-    							light = 0;
+    							blockLight = 0;
     						}
     						else
     						{
-    							light = neighborChunk.getLights().getEffectiveLight(location.x, location.y, 15, block, face);
+    							blockLight = neighborChunk.getLights().getLight(location.x, location.y, 15, LightType.BLOCK);
     							skyLight = neighborChunk.getLights().getLight(location.x, location.y, 15, LightType.SKY);
     						}
     					}
@@ -205,7 +205,7 @@ public abstract class BlockShape
     					int neighborX = location.x - 1;
     					if(neighborX >= 0)
     					{
-    						light = lights.getEffectiveLight(neighborX, location.y, location.z, block, face);
+    						blockLight = lights.getLight(neighborX, location.y, location.z, LightType.BLOCK);
     						skyLight = lights.getLight(neighborX, location.y, location.z, LightType.SKY);
     					}
     					else
@@ -214,11 +214,11 @@ public abstract class BlockShape
     						Chunk neighborChunk = terrain.getChunkNeighbor(chunk, Direction.LEFT);
     						if(neighborChunk == null)
     						{
-    							light = 0;
+    							blockLight = 0;
     						}
     						else
     						{
-    							light = neighborChunk.getLights().getEffectiveLight(15, location.y, location.z, block, face);
+    							blockLight = neighborChunk.getLights().getLight(15, location.y, location.z, LightType.BLOCK);
     							skyLight = neighborChunk.getLights().getLight(15, location.y, location.z, LightType.SKY);
     						}
     					}
@@ -228,7 +228,7 @@ public abstract class BlockShape
     					int neighborX = location.x + 1;
     					if(neighborX < 16)
     					{
-    						light = lights.getEffectiveLight(neighborX, location.y, location.z, block, face);
+    						blockLight = lights.getLight(neighborX, location.y, location.z, LightType.BLOCK);
     						skyLight = lights.getLight(neighborX, location.y, location.z, LightType.SKY);
     					}
     					else
@@ -237,11 +237,11 @@ public abstract class BlockShape
     						Chunk neighborChunk = terrain.getChunkNeighbor(chunk, Direction.RIGHT);
     						if(neighborChunk == null)
     						{
-    							light = 0;
+    							blockLight = 0;
     						}
     						else
     						{
-    							light = neighborChunk.getLights().getEffectiveLight(0, location.y, location.z, block, face);
+    							blockLight = neighborChunk.getLights().getLight(0, location.y, location.z, LightType.BLOCK);
     							skyLight = neighborChunk.getLights().getLight(0, location.y, location.z, LightType.SKY);
     						}
     					}
@@ -250,24 +250,24 @@ public abstract class BlockShape
     		}
     	}
     	
-    	colors.add((float)light);
-    	colors.add((float)light);
-    	colors.add((float)light);
+    	colors.add((float)blockLight);
+    	colors.add((float)blockLight);
+    	colors.add((float)blockLight);
     	colors.add((float)skyLight);
     	
-    	colors.add((float)light);
-    	colors.add((float)light);
-    	colors.add((float)light);
+    	colors.add((float)blockLight);
+    	colors.add((float)blockLight);
+    	colors.add((float)blockLight);
     	colors.add((float)skyLight);
     	
-    	colors.add((float)light);
-    	colors.add((float)light);
-    	colors.add((float)light);
+    	colors.add((float)blockLight);
+    	colors.add((float)blockLight);
+    	colors.add((float)blockLight);
     	colors.add((float)skyLight);
     	
-    	colors.add((float)light);
-    	colors.add((float)light);
-    	colors.add((float)light);
+    	colors.add((float)blockLight);
+    	colors.add((float)blockLight);
+    	colors.add((float)blockLight);
     	colors.add((float)skyLight);
     }
 }

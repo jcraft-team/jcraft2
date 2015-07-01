@@ -536,4 +536,34 @@ public class FloodFillLightManager implements LightManager
 		chunk.getLights().clearSunlight();
 		initChunkSunlight(chunk);
 	}
+	
+	public float calculateDayNightLighting(float hour)
+	{
+		int morningStart = 6;
+		int morningEnd = 8;
+		int nightStart = 17;
+		int nightEnd = 19;
+		float darkest = 0.2f;
+		if(hour < morningEnd && hour > morningStart)//Transition to daylight between 6 and 8
+		{
+			float denominator = morningEnd - morningStart;
+			float progress = hour - morningStart;
+			return Math.max(progress/denominator, darkest);
+		}
+		else if(hour > nightStart && hour < nightEnd)//Transition to night
+		{
+			float denominator = nightEnd - nightStart;
+			float progress = hour - nightStart;
+			return Math.max(1.0f-progress/denominator, darkest);
+		}
+		else if(hour > morningEnd && hour < nightStart)
+		{
+			return 1.0f;
+		}
+		else
+		{
+			return darkest;
+		}
+	}
+
 }

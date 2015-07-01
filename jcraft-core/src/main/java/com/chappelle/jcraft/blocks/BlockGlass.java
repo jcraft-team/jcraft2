@@ -32,7 +32,7 @@ public class BlockGlass extends Block
 	}
 
 	@Override
-	public boolean smothersBottomBlock()
+	public boolean isOpaqueCube()
 	{
 		return false;
 	}

@@ -187,7 +187,7 @@ public class Chunk implements BitSerializable
     		return true;
     	}
     	Block topBlock = getBlock(location.add(0, 1, 0));
-		return topBlock == null || !topBlock.smothersBottomBlock();
+		return topBlock == null || !topBlock.isOpaqueCube();
     }
 
     private Vector3Int getNeighborBlockGlobalLocation(Vector3Int location, Block.Face face){

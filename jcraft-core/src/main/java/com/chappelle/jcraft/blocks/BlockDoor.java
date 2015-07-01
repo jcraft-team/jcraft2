@@ -137,7 +137,7 @@ public class BlockDoor extends Block
     }
     
     @Override
-    public boolean smothersBottomBlock()
+    public boolean isOpaqueCube()
     {
         return false;
     }

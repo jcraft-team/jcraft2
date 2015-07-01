@@ -117,17 +117,11 @@ public class BlockTorch extends Block
     }
 
     @Override
-    public boolean smothersBottomBlock()
+    public boolean isOpaqueCube()
     {
         return false;
     }
     
-    @Override
-    public boolean isSolid()
-    {
-    	return false;
-    }
-
 	@Override
 	public AABB getSelectedBoundingBox(World world, int x, int y, int z)
 	{
@@ -143,4 +137,10 @@ public class BlockTorch extends Block
 		setBlockBoundsBasedOnState(world, x, y, z);
 		return super.collisionRayTrace(world, x, y, z, startVec, endVec);
 	}
+
+//	@Override
+//	public boolean isTransparent()
+//	{
+//		return true;
+//	}
 }
