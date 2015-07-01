@@ -2,10 +2,10 @@ package com.chappelle.jcraft.world;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.Random;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 import com.chappelle.jcraft.BlockState;
@@ -43,8 +43,8 @@ public class World implements BitSerializable
 	private ChunkProvider chunkProvider;
 	
 	/** Chunks added here will be rendered in the following tick(one per tick)*/ 
-	public Queue<Chunk> chunkRenderQueue = new LinkedList<Chunk>();
-	public Queue<Chunk> chunkUnloadQueue = new LinkedList<Chunk>();
+	public Queue<Chunk> chunkRenderQueue = new ConcurrentLinkedQueue<Chunk>();
+	public Queue<Chunk> chunkUnloadQueue = new ConcurrentLinkedQueue<Chunk>();
 
 	/** Chunks generated this tick. We queue them up and copy them to the render queue after the lighting data is ready*/
 	private List<Chunk> generatedChunks = new ArrayList<Chunk>();
