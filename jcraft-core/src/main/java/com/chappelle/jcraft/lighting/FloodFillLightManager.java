@@ -536,7 +536,8 @@ public class FloodFillLightManager implements LightManager
 		chunk.getLights().clearSunlight();
 		initChunkSunlight(chunk);
 	}
-	
+
+	@Override
 	public float calculateDayNightLighting(float hour)
 	{
 		int morningStart = 6;

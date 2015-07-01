@@ -12,6 +12,10 @@ public class Util
 
 	public static boolean isValidIndex(byte[][][] array, Vector3Int index)
 	{
+		if(array == null)
+		{
+			throw new IllegalArgumentException("array cannot be null");
+		}
 		return ((index.getX() >= 0) && (index.getX() < array.length) && (index.getY() >= 0)
 				&& (index.getY() < array[0].length) && (index.getZ() >= 0) && (index.getZ() < array[0][0].length));
 	}

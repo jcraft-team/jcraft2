@@ -86,11 +86,14 @@ public class BlockTerrainControl extends AbstractControl
 				chunks.remove(chunkKey);
 			}
 		}
-		
+
 		//Update meshes
 		for(BlockChunkControl chunk : chunks.values())
 		{
-			chunk.updateSpatial();
+			if(!chunk.chunk.isDestroyed)
+			{
+				chunk.updateSpatial();
+			}
 		}
 		profiler.endSection();
 	}

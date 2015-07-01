@@ -111,145 +111,134 @@ public abstract class BlockShape
     {
     	int blockLight = 15;
     	int skyLight = 15;
-    	if(chunk != null)
-    	{
-    		Block block = chunk.getBlock(location);
-    		if(block.lightValue > 0)
-    		{
-    			blockLight = block.lightValue;
-    		}
-    		else
-    		{
-    			LightMap lights = chunk.getLights();
-    			if(!block.useNeighborLight())
-    			{
-    				blockLight = lights.getLight(location.x, location.y, location.z, LightType.BLOCK);
-    				skyLight = lights.getLight(location.x, location.y, location.z, LightType.SKY);
-    			}
-    			else
-    			{
-    				if(face == Block.Face.Top)
-    				{
-    					int neighborY = location.y+1;
-    					if(neighborY < 256)
-    					{
-    						blockLight = lights.getLight(location.x, neighborY, location.z, LightType.BLOCK);
-    						skyLight = lights.getLight(location.x, neighborY, location.z, LightType.SKY);
-    					}
-    					else
-    					{
-    						blockLight = 0;
-    					}
-    				}
-    				else if(face == Block.Face.Bottom)
-    				{
-    					int neighborY = location.y-1;
-    					if(neighborY >= 0)
-    					{
-    						blockLight = lights.getLight(location.x, neighborY, location.z, LightType.BLOCK);
-    						skyLight = lights.getLight(location.x, neighborY, location.z, LightType.SKY);
-    					}
-    					else
-    					{
-    						blockLight = 0;
-    					}
-    				}
-    				else if(face == Block.Face.Front)
-    				{
-    					int neighborZ = location.z + 1;
-    					if(neighborZ < 16)
-    					{
-    						blockLight = lights.getLight(location.x, location.y, neighborZ, LightType.BLOCK);
-    						skyLight = lights.getLight(location.x, location.y, neighborZ, LightType.SKY);
-    					}
-    					else
-    					{
-    						World terrain = chunk.world;
-    						Chunk neighborChunk = terrain.getChunkNeighbor(chunk, Direction.FRONT);
-    						if(neighborChunk == null)
-    						{
-    							blockLight = 0;
-    						}
-    						else
-    						{
-    							blockLight = neighborChunk.getLights().getLight(location.x, location.y, 0, LightType.BLOCK);
-    							skyLight = neighborChunk.getLights().getLight(location.x, location.y, 0, LightType.SKY);
-    						}
-    					}
-    				}
-    				else if(face == Block.Face.Back)
-    				{
-    					int neighborZ = location.z - 1;
-    					if(neighborZ >= 0)
-    					{
-    						blockLight = lights.getLight(location.x, location.y, neighborZ, LightType.BLOCK);
-    						skyLight = lights.getLight(location.x, location.y, neighborZ, LightType.SKY);
-    					}
-    					else
-    					{
-    						World terrain = chunk.world;
-    						Chunk neighborChunk = terrain.getChunkNeighbor(chunk, Direction.BACK);
-    						if(neighborChunk == null)
-    						{
-    							blockLight = 0;
-    						}
-    						else
-    						{
-    							blockLight = neighborChunk.getLights().getLight(location.x, location.y, 15, LightType.BLOCK);
-    							skyLight = neighborChunk.getLights().getLight(location.x, location.y, 15, LightType.SKY);
-    						}
-    					}
-    				}
-    				else if(face == Block.Face.Left)
-    				{
-    					int neighborX = location.x - 1;
-    					if(neighborX >= 0)
-    					{
-    						blockLight = lights.getLight(neighborX, location.y, location.z, LightType.BLOCK);
-    						skyLight = lights.getLight(neighborX, location.y, location.z, LightType.SKY);
-    					}
-    					else
-    					{
-    						World terrain = chunk.world;
-    						Chunk neighborChunk = terrain.getChunkNeighbor(chunk, Direction.LEFT);
-    						if(neighborChunk == null)
-    						{
-    							blockLight = 0;
-    						}
-    						else
-    						{
-    							blockLight = neighborChunk.getLights().getLight(15, location.y, location.z, LightType.BLOCK);
-    							skyLight = neighborChunk.getLights().getLight(15, location.y, location.z, LightType.SKY);
-    						}
-    					}
-    				}
-    				else if(face == Block.Face.Right)
-    				{
-    					int neighborX = location.x + 1;
-    					if(neighborX < 16)
-    					{
-    						blockLight = lights.getLight(neighborX, location.y, location.z, LightType.BLOCK);
-    						skyLight = lights.getLight(neighborX, location.y, location.z, LightType.SKY);
-    					}
-    					else
-    					{
-    						World terrain = chunk.world;
-    						Chunk neighborChunk = terrain.getChunkNeighbor(chunk, Direction.RIGHT);
-    						if(neighborChunk == null)
-    						{
-    							blockLight = 0;
-    						}
-    						else
-    						{
-    							blockLight = neighborChunk.getLights().getLight(0, location.y, location.z, LightType.BLOCK);
-    							skyLight = neighborChunk.getLights().getLight(0, location.y, location.z, LightType.SKY);
-    						}
-    					}
-    			}
-    			}
-    		}
+    	Block block = chunk.getBlock(location);
+		LightMap lights = chunk.getLights();
+		int x = location.x;
+		int y = location.y;
+		int z = location.z;
+		World world = chunk.world;
+		if(block.useNeighborLight())
+		{
+			if(face == Block.Face.Top)
+			{
+				y = (location.y+1)&255;
+			}
+			else if(face == Block.Face.Bottom)
+			{
+				int neighborY = location.y-1;
+				if(neighborY >= 0)
+				{
+					y = neighborY;
+				}
+				else
+				{
+					y = 0;
+				}
+			}
+			else if(face == Block.Face.Front)
+			{
+				int neighborZ = location.z + 1;
+				if(neighborZ < 16)
+				{
+					z = neighborZ;
+				}
+				else
+				{
+					Chunk neighborChunk = world.getChunkNeighbor(chunk, Direction.FRONT);
+					if(neighborChunk == null)
+					{
+						lights = null;
+					}
+					else
+					{
+						lights = neighborChunk.getLights();
+						z = 0;
+					}
+				}
+			}
+			else if(face == Block.Face.Back)
+			{
+				int neighborZ = location.z - 1;
+				if(neighborZ >= 0)
+				{
+					z = neighborZ;
+				}
+				else
+				{
+					Chunk neighborChunk = world.getChunkNeighbor(chunk, Direction.BACK);
+					if(neighborChunk == null)
+					{
+						lights = null;
+					}
+					else
+					{
+						z = 15;
+						lights = neighborChunk.getLights();
+					}
+				}
+			}
+			else if(face == Block.Face.Left)
+			{
+				int neighborX = location.x - 1;
+				if(neighborX >= 0)
+				{
+					x = neighborX;
+				}
+				else
+				{
+					Chunk neighborChunk = world.getChunkNeighbor(chunk, Direction.LEFT);
+					if(neighborChunk == null)
+					{
+						lights = null;
+					}
+					else
+					{
+						x = 15;
+						lights = neighborChunk.getLights();
+					}
+				}
+			}
+			else if(face == Block.Face.Right)
+			{
+				int neighborX = location.x + 1;
+				if(neighborX < 16)
+				{
+					x = neighborX;
+				}
+				else
+				{
+					Chunk neighborChunk = world.getChunkNeighbor(chunk, Direction.RIGHT);
+					if(neighborChunk == null)
+					{
+						lights = null;
+					}
+					else
+					{
+						x = 0;
+						lights = neighborChunk.getLights();
+					}
+				}
+			}
     	}
-    	
+
+		if(lights == null)
+		{
+			blockLight = 0;
+			skyLight = 0;
+		}
+		else
+		{
+			if(block.lightValue > 0)
+			{
+				blockLight = block.lightValue;
+			}
+			else
+			{
+				blockLight = lights.getLight(x, y, z, LightType.BLOCK);
+			}
+			skyLight = lights.getLight(x, y, z, LightType.SKY);
+		}
+
     	colors.add((float)blockLight);
     	colors.add((float)blockLight);
     	colors.add((float)blockLight);

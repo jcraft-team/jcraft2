@@ -74,7 +74,7 @@ public class World implements BitSerializable
 	private ChunkUnloadRunnable chunkUnloader = new ChunkUnloadRunnable();
 	
 	/**Number of blocks to load around the player, represents the radius in moore neighborhood algorithm */
-	private static final int CHUNK_LOAD_RADIUS = 1;
+	private static final int CHUNK_LOAD_RADIUS = 10;
 	
 	/**Chunk distance threshold for determining which chunks to unload. Uses manhattan block distance. Calculated to be outside of the CHUNK_LOAD_RADIUS*/
 	private static final int CHUNK_UNLOAD_RADIUS = CHUNK_LOAD_RADIUS*16*2+16;
@@ -97,6 +97,10 @@ public class World implements BitSerializable
         music.setLooping(true);
 	}
 
+	public void initChunkSunlight(Chunk chunk)
+	{
+		lightMgr.initChunkSunlight(chunk);
+	}
 	private class ChunkGenerationRunnable implements Runnable
 	{
 		public boolean isRunning;
@@ -117,6 +121,19 @@ public class World implements BitSerializable
 				sunlightManager.initChunkSunlight(chunk);
 			}
 			sunlightManager.calculateLight();//Need a separate LightManager to ensure light is built before rendering
+			
+			//Reinitializing sunlight for neighbors prevents black stripes of darkness when crossing chunk boundaries
+			for(Chunk chunk : generatedChunks)
+			{
+				for(Direction dir : Direction.values())
+				{
+					Chunk neighbor = getChunkNeighbor(chunk, dir);
+					if(neighbor != null)
+					{
+						initChunkSunlight(neighbor);//Use world light manager here on purpose
+					}
+				}
+			}
 			chunkRenderQueue.addAll(generatedChunks);
 			generatedChunks.clear();
 			isRunning = false;
@@ -525,14 +542,6 @@ public class World implements BitSerializable
 	{
 		generatedChunks.add(chunk);
 		loadedChunks++;
-		for(Direction dir : Direction.values())
-		{
-			Chunk neighbor = getChunkNeighbor(chunk, dir);
-			if(neighbor != null)
-			{
-				neighbor.markDirty();
-			}
-		}
 	}
 	
 	public Chunk getChunkNeighbor(Chunk chunk, Direction direction)

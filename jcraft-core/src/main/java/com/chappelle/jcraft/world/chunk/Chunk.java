@@ -29,9 +29,11 @@ public class Chunk implements BitSerializable
     public World world;
     private Vector3Int temp = new Vector3Int();
     private NibbleArray metadata;
+    public boolean isDestroyed;
     
     public void destroy()
     {
+    	isDestroyed = true;
     	blockTypes = null;
     	lights = null;
     	needsMeshUpdate = false;
