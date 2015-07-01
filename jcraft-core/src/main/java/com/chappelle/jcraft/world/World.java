@@ -18,6 +18,7 @@ import com.chappelle.jcraft.blocks.Block;
 import com.chappelle.jcraft.blocks.SoundConstants;
 import com.chappelle.jcraft.lighting.FloodFillLightManager;
 import com.chappelle.jcraft.lighting.LightManager;
+import com.chappelle.jcraft.lighting.LightType;
 import com.chappelle.jcraft.network.BitInputStream;
 import com.chappelle.jcraft.network.BitOutputStream;
 import com.chappelle.jcraft.network.BitSerializable;
@@ -307,69 +308,6 @@ public class World implements BitSerializable
 		}
 	}
 	
-	public void setBlocksFromHeightmap(Vector3Int location, int[][] heightmap, Block block)
-	{
-		Vector3Int tmpLocation = new Vector3Int();
-		Vector3Int tmpSize = new Vector3Int();
-		for(int x = 0; x < heightmap.length; x++)
-		{
-			for(int z = 0; z < heightmap[0].length; z++)
-			{
-				tmpLocation.set(location.getX() + x, location.getY(), location.getZ() + z);
-				tmpSize.set(1, heightmap[x][z], 1);
-				setBlockArea(tmpLocation, tmpSize, block);
-			}
-		}
-	}
-
-	public void setBlocksFromNoise(Vector3Int location, Vector3Int size, float roughness, Block block)
-	{
-		Noise noise = new Noise(null, roughness, size.getX(), size.getZ());
-		noise.initialise();
-		float gridMinimum = noise.getMinimum();
-		float gridLargestDifference = (noise.getMaximum() - gridMinimum);
-		float[][] grid = noise.getGrid();
-		for(int x = 0; x < grid.length; x++)
-		{
-			float[] row = grid[x];
-			for(int z = 0; z < row.length; z++)
-			{
-				/*---Calculation of block height has been summarized to minimize the java heap---
-				float gridGroundHeight = (row[z] - gridMinimum);
-				float blockHeightInPercents = ((gridGroundHeight * 100) / gridLargestDifference);
-				int blockHeight = ((int) ((blockHeightInPercents / 100) * size.getY())) + 1;
-				---*/
-				int blockHeight = (((int) (((((row[z] - gridMinimum) * 100) / gridLargestDifference) / 100) * size.getY())) + 1);
-				Vector3Int tmpLocation = new Vector3Int();
-				for(int y = 0; y < blockHeight; y++)
-				{
-					tmpLocation.set(location.getX() + x, location.getY() + y, location.getZ() + z);
-					setBlock(tmpLocation, block);
-				}
-			}
-		}
-	}
-
-	public void setBlocksForMaximumFaces(Vector3Int location, Vector3Int size, Block block)
-	{
-		Vector3Int tmpLocation = new Vector3Int();
-		for(int x = 0; x < size.getX(); x++)
-		{
-			for(int y = 0; y < size.getY(); y++)
-			{
-				for(int z = 0; z < size.getZ(); z++)
-				{
-					if(((x ^ y ^ z) & 1) == 1)
-					{
-						tmpLocation.set(location.getX() + x, location.getY() + y, location.getZ() + z);
-						setBlock(tmpLocation, block);
-					}
-				}
-			}
-		}
-	}
-
-
 	public void removeBlock(Vector3Int location)
 	{
 		BlockTerrain_LocalBlockState localBlockState = getLocalBlockState(location);
@@ -633,6 +571,11 @@ public class World implements BitSerializable
 	
 	public int getLight(Vector3Int blockLocation)
 	{
+		return getLight(blockLocation, null);
+	}
+	
+	public int getLight(Vector3Int blockLocation, LightType lightType)
+	{
         if (blockLocation.hasNegativeCoordinate())
         {
             return -1;
@@ -641,9 +584,16 @@ public class World implements BitSerializable
         if (chunk != null)
         {
             Vector3Int localBlockLocation = getLocalBlockLocation(blockLocation, chunk);
-            return chunk.getLights().getLight(localBlockLocation.x, localBlockLocation.y, localBlockLocation.z);
+            if(lightType == null)
+            {
+            	return chunk.getLights().getLight(localBlockLocation.x, localBlockLocation.y, localBlockLocation.z);
+            }
+            else
+            {
+            	return chunk.getLights().getLight(localBlockLocation.x, localBlockLocation.y, localBlockLocation.z, lightType);
+            }
         }
-		return 0;
+		return -1;
 	}
 	
 	public float calculateDayNightLighting(float hour)

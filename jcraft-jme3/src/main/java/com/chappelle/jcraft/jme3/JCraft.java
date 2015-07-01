@@ -7,7 +7,6 @@ import java.util.logging.Logger;
 import com.chappelle.jcraft.CubesSettings;
 import com.chappelle.jcraft.EntityPlayer;
 import com.chappelle.jcraft.GameSettings;
-import com.chappelle.jcraft.Vector3Int;
 import com.chappelle.jcraft.blocks.Block;
 import com.chappelle.jcraft.profiler.Profiler;
 import com.chappelle.jcraft.profiler.ProfilerResult;
@@ -15,7 +14,13 @@ import com.chappelle.jcraft.util.AABB;
 import com.chappelle.jcraft.world.World;
 import com.chappelle.jcraft.world.chunk.ChunkProvider;
 import com.chappelle.jcraft.world.chunk.SimpleChunkProvider;
-import com.chappelle.jcraft.world.chunk.gen.*;
+import com.chappelle.jcraft.world.chunk.gen.BlockOreFeature;
+import com.chappelle.jcraft.world.chunk.gen.PlantFeature;
+import com.chappelle.jcraft.world.chunk.gen.Simplex2DFeature;
+import com.chappelle.jcraft.world.chunk.gen.Simplex3DFeature;
+import com.chappelle.jcraft.world.chunk.gen.SimplexNoise;
+import com.chappelle.jcraft.world.chunk.gen.TreeFeature;
+import com.chappelle.jcraft.world.chunk.gen.WaterFeature;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.StatsAppState;
 import com.jme3.font.BitmapFont;
@@ -42,8 +47,6 @@ import de.lessvoid.nifty.Nifty;
 public class JCraft extends SimpleApplication implements ActionListener
 {
 	private static final int JUMP_TIME_INTERVAL = 200;
-	private final Vector3Int terrainSize = new Vector3Int(16, 10, 16);
-	private int terrainIndex = terrainSize.x / 16;
 
 	private static JCraft jcraft;
 	private Nifty nifty;
@@ -220,7 +223,6 @@ public class JCraft extends SimpleApplication implements ActionListener
 		addMapping("8", new KeyTrigger(KeyInput.KEY_8));
 		addMapping("9", new KeyTrigger(KeyInput.KEY_9));
 		addMapping("0", new KeyTrigger(KeyInput.KEY_0));
-		addMapping("t", new KeyTrigger(KeyInput.KEY_T));
 		addMapping("g", new KeyTrigger(KeyInput.KEY_G));
 		addMapping("u", new KeyTrigger(KeyInput.KEY_U));
 		addMapping("lshift", new KeyTrigger(KeyInput.KEY_LSHIFT));
@@ -368,12 +370,6 @@ public class JCraft extends SimpleApplication implements ActionListener
 		else if("9".equals(name) && !isPressed)
 		{
 			player.selectBlock(9);
-		}
-		else if("t".equals(name) && !isPressed)
-		{
-			blockTerrain.world.setBlocksFromNoise(new Vector3Int(terrainIndex * 16, 0, 0), terrainSize, 0.8f,
-					Block.grass);
-			terrainIndex++;
 		}
 		else if("f1".equals(name) && !isPressed)
 		{

@@ -7,6 +7,7 @@ import com.chappelle.jcraft.blocks.Sprite;
 import com.chappelle.jcraft.inventory.Inventory;
 import com.chappelle.jcraft.inventory.InventoryListener;
 import com.chappelle.jcraft.inventory.ItemStack;
+import com.chappelle.jcraft.lighting.LightType;
 import com.chappelle.jcraft.util.RayTrace;
 import com.chappelle.jcraft.world.World;
 import com.chappelle.jcraft.world.chunk.Chunk;
@@ -240,7 +241,10 @@ public class HUDControl extends AbstractControl implements ScreenController, Inv
 				Vector3Int walkedOnBlockLocation = blockLoc.subtract(0, 2, 0);
 				if(walkedOnBlockLocation != null)
 				{
-					lightLevelLabel.setText("Light Level: " + world.getLight(blockLoc));
+					int overallLight = world.getLight(blockLoc);
+					int skyLight = world.getLight(blockLoc, LightType.SKY);
+					int blockLight = world.getLight(blockLoc, LightType.BLOCK);
+					lightLevelLabel.setText("Light: " + overallLight + " (Sky: " + skyLight + ", Block: " + blockLight + ")");
 					walkingOnLabel.setText("Walking On: " + toString(world.getBlock(walkedOnBlockLocation)));
 				}
 				Chunk chunk = world.getChunkFromBlockCoordinates(blockLoc.x, blockLoc.z);
