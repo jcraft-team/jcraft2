@@ -3,11 +3,14 @@ package com.chappelle.jcraft.world.chunk;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
 
 import com.chappelle.jcraft.BlockState;
 import com.chappelle.jcraft.Direction;
 import com.chappelle.jcraft.Vector3Int;
 import com.chappelle.jcraft.blocks.Block;
+import com.chappelle.jcraft.blocks.MeshGenerator;
 import com.chappelle.jcraft.lighting.LightMap;
 import com.chappelle.jcraft.lighting.LightType;
 import com.chappelle.jcraft.network.BitInputStream;
@@ -17,6 +20,11 @@ import com.chappelle.jcraft.util.BlockNavigator;
 import com.chappelle.jcraft.util.NibbleArray;
 import com.chappelle.jcraft.util.Util;
 import com.chappelle.jcraft.world.World;
+import com.jme3.math.Vector3f;
+import com.jme3.renderer.queue.RenderQueue.Bucket;
+import com.jme3.scene.Geometry;
+import com.jme3.scene.Mesh;
+import com.jme3.scene.Node;
 
 public class Chunk implements BitSerializable
 {
@@ -30,7 +38,15 @@ public class Chunk implements BitSerializable
     private Vector3Int temp = new Vector3Int();
     private NibbleArray metadata;
     public boolean isDestroyed;
-    
+
+	private MeshBuilder opaqueMeshBuilder;
+	private MeshBuilder transparentMeshBuilder;
+	private Future<Mesh> opaqueMeshFuture;
+	private Future<Mesh> transparentMeshFuture;
+	private Geometry optimizedGeometry_Opaque; 
+	private Geometry optimizedGeometry_Transparent; 
+	private Node node = new Node();
+	
     public void destroy()
     {
     	isDestroyed = true;
@@ -49,6 +65,9 @@ public class Chunk implements BitSerializable
     	blockTypes = new byte[16][256][16];
     	lights = new LightMap(new Vector3Int(16, 256, 16), location);
     	this.metadata = new NibbleArray(16*256*16);
+		this.opaqueMeshBuilder = new MeshBuilder(this, false);
+		this.transparentMeshBuilder = new MeshBuilder(this, true);
+		node.setLocalTranslation(new Vector3f(blockLocation.getX(), blockLocation.getY(), blockLocation.getZ()));
     }
 
     public Chunk(World world, int x, int z, byte[][][] blockTypes)
@@ -59,8 +78,98 @@ public class Chunk implements BitSerializable
     	this.blockTypes = blockTypes;
     	lights = new LightMap(new Vector3Int(16, 256, 16), location);
     	this.metadata = new NibbleArray(16*256*16);
+    	this.opaqueMeshBuilder = new MeshBuilder(this, false);
+    	this.transparentMeshBuilder = new MeshBuilder(this, true);
+    	node.setLocalTranslation(new Vector3f(blockLocation.getX(), blockLocation.getY(), blockLocation.getZ()));
     }
     
+    public void addToScene(Node parent)
+    {
+    	parent.attachChild(node);
+    }
+    
+    public void removeFromScene()
+    {
+    	node.getParent().detachChild(node);
+    }
+    
+	public boolean updateSpatial()
+	{
+		if(needsMeshUpdate)
+		{
+			if(opaqueMeshFuture == null && transparentMeshFuture == null)
+			{
+				opaqueMeshFuture = world.executor.submit(opaqueMeshBuilder);
+				transparentMeshFuture = world.executor.submit(transparentMeshBuilder);
+			}
+			else
+			{
+				if(opaqueMeshFuture.isDone() && transparentMeshFuture.isDone())
+				{
+					if(optimizedGeometry_Opaque == null)
+					{
+						optimizedGeometry_Opaque = new Geometry("");
+						optimizedGeometry_Opaque.setQueueBucket(Bucket.Opaque);
+						node.attachChild(optimizedGeometry_Opaque);
+						optimizedGeometry_Opaque.setMaterial(world.getBlockMaterial());
+					}
+					if(optimizedGeometry_Transparent == null)
+					{
+						optimizedGeometry_Transparent = new Geometry("");
+						optimizedGeometry_Transparent.setQueueBucket(Bucket.Transparent);
+						node.attachChild(optimizedGeometry_Transparent);
+						optimizedGeometry_Transparent.setMaterial(world.getBlockMaterial());
+					}
+					try
+					{
+						optimizedGeometry_Opaque.setMesh(opaqueMeshFuture.get());
+						optimizedGeometry_Transparent.setMesh(transparentMeshFuture.get());
+					}
+					catch(Exception e)
+					{
+						e.printStackTrace();
+						//Try to generate it non threaded
+						optimizedGeometry_Opaque.setMesh(MeshGenerator.generateOptimizedMesh(this, false));
+						optimizedGeometry_Transparent.setMesh(MeshGenerator.generateOptimizedMesh(this, true));
+					}
+					opaqueMeshFuture = null;
+					transparentMeshFuture = null;
+					needsMeshUpdate = false;
+				}
+			}
+			return true;
+		}
+		return false;
+	}
+
+	public void setDayNightLighting(float dayNightLighting)
+	{
+		if(optimizedGeometry_Opaque != null && optimizedGeometry_Transparent != null)
+		{
+			this.optimizedGeometry_Opaque.getMaterial().setFloat("dayNightLighting", dayNightLighting);
+			this.optimizedGeometry_Transparent.getMaterial().setFloat("dayNightLighting", dayNightLighting);
+		}
+	}
+	
+
+	private class MeshBuilder implements Callable<Mesh>
+	{
+		private final Chunk chunk;
+		private final boolean isTransparent;
+		
+		public MeshBuilder(Chunk chunk, boolean isTransparent)
+		{
+			this.chunk = chunk;
+			this.isTransparent = isTransparent;
+		}
+		
+		@Override
+		public Mesh call() throws Exception
+		{
+			return MeshGenerator.generateOptimizedMesh(this.chunk, this.isTransparent);
+		}
+	}
+
     public byte getMetadata(int x, int y, int z)
     {
     	int index = y + (z * 256) + (x * 16 * 16);
@@ -123,6 +232,7 @@ public class Chunk implements BitSerializable
         }
         return state;
     }
+    
     
     private BlockState getBlockState(int x, int y, int z)
     {

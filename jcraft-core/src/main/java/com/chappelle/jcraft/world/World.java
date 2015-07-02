@@ -32,6 +32,7 @@ import com.chappelle.jcraft.world.chunk.Chunk;
 import com.chappelle.jcraft.world.chunk.ChunkProvider;
 import com.jme3.asset.AssetManager;
 import com.jme3.audio.AudioNode;
+import com.jme3.material.Material;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 
@@ -885,4 +886,9 @@ public class World implements BitSerializable
     {
     	return seed;
     }
+
+	public Material getBlockMaterial()
+	{
+		return settings.getBlockMaterial();
+	}
 }

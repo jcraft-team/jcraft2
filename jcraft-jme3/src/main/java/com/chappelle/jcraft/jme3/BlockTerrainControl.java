@@ -10,6 +10,7 @@ import com.chappelle.jcraft.world.chunk.Chunk;
 import com.chappelle.jcraft.world.chunk.ChunkCoordIntPair;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
+import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.AbstractControl;
 import com.jme3.scene.control.Control;
@@ -18,7 +19,7 @@ public class BlockTerrainControl extends AbstractControl
 {
 	private CubesSettings settings;
 	
-	private Map<Long, BlockChunkControl> chunks = new HashMap<Long, BlockChunkControl>();	
+	private Map<Long, Chunk> chunks = new HashMap<Long, Chunk>();	
 	private JCraft app;
 	public World world;
 	private Profiler profiler;
@@ -60,7 +61,7 @@ public class BlockTerrainControl extends AbstractControl
 		{
 			float hour = env.getTimeOfDay().getHour();
 			float dayNightLighting = world.calculateDayNightLighting(hour);
-			for(BlockChunkControl chunk : chunks.values())
+			for(Chunk chunk : chunks.values())
 			{
 				chunk.setDayNightLighting(dayNightLighting);
 			}
@@ -69,9 +70,8 @@ public class BlockTerrainControl extends AbstractControl
 		Chunk addedChunk = world.chunkRenderQueue.poll();
 		if(addedChunk != null)//Game runs smoother when we load 1 chunk per frame for some reason
 		{
-			BlockChunkControl control = new BlockChunkControl(this, addedChunk);
-			this.spatial.addControl(control);
-			chunks.put(ChunkCoordIntPair.chunkXZ2Int(addedChunk.location.x, addedChunk.location.z), control);
+			addedChunk.addToScene((Node)this.spatial);
+			chunks.put(ChunkCoordIntPair.chunkXZ2Int(addedChunk.location.x, addedChunk.location.z), addedChunk);
 		}
 		
 		//Remove chunks
@@ -79,18 +79,18 @@ public class BlockTerrainControl extends AbstractControl
 		if(removedChunk != null)
 		{
 			long chunkKey = ChunkCoordIntPair.chunkXZ2Int(removedChunk.location.x, removedChunk.location.z);
-			BlockChunkControl control = chunks.get(chunkKey);
+			Chunk control = chunks.get(chunkKey);
 			if(control != null)
 			{
-				control.detachNode();
+				control.destroy();
 				chunks.remove(chunkKey);
 			}
 		}
 
 		//Update meshes
-		for(BlockChunkControl chunk : chunks.values())
+		for(Chunk chunk : chunks.values())
 		{
-			if(!chunk.chunk.isDestroyed)
+			if(!chunk.isDestroyed)
 			{
 				chunk.updateSpatial();
 			}
