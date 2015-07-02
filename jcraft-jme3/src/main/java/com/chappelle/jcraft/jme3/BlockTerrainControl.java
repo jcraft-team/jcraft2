@@ -56,16 +56,6 @@ public class BlockTerrainControl extends AbstractControl
 	{
 		profiler.startSection("ChunkSpatial");
 		
-		EnvironmentAppState env = app.getStateManager().getState(EnvironmentAppState.class);
-		if(env != null)
-		{
-			float hour = env.getTimeOfDay().getHour();
-			float dayNightLighting = world.calculateDayNightLighting(hour);
-			for(Chunk chunk : chunks.values())
-			{
-				chunk.setDayNightLighting(dayNightLighting);
-			}
-		}
 		//Add chunks
 		Chunk addedChunk = world.chunkRenderQueue.poll();
 		if(addedChunk != null)//Game runs smoother when we load 1 chunk per frame for some reason

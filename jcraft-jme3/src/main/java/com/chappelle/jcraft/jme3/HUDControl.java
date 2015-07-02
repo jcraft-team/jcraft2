@@ -229,7 +229,7 @@ public class HUDControl extends AbstractControl implements ScreenController, Inv
 			EnvironmentAppState env = JCraft.getInstance().getStateManager().getState(EnvironmentAppState.class);
 			if(env != null)
 			{
-				timeLabel.setText("Time: " + env.getTimeOfDay().getHour());
+				timeLabel.setText("Time: " + env.getTimeOfDay());
 			}
 			else
 			{

@@ -62,6 +62,8 @@ public class World implements BitSerializable
 	private int chunkGenTicks;
 	private int chunkUnloadTicks;
 	
+	private TimeOfDayProvider timeOfDayProvider;
+	
 	public volatile int loadedChunks;
 	
 	// Lighting bugs occurr less when
@@ -99,10 +101,16 @@ public class World implements BitSerializable
         music.setLooping(true);
 	}
 
+	public void setTimeOfDayProvider(TimeOfDayProvider timeOfDayProvider)
+	{
+		this.timeOfDayProvider = timeOfDayProvider;
+	}
+	
 	public void initChunkSunlight(Chunk chunk)
 	{
 		lightMgr.initChunkSunlight(chunk);
 	}
+	
 	private class ChunkGenerationRunnable implements Runnable
 	{
 		public boolean isRunning;
@@ -167,6 +175,15 @@ public class World implements BitSerializable
 	
 	public void update(float tpf)
 	{
+		if(timeOfDayProvider != null)
+		{
+			float hour = timeOfDayProvider.getTimeOfDay();
+			float dayNightLighting = lightMgr.calculateDayNightLighting(hour);
+			for(Chunk chunk : chunkProvider.getLoadedChunks())
+			{
+				chunk.setDayNightLighting(dayNightLighting);
+			}
+		}
 		if(chunkGenTicks > 30)
 		{
 			if(!gen.isRunning)
@@ -595,11 +612,6 @@ public class World implements BitSerializable
             }
         }
 		return -1;
-	}
-	
-	public float calculateDayNightLighting(float hour)
-	{
-		return lightMgr.calculateDayNightLighting(hour);
 	}
 	
     public BlockState getBlockState(Vector3Int location)

@@ -8,6 +8,7 @@ import jme3utilities.sky.GlobeRenderer;
 import jme3utilities.sky.SkyControl;
 import jme3utilities.sky.Updater;
 
+import com.chappelle.jcraft.world.TimeOfDayProvider;
 import com.jme3.app.Application;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
@@ -27,7 +28,7 @@ import com.jme3.shadow.EdgeFilteringMode;
 import com.jme3.texture.Image;
 import com.jme3.texture.Texture;
 
-public class EnvironmentAppState extends AbstractAppState implements ViewPortListener
+public class EnvironmentAppState extends AbstractAppState implements ViewPortListener, TimeOfDayProvider
 {
     private static final float initialTimeOfDay = 3;
     private static final float timeRate = 1000f;
@@ -109,9 +110,9 @@ public class EnvironmentAppState extends AbstractAppState implements ViewPortLis
         this.sky.setEnabled(true);
     }
     
-    public TimeOfDay getTimeOfDay()
+    public float getTimeOfDay()
     {
-    	return timeOfDay;
+    	return timeOfDay.getHour();
     }
 
     private void initializeLights()

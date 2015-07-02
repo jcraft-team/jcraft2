@@ -112,7 +112,10 @@ public class JCraft extends SimpleApplication implements ActionListener
 	public void simpleInitApp()
 	{
 		initializeGUI();
-
+		if(gameSettings.skyEnabled)
+		{
+			stateManager.attach(new EnvironmentAppState());
+		}
 		cam.setFrustumPerspective(45f, (float) cam.getWidth() / cam.getHeight(), 0.01f, 500f);
 		initControls();
 		initBlockTerrain();
@@ -121,10 +124,6 @@ public class JCraft extends SimpleApplication implements ActionListener
 		// Setup sky
 		viewPort.setBackgroundColor(new ColorRGBA((float) 128 / 255, (float) 173 / 255, (float) 254 / 255, 1));
 
-		if(gameSettings.skyEnabled)
-		{
-			stateManager.attach(new EnvironmentAppState());
-		}
 		
 		// Setup player
 		player = new EntityPlayer(world, cam);
@@ -247,6 +246,7 @@ public class JCraft extends SimpleApplication implements ActionListener
 		}
 		System.out.println("Using world seed: " + seed);
 		world = new World(makeChunkProvider(seed), profiler, cubesSettings, assetManager, cam, seed);
+		world.setTimeOfDayProvider(stateManager.getState(EnvironmentAppState.class));
 		blockTerrain = new BlockTerrainControl(this, cubesSettings, world);
 		terrainNode.addControl(blockTerrain);
 		terrainNode.setShadowMode(RenderQueue.ShadowMode.CastAndReceive);

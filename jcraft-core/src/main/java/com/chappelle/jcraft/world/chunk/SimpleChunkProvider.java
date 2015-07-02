@@ -2,15 +2,15 @@ package com.chappelle.jcraft.world.chunk;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.chappelle.jcraft.world.World;
 
 public class SimpleChunkProvider implements ChunkProvider
 {
-	private Map<Long, Chunk> chunks = new HashMap<Long, Chunk>();
+	private Map<Long, Chunk> chunks = new ConcurrentHashMap<Long, Chunk>();
 	
 	private World world;
 	
