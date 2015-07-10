@@ -3,14 +3,13 @@ package com.chappelle.jcraft.world.chunk;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
 
 import com.chappelle.jcraft.BlockState;
 import com.chappelle.jcraft.Direction;
 import com.chappelle.jcraft.Vector3Int;
 import com.chappelle.jcraft.blocks.Block;
-import com.chappelle.jcraft.blocks.MeshGenerator;
+import com.chappelle.jcraft.lighting.FloodFillLightManager;
+import com.chappelle.jcraft.lighting.LightManager;
 import com.chappelle.jcraft.lighting.LightMap;
 import com.chappelle.jcraft.lighting.LightType;
 import com.chappelle.jcraft.network.BitInputStream;
@@ -33,43 +32,20 @@ public class Chunk implements BitSerializable
     private byte[][][] blockTypes;
     private BlockState[][][] blockState;
     private LightMap lights;
-    public boolean needsMeshUpdate;
+    private boolean needsMeshUpdate = true;
     public World world;
     private Vector3Int temp = new Vector3Int();
     private NibbleArray metadata;
-    public boolean isDestroyed;
+    public boolean isLoaded;
+    public boolean updateInProgress;
 
-	private MeshBuilder opaqueMeshBuilder;
-	private MeshBuilder transparentMeshBuilder;
-	private Future<Mesh> opaqueMeshFuture;
-	private Future<Mesh> transparentMeshFuture;
 	private Geometry optimizedGeometry_Opaque; 
 	private Geometry optimizedGeometry_Transparent; 
 	private Node node = new Node();
+	public Long id;
+	public LightManager lightMgr;
+	public boolean isLightUpdating;
 	
-    public void destroy()
-    {
-    	isDestroyed = true;
-    	blockTypes = null;
-    	lights = null;
-    	needsMeshUpdate = false;
-    	world = null;
-    	blockState = null;
-    	metadata = null;
-    }
-    public Chunk(World world, int x, int z)
-    {
-    	this.world = world;
-    	location.set(x, 0, z);
-    	blockLocation.set(location.mult(16, 256, 16));
-    	blockTypes = new byte[16][256][16];
-    	lights = new LightMap(new Vector3Int(16, 256, 16), location);
-    	this.metadata = new NibbleArray(16*256*16);
-		this.opaqueMeshBuilder = new MeshBuilder(this, false);
-		this.transparentMeshBuilder = new MeshBuilder(this, true);
-		node.setLocalTranslation(new Vector3f(blockLocation.getX(), blockLocation.getY(), blockLocation.getZ()));
-    }
-
     public Chunk(World world, int x, int z, byte[][][] blockTypes)
     {
     	this.world = world;
@@ -78,9 +54,10 @@ public class Chunk implements BitSerializable
     	this.blockTypes = blockTypes;
     	lights = new LightMap(new Vector3Int(16, 256, 16), location);
     	this.metadata = new NibbleArray(16*256*16);
-    	this.opaqueMeshBuilder = new MeshBuilder(this, false);
-    	this.transparentMeshBuilder = new MeshBuilder(this, true);
     	node.setLocalTranslation(new Vector3f(blockLocation.getX(), blockLocation.getY(), blockLocation.getZ()));
+    	this.id = ChunkCoordIntPair.chunkXZ2Int(x, z); 
+    	this.lightMgr = new FloodFillLightManager(world);
+    	this.lightMgr.initChunkSunlight(this);
     }
     
     public void addToScene(Node parent)
@@ -92,56 +69,36 @@ public class Chunk implements BitSerializable
     {
     	node.getParent().detachChild(node);
     }
-    
-	public boolean updateSpatial()
-	{
-		if(needsMeshUpdate)
-		{
-			if(opaqueMeshFuture == null && transparentMeshFuture == null)
-			{
-				opaqueMeshFuture = world.executor.submit(opaqueMeshBuilder);
-				transparentMeshFuture = world.executor.submit(transparentMeshBuilder);
-			}
-			else
-			{
-				if(opaqueMeshFuture.isDone() && transparentMeshFuture.isDone())
-				{
-					if(optimizedGeometry_Opaque == null)
-					{
-						optimizedGeometry_Opaque = new Geometry("");
-						optimizedGeometry_Opaque.setQueueBucket(Bucket.Opaque);
-						node.attachChild(optimizedGeometry_Opaque);
-						optimizedGeometry_Opaque.setMaterial(world.getBlockMaterial());
-					}
-					if(optimizedGeometry_Transparent == null)
-					{
-						optimizedGeometry_Transparent = new Geometry("");
-						optimizedGeometry_Transparent.setQueueBucket(Bucket.Transparent);
-						node.attachChild(optimizedGeometry_Transparent);
-						optimizedGeometry_Transparent.setMaterial(world.getBlockMaterial());
-					}
-					try
-					{
-						optimizedGeometry_Opaque.setMesh(opaqueMeshFuture.get());
-						optimizedGeometry_Transparent.setMesh(transparentMeshFuture.get());
-					}
-					catch(Exception e)
-					{
-						e.printStackTrace();
-						//Try to generate it non threaded
-						optimizedGeometry_Opaque.setMesh(MeshGenerator.generateOptimizedMesh(this, false));
-						optimizedGeometry_Transparent.setMesh(MeshGenerator.generateOptimizedMesh(this, true));
-					}
-					opaqueMeshFuture = null;
-					transparentMeshFuture = null;
-					needsMeshUpdate = false;
-				}
-			}
-			return true;
-		}
-		return false;
-	}
 
+    /**
+     * Updates the mesh. NEVER CALL THIS FROM A THREAD OTHER THAN THE MAIN THREAD!
+     * @param opaqueMesh
+     * @param transparentMesh
+     */
+    public void setMesh(Mesh opaqueMesh, Mesh transparentMesh)
+    {
+    	System.out.println("Set mesh: " + location);
+		if(optimizedGeometry_Opaque == null)
+		{
+			optimizedGeometry_Opaque = new Geometry("");
+			optimizedGeometry_Opaque.setQueueBucket(Bucket.Opaque);
+			node.attachChild(optimizedGeometry_Opaque);
+			optimizedGeometry_Opaque.setMaterial(world.getBlockMaterial());
+		}
+		if(optimizedGeometry_Transparent == null)
+		{
+			optimizedGeometry_Transparent = new Geometry("");
+			optimizedGeometry_Transparent.setQueueBucket(Bucket.Transparent);
+			node.attachChild(optimizedGeometry_Transparent);
+			optimizedGeometry_Transparent.setMaterial(world.getBlockMaterial());
+		}
+		optimizedGeometry_Opaque.setMesh(opaqueMesh);
+		optimizedGeometry_Transparent.setMesh(transparentMesh);
+		isLoaded = true;
+		needsMeshUpdate = false;
+		updateInProgress = false;
+    }
+    
 	public void setDayNightLighting(float dayNightLighting)
 	{
 		if(optimizedGeometry_Opaque != null && optimizedGeometry_Transparent != null)
@@ -151,24 +108,6 @@ public class Chunk implements BitSerializable
 		}
 	}
 	
-
-	private class MeshBuilder implements Callable<Mesh>
-	{
-		private final Chunk chunk;
-		private final boolean isTransparent;
-		
-		public MeshBuilder(Chunk chunk, boolean isTransparent)
-		{
-			this.chunk = chunk;
-			this.isTransparent = isTransparent;
-		}
-		
-		@Override
-		public Mesh call() throws Exception
-		{
-			return MeshGenerator.generateOptimizedMesh(this.chunk, this.isTransparent);
-		}
-	}
 
     public byte getMetadata(int x, int y, int z)
     {
@@ -180,7 +119,7 @@ public class Chunk implements BitSerializable
     {
     	int index = y + (z * 256) + (x * 16 * 16);
     	metadata.set(index, value);
-    	needsMeshUpdate = true;
+    	markDirty();
     }
     
     public Vector3Int getBlockLocation()
@@ -188,6 +127,11 @@ public class Chunk implements BitSerializable
         return blockLocation;
     }
 
+    public boolean isDirty()
+    {
+    	return needsMeshUpdate;
+    }
+    
     public void markDirty()
     {
     	this.needsMeshUpdate = true;
@@ -196,7 +140,7 @@ public class Chunk implements BitSerializable
     public void setLight(int x, int y, int z, LightType type, int lightVal)
     {
     	lights.setLight(x, y, z, type, lightVal);
-    	needsMeshUpdate = true;
+    	markDirty();
     }
 
     public int getLight(int x, int y, int z, LightType type)
@@ -247,8 +191,10 @@ public class Chunk implements BitSerializable
         return world.getBlock(getNeighborBlockGlobalLocation(location, face));
     }
 
-    public Block getBlock(Vector3Int location){
-        if(isValidBlockLocation(location)){
+    public Block getBlock(Vector3Int location)
+    {
+        if(isValidBlockLocation(location))
+        {
             int blockType = blockTypes[location.getX()][location.getY()][location.getZ()];
             return Block.blocksList[blockType];
         }
@@ -266,7 +212,7 @@ public class Chunk implements BitSerializable
      * @param r The radius
      * @return A list of neighboring Chunks with a radius of r
      */
-    public List<Chunk> getChunkNeighborhood(int r, boolean generateIfNeeded)
+    public List<Chunk> getChunkNeighborhood(int r)
     {
     	List<Chunk> result = new ArrayList<Chunk>();
 		//Iterates starting in top left corner, then down, then across to the right
@@ -281,7 +227,7 @@ public class Chunk implements BitSerializable
 				int chunkZ = z-zMod;
 				if(!(chunkX == location.x && chunkZ == location.z))//Exclude this chunk from result
 				{
-					Chunk chunk = world.getChunkFromChunkCoordinates(chunkX, chunkZ, generateIfNeeded);
+					Chunk chunk = world.getChunkFromChunkCoordinates(chunkX, chunkZ);
 					if(chunk != null)
 					{
 						result.add(chunk);
@@ -289,6 +235,32 @@ public class Chunk implements BitSerializable
 				}
 			}
 		}
+    	return result;
+    }
+
+    public List<Vector3Int> getMissingChunkNeighborhoodLocations(int r)
+    {
+    	List<Vector3Int> result = new ArrayList<Vector3Int>();
+    	//Iterates starting in top left corner, then down, then across to the right
+    	int x = location.x - r;
+    	int z = location.z + r;
+    	int gridWidth = r*2 + 1;
+    	for(int xMod = 0; xMod < gridWidth; xMod++)
+    	{
+    		for(int zMod = 0; zMod < gridWidth; zMod++)
+    		{
+    			int chunkX = x+xMod;
+    			int chunkZ = z-zMod;
+    			if(!(chunkX == location.x && chunkZ == location.z))//Exclude this chunk from result
+    			{
+    				Chunk chunk = world.getChunkFromChunkCoordinates(chunkX, chunkZ);
+    				if(chunk == null)
+    				{
+    					result.add(new Vector3Int(chunkX, 0, chunkZ));
+    				}
+    			}
+    		}
+    	}
     	return result;
     }
 
@@ -302,7 +274,8 @@ public class Chunk implements BitSerializable
 		return topBlock == null || !topBlock.isOpaqueCube();
     }
 
-    private Vector3Int getNeighborBlockGlobalLocation(Vector3Int location, Block.Face face){
+    private Vector3Int getNeighborBlockGlobalLocation(Vector3Int location, Block.Face face)
+    {
         Vector3Int neighborLocation = BlockNavigator.getNeighborBlockLocalLocation(location, face);
         neighborLocation.addLocal(blockLocation);
         return neighborLocation;
@@ -314,15 +287,18 @@ public class Chunk implements BitSerializable
     	setBlock(temp, block);
     }
     
-    public void setBlock(Vector3Int location, Block block){
-//        if(isValidBlockLocation(location)){
+    public void setBlock(Vector3Int location, Block block)
+    {
+//        if(isValidBlockLocation(location))
+//    	  {
             blockTypes[location.getX()][location.getY()][location.getZ()] = block.blockId;
             updateBlockState(location);
-            needsMeshUpdate = true;
+            markDirty();
 //        }
     }
 
-    private void updateBlockState(Vector3Int location){
+    private void updateBlockState(Vector3Int location)
+    {
         updateBlockInformation(location);
         for(int i=0;i<Block.Face.values().length;i++){
             Vector3Int neighborLocation = getNeighborBlockGlobalLocation(location, Block.Face.values()[i]);
@@ -333,12 +309,14 @@ public class Chunk implements BitSerializable
         }
     }
     
-    private void updateBlockInformation(Vector3Int location){
+    private void updateBlockInformation(Vector3Int location)
+    {
 //        Block neighborBlock_Top = world.getBlock(getNeighborBlockGlobalLocation(location, Block.Face.Top));
 //        blocks_IsOnSurface[location.getX()][location.getY()][location.getZ()] = (neighborBlock_Top == null || !neighborBlock_Top.smothersBottomBlock());
     }
 
-    private boolean isValidBlockLocation(Vector3Int location){
+    private boolean isValidBlockLocation(Vector3Int location)
+    {
         return Util.isValidIndex(blockTypes, location);
     }
 
@@ -352,7 +330,8 @@ public class Chunk implements BitSerializable
         }
     }
     
-    public Block getNeighborBlock_Local(Vector3Int location, Block.Face face){
+    public Block getNeighborBlock_Local(Vector3Int location, Block.Face face)
+    {
         Vector3Int neighborLocation = BlockNavigator.getNeighborBlockLocalLocation(location, face);
         return getBlock(neighborLocation);
     }
@@ -361,40 +340,51 @@ public class Chunk implements BitSerializable
     {
         blockTypes[location.getX()][location.getY()][location.getZ()] = 0;
         updateBlockState(location);
-        needsMeshUpdate = true;
+        markDirty();
     }
     
-    @Override
-    public void write(BitOutputStream outputStream){
-        for(int x=0;x<blockTypes.length;x++){
-            for(int y=0;y<blockTypes[0].length;y++){
-                for(int z=0;z<blockTypes[0][0].length;z++){
-                    outputStream.writeBits(blockTypes[x][y][z], 8);
-                }
-            }
-        }
-    }
+	@Override
+	public void write(BitOutputStream outputStream)
+	{
+		for(int x = 0; x < blockTypes.length; x++)
+		{
+			for(int y = 0; y < blockTypes[0].length; y++)
+			{
+				for(int z = 0; z < blockTypes[0][0].length; z++)
+				{
+					outputStream.writeBits(blockTypes[x][y][z], 8);
+				}
+			}
+		}
+	}
 
-    @Override
-    public void read(BitInputStream inputStream) throws IOException{
-        for(int x=0;x<blockTypes.length;x++){
-            for(int y=0;y<blockTypes[0].length;y++){
-                for(int z=0;z<blockTypes[0][0].length;z++){
-                    blockTypes[x][y][z] = (byte) inputStream.readBits(8);
-                }
-            }
-        }
-        Vector3Int tmpLocation = new Vector3Int();
-        for(int x=0;x<blockTypes.length;x++){
-            for(int y=0;y<blockTypes[0].length;y++){
-                for(int z=0;z<blockTypes[0][0].length;z++){
-                    tmpLocation.set(x, y, z);
-                    updateBlockInformation(tmpLocation);
-                }
-            }
-        }
-        needsMeshUpdate = true;
-    }
+	@Override
+	public void read(BitInputStream inputStream) throws IOException
+	{
+		for(int x = 0; x < blockTypes.length; x++)
+		{
+			for(int y = 0; y < blockTypes[0].length; y++)
+			{
+				for(int z = 0; z < blockTypes[0][0].length; z++)
+				{
+					blockTypes[x][y][z] = (byte) inputStream.readBits(8);
+				}
+			}
+		}
+		Vector3Int tmpLocation = new Vector3Int();
+		for(int x = 0; x < blockTypes.length; x++)
+		{
+			for(int y = 0; y < blockTypes[0].length; y++)
+			{
+				for(int z = 0; z < blockTypes[0][0].length; z++)
+				{
+					tmpLocation.set(x, y, z);
+					updateBlockInformation(tmpLocation);
+				}
+			}
+		}
+		markDirty();
+	}
     
     public Chunk clone()
     {

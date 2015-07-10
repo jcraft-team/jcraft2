@@ -13,6 +13,7 @@ import com.jme3.util.BufferUtils;
 
 public class MeshGenerator
 {
+	private static int count;
 	public static Mesh generateMesh(Block block)
 	{
 		MeshData meshData = new MeshData();
@@ -23,6 +24,7 @@ public class MeshGenerator
 	
 	public static Mesh generateOptimizedMesh(Chunk blockChunk, boolean isTransparent)
 	{
+//		System.out.println("Generating mesh: " + count++ + " (" + blockChunk.location + ")");
 		MeshData meshData = new MeshData();
 		Vector3Int tmpLocation = new Vector3Int();
 		for(int x = 0; x < 16; x++)

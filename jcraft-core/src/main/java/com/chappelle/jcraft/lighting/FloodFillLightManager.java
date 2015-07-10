@@ -11,40 +11,36 @@ import com.chappelle.jcraft.world.chunk.Chunk;
 
 public class FloodFillLightManager implements LightManager
 {
-	private boolean sunlightEnabled = true;
-	
 	private World world;
 	private Queue<LightNode> lightAdditionQueue;
 	private Queue<LightRemovalNode> lightRemovalQueue;
 	private Queue<LightNode> sunlightAdditionQueue;
 	private Queue<LightRemovalNode> sunlightRemovalQueue;
 	
-	public FloodFillLightManager(World terrain)
+	public FloodFillLightManager(World world)
 	{
-		this.world = terrain;
+		this.world = world;
 		lightAdditionQueue = new LinkedList<>();
 		lightRemovalQueue = new LinkedList<>();
 		sunlightAdditionQueue = new LinkedList<>();
 		sunlightRemovalQueue = new LinkedList<>();
 	}
 	
+	public void propagateLight(Chunk chunk)
+	{
+		chunk.isLightUpdating = true;
+		propagateLight();
+		chunk.isLightUpdating = false;
+	}
+	
 	@Override
-	public void calculateLight()
+	public void propagateLight()
 	{
 		propagateRemovedBlockLights();
 		propagateAddedBlockLights();
 		
-		if(sunlightEnabled)
-		{
-			propagateRemovedSunlight();
-			propagateAddedSunlight();
-		}
-		else
-		{
-			sunlightAdditionQueue.clear();
-			sunlightRemovalQueue.clear();
-		}
-	
+		propagateRemovedSunlight();
+		propagateAddedSunlight();
 	}
 
 	private void propagateRemovedBlockLights()
@@ -70,7 +66,6 @@ public class FloodFillLightManager implements LightManager
 				propagateRemovedBlockLights(world.getChunkNeighbor(chunk, Direction.LEFT), lightLevel, location.setX(15));
 			}
 			
-
 			//Positive X neighbor
 			location.x = x + 1;
 			location.y = y;
@@ -475,6 +470,7 @@ public class FloodFillLightManager implements LightManager
 		
 		chunk.setLight(localBlockLocation.x, localBlockLocation.y, localBlockLocation.z, LightType.SKY, LightMap.MAX_LIGHT);
 		sunlightAdditionQueue.add(new LightNode(localBlockLocation, chunk));
+		propagateLight(chunk);
 	}
 
 	@Override
@@ -484,6 +480,7 @@ public class FloodFillLightManager implements LightManager
 		Vector3Int localBlockLocation = world.getLocalBlockLocation(location, chunk);
 		chunk.setLight(localBlockLocation.x, localBlockLocation.y, localBlockLocation.z, LightType.BLOCK, light);
 		lightAdditionQueue.add(new LightNode(localBlockLocation, chunk));
+		propagateLight(chunk);
 	}
 	
 	@Override
@@ -508,6 +505,7 @@ public class FloodFillLightManager implements LightManager
 		sunlightRemovalQueue.add(new LightRemovalNode(localBlockLocation, val, chunk));
 		
 		chunk.setLight(localBlockLocation.x, localBlockLocation.y, localBlockLocation.z, LightType.SKY, 0);
+		propagateLight(chunk);
 	}
 
 	@Override
@@ -528,6 +526,7 @@ public class FloodFillLightManager implements LightManager
 				}
 			}
 		}
+		propagateLight(chunk);
 	}
 
 	@Override
@@ -536,35 +535,4 @@ public class FloodFillLightManager implements LightManager
 		chunk.getLights().clearSunlight();
 		initChunkSunlight(chunk);
 	}
-
-	@Override
-	public float calculateDayNightLighting(float hour)
-	{
-		int morningStart = 6;
-		int morningEnd = 8;
-		int nightStart = 17;
-		int nightEnd = 19;
-		float darkest = 0.2f;
-		if(hour < morningEnd && hour > morningStart)//Transition to daylight between 6 and 8
-		{
-			float denominator = morningEnd - morningStart;
-			float progress = hour - morningStart;
-			return Math.max(progress/denominator, darkest);
-		}
-		else if(hour > nightStart && hour < nightEnd)//Transition to night
-		{
-			float denominator = nightEnd - nightStart;
-			float progress = hour - nightStart;
-			return Math.max(1.0f-progress/denominator, darkest);
-		}
-		else if(hour > morningEnd && hour < nightStart)
-		{
-			return 1.0f;
-		}
-		else
-		{
-			return darkest;
-		}
-	}
-
 }

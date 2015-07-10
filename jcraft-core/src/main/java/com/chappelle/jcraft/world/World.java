@@ -3,9 +3,9 @@ package com.chappelle.jcraft.world;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Queue;
 import java.util.Random;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 import com.chappelle.jcraft.BlockState;
@@ -16,8 +16,6 @@ import com.chappelle.jcraft.EntityPlayer;
 import com.chappelle.jcraft.Vector3Int;
 import com.chappelle.jcraft.blocks.Block;
 import com.chappelle.jcraft.blocks.SoundConstants;
-import com.chappelle.jcraft.lighting.FloodFillLightManager;
-import com.chappelle.jcraft.lighting.LightManager;
 import com.chappelle.jcraft.lighting.LightType;
 import com.chappelle.jcraft.network.BitInputStream;
 import com.chappelle.jcraft.network.BitOutputStream;
@@ -29,29 +27,26 @@ import com.chappelle.jcraft.util.BlockNavigator;
 import com.chappelle.jcraft.util.MathUtils;
 import com.chappelle.jcraft.util.RayTrace;
 import com.chappelle.jcraft.world.chunk.Chunk;
-import com.chappelle.jcraft.world.chunk.ChunkProvider;
+import com.chappelle.jcraft.world.chunk.ChunkManager;
+import com.chappelle.jcraft.world.chunk.TerrainGenerator;
+import com.jme3.app.Application;
 import com.jme3.asset.AssetManager;
 import com.jme3.audio.AudioNode;
 import com.jme3.material.Material;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
+import com.jme3.scene.Node;
 
 public class World implements BitSerializable
 {
+	private static final int THREAD_COUNT = 1;
+	public ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(THREAD_COUNT);
+
 	private long seed;
 	
 	private CubesSettings settings;
-	
-	private ChunkProvider chunkProvider;
-	
-	/** Chunks added here will be rendered in the following tick(one per tick)*/ 
-	public Queue<Chunk> chunkRenderQueue = new ConcurrentLinkedQueue<Chunk>();
-	public Queue<Chunk> chunkUnloadQueue = new ConcurrentLinkedQueue<Chunk>();
 
-	/** Chunks generated this tick. We queue them up and copy them to the render queue after the lighting data is ready*/
-	private List<Chunk> generatedChunks = new ArrayList<Chunk>();
-	
-	private LightManager lightMgr;
+// 	private LightManager lightMgr;
 	public Profiler profiler;
 	private AssetManager assetManager;
 	private Random random = new Random();
@@ -59,174 +54,126 @@ public class World implements BitSerializable
 	private Camera cam;
 	private List<Entity> entities = new ArrayList<Entity>();
 	private EntityPlayer player;
-	private int chunkGenTicks;
-	private int chunkUnloadTicks;
-	
 	private TimeOfDayProvider timeOfDayProvider;
 	
-	public volatile int loadedChunks;
+	private Application app;
+	public Node node = new Node("world");
+	private ChunkManager chunkMgr;
+	private TerrainGenerator terrainGenerator;
 	
-	// Lighting bugs occurr less when
-	// we use 1 thread(need to fix
-	// lighting so we can increase
-	// this)
-	private static final int THREAD_COUNT = 6;
-	
-	public ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(THREAD_COUNT);
-
-	private ChunkGenerationRunnable gen;
-	private ChunkUnloadRunnable chunkUnloader = new ChunkUnloadRunnable();
-	
-	/**Number of blocks to load around the player, represents the radius in moore neighborhood algorithm */
-	private static final int CHUNK_LOAD_RADIUS = 10;
-	
-	/**Chunk distance threshold for determining which chunks to unload. Uses manhattan block distance. Calculated to be outside of the CHUNK_LOAD_RADIUS*/
-	private static final int CHUNK_UNLOAD_RADIUS = CHUNK_LOAD_RADIUS*16*2+16;
-	
-	public World(ChunkProvider chunkProvider, Profiler profiler, CubesSettings settings, AssetManager assetManager, Camera cam, long seed)
+	public World(Application app, Profiler profiler, CubesSettings settings, AssetManager assetManager, Camera cam, long seed)
 	{
-		this.chunkProvider = chunkProvider;
-		this.chunkProvider.setWorld(this);
+		this.app = app;
 		this.profiler = profiler;
 		this.settings = settings;
 		this.assetManager = assetManager;
-		this.gen = new ChunkGenerationRunnable(new FloodFillLightManager(this));
-		this.lightMgr = new FloodFillLightManager(this);
+//		this.lightMgr = new FloodFillLightManager(this);
 		this.cam = cam;
 		this.seed = seed;
-		
         music = new AudioNode(assetManager, SoundConstants.MUSIC_CALM1);
         music.setReverbEnabled(false);
         music.setPositional(false);
         music.setLooping(true);
+        this.chunkMgr = new ChunkManager(this);
+        this.terrainGenerator = new TerrainGenerator(this, chunkMgr);
+	}
+	
+//	public LightManager getLightManager()
+//	{
+//		return lightMgr;
+//	}
+
+	public TerrainGenerator getTerrainGenerator()
+	{
+		return terrainGenerator;
+	}
+	
+	public void update(float tpf)
+	{
+		updateTimeOfDay();
+
+		chunkMgr.update();
+		
+		terrainGenerator.generateTerrainAroundPlayer(player.posX, player.posZ, 10);
+	}
+	
+	private void updateTimeOfDay()
+	{
+		if(timeOfDayProvider != null)
+		{
+			float hour = timeOfDayProvider.getTimeOfDay();
+			float dayNightLighting = calculateDayNightLighting(hour);
+			for(Chunk chunk : chunkMgr.getLoadedChunks())
+			{
+				chunk.setDayNightLighting(dayNightLighting);
+			}
+		}
 	}
 
+	public float calculateDayNightLighting(float hour)
+	{
+		int morningStart = 6;
+		int morningEnd = 8;
+		int nightStart = 17;
+		int nightEnd = 19;
+		float darkest = 0.2f;
+		if(hour < morningEnd && hour > morningStart)//Transition to daylight between 6 and 8
+		{
+			float denominator = morningEnd - morningStart;
+			float progress = hour - morningStart;
+			return Math.max(progress/denominator, darkest);
+		}
+		else if(hour > nightStart && hour < nightEnd)//Transition to night
+		{
+			float denominator = nightEnd - nightStart;
+			float progress = hour - nightStart;
+			return Math.max(1.0f-progress/denominator, darkest);
+		}
+		else if(hour > morningEnd && hour < nightStart)
+		{
+			return 1.0f;
+		}
+		else
+		{
+			return darkest;
+		}
+	}
+
+	public <V> Future<V> enqueue(Callable<V> callable) 
+	{
+		return app.enqueue(callable);
+	}
+	
+	public void addToScene(Node parent)
+	{
+		parent.attachChild(node);
+	}
+	
 	public void setTimeOfDayProvider(TimeOfDayProvider timeOfDayProvider)
 	{
 		this.timeOfDayProvider = timeOfDayProvider;
 	}
 	
-	public void initChunkSunlight(Chunk chunk)
+	public int getLoadedChunkCount()
 	{
-		lightMgr.initChunkSunlight(chunk);
+		return chunkMgr.getLoadedChunkCount();
 	}
 	
-	private class ChunkGenerationRunnable implements Runnable
-	{
-		public boolean isRunning;
-		
-		private final LightManager sunlightManager;
-		
-		public ChunkGenerationRunnable(LightManager sunlightManager)
-		{
-			this.sunlightManager = sunlightManager;
-		}
-		
-		public void run()
-		{
-			isRunning = true;
-			getNearbyChunks(CHUNK_LOAD_RADIUS);
-			for(Chunk chunk : generatedChunks)
-			{
-				sunlightManager.initChunkSunlight(chunk);
-			}
-			sunlightManager.calculateLight();//Need a separate LightManager to ensure light is built before rendering
-			
-			//Reinitializing sunlight for neighbors prevents black stripes of darkness when crossing chunk boundaries
-			for(Chunk chunk : generatedChunks)
-			{
-				for(Direction dir : Direction.values())
-				{
-					Chunk neighbor = getChunkNeighbor(chunk, dir);
-					if(neighbor != null)
-					{
-						initChunkSunlight(neighbor);//Use world light manager here on purpose
-					}
-				}
-			}
-			chunkRenderQueue.addAll(generatedChunks);
-			generatedChunks.clear();
-			isRunning = false;
-		}
-	}
-
-	private class ChunkUnloadRunnable implements Runnable
-	{
-		public boolean isRunning;
-		
-		public void run()
-		{
-			isRunning = true;
-			for(Chunk chunk : chunkProvider.getLoadedChunks())
-			{
-				double xDiff = chunk.blockLocation.x - player.posX;
-				double zDiff = chunk.blockLocation.z - player.posZ;
-				double dist = Math.abs(xDiff) + Math.abs(zDiff);//Manhattan block distance for performance
-				if(dist > CHUNK_UNLOAD_RADIUS)
-				{
-					chunkProvider.removeChunk(chunk.location.x, chunk.location.z);
-					loadedChunks--;
-					chunkUnloadQueue.add(chunk);
-				}
-			}
-			isRunning = false;
-		}
-	}
-	
-	public void update(float tpf)
-	{
-		if(timeOfDayProvider != null)
-		{
-			float hour = timeOfDayProvider.getTimeOfDay();
-			float dayNightLighting = lightMgr.calculateDayNightLighting(hour);
-			for(Chunk chunk : chunkProvider.getLoadedChunks())
-			{
-				chunk.setDayNightLighting(dayNightLighting);
-			}
-		}
-		if(chunkGenTicks > 30)
-		{
-			if(!gen.isRunning)
-			{
-				chunkGenTicks = 0;
-				
-				executor.submit(gen);
-			}
-		}
-		chunkGenTicks++;
-		
-		if(chunkUnloadTicks > 60)
-		{
-			if(!chunkUnloader.isRunning)
-			{
-				chunkUnloadTicks = 0;
-				
-				executor.submit(chunkUnloader);
-			}
-		}
-		chunkUnloadTicks++;
-	}
-
-	/**
-	 * Generates a radius of chunks around the player if they don't already exist
-	 */
 	public List<Chunk> getNearbyChunks(int radius)
 	{
-		return getPlayerChunk().getChunkNeighborhood(radius, true);
+		return getPlayerChunk().getChunkNeighborhood(radius);
 	}
 
-	/**
-	 * Returns the Chunk the player is standing on, will generate one if needed
-	 */
 	public Chunk getPlayerChunk()
 	{
-		return getChunkFromBlockCoordinates(MathUtils.floor_double(player.posX), MathUtils.floor_double(player.posZ), true);
+		return getChunkFromBlockCoordinates(MathUtils.floor_double(player.posX), MathUtils.floor_double(player.posZ));
 	}
 	
 	public void setPlayer(EntityPlayer player)
 	{
 		this.player = player;
-		getChunkFromBlockCoordinates(MathUtils.floor_double(player.posX), MathUtils.floor_double(player.posZ), true);
+		terrainGenerator.generateTerrain(MathUtils.floor_double(player.posX)/16, MathUtils.floor_double(player.posZ)/16);
+		chunkMgr.updateNow();
 	}
 	
 	public void addEntity(Entity entity)
@@ -297,13 +244,13 @@ public class World implements BitSerializable
 
 	public void setBlock(Vector3Int location, Block block)
 	{
-		BlockTerrain_LocalBlockState localBlockState = getLocalBlockState(location, true);
+		BlockTerrain_LocalBlockState localBlockState = getLocalBlockState(location);
 		if(localBlockState != null)
 		{
-			lightMgr.setBlockLight(location, block.lightValue);
+			localBlockState.getChunk().lightMgr.setBlockLight(location, block.lightValue);
 			if(!block.isTransparent())
 			{
-				lightMgr.removeSunlight(location);
+				localBlockState.getChunk().lightMgr.removeSunlight(location);
 			}
 			
 			localBlockState.setBlock(block);
@@ -332,19 +279,15 @@ public class World implements BitSerializable
 		if(localBlockState != null)
 		{
 			Block block = localBlockState.getBlock();
-			if(block == null)
-			{
-				System.out.println("NPE is here. location=" + location + " Chunk blockLocation=" + localBlockState.getChunk().blockLocation);
-			}
 			if(block.isBreakable())
 			{
 				Chunk chunk = localBlockState.getChunk();
-				lightMgr.removeBlockLight(location);
-				lightMgr.rebuildSunlight(chunk);
 				localBlockState.removeBlock();
 				block.onBlockRemoved(this, location);
+				chunk.lightMgr.removeBlockLight(location);
+				chunk.lightMgr.rebuildSunlight(chunk);
 				
-				rebuildNeighborsSunlight(chunk);
+				rebuildNeighborsSunlight(chunk);//FIXME: Not great performance, but fixes some lighting issues when breaking blocks underground over chunk boundaries
 	            //Notify neighbors of block removal
 	            for (Block.Face face : Block.Face.values())
 	            {
@@ -369,9 +312,9 @@ public class World implements BitSerializable
 
 	private void rebuildNeighborsSunlight(Chunk chunk)
 	{
-		for(Chunk chunkNeighbor : chunk.getChunkNeighborhood(1, false))
+		for(Chunk chunkNeighbor : chunk.getChunkNeighborhood(1))
 		{
-			lightMgr.rebuildSunlight(chunkNeighbor);
+			chunkNeighbor.lightMgr.rebuildSunlight(chunkNeighbor);
 		}
 	}
 
@@ -440,16 +383,7 @@ public class World implements BitSerializable
 
 	public BlockTerrain_LocalBlockState getLocalBlockState(Vector3Int blockLocation)
 	{
-		return getLocalBlockState(blockLocation, false);
-	}
-	
-	public BlockTerrain_LocalBlockState getLocalBlockState(Vector3Int blockLocation, boolean generateIfNeeded)
-	{
-//		if(blockLocation.hasNegativeCoordinate())
-//		{
-//			return null;
-//		}
-		Chunk chunk = getChunkFromBlockCoordinates(blockLocation.x, blockLocation.z, generateIfNeeded);
+		Chunk chunk = getChunkFromBlockCoordinates(blockLocation.x, blockLocation.z);
 		if(chunk != null)
 		{
 			Vector3Int localBlockLocation = getLocalBlockLocation(blockLocation, chunk);
@@ -460,50 +394,19 @@ public class World implements BitSerializable
 
 	public Chunk getChunkFromBlockCoordinates(int blockX, int blockZ)
 	{
-		return getChunkFromBlockCoordinates(blockX, blockZ, false);
-	}
-	
-	public Chunk getChunkFromBlockCoordinates(int blockX, int blockZ, boolean generateIfNeeded)
-	{
 		Vector3Int chunkLocation = getChunkFromBlockLocation(blockX, blockZ);
-		Chunk cachedChunk = chunkProvider.getChunk(chunkLocation.x, chunkLocation.z);
-		if(!generateIfNeeded || cachedChunk != null)
-		{
-			return cachedChunk;
-		}
-		else
-		{
-			Chunk chunk = chunkProvider.generateChunk(chunkLocation.x, chunkLocation.z);
-			onChunkGenerated(chunk);
-			return chunk;
-		}
+		return getChunkFromChunkCoordinates(chunkLocation.x, chunkLocation.z);
 	}
 	
-	public Chunk getChunkFromChunkCoordinates(int chunkX, int chunkZ, boolean generateIfNeeded)
+	public Chunk getChunkFromChunkCoordinates(int chunkX, int chunkZ)
 	{
-		Chunk cachedChunk = chunkProvider.getChunk(chunkX, chunkZ);
-		if(!generateIfNeeded || cachedChunk != null)
-		{
-			return cachedChunk;
-		}
-		else
-		{
-			Chunk chunk = chunkProvider.generateChunk(chunkX, chunkZ);
-			onChunkGenerated(chunk);
-			return chunk;
-		}
+		return chunkMgr.getChunk(chunkX, chunkZ);
 	}
 
-	private void onChunkGenerated(Chunk chunk)
-	{
-		generatedChunks.add(chunk);
-		loadedChunks++;
-	}
-	
 	public Chunk getChunkNeighbor(Chunk chunk, Direction direction)
 	{
 		Vector3Int chunkLocation = chunk.location.add(direction.getVector());
-		return chunkProvider.getChunk(chunkLocation.getX(), chunkLocation.getZ());
+		return chunkMgr.getChunk(chunkLocation.getX(), chunkLocation.getZ());
 	}
 	
 	/**
@@ -619,16 +522,6 @@ public class World implements BitSerializable
         BlockTerrain_LocalBlockState localState = getLocalBlockState(location);
         Chunk chunk = localState.getChunk();
         return chunk.getBlockState(localState.getLocalBlockLocation());
-    }
-
-
-    public void calculateLight()
-    {
-    	profiler.startSection("light");
-    	
-    	lightMgr.calculateLight();
-    	
-    	profiler.endSection();
     }
 
     public List<AABB> getCollidingBoundingBoxes(Entity entity, AABB boundingBox)
@@ -902,5 +795,11 @@ public class World implements BitSerializable
 	public Material getBlockMaterial()
 	{
 		return settings.getBlockMaterial();
+	}
+
+	public void destroy()
+	{
+		executor.shutdown();
+		chunkMgr.destroy();
 	}
 }

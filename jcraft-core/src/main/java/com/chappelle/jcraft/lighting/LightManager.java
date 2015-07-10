@@ -10,8 +10,6 @@ public interface LightManager
 	void initChunkSunlight(Chunk chunk);
 	void removeSunlight(Vector3Int location);
 	void addSunlight(Vector3Int location);
-	void calculateLight();
+	void propagateLight();
 	void rebuildSunlight(Chunk chunk);
-	
-	float calculateDayNightLighting(float hour);
 }

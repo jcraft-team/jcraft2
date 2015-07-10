@@ -12,8 +12,7 @@ import com.chappelle.jcraft.profiler.Profiler;
 import com.chappelle.jcraft.profiler.ProfilerResult;
 import com.chappelle.jcraft.util.AABB;
 import com.chappelle.jcraft.world.World;
-import com.chappelle.jcraft.world.chunk.ChunkProvider;
-import com.chappelle.jcraft.world.chunk.SimpleChunkProvider;
+import com.chappelle.jcraft.world.chunk.TerrainGenerator;
 import com.chappelle.jcraft.world.chunk.gen.BlockOreFeature;
 import com.chappelle.jcraft.world.chunk.gen.PlantFeature;
 import com.chappelle.jcraft.world.chunk.gen.Simplex2DFeature;
@@ -35,9 +34,7 @@ import com.jme3.math.Vector3f;
 import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.ViewPort;
-import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Geometry;
-import com.jme3.scene.Node;
 import com.jme3.scene.SceneGraphVisitor;
 import com.jme3.scene.Spatial;
 import com.jme3.system.AppSettings;
@@ -54,8 +51,6 @@ public class JCraft extends SimpleApplication implements ActionListener
 	public boolean debugEnabled = false;
 	private GameSettings gameSettings;
 	private CubesSettings cubesSettings;
-	private BlockTerrainControl blockTerrain;
-	private Node terrainNode = new Node("terrain");
 	private InventoryAppState inventoryAppState;
 	private EntityPlayer player;
 	public World world;
@@ -146,6 +141,8 @@ public class JCraft extends SimpleApplication implements ActionListener
 		this.inventoryAppState = new InventoryAppState();
 		stateManager.attach(inventoryAppState);
 		nifty.fromXml("Interface/hud.xml", "hud", hud);
+		
+//		world.getNearbyChunks(5);//TODO:
 	}
 
 	private void initializeGUI()
@@ -245,41 +242,38 @@ public class JCraft extends SimpleApplication implements ActionListener
 			seed = Long.parseLong(seedStr);
 		}
 		System.out.println("Using world seed: " + seed);
-		world = new World(makeChunkProvider(seed), profiler, cubesSettings, assetManager, cam, seed);
+		world = new World(this, profiler, cubesSettings, assetManager, cam, seed);
+		configureTerrainGenerator(seed, world.getTerrainGenerator());
 		world.setTimeOfDayProvider(stateManager.getState(EnvironmentAppState.class));
-		blockTerrain = new BlockTerrainControl(this, cubesSettings, world);
-		terrainNode.addControl(blockTerrain);
-		terrainNode.setShadowMode(RenderQueue.ShadowMode.CastAndReceive);
-		rootNode.attachChild(terrainNode);
+		
+		world.addToScene(rootNode);
 	}
 
-	private ChunkProvider makeChunkProvider(long seed)
+	private void configureTerrainGenerator(long seed, TerrainGenerator terrainGenerator)
 	{
 		SimplexNoise.setSeed(seed);//TODO: Need to make this non-static and allow Simplex2DFeature to set it
 		// test commit
-		SimpleChunkProvider chunkProvider = new SimpleChunkProvider();
-//		chunkProvider.addFeature(new FlatFeature(Block.grass, 10));
-		chunkProvider.addFeature(new Simplex3DFeature(seed, 0.01f, 0.1f, 4, 70)); 
-		chunkProvider.addFeature(new Simplex2DFeature(seed,Block.grass.blockId).setSimplexScale(0.015f).setPersistence(0.2f).setIterations(4).setHeight(60));
-		chunkProvider.addFeature(new Simplex2DFeature(seed).setSimplexScale(0.01f).setPersistence(0.12f).setIterations(4).setHeight(60));
-		chunkProvider.addFeature(new Simplex2DFeature(seed).setSimplexScale(0.001f).setPersistence(0.2f).setIterations(4).setHeight(80));
-		chunkProvider.addFeature(new Simplex2DFeature(seed).setSimplexScale(0.001f).setPersistence(0.09f).setIterations(4).setHeight(100));
-		chunkProvider.addFeature(new BlockOreFeature(seed));
-		chunkProvider.addFeature(new WaterFeature(45));
-		chunkProvider.addFeature(new PlantFeature(seed));
-		chunkProvider.addFeature(new TreeFeature(seed));
-//		chunkProvider.addFeature(new ChessBoardFeature());
-//		chunkProvider.addFeature(new CellNoiseFlatFeature(seed));
-//		chunkProvider.addFeature(new CellNoise2DFeature(seed));
-//		chunkProvider.addFeature(new CellNoise3DFeature(seed));
-		
- 		return chunkProvider;
+//		terrainGenerator.addFeature(new FlatFeature(Block.grass, 10));
+		terrainGenerator.addFeature(new Simplex3DFeature(seed, 0.01f, 0.1f, 4, 70)); 
+		terrainGenerator.addFeature(new Simplex2DFeature(seed,Block.grass.blockId).setSimplexScale(0.015f).setPersistence(0.2f).setIterations(4).setHeight(60));
+		terrainGenerator.addFeature(new Simplex2DFeature(seed).setSimplexScale(0.01f).setPersistence(0.12f).setIterations(4).setHeight(60));
+		terrainGenerator.addFeature(new Simplex2DFeature(seed).setSimplexScale(0.001f).setPersistence(0.2f).setIterations(4).setHeight(80));
+		terrainGenerator.addFeature(new Simplex2DFeature(seed).setSimplexScale(0.001f).setPersistence(0.09f).setIterations(4).setHeight(100));
+		terrainGenerator.addFeature(new BlockOreFeature(seed));
+		terrainGenerator.addFeature(new WaterFeature(45));
+		terrainGenerator.addFeature(new PlantFeature(seed));
+		terrainGenerator.addFeature(new TreeFeature(seed));
+//		terrainGenerator.addFeature(new ChessBoardFeature());
+//		terrainGenerator.addFeature(new CellNoiseFlatFeature(seed));
+//		terrainGenerator.addFeature(new CellNoise2DFeature(seed));
+//		terrainGenerator.addFeature(new CellNoise3DFeature(seed));
 	}
 
 	@Override
 	public void simpleUpdate(float tpf)
 	{
 		AABB.getAABBPool().cleanPool();
+		world.update(tpf);
 	}
 
 	@Override
@@ -440,7 +434,7 @@ public class JCraft extends SimpleApplication implements ActionListener
 	public void destroy()
 	{
 		super.destroy();
-		world.executor.shutdown();
+		world.destroy();
 		gameSettings.save();
 
 		if(profiler.profilingEnabled)

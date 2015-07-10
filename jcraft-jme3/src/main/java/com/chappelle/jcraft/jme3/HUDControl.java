@@ -235,7 +235,7 @@ public class HUDControl extends AbstractControl implements ScreenController, Inv
 			{
 				timeLabel.setText("Time: ?");
 			}
-			loadedChunksLabel.setText("Loaded Chunks: " + world.loadedChunks);
+			loadedChunksLabel.setText("Loaded Chunks: " + world.getLoadedChunkCount());
 			if(blockLoc != null && blockLoc.y < 256)
 			{
 				Vector3Int walkedOnBlockLocation = blockLoc.subtract(0, 2, 0);
