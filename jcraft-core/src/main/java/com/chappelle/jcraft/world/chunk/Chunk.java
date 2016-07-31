@@ -77,7 +77,6 @@ public class Chunk implements BitSerializable
      */
     public void setMesh(Mesh opaqueMesh, Mesh transparentMesh)
     {
-    	System.out.println("Set mesh: " + location);
 		if(optimizedGeometry_Opaque == null)
 		{
 			optimizedGeometry_Opaque = new Geometry("");

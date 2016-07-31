@@ -535,11 +535,11 @@ public class World implements BitSerializable
 		int minZ = MathUtils.floor_double(boundingBox.minZ);
 		int maxZ = MathUtils.floor_double(boundingBox.maxZ + 1.0D);
 
-		for (int x = minX; x < maxX; ++x)
+		for (int x = minX; x <= maxX; ++x)
 		{
-			for (int z = minZ; z < maxZ; ++z)
+			for (int z = minZ; z <= maxZ; ++z)
 			{
-				for (int y = minY - 1; y < maxY; ++y)
+				for (int y = minY - 1; y <= maxY; ++y)
 				{
 					Block block = getBlock(x, y, z);
 					if (block != null)
