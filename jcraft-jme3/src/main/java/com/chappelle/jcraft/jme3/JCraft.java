@@ -329,41 +329,9 @@ public class JCraft extends SimpleApplication implements ActionListener
 		{
 			player.breakBlock();
 		}
-		else if("1".equals(name) && !isPressed)
+		else if(name.length() == 1 && Character.isDigit(name.charAt(0)) && !isPressed)
 		{
-			player.selectBlock(1);
-		}
-		else if("2".equals(name) && !isPressed)
-		{
-			player.selectBlock(2);
-		}
-		else if("3".equals(name) && !isPressed)
-		{
-			player.selectBlock(3);
-		}
-		else if("4".equals(name) && !isPressed)
-		{
-			player.selectBlock(4);
-		}
-		else if("5".equals(name) && !isPressed)
-		{
-			player.selectBlock(5);
-		}
-		else if("6".equals(name) && !isPressed)
-		{
-			player.selectBlock(6);
-		}
-		else if("7".equals(name) && !isPressed)
-		{
-			player.selectBlock(7);
-		}
-		else if("8".equals(name) && !isPressed)
-		{
-			player.selectBlock(8);
-		}
-		else if("9".equals(name) && !isPressed)
-		{
-			player.selectBlock(9);
+			player.selectBlock(Integer.valueOf(name));
 		}
 		else if("f1".equals(name) && !isPressed)
 		{
