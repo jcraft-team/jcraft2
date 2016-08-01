@@ -1,42 +1,23 @@
 package com.chappelle.jcraft.jme3;
 
-import java.io.File;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.*;
+import java.util.logging.*;
 
-import com.chappelle.jcraft.CubesSettings;
-import com.chappelle.jcraft.EntityPlayer;
-import com.chappelle.jcraft.GameSettings;
+import com.chappelle.jcraft.*;
 import com.chappelle.jcraft.blocks.Block;
-import com.chappelle.jcraft.profiler.Profiler;
-import com.chappelle.jcraft.profiler.ProfilerResult;
 import com.chappelle.jcraft.util.AABB;
 import com.chappelle.jcraft.world.World;
 import com.chappelle.jcraft.world.chunk.TerrainGenerator;
-import com.chappelle.jcraft.world.chunk.gen.BlockOreFeature;
-import com.chappelle.jcraft.world.chunk.gen.PlantFeature;
-import com.chappelle.jcraft.world.chunk.gen.Simplex2DFeature;
-import com.chappelle.jcraft.world.chunk.gen.Simplex3DFeature;
-import com.chappelle.jcraft.world.chunk.gen.SimplexNoise;
-import com.chappelle.jcraft.world.chunk.gen.TreeFeature;
-import com.chappelle.jcraft.world.chunk.gen.WaterFeature;
-import com.jme3.app.SimpleApplication;
-import com.jme3.app.StatsAppState;
+import com.chappelle.jcraft.world.chunk.gen.*;
+import com.jamonapi.*;
+import com.jme3.app.*;
 import com.jme3.font.BitmapFont;
-import com.jme3.input.KeyInput;
-import com.jme3.input.MouseInput;
-import com.jme3.input.controls.ActionListener;
-import com.jme3.input.controls.KeyTrigger;
-import com.jme3.input.controls.MouseButtonTrigger;
-import com.jme3.input.controls.Trigger;
-import com.jme3.math.ColorRGBA;
-import com.jme3.math.Vector3f;
+import com.jme3.input.*;
+import com.jme3.input.controls.*;
+import com.jme3.math.*;
 import com.jme3.niftygui.NiftyJmeDisplay;
-import com.jme3.renderer.Camera;
-import com.jme3.renderer.ViewPort;
-import com.jme3.scene.Geometry;
-import com.jme3.scene.SceneGraphVisitor;
-import com.jme3.scene.Spatial;
+import com.jme3.renderer.*;
+import com.jme3.scene.*;
 import com.jme3.system.AppSettings;
 
 import de.lessvoid.nifty.Nifty;
@@ -49,12 +30,10 @@ public class JCraft extends SimpleApplication implements ActionListener
 	private Nifty nifty;
 	private NiftyJmeDisplay niftyDisplay;
 	public boolean debugEnabled = false;
-	private GameSettings gameSettings;
 	private CubesSettings cubesSettings;
 	private InventoryAppState inventoryAppState;
 	private EntityPlayer player;
 	public World world;
-	private Profiler profiler;
 	private HUDControl hud;
 	private boolean wireframe;
 
@@ -63,19 +42,16 @@ public class JCraft extends SimpleApplication implements ActionListener
 	 */
 	private long lastJumpPressed;
 
-	public JCraft(GameSettings gameSettings)
+	public JCraft()
 	{
 		jcraft = this;
 
-		this.gameSettings = gameSettings;
-		debugEnabled = gameSettings.debugEnabled;
-		this.profiler = new Profiler();
-		profiler.profilingEnabled = gameSettings.profilingEnabled;
+		debugEnabled = GameSettings.debugEnabled;
 		settings = new AppSettings(true);
-		settings.setWidth(gameSettings.screenWidth);
-		settings.setHeight(gameSettings.screenHeight);
+		settings.setWidth(GameSettings.screenWidth);
+		settings.setHeight(GameSettings.screenHeight);
 		settings.setTitle("JCraft");
-		settings.setFrameRate(gameSettings.frameRate);
+		settings.setFrameRate(GameSettings.frameRate);
 	}
 
 	public AppSettings getAppSettings()
@@ -93,11 +69,6 @@ public class JCraft extends SimpleApplication implements ActionListener
 		return player;
 	}
 
-	public Profiler getProfiler()
-	{
-		return profiler;
-	}
-
 	public static JCraft getInstance()
 	{
 		return jcraft;
@@ -107,7 +78,7 @@ public class JCraft extends SimpleApplication implements ActionListener
 	public void simpleInitApp()
 	{
 		initializeGUI();
-		if(gameSettings.skyEnabled)
+		if(GameSettings.skyEnabled)
 		{
 			stateManager.attach(new EnvironmentAppState());
 		}
@@ -129,7 +100,6 @@ public class JCraft extends SimpleApplication implements ActionListener
 		rootNode.addControl(hud);
 		rootNode.addControl(new BlockCursorControl(world, player, assetManager));
 
-		profiler.startSection("root");
 		updateStatsView();
 
 		System.out.println("****************************************************************************");
@@ -183,7 +153,7 @@ public class JCraft extends SimpleApplication implements ActionListener
 
 	private void toggleProfiling()
 	{
-		profiler.profilingEnabled = !profiler.profilingEnabled;
+		MonitorFactory.setEnabled(!MonitorFactory.isEnabled());
 	}
 
 	private void updateStatsView()
@@ -242,7 +212,7 @@ public class JCraft extends SimpleApplication implements ActionListener
 			seed = Long.parseLong(seedStr);
 		}
 		System.out.println("Using world seed: " + seed);
-		world = new World(this, profiler, cubesSettings, assetManager, cam, seed);
+		world = new World(this, cubesSettings, assetManager, cam, seed);
 		configureTerrainGenerator(seed, world.getTerrainGenerator());
 		world.setTimeOfDayProvider(stateManager.getState(EnvironmentAppState.class));
 		
@@ -403,11 +373,15 @@ public class JCraft extends SimpleApplication implements ActionListener
 	{
 		super.destroy();
 		world.destroy();
-		gameSettings.save();
+		GameSettings.save();
 
-		if(profiler.profilingEnabled)
+		if(MonitorFactory.isEnabled())
 		{
 			printProfilingData();
+		}
+		else
+		{
+			System.out.println("Profiling is disabled so no monitor data will be printed.");
 		}
 	}
 
@@ -417,11 +391,30 @@ public class JCraft extends SimpleApplication implements ActionListener
 		System.out.println("**********************************************");
 		System.out.println("************* Profiler results ***************");
 		System.out.println("**********************************************");
-		profiler.endSection();// needed to close the root profiling section
-		for(ProfilerResult result : profiler.getProfilingData("root"))
+		TableBuilder table = new TableBuilder("Label","Hits","Avg","Total","StdDev","Min","Max","Active","Avg Active","Max Active","First Access","Last Access","Last Value");
+		List<Monitor> monitors = new ArrayList<>();
+		for(Monitor mon : MonitorFactory.getRootMonitor().getMonitors())
 		{
-			System.out.println(result.section + " [" + result.elapsedTime + "," + result.maxTime + "]");
+			if(!"com.jamonapi.Exceptions".equalsIgnoreCase(mon.getLabel()))
+			{
+				monitors.add(mon);
+			}
 		}
+		Collections.sort(monitors, new Comparator<Monitor>()
+		{
+			@Override
+			public int compare(Monitor o1, Monitor o2)
+			{
+				Double avg1 = o1.getAvg();
+				Double avg2 = o2.getAvg();
+				return avg2.compareTo(avg1);
+			}
+		});
+		for(Monitor mon : monitors)
+		{
+			table.addRow(mon.getLabel(),mon.getHits(),mon.getAvg(),mon.getTotal(),mon.getStdDev(),mon.getMin(),mon.getMax(),mon.getActive(),mon.getAvgActive(),mon.getMaxActive(),mon.getFirstAccess(),mon.getLastAccess(),mon.getLastValue());
+		}
+		System.out.println(table.toString());
 	}
 
 	// WARNING: This may be buggy. See
@@ -452,11 +445,10 @@ public class JCraft extends SimpleApplication implements ActionListener
 	{
 		Logger.getLogger("").setLevel(Level.SEVERE);
 
-		GameSettings gameSettings = new GameSettings(new File(System.getProperty("user.home")));
-		gameSettings.load();
+		GameSettings.load();
 
-		JCraft app = new JCraft(gameSettings);
-		app.setShowSettings(gameSettings.showSettings);
+		JCraft app = new JCraft();
+		app.setShowSettings(GameSettings.showSettings);
 		app.start();
 	}
 }

@@ -8,6 +8,7 @@ import com.chappelle.jcraft.Vector3Int;
 import com.chappelle.jcraft.blocks.Block;
 import com.chappelle.jcraft.world.World;
 import com.chappelle.jcraft.world.chunk.Chunk;
+import com.jamonapi.*;
 
 public class FloodFillLightManager implements LightManager
 {
@@ -28,19 +29,31 @@ public class FloodFillLightManager implements LightManager
 	
 	public void propagateLight(Chunk chunk)
 	{
+		Monitor mon = MonitorFactory.start("propagateLight(chunk)");
 		chunk.isLightUpdating = true;
 		propagateLight();
 		chunk.isLightUpdating = false;
+		mon.stop();
 	}
 	
 	@Override
 	public void propagateLight()
 	{
+		Monitor mon = MonitorFactory.start("propagateLight");
+		Monitor monBlockLight = MonitorFactory.start("propagateLight.blockLight");
+		
 		propagateRemovedBlockLights();
 		propagateAddedBlockLights();
 		
+		monBlockLight.stop();
+		
+		Monitor monSunLight = MonitorFactory.start("propagateLight.monSunLight");
+		
 		propagateRemovedSunlight();
 		propagateAddedSunlight();
+		
+		monSunLight.stop();
+		mon.stop();
 	}
 
 	private void propagateRemovedBlockLights()

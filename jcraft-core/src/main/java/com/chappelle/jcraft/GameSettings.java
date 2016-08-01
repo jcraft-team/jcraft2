@@ -7,29 +7,30 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import com.jamonapi.MonitorFactory;
+
 public class GameSettings
 {
-	public int screenWidth = 1366;
-	public int screenHeight = 768;
-	public boolean showSettings;
-	public int frameRate = -1;//-1 is unlimited
-	public boolean debugEnabled;
-	public boolean profilingEnabled;
-	public boolean skyEnabled;
+	public static int screenWidth = 1366;
+	public static int screenHeight = 768;
+	public static boolean showSettings;
+	public static int frameRate = -1;//-1 is unlimited
+	public static boolean debugEnabled;
+	public static boolean skyEnabled;
 	
-	private File optionsFile;
+	private static File optionsFile;
 	
-	public GameSettings(File parent)
+	private GameSettings()
 	{
-		this.optionsFile = new File(parent, "jcraft-options.txt");
 	}
 	/**/
-	public void load()
+	public static void load()
 	{
+		optionsFile = new File(System.getProperty("user.home"), "jcraft-options.txt");
 		if(optionsFile.exists())
 		{
 			System.out.println("Loading options from " + optionsFile);
-			try(BufferedReader bufferedreader = new BufferedReader(new FileReader(this.optionsFile)))
+			try(BufferedReader bufferedreader = new BufferedReader(new FileReader(optionsFile)))
 			{
 				String line = "";
 				while ((line = bufferedreader.readLine()) != null)
@@ -40,31 +41,31 @@ public class GameSettings
 
 						if (lineParts[0].equals("screenWidth"))
 						{
-							this.screenWidth = Integer.parseInt(lineParts[1]);
+							screenWidth = Integer.parseInt(lineParts[1]);
 						}
 						else if (lineParts[0].equals("screenHeight"))
 						{
-							this.screenHeight = Integer.parseInt(lineParts[1]);
+							screenHeight = Integer.parseInt(lineParts[1]);
 						}
 						else if (lineParts[0].equals("showSettings"))
 						{
-							this.showSettings = Boolean.parseBoolean(lineParts[1]);
+							showSettings = Boolean.parseBoolean(lineParts[1]);
 						}
 						else if (lineParts[0].equals("frameRate"))
 						{
-							this.frameRate = Integer.parseInt(lineParts[1]);
+							frameRate = Integer.parseInt(lineParts[1]);
 						}
 						else if (lineParts[0].equals("debugEnabled"))
 						{
-							this.debugEnabled = Boolean.parseBoolean(lineParts[1]);
+							debugEnabled = Boolean.parseBoolean(lineParts[1]);
 						}
 						else if (lineParts[0].equals("profilingEnabled"))
 						{
-							this.profilingEnabled = Boolean.parseBoolean(lineParts[1]);
+							MonitorFactory.setEnabled(Boolean.parseBoolean(lineParts[1]));
 						}
 						else if (lineParts[0].equals("skyEnabled"))
 						{
-							this.skyEnabled = Boolean.parseBoolean(lineParts[1]);
+							skyEnabled = Boolean.parseBoolean(lineParts[1]);
 						}
 					}
 					catch(Exception e)
@@ -80,9 +81,9 @@ public class GameSettings
 		}
 	}
 	
-	public void save()
+	public static void save()
 	{
-		try(PrintWriter printWriter = new PrintWriter(new FileWriter(this.optionsFile)))
+		try(PrintWriter printWriter = new PrintWriter(new FileWriter(optionsFile)))
 		{
 			System.out.println("Saving options to " + optionsFile);
 			printWriter.println("screenWidth=" + screenWidth);
@@ -90,7 +91,7 @@ public class GameSettings
 			printWriter.println("showSettings=" + showSettings);
 			printWriter.println("frameRate=" + frameRate);
 			printWriter.println("debugEnabled=" + debugEnabled);
-			printWriter.println("profilingEnabled=" + profilingEnabled);
+			printWriter.println("profilingEnabled=" + MonitorFactory.isEnabled());
 			printWriter.println("skyEnabled=" + skyEnabled);
 		}
 		catch(IOException e)

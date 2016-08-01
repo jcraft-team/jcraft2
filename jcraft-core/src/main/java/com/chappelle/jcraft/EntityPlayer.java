@@ -9,6 +9,7 @@ import com.chappelle.jcraft.util.AABB;
 import com.chappelle.jcraft.util.MathUtils;
 import com.chappelle.jcraft.util.RayTrace;
 import com.chappelle.jcraft.world.World;
+import com.jamonapi.*;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
@@ -304,12 +305,19 @@ public class EntityPlayer extends Entity
 	
 	public void breakBlock()
 	{
+		Monitor monitor = MonitorFactory.start("breakBlock");
+		
+		Monitor rayTraceMon = MonitorFactory.start("pickBlock");
 		RayTrace rayTrace = pickBlock();
+		rayTraceMon.stop();
 		if(rayTrace != null)
 		{
 			System.out.println("Removing block at [" + rayTrace.blockX + ", " + rayTrace.blockY + ", " + rayTrace.blockZ + "]");
+			
 			world.removeBlock(rayTrace.blockX, rayTrace.blockY, rayTrace.blockZ);
 		}
+		
+		monitor.stop();
 	}
 	
 	public RayTrace pickBlock()
@@ -317,7 +325,8 @@ public class EntityPlayer extends Entity
 		float blockReachDistance = 4.5f;
         Vector3f origin = new Vector3f((float)posX, (float)posY, (float)posZ);
         Vector3f look = cam.getDirection().normalize().mult(blockReachDistance).add(new Vector3f((float)posX, (float)posY, (float)posZ));
-		return world.rayTraceBlocks(origin, look);
+		RayTrace rayTraceBlocks = world.rayTraceBlocks(origin, look);
+		return rayTraceBlocks;
 	}
 	
 	public void placeBlock()

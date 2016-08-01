@@ -1,34 +1,16 @@
 package com.chappelle.jcraft.world;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.*;
+import java.util.concurrent.*;
 
-import com.chappelle.jcraft.BlockState;
-import com.chappelle.jcraft.CubesSettings;
-import com.chappelle.jcraft.Direction;
-import com.chappelle.jcraft.Entity;
-import com.chappelle.jcraft.EntityPlayer;
-import com.chappelle.jcraft.Vector3Int;
-import com.chappelle.jcraft.blocks.Block;
-import com.chappelle.jcraft.blocks.SoundConstants;
+import com.chappelle.jcraft.*;
+import com.chappelle.jcraft.blocks.*;
 import com.chappelle.jcraft.lighting.LightType;
-import com.chappelle.jcraft.network.BitInputStream;
-import com.chappelle.jcraft.network.BitOutputStream;
-import com.chappelle.jcraft.network.BitSerializable;
-import com.chappelle.jcraft.network.CubesSerializer;
-import com.chappelle.jcraft.profiler.Profiler;
-import com.chappelle.jcraft.util.AABB;
-import com.chappelle.jcraft.util.BlockNavigator;
-import com.chappelle.jcraft.util.MathUtils;
-import com.chappelle.jcraft.util.RayTrace;
-import com.chappelle.jcraft.world.chunk.Chunk;
-import com.chappelle.jcraft.world.chunk.ChunkManager;
-import com.chappelle.jcraft.world.chunk.TerrainGenerator;
+import com.chappelle.jcraft.network.*;
+import com.chappelle.jcraft.util.*;
+import com.chappelle.jcraft.world.chunk.*;
+import com.jamonapi.*;
 import com.jme3.app.Application;
 import com.jme3.asset.AssetManager;
 import com.jme3.audio.AudioNode;
@@ -47,7 +29,6 @@ public class World implements BitSerializable
 	private CubesSettings settings;
 
 // 	private LightManager lightMgr;
-	public Profiler profiler;
 	private AssetManager assetManager;
 	private Random random = new Random();
 	private AudioNode music;
@@ -61,10 +42,9 @@ public class World implements BitSerializable
 	private ChunkManager chunkMgr;
 	private TerrainGenerator terrainGenerator;
 	
-	public World(Application app, Profiler profiler, CubesSettings settings, AssetManager assetManager, Camera cam, long seed)
+	public World(Application app, CubesSettings settings, AssetManager assetManager, Camera cam, long seed)
 	{
 		this.app = app;
-		this.profiler = profiler;
 		this.settings = settings;
 		this.assetManager = assetManager;
 //		this.lightMgr = new FloodFillLightManager(this);
@@ -275,6 +255,7 @@ public class World implements BitSerializable
 	
 	public void removeBlock(Vector3Int location)
 	{
+		Monitor removeBlockMon = MonitorFactory.start("removeBlock");
 		BlockTerrain_LocalBlockState localBlockState = getLocalBlockState(location);
 		if(localBlockState != null)
 		{
@@ -287,7 +268,11 @@ public class World implements BitSerializable
 				chunk.lightMgr.removeBlockLight(location);
 				chunk.lightMgr.rebuildSunlight(chunk);
 				
+				
+				Monitor rebuildNeighborsSunlightMon = MonitorFactory.start("rebuildNeighborsSunlight");
 				rebuildNeighborsSunlight(chunk);//FIXME: Not great performance, but fixes some lighting issues when breaking blocks underground over chunk boundaries
+				rebuildNeighborsSunlightMon.stop();
+				
 	            //Notify neighbors of block removal
 	            for (Block.Face face : Block.Face.values())
 	            {
@@ -308,6 +293,7 @@ public class World implements BitSerializable
 	            }
 			}
 		}
+		removeBlockMon.stop();
 	}
 
 	private void rebuildNeighborsSunlight(Chunk chunk)
