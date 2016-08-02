@@ -1,0 +1,81 @@
+//Adds a light block, doesn't handle sunlight or light removal
+//Just for future reference.
+
+	void LightBlock(int x, int y, int z, int level)
+	{
+		setLight(x, y, z, level);
+
+		LightAxis(x, y, z, Direction.RIGHT);
+		LightAxis(x, y, z, Direction.LEFT);
+		LightAxis(x, y, z, Direction.UP);
+		LightAxis(x, y, z, Direction.DOWN);
+		LightAxis(x, y, z, Direction.FRONT);
+		LightAxis(x, y, z, Direction.BACK);
+	}
+
+	void LightAxis(int x, int y, int z, Direction direction)
+	{
+		for(int i = getLight(x, y, z) - 1; i != 0; i--)
+		{
+			switch(direction)
+			{
+			case RIGHT:		x++; break;
+			case LEFT:		x--; break;
+			case UP:			y++; break;
+			case DOWN:		y--; break;
+			case FRONT:		z++; break;
+			case BACK:	z--; break;
+			}
+
+			if(getBlock(x, y, z) != null)
+			{
+				break;
+			}
+			else if(getLight(x, y, z) >= i)
+			{
+				break;
+			}
+
+			setLight(x, y, z, i);
+
+			switch(direction)
+			{
+			case RIGHT:
+				LightAxis(x, y, z, Direction.UP);
+				LightAxis(x, y, z, Direction.DOWN);
+				LightAxis(x, y, z, Direction.FRONT);
+				LightAxis(x, y, z, Direction.BACK);
+				break;
+			case LEFT:
+				LightAxis(x, y, z, Direction.UP);
+				LightAxis(x, y, z, Direction.DOWN);
+				LightAxis(x, y, z, Direction.FRONT);
+				LightAxis(x, y, z, Direction.BACK);
+				break;
+			case UP:
+				LightAxis(x, y, z, Direction.LEFT);
+				LightAxis(x, y, z, Direction.RIGHT);
+				LightAxis(x, y, z, Direction.FRONT);
+				LightAxis(x, y, z, Direction.BACK);
+				break;
+			case DOWN:
+				LightAxis(x, y, z, Direction.LEFT);
+				LightAxis(x, y, z, Direction.RIGHT);
+				LightAxis(x, y, z, Direction.FRONT);
+				LightAxis(x, y, z, Direction.BACK);
+				break;
+			case FRONT:
+				LightAxis(x, y, z, Direction.UP);
+				LightAxis(x, y, z, Direction.DOWN);
+				LightAxis(x, y, z, Direction.LEFT);
+				LightAxis(x, y, z, Direction.RIGHT);
+				break;
+			case BACK:
+				LightAxis(x, y, z, Direction.UP);
+				LightAxis(x, y, z, Direction.DOWN);
+				LightAxis(x, y, z, Direction.LEFT);
+				LightAxis(x, y, z, Direction.RIGHT);
+				break;
+			}
+		}
+	}
