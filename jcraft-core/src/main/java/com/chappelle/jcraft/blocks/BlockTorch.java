@@ -138,9 +138,9 @@ public class BlockTorch extends Block
 		return super.collisionRayTrace(world, x, y, z, startVec, endVec);
 	}
 
-//	@Override
-//	public boolean isTransparent()
-//	{
-//		return true;
-//	}
+	@Override
+	public boolean isTransparent()
+	{
+		return true;
+	}
 }

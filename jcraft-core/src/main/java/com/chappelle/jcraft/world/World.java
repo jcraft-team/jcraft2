@@ -418,12 +418,44 @@ public class World implements BitSerializable
 		return chunkLocation;
 	}
 
+//	public Vector3Int getLocalBlockLocation(Vector3Int blockLocation, Chunk chunk)
+//	{
+//		Vector3Int localLocation = new Vector3Int();
+//		int localX = (blockLocation.getX() - chunk.getBlockLocation().getX());
+//		int localY = (blockLocation.getY() - chunk.getBlockLocation().getY());
+//		int localZ = (blockLocation.getZ() - chunk.getBlockLocation().getZ());
+//		localLocation.set(localX, localY, localZ);
+//		return localLocation;
+//	}
+
 	public Vector3Int getLocalBlockLocation(Vector3Int blockLocation, Chunk chunk)
 	{
 		Vector3Int localLocation = new Vector3Int();
 		int localX = (blockLocation.getX() - chunk.getBlockLocation().getX());
+		if(localX == 16)
+		{
+			if(blockLocation.x < 0)
+			{
+				localX = 15;
+			}
+			else
+			{
+				localX = 0;
+			}
+		}
 		int localY = (blockLocation.getY() - chunk.getBlockLocation().getY());
 		int localZ = (blockLocation.getZ() - chunk.getBlockLocation().getZ());
+		if(localZ == 16)
+		{
+			if(blockLocation.z < 0)
+			{
+				localZ = 15;
+			}
+			else
+			{
+				localZ = 0;
+			}
+		}
 		localLocation.set(localX, localY, localZ);
 		return localLocation;
 	}

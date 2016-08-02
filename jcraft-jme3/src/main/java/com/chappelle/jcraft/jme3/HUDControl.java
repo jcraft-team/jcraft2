@@ -9,7 +9,7 @@ import com.chappelle.jcraft.inventory.InventoryListener;
 import com.chappelle.jcraft.inventory.ItemStack;
 import com.chappelle.jcraft.lighting.LightType;
 import com.chappelle.jcraft.util.RayTrace;
-import com.chappelle.jcraft.world.World;
+import com.chappelle.jcraft.world.*;
 import com.chappelle.jcraft.world.chunk.Chunk;
 import com.jme3.asset.AssetManager;
 import com.jme3.font.BitmapFont;
@@ -46,11 +46,14 @@ public class HUDControl extends AbstractControl implements ScreenController, Inv
 	private BitmapText playerLocationLabel;
 	private BitmapText blockLocationLabel;
 	private BitmapText chunkLocationLabel;
+	private BitmapText chunkBlockLocationLabel;
+	private BitmapText localBlockLocationLabel;
 	private BitmapText walkingOnLabel;
 	private BitmapText selectedBlockLabel;
 	private BitmapText lightLevelLabel;
 	private BitmapText facingLabel;
 	private BitmapText pointedBlockLabel;
+	private BitmapText pointedLocalBlockLabel;
 	private BitmapText boundingBoxLabel;
 	private BitmapText pointedBoundingBoxLabel;
 	private BitmapText timeLabel;
@@ -100,6 +103,14 @@ public class HUDControl extends AbstractControl implements ScreenController, Inv
         x = 10;
         y-= 25;
         chunkLocationLabel.setLocalTranslation(x, y, 0);
+
+        x = 10;
+        y-= 25;
+        chunkBlockLocationLabel.setLocalTranslation(x, y, 0);
+        
+        x = 10;
+        y-= 25;
+        localBlockLocationLabel.setLocalTranslation(x, y, 0);
         
         x = 10;
         y-= 25;
@@ -116,6 +127,10 @@ public class HUDControl extends AbstractControl implements ScreenController, Inv
         x = 10;
         y-= 25;
         pointedBlockLabel.setLocalTranslation(x, y, 0);
+        
+        x = 10;
+        y-= 25;
+        pointedLocalBlockLabel.setLocalTranslation(x, y, 0);
         
         x = 10;
         y-= 25;
@@ -170,6 +185,16 @@ public class HUDControl extends AbstractControl implements ScreenController, Inv
             chunkLocationLabel.setText("Chunk location: ");
             debugNode.attachChild(chunkLocationLabel);
 
+            chunkBlockLocationLabel = new BitmapText(guiFont, false);
+            chunkBlockLocationLabel.setSize(guiFont.getCharSet().getRenderedSize());
+            chunkBlockLocationLabel.setText("Chunk Block location: ");
+            debugNode.attachChild(chunkBlockLocationLabel);
+            
+            localBlockLocationLabel = new BitmapText(guiFont, false);
+            localBlockLocationLabel.setSize(guiFont.getCharSet().getRenderedSize());
+            localBlockLocationLabel.setText("Local Block location: ");
+            debugNode.attachChild(localBlockLocationLabel);
+
             lightLevelLabel = new BitmapText(guiFont, false);
             lightLevelLabel.setSize(guiFont.getCharSet().getRenderedSize());
             lightLevelLabel.setText("Light Level: ");
@@ -189,6 +214,11 @@ public class HUDControl extends AbstractControl implements ScreenController, Inv
             pointedBlockLabel.setSize(guiFont.getCharSet().getRenderedSize());
             pointedBlockLabel.setText("Pointed Block: ");
             debugNode.attachChild(pointedBlockLabel);
+            
+            pointedLocalBlockLabel = new BitmapText(guiFont, false);
+            pointedLocalBlockLabel.setSize(guiFont.getCharSet().getRenderedSize());
+            pointedLocalBlockLabel.setText("Pointed Local Block: ");
+            debugNode.attachChild(pointedLocalBlockLabel);
             
             facingLabel = new BitmapText(guiFont, false);
             facingLabel.setSize(guiFont.getCharSet().getRenderedSize());
@@ -251,6 +281,14 @@ public class HUDControl extends AbstractControl implements ScreenController, Inv
 				if(chunk != null)
 				{
 					chunkLocationLabel.setText("Chunk location: " + chunk.location);
+					chunkBlockLocationLabel.setText("Chunk Block location: " + chunk.blockLocation);
+					localBlockLocationLabel.setText("Local Block Location: " + world.getLocalBlockLocation(blockLoc, chunk));
+				}
+				else
+				{
+					chunkLocationLabel.setText("Chunk location: null");
+					chunkBlockLocationLabel.setText("Chunk Block location: null");
+					localBlockLocationLabel.setText("Local Block Location: null");
 				}
 			}
 			RayTrace rayTrace = player.pickBlock();
@@ -258,6 +296,23 @@ public class HUDControl extends AbstractControl implements ScreenController, Inv
 			{
 				Block block = world.getBlock(rayTrace.blockX, rayTrace.blockY, rayTrace.blockZ);
 				pointedBlockLabel.setText("Pointed Block: " + (block == null ? "Air" : block) + " at [" + rayTrace.blockX + ", " + rayTrace.blockY + ", " + rayTrace.blockZ + "]");
+				if(block == null)
+				{
+					pointedLocalBlockLabel.setText("Pointed Local Block: null");
+				}
+				else
+				{
+					BlockTerrain_LocalBlockState localBlockState = world.getLocalBlockState(new Vector3Int(rayTrace.blockX, rayTrace.blockY, rayTrace.blockZ));
+					if(localBlockState != null)
+					{
+						Vector3Int localBlockLocation = localBlockState.getLocalBlockLocation();
+						pointedLocalBlockLabel.setText("Pointed Local Block: " + block + " at [" + localBlockLocation.x + ", " + localBlockLocation.y + ", " + localBlockLocation.z + "]");
+					}
+					else
+					{
+						pointedLocalBlockLabel.setText("Pointed Local Block: null");
+					}
+				}
 				if(block != null)
 				{
 					pointedBoundingBoxLabel.setText("Pointed Bounding Box: " + block.getCollisionBoundingBox(world, rayTrace.blockX, rayTrace.blockY, rayTrace.blockZ));

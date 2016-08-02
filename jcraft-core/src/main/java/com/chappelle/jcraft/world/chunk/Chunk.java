@@ -34,7 +34,6 @@ public class Chunk implements BitSerializable
     private LightMap lights;
     private boolean needsMeshUpdate = true;
     public World world;
-    private Vector3Int temp = new Vector3Int();
     private NibbleArray metadata;
     public boolean isLoaded;
     public boolean updateInProgress;
@@ -282,36 +281,13 @@ public class Chunk implements BitSerializable
 
     public void setBlock(int x, int y, int z, Block block)
     {
-    	temp.set(x, y, z);
-    	setBlock(temp, block);
+        blockTypes[x][y][z] = block.blockId;
+        markDirty();
     }
     
-    public void setBlock(Vector3Int location, Block block)
+    public void setBlock(Vector3Int blockLocation, Block block)
     {
-//        if(isValidBlockLocation(location))
-//    	  {
-            blockTypes[location.getX()][location.getY()][location.getZ()] = block.blockId;
-            updateBlockState(location);
-            markDirty();
-//        }
-    }
-
-    private void updateBlockState(Vector3Int location)
-    {
-        updateBlockInformation(location);
-        for(int i=0;i<Block.Face.values().length;i++){
-            Vector3Int neighborLocation = getNeighborBlockGlobalLocation(location, Block.Face.values()[i]);
-            Chunk chunk = world.getChunkFromBlockCoordinates(neighborLocation.x, neighborLocation.z);
-            if(chunk != null){
-                chunk.updateBlockInformation(neighborLocation.subtract(chunk.getBlockLocation()));
-            }
-        }
-    }
-    
-    private void updateBlockInformation(Vector3Int location)
-    {
-//        Block neighborBlock_Top = world.getBlock(getNeighborBlockGlobalLocation(location, Block.Face.Top));
-//        blocks_IsOnSurface[location.getX()][location.getY()][location.getZ()] = (neighborBlock_Top == null || !neighborBlock_Top.smothersBottomBlock());
+    	setBlock(blockLocation.x, blockLocation.y, blockLocation.z, block);
     }
 
     private boolean isValidBlockLocation(Vector3Int location)
@@ -338,7 +314,6 @@ public class Chunk implements BitSerializable
     public void removeBlock(Vector3Int location)
     {
         blockTypes[location.getX()][location.getY()][location.getZ()] = 0;
-        updateBlockState(location);
         markDirty();
     }
     
@@ -378,7 +353,6 @@ public class Chunk implements BitSerializable
 				for(int z = 0; z < blockTypes[0][0].length; z++)
 				{
 					tmpLocation.set(x, y, z);
-					updateBlockInformation(tmpLocation);
 				}
 			}
 		}

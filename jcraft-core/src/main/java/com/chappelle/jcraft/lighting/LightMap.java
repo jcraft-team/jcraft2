@@ -50,16 +50,17 @@ public class LightMap
 
 	public void clearSunlight()
 	{
-		for(int y = 0; y < chunkSize.y; y++)
-		{
-			for(int z = 0; z < chunkSize.z; z++)
-			{
-				for(int x = 0; x < chunkSize.x; x++)
-				{
-					setLight(x, y, z, LightType.SKY, 0);
-				}
-			}
-		}
+		this.light = new byte[chunkSize.y][chunkSize.z][chunkSize.x];
+//		for(int y = 0; y < chunkSize.y; y++)
+//		{
+//			for(int z = 0; z < chunkSize.z; z++)
+//			{
+//				for(int x = 0; x < chunkSize.x; x++)
+//				{
+//					setLight(x, y, z, LightType.SKY, 0);
+//				}
+//			}
+//		}
 	}
 
 	private int getSunlight(int x, int y, int z)

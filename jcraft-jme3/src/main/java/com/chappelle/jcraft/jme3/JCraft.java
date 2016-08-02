@@ -1,5 +1,6 @@
 package com.chappelle.jcraft.jme3;
 
+import java.io.*;
 import java.util.*;
 import java.util.logging.*;
 
@@ -7,7 +8,7 @@ import com.chappelle.jcraft.*;
 import com.chappelle.jcraft.blocks.Block;
 import com.chappelle.jcraft.util.AABB;
 import com.chappelle.jcraft.world.World;
-import com.chappelle.jcraft.world.chunk.TerrainGenerator;
+import com.chappelle.jcraft.world.chunk.*;
 import com.chappelle.jcraft.world.chunk.gen.*;
 import com.jamonapi.*;
 import com.jme3.app.*;
@@ -224,6 +225,8 @@ public class JCraft extends SimpleApplication implements ActionListener
 		SimplexNoise.setSeed(seed);//TODO: Need to make this non-static and allow Simplex2DFeature to set it
 		// test commit
 //		terrainGenerator.addFeature(new FlatFeature(Block.grass, 10));
+		
+		
 		terrainGenerator.addFeature(new Simplex3DFeature(seed, 0.01f, 0.1f, 4, 70)); 
 		terrainGenerator.addFeature(new Simplex2DFeature(seed,Block.grass.blockId).setSimplexScale(0.015f).setPersistence(0.2f).setIterations(4).setHeight(60));
 		terrainGenerator.addFeature(new Simplex2DFeature(seed).setSimplexScale(0.01f).setPersistence(0.12f).setIterations(4).setHeight(60));
@@ -233,6 +236,9 @@ public class JCraft extends SimpleApplication implements ActionListener
 		terrainGenerator.addFeature(new WaterFeature(45));
 		terrainGenerator.addFeature(new PlantFeature(seed));
 		terrainGenerator.addFeature(new TreeFeature(seed));
+		
+		
+//		terrainGenerator.addFeature(new ShowNegativeCoordinatesAndChunkBoundariesFeature());
 //		terrainGenerator.addFeature(new ChessBoardFeature());
 //		terrainGenerator.addFeature(new CellNoiseFlatFeature(seed));
 //		terrainGenerator.addFeature(new CellNoise2DFeature(seed));
