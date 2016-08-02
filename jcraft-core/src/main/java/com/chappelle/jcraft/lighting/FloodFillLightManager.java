@@ -524,18 +524,16 @@ public class FloodFillLightManager implements LightManager
 	@Override
 	public void initChunkSunlight(Chunk chunk)
 	{
-		Vector3Int location = new Vector3Int(0, 255, 0);
+		int y = 255;
 		for(int x = 0; x < 16; x++)
 		{
-			location.x = x;
 			for(int z = 0; z < 16; z++)
 			{
-				location.z = z;
-				Block block = chunk.getBlock(location);
+				Block block = chunk.getBlock(x, y, z);
 				if(block == null || block.isTransparent())
 				{
-					chunk.setLight(location.x, location.y, location.z, LightType.SKY, LightMap.MAX_LIGHT);
-					sunlightAdditionQueue.add(new LightNode(location, chunk));
+					chunk.setLight(x, y, z, LightType.SKY, LightMap.MAX_LIGHT);
+					sunlightAdditionQueue.add(new LightNode(x, y, z, chunk));
 				}
 			}
 		}

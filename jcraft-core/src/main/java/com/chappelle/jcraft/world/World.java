@@ -197,7 +197,7 @@ public class World implements BitSerializable
 
 	public Block getBlock(Vector3Int location)
 	{
-		BlockTerrain_LocalBlockState localBlockState = getLocalBlockState(location);
+		ChunkLocation localBlockState = getLocalBlockState(location);
 		if(localBlockState != null)
 		{
 			return localBlockState.getBlock();
@@ -224,7 +224,7 @@ public class World implements BitSerializable
 
 	public void setBlock(Vector3Int location, Block block)
 	{
-		BlockTerrain_LocalBlockState localBlockState = getLocalBlockState(location);
+		ChunkLocation localBlockState = getLocalBlockState(location);
 		if(localBlockState != null)
 		{
 			localBlockState.getChunk().lightMgr.setBlockLight(location, block.lightValue);
@@ -256,7 +256,7 @@ public class World implements BitSerializable
 	public void removeBlock(Vector3Int location)
 	{
 		Monitor removeBlockMon = MonitorFactory.start("removeBlock");
-		BlockTerrain_LocalBlockState localBlockState = getLocalBlockState(location);
+		ChunkLocation localBlockState = getLocalBlockState(location);
 		if(localBlockState != null)
 		{
 			Block block = localBlockState.getBlock();
@@ -367,13 +367,13 @@ public class World implements BitSerializable
 		removeBlock(new Vector3Int(x, y, z));
 	}
 
-	public BlockTerrain_LocalBlockState getLocalBlockState(Vector3Int blockLocation)
+	public ChunkLocation getLocalBlockState(Vector3Int blockLocation)
 	{
 		Chunk chunk = getChunkFromBlockCoordinates(blockLocation.x, blockLocation.z);
 		if(chunk != null)
 		{
 			Vector3Int localBlockLocation = getLocalBlockLocation(blockLocation, chunk);
-			return new BlockTerrain_LocalBlockState(chunk, localBlockLocation);
+			return new ChunkLocation(chunk, localBlockLocation);
 		}
 		return null;
 	}
@@ -537,7 +537,7 @@ public class World implements BitSerializable
 	
     public BlockState getBlockState(Vector3Int location)
     {
-        BlockTerrain_LocalBlockState localState = getLocalBlockState(location);
+        ChunkLocation localState = getLocalBlockState(location);
         Chunk chunk = localState.getChunk();
         return chunk.getBlockState(localState.getLocalBlockLocation());
     }

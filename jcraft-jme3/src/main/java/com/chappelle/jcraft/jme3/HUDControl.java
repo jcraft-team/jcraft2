@@ -302,7 +302,7 @@ public class HUDControl extends AbstractControl implements ScreenController, Inv
 				}
 				else
 				{
-					BlockTerrain_LocalBlockState localBlockState = world.getLocalBlockState(new Vector3Int(rayTrace.blockX, rayTrace.blockY, rayTrace.blockZ));
+					ChunkLocation localBlockState = world.getLocalBlockState(new Vector3Int(rayTrace.blockX, rayTrace.blockY, rayTrace.blockZ));
 					if(localBlockState != null)
 					{
 						Vector3Int localBlockLocation = localBlockState.getLocalBlockLocation();

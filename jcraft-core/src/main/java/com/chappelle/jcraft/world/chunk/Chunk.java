@@ -30,6 +30,7 @@ public class Chunk implements BitSerializable
     public Vector3Int location = new Vector3Int();
     public Vector3Int blockLocation = new Vector3Int();
     private byte[][][] blockTypes;
+    private int[][] heightMap;
     private BlockState[][][] blockState;
     private LightMap lights;
     private boolean needsMeshUpdate = true;
@@ -57,8 +58,120 @@ public class Chunk implements BitSerializable
     	this.id = ChunkCoordIntPair.chunkXZ2Int(x, z); 
     	this.lightMgr = new FloodFillLightManager(world);
     	this.lightMgr.initChunkSunlight(this);
+    	this.heightMap = makeHeightMap(blockTypes);
     }
     
+    public int[][] getHeightMap()
+    {
+    	return heightMap;
+    }
+    
+	public void setBlock(int x, int y, int z, Block block)
+    {
+    	if(heightMap[x][z] < y)
+    	{
+    		heightMap[x][z] = y;
+    	}
+    	blockTypes[x][y][z] = block.blockId;
+    	markDirty();
+    }
+    
+	public Block getBlock(Vector3Int location)
+	{
+		return getBlock(location.x, location.y, location.z);
+	}
+	
+    public Block getBlock(int x, int y, int z)
+    {
+        if(isValidBlockLocation(x, y, z))
+        {
+            int blockType = blockTypes[x][y][z];
+            return Block.blocksList[blockType];
+        }
+        return null;
+    }
+    
+    public void removeBlock(int x, int y, int z)
+    {
+    	if(heightMap[x][z] == y)
+    	{
+    		heightMap[x][z] = findHeight(x, z);
+    	}
+    	blockTypes[x][y][z] = 0;
+    	markDirty();
+    }
+
+    private int[][] makeHeightMap(byte[][][] blockTypes)
+	{
+    	int[][] heightMap = new int[16][16];
+    	for(int x = 0; x < 16; x++)
+    	{
+    		for(int z = 0; z < 16; z++)
+    		{
+    			heightMap[x][z] = findHeight(x, z);
+    		}
+    	}
+    	return heightMap;
+	}
+
+
+    private int findHeight(int x, int z)
+    {
+		for(int y = 255; y >= 0; y--)
+		{
+			Block block = getBlock(x, y, z);
+			if(block != null && !block.isTransparent())
+			{
+				return y;
+			}
+		}
+		return 0;
+    }
+    
+    public void setBlockState(Vector3Int location, Short key, Object value)
+    {
+        Block block = getBlock(location);
+        if(block != null)
+        {
+            BlockState state = getBlockState(location);
+            state.put(key, value);
+        }
+    }
+
+    public BlockState getBlockState(Vector3Int location)
+    {
+        BlockState state = getBlockState(location.x, location.y, location.z);
+        if(state == null)
+        {
+            state = new BlockState(this);
+            blockState[location.getX()][location.getY()][location.getZ()] = state;
+        }
+        return state;
+    }
+    
+    
+    private BlockState getBlockState(int x, int y, int z)
+    {
+    	if(blockState == null)
+    	{
+    		blockState = new BlockState[16][256][16];
+    	}
+    	return blockState[x][y][z];
+    }
+
+    public Object getBlockStateValue(Vector3Int location, Short key)
+    {
+        BlockState state = getBlockState(location);
+        if(state == null)
+        {
+            return null;
+        }
+        else
+        {
+            return state.get(key);
+        }
+    }
+
     public void addToScene(Node parent)
     {
     	parent.attachChild(node);
@@ -151,54 +264,11 @@ public class Chunk implements BitSerializable
     	return lights;
     }
 
-    public Object getBlockStateValue(Vector3Int location, Short key)
+    public Block getNeighborBlock_Global(Vector3Int location, Block.Face face)
     {
-        BlockState state = getBlockState(location);
-        if(state == null)
-        {
-            return null;
-        }
-        else
-        {
-            return state.get(key);
-        }
-    }
-
-    public BlockState getBlockState(Vector3Int location)
-    {
-        BlockState state = getBlockState(location.x, location.y, location.z);
-        if(state == null)
-        {
-            state = new BlockState(this);
-            blockState[location.getX()][location.getY()][location.getZ()] = state;
-        }
-        return state;
-    }
-    
-    
-    private BlockState getBlockState(int x, int y, int z)
-    {
-    	if(blockState == null)
-    	{
-    		blockState = new BlockState[16][256][16];
-    	}
-    	return blockState[x][y][z];
-    }
-
-    public Block getNeighborBlock_Global(Vector3Int location, Block.Face face){
         return world.getBlock(getNeighborBlockGlobalLocation(location, face));
     }
 
-    public Block getBlock(Vector3Int location)
-    {
-        if(isValidBlockLocation(location))
-        {
-            int blockType = blockTypes[location.getX()][location.getY()][location.getZ()];
-            return Block.blocksList[blockType];
-        }
-        return null;
-    }
-    
     public Chunk getChunkNeighbor(Direction dir)
     {
     	return world.getChunkNeighbor(this, dir);
@@ -278,43 +348,16 @@ public class Chunk implements BitSerializable
         neighborLocation.addLocal(blockLocation);
         return neighborLocation;
     }
-
-    public void setBlock(int x, int y, int z, Block block)
-    {
-        blockTypes[x][y][z] = block.blockId;
-        markDirty();
-    }
     
-    public void setBlock(Vector3Int blockLocation, Block block)
+    private boolean isValidBlockLocation(int x, int y, int z)
     {
-    	setBlock(blockLocation.x, blockLocation.y, blockLocation.z, block);
+        return Util.isValidIndex(blockTypes, x, y, z);
     }
 
-    private boolean isValidBlockLocation(Vector3Int location)
-    {
-        return Util.isValidIndex(blockTypes, location);
-    }
-
-    public void setBlockState(Vector3Int location, Short key, Object value)
-    {
-        Block block = getBlock(location);
-        if(block != null)
-        {
-            BlockState state = getBlockState(location);
-            state.put(key, value);
-        }
-    }
-    
     public Block getNeighborBlock_Local(Vector3Int location, Block.Face face)
     {
         Vector3Int neighborLocation = BlockNavigator.getNeighborBlockLocalLocation(location, face);
         return getBlock(neighborLocation);
-    }
-    
-    public void removeBlock(Vector3Int location)
-    {
-        blockTypes[location.getX()][location.getY()][location.getZ()] = 0;
-        markDirty();
     }
     
 	@Override
