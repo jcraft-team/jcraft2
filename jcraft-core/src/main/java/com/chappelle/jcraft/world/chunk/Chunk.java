@@ -1,31 +1,17 @@
 package com.chappelle.jcraft.world.chunk;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
-import com.chappelle.jcraft.BlockState;
-import com.chappelle.jcraft.Direction;
-import com.chappelle.jcraft.Vector3Int;
+import com.chappelle.jcraft.*;
 import com.chappelle.jcraft.blocks.Block;
-import com.chappelle.jcraft.lighting.FloodFillLightManager;
-import com.chappelle.jcraft.lighting.LightManager;
-import com.chappelle.jcraft.lighting.LightMap;
-import com.chappelle.jcraft.lighting.LightType;
-import com.chappelle.jcraft.network.BitInputStream;
-import com.chappelle.jcraft.network.BitOutputStream;
-import com.chappelle.jcraft.network.BitSerializable;
-import com.chappelle.jcraft.util.BlockNavigator;
-import com.chappelle.jcraft.util.NibbleArray;
-import com.chappelle.jcraft.util.Util;
+import com.chappelle.jcraft.lighting.*;
+import com.chappelle.jcraft.util.*;
 import com.chappelle.jcraft.world.World;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.queue.RenderQueue.Bucket;
-import com.jme3.scene.Geometry;
-import com.jme3.scene.Mesh;
-import com.jme3.scene.Node;
+import com.jme3.scene.*;
 
-public class Chunk implements BitSerializable
+public class Chunk
 {
     public Vector3Int location = new Vector3Int();
     public Vector3Int blockLocation = new Vector3Int();
@@ -359,48 +345,6 @@ public class Chunk implements BitSerializable
         Vector3Int neighborLocation = BlockNavigator.getNeighborBlockLocalLocation(location, face);
         return getBlock(neighborLocation);
     }
-    
-	@Override
-	public void write(BitOutputStream outputStream)
-	{
-		for(int x = 0; x < blockTypes.length; x++)
-		{
-			for(int y = 0; y < blockTypes[0].length; y++)
-			{
-				for(int z = 0; z < blockTypes[0][0].length; z++)
-				{
-					outputStream.writeBits(blockTypes[x][y][z], 8);
-				}
-			}
-		}
-	}
-
-	@Override
-	public void read(BitInputStream inputStream) throws IOException
-	{
-		for(int x = 0; x < blockTypes.length; x++)
-		{
-			for(int y = 0; y < blockTypes[0].length; y++)
-			{
-				for(int z = 0; z < blockTypes[0][0].length; z++)
-				{
-					blockTypes[x][y][z] = (byte) inputStream.readBits(8);
-				}
-			}
-		}
-		Vector3Int tmpLocation = new Vector3Int();
-		for(int x = 0; x < blockTypes.length; x++)
-		{
-			for(int y = 0; y < blockTypes[0].length; y++)
-			{
-				for(int z = 0; z < blockTypes[0][0].length; z++)
-				{
-					tmpLocation.set(x, y, z);
-				}
-			}
-		}
-		markDirty();
-	}
     
     public Chunk clone()
     {

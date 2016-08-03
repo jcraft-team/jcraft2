@@ -4,6 +4,7 @@ import java.util.*;
 
 import com.chappelle.jcraft.*;
 import com.chappelle.jcraft.blocks.Block;
+import com.chappelle.jcraft.util.*;
 import com.chappelle.jcraft.world.World;
 import com.chappelle.jcraft.world.chunk.Chunk;
 

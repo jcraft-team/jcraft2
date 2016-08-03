@@ -1,10 +1,8 @@
 package com.chappelle.jcraft.jme3;
 
-import com.chappelle.jcraft.EntityPlayer;
-import com.chappelle.jcraft.Vector3Int;
+import com.chappelle.jcraft.*;
 import com.chappelle.jcraft.blocks.Block;
-import com.chappelle.jcraft.util.AABB;
-import com.chappelle.jcraft.util.RayTrace;
+import com.chappelle.jcraft.util.*;
 import com.chappelle.jcraft.world.World;
 import com.jme3.asset.AssetManager;
 import com.jme3.material.Material;

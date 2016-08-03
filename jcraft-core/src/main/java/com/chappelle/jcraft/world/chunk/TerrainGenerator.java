@@ -3,7 +3,7 @@ package com.chappelle.jcraft.world.chunk;
 import java.util.*;
 
 import com.chappelle.jcraft.Vector3Int;
-import com.chappelle.jcraft.util.MathUtils;
+import com.chappelle.jcraft.util.*;
 import com.chappelle.jcraft.world.World;
 
 public class TerrainGenerator

@@ -1,13 +1,11 @@
 package com.chappelle.jcraft.world;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.*;
 
 import com.chappelle.jcraft.*;
 import com.chappelle.jcraft.blocks.*;
 import com.chappelle.jcraft.lighting.LightType;
-import com.chappelle.jcraft.network.*;
 import com.chappelle.jcraft.util.*;
 import com.chappelle.jcraft.world.chunk.*;
 import com.jme3.app.Application;
@@ -18,7 +16,7 @@ import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Node;
 
-public class World implements BitSerializable
+public class World
 {
 	private static final int THREAD_COUNT = 1;
 	public ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(THREAD_COUNT);
@@ -27,7 +25,6 @@ public class World implements BitSerializable
 	
 	private CubesSettings settings;
 
-// 	private LightManager lightMgr;
 	private AssetManager assetManager;
 	private Random random = new Random();
 	private AudioNode music;
@@ -46,7 +43,6 @@ public class World implements BitSerializable
 		this.app = app;
 		this.settings = settings;
 		this.assetManager = assetManager;
-//		this.lightMgr = new FloodFillLightManager(this);
 		this.cam = cam;
 		this.seed = seed;
         music = new AudioNode(assetManager, SoundConstants.MUSIC_CALM1);
@@ -57,11 +53,6 @@ public class World implements BitSerializable
         this.terrainGenerator = new TerrainGenerator(this, chunkMgr);
 	}
 	
-//	public LightManager getLightManager()
-//	{
-//		return lightMgr;
-//	}
-
 	public TerrainGenerator getTerrainGenerator()
 	{
 		return terrainGenerator;
@@ -459,49 +450,6 @@ public class World implements BitSerializable
 		return settings;
 	}
 
-
-	public void setBlocksFromTerrain(World world)
-	{
-		CubesSerializer.readFromBytes(this, CubesSerializer.writeToBytes(world));
-	}
-
-	@Override
-	public void write(BitOutputStream outputStream)
-	{
-//		outputStream.writeInteger(chunks.length);
-//		outputStream.writeInteger(chunks[0].length);
-//		outputStream.writeInteger(chunks[0][0].length);
-//		for(int x = 0; x < chunks.length; x++)
-//		{
-//			for(int y = 0; y < chunks[0].length; y++)
-//			{
-//				for(int z = 0; z < chunks[0][0].length; z++)
-//				{
-//					chunks[x][y][z].write(outputStream);
-//				}
-//			}
-//		}
-	}
-
-	@Override
-	public void read(BitInputStream inputStream) throws IOException
-	{
-//		int chunksCountX = inputStream.readInteger();
-//		int chunksCountY = inputStream.readInteger();
-//		int chunksCountZ = inputStream.readInteger();
-//		initializeChunks(new Vector3Int(chunksCountX, chunksCountY, chunksCountZ));
-//		for(int x = 0; x < chunksCountX; x++)
-//		{
-//			for(int y = 0; y < chunksCountY; y++)
-//			{
-//				for(int z = 0; z < chunksCountZ; z++)
-//				{
-//					chunks[x][y][z].read(inputStream);
-//				}
-//			}
-//		}
-	}
-	
 	public int getLight(Vector3Int blockLocation)
 	{
 		return getLight(blockLocation, null);

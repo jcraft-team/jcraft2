@@ -8,7 +8,7 @@ import com.chappelle.jcraft.blocks.BlockLadder;
 import com.chappelle.jcraft.blocks.BlockShape;
 import com.chappelle.jcraft.blocks.BlockSkin_TextureLocation;
 import com.chappelle.jcraft.blocks.MeshData;
-import com.chappelle.jcraft.util.BlockNavigator;
+import com.chappelle.jcraft.util.*;
 import com.chappelle.jcraft.world.chunk.Chunk;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;

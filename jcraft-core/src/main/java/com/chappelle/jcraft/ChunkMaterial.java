@@ -16,15 +16,6 @@ public class ChunkMaterial extends Material
     	return result;
     }
 
-    public static ChunkMaterial makeLightingMaterial(AssetManager assetManager, String blockTextureFilePath)
-    {
-    	ChunkMaterial result = new ChunkMaterial("MatDefs/Lighting.j3md", assetManager, blockTextureFilePath, true);
-    	result.setTexture("DiffuseMap", makeTexture(assetManager, blockTextureFilePath));
-    	result.setBoolean("UseMaterialColors", true);
-    	setupMaterial(result);
-    	return result;
-    }
-
     private static Texture makeTexture(AssetManager assetManager, String blockTextureFilePath)
     {
     	Texture texture = assetManager.loadTexture(blockTextureFilePath);
