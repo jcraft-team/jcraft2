@@ -17,6 +17,8 @@ public class BlockLadder extends Block
 		super(blockId, new BlockSkin[] { new BlockSkin(new BlockSkin_TextureLocation(3, 5), false)});
 		
 		setShapes(new BlockShape_Ladder());
+		
+		this.isTransparent = true;
 	}
 	
 	@Override
@@ -119,12 +121,6 @@ public class BlockLadder extends Block
     			world.removeBlock(myLocation);
     		}
     	}
-	}
-
-	@Override
-	public boolean isTransparent()
-	{
-		return true;
 	}
 
 	@Override

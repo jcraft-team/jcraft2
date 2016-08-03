@@ -27,6 +27,8 @@ public class BlockDoor extends Block
 		this.userCanOpen = userCanOpen;
 		
 		setShapes(new BlockShape_Door());
+		
+		this.isTransparent = true;
 	}
 	
 	
@@ -148,12 +150,6 @@ public class BlockDoor extends Block
     	return true;
     }
 
-    @Override
-	public boolean isTransparent()
-	{
-		return true;
-	}
-    
     @Override
 	public boolean useNeighborLight()
 	{

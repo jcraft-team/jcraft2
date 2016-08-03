@@ -228,7 +228,7 @@ public class World implements BitSerializable
 		if(localBlockState != null)
 		{
 			localBlockState.getChunk().lightMgr.setBlockLight(location, block.lightValue);
-			if(!block.isTransparent())
+			if(!block.isTransparent)
 			{
 				localBlockState.getChunk().lightMgr.removeSunlight(location);
 			}

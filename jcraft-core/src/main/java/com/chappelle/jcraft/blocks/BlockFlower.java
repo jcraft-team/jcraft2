@@ -18,6 +18,8 @@ public class BlockFlower extends Block
 		maxX = 0.6f;
 		maxY = 0.4f;
 		maxZ = 0.6f;
+		
+		this.isTransparent = true;
 	}
 
 	public void onBlockPlaced(World world, Vector3Int location, Vector3f contactNormal, Vector3f cameraDirectionAsUnitVector)
@@ -48,12 +50,6 @@ public class BlockFlower extends Block
 	public AABB getCollisionBoundingBox(World world, int x, int y, int z)
 	{
 		return null;
-	}
-
-	@Override
-	public boolean isTransparent()
-	{
-		return true;
 	}
 
 	@Override

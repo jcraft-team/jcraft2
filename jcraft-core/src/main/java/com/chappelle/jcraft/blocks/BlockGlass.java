@@ -9,6 +9,7 @@ public class BlockGlass extends Block
 	public BlockGlass(int blockId)
 	{
 		super(blockId, new BlockSkin[] { new BlockSkin(new BlockSkin_TextureLocation(1, 3), true)});
+		this.isTransparent = true;
 	}
 	
 	public void onBlockPlaced(World world, Vector3Int location, Vector3f contactNormal, Vector3f cameraDirectionAsUnitVector)
@@ -23,12 +24,6 @@ public class BlockGlass extends Block
 
 	public void onEntityWalking(World world, Vector3Int location)
 	{
-	}
-
-	@Override
-	public boolean isTransparent()
-	{
-		return true;
 	}
 
 	@Override

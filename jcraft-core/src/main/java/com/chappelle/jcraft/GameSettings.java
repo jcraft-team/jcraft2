@@ -26,7 +26,7 @@ public class GameSettings
 	/**/
 	public static void load()
 	{
-		optionsFile = new File(System.getProperty("user.home"), "jcraft-options.txt");
+		optionsFile = new File(GameFiles.getDataDir(), "jcraft-options.txt");
 		if(optionsFile.exists())
 		{
 			System.out.println("Loading options from " + optionsFile);
@@ -83,6 +83,17 @@ public class GameSettings
 	
 	public static void save()
 	{
+		if(!optionsFile.exists())
+		{
+			try
+			{
+				optionsFile.createNewFile();
+			}
+			catch(IOException e)
+			{
+				throw new RuntimeException("Unable to create options file", e);
+			}
+		}
 		try(PrintWriter printWriter = new PrintWriter(new FileWriter(optionsFile)))
 		{
 			System.out.println("Saving options to " + optionsFile);

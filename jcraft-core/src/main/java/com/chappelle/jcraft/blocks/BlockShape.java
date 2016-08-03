@@ -239,24 +239,25 @@ public abstract class BlockShape
 			skyLight = lights.getLight(x, y, z, LightType.SKY);
 		}
 
-    	colors.add((float)blockLight);
-    	colors.add((float)blockLight);
-    	colors.add((float)blockLight);
+		float effectiveBlockLight = Math.max(blockLight, 0.25f);
+    	colors.add((float)effectiveBlockLight);
+    	colors.add((float)effectiveBlockLight);
+    	colors.add((float)effectiveBlockLight);
     	colors.add((float)skyLight);
     	
-    	colors.add((float)blockLight);
-    	colors.add((float)blockLight);
-    	colors.add((float)blockLight);
+    	colors.add((float)effectiveBlockLight);
+    	colors.add((float)effectiveBlockLight);
+    	colors.add((float)effectiveBlockLight);
     	colors.add((float)skyLight);
     	
-    	colors.add((float)blockLight);
-    	colors.add((float)blockLight);
-    	colors.add((float)blockLight);
+    	colors.add((float)effectiveBlockLight);
+    	colors.add((float)effectiveBlockLight);
+    	colors.add((float)effectiveBlockLight);
     	colors.add((float)skyLight);
     	
-    	colors.add((float)blockLight);
-    	colors.add((float)blockLight);
-    	colors.add((float)blockLight);
+    	colors.add((float)effectiveBlockLight);
+    	colors.add((float)effectiveBlockLight);
+    	colors.add((float)effectiveBlockLight);
     	colors.add((float)skyLight);
     }
 }

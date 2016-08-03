@@ -472,7 +472,7 @@ public class FloodFillLightManager implements LightManager
 	
 	private boolean isNotOpaque(Block block)
 	{
-		return block == null || block.isTransparent();
+		return block == null || block.isTransparent;
 	}
 
 	@Override
@@ -530,7 +530,7 @@ public class FloodFillLightManager implements LightManager
 			for(int z = 0; z < 16; z++)
 			{
 				Block block = chunk.getBlock(x, y, z);
-				if(block == null || block.isTransparent())
+				if(block == null || block.isTransparent)
 				{
 					chunk.setLight(x, y, z, LightType.SKY, LightMap.MAX_LIGHT);
 					sunlightAdditionQueue.add(new LightNode(x, y, z, chunk));

@@ -120,7 +120,7 @@ public class Chunk implements BitSerializable
 		for(int y = 255; y >= 0; y--)
 		{
 			Block block = getBlock(x, y, z);
-			if(block != null && !block.isTransparent())
+			if(block != null && !block.isTransparent)
 			{
 				return y;
 			}

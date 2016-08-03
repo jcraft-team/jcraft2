@@ -162,6 +162,11 @@ public class Block
 	public int lightValue;
 	private Sprite sprite;
 	
+    /**
+     * Returns true if light should pass through this block, false otherwise
+     */
+	public boolean isTransparent;
+	
 	public Block(int blockId, BlockSkin... skins)
 	{
 		this.skins = skins;
@@ -282,14 +287,6 @@ public class Block
 	public AABB getSelectedBoundingBox(World world, int x, int y, int z)
 	{
 		return AABB.getAABBPool().getAABB((double) x + this.minX, (double) y + this.minY, (double) z + this.minZ, (double) x + this.maxX, (double) y + this.maxY, (double) z + this.maxZ);
-	}
-
-    /**
-     * Returns true if light should pass through this block, false otherwise
-     */
-	public boolean isTransparent()
-	{
-		return false;
 	}
 
 	public boolean isOpaqueCube()

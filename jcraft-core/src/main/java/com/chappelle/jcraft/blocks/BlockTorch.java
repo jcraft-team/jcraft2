@@ -25,6 +25,7 @@ public class BlockTorch extends Block
     	super(blockId, new BlockSkin(new BlockSkin_TextureLocation(0, 5), true));
     	
     	setShapes(new BlockShape_Torch());
+    	this.isTransparent = true;
     }
 
     @Override
@@ -138,9 +139,4 @@ public class BlockTorch extends Block
 		return super.collisionRayTrace(world, x, y, z, startVec, endVec);
 	}
 
-	@Override
-	public boolean isTransparent()
-	{
-		return true;
-	}
 }

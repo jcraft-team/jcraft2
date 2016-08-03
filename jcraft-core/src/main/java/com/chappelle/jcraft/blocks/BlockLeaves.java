@@ -9,6 +9,7 @@ public class BlockLeaves extends Block
 	public BlockLeaves(int blockId)
 	{
 		super(blockId, new BlockSkin[] { new BlockSkin(new BlockSkin_TextureLocation(4, 8), true) });
+		this.isTransparent = true;
 	}
 
 	public void onBlockPlaced(World world, Vector3Int location, Vector3f contactNormal, Vector3f cameraDirectionAsUnitVector)
@@ -24,12 +25,6 @@ public class BlockLeaves extends Block
 	public void onEntityWalking(World world, Vector3Int location)
 	{
 		world.playSound(SoundConstants.DIG_GRASS, 4);
-	}
-
-	@Override
-	public boolean isTransparent()
-	{
-		return true;
 	}
 
 	@Override

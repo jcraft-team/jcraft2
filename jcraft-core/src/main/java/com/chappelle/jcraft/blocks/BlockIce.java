@@ -10,6 +10,7 @@ public class BlockIce extends Block
 	{
 		super(blockId, new BlockSkin[]{new BlockSkin(new BlockSkin_TextureLocation(3, 4), true)});
 		this.slipperiness = 0.98F;
+		this.isTransparent = true;
 	}
 
 	@Override
@@ -24,10 +25,4 @@ public class BlockIce extends Block
 		world.playSound(SoundConstants.MISC_GLASS, 3);
 	}
 
-	@Override
-	public boolean isTransparent()
-	{
-		return true;
-	}
-	
 }
