@@ -217,10 +217,11 @@ public class World
 		ChunkLocation localBlockState = getLocalBlockState(location);
 		if(localBlockState != null)
 		{
-			localBlockState.getChunk().lightMgr.setBlockLight(location, block.lightValue);
+			Vector3Int localBlockLocation = localBlockState.getLocalBlockLocation();
+			localBlockState.getChunk().lightMgr.setBlockLight(localBlockLocation, block.lightValue);
 			if(!block.isTransparent)
 			{
-				localBlockState.getChunk().lightMgr.removeSunlight(location);
+				localBlockState.getChunk().lightMgr.removeSunlight(localBlockLocation);
 			}
 			
 			localBlockState.setBlock(block);
@@ -254,8 +255,8 @@ public class World
 				Chunk chunk = localBlockState.getChunk();
 				localBlockState.removeBlock();
 				block.onBlockRemoved(this, location);
-				chunk.lightMgr.removeBlockLight(location);
-				chunk.lightMgr.rebuildSunlight(chunk);
+				chunk.lightMgr.removeBlockLight(localBlockState.getLocalBlockLocation());
+				chunk.lightMgr.rebuildSunlight();
 				
 				rebuildNeighborsSunlight(chunk);//FIXME: Not great performance, but fixes some lighting issues when breaking blocks underground over chunk boundaries
 				
@@ -285,7 +286,7 @@ public class World
 	{
 		for(Chunk chunkNeighbor : chunk.getChunkNeighborhood(1))
 		{
-			chunkNeighbor.lightMgr.rebuildSunlight(chunkNeighbor);
+			chunkNeighbor.lightMgr.rebuildSunlight();
 		}
 	}
 

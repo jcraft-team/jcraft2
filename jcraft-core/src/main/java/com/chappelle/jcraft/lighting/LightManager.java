@@ -1,15 +1,16 @@
 package com.chappelle.jcraft.lighting;
 
 import com.chappelle.jcraft.Vector3Int;
-import com.chappelle.jcraft.world.chunk.Chunk;
 
 public interface LightManager
 {
+	void propagateLight();
+
 	void setBlockLight(Vector3Int location, int light);
 	void removeBlockLight(Vector3Int location);
-	void initChunkSunlight(Chunk chunk);
-	void removeSunlight(Vector3Int location);
+	
 	void addSunlight(Vector3Int location);
-	void propagateLight();
-	void rebuildSunlight(Chunk chunk);
+	void removeSunlight(Vector3Int location);
+
+	void rebuildSunlight();
 }

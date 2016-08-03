@@ -41,8 +41,9 @@ public class ChunkManager
 		addChunks();
 		for(Chunk chunk : getLoadedChunks())
 		{
-			if(chunk.isDirty() && chunk.isLoaded && !chunk.isLightUpdating)
+			if(chunk.isDirty() && chunk.isLoaded)
 			{
+				chunk.lightMgr.propagateLight();
 				final Mesh opaque = MeshGenerator.generateOptimizedMesh(chunk, false);
 				final Mesh transparent = MeshGenerator.generateOptimizedMesh(chunk, true);
 				world.enqueue(new ChunkMeshUpdater(chunk, opaque, transparent));
@@ -55,6 +56,7 @@ public class ChunkManager
 		Chunk chunk = addedQueue.poll();
 		if(chunk != null)
 		{
+			//No need to propagate light here. it's already initialized
 			final Mesh opaque = MeshGenerator.generateOptimizedMesh(chunk, false);
 			final Mesh transparent = MeshGenerator.generateOptimizedMesh(chunk, true);
 			world.enqueue(new ChunkMeshUpdater(chunk, opaque, transparent));

@@ -42,8 +42,7 @@ public class Chunk
     	this.metadata = new NibbleArray(16*256*16);
     	node.setLocalTranslation(new Vector3f(blockLocation.getX(), blockLocation.getY(), blockLocation.getZ()));
     	this.id = ChunkCoordIntPair.chunkXZ2Int(x, z); 
-    	this.lightMgr = new FloodFillLightManager(world);
-    	this.lightMgr.initChunkSunlight(this);
+    	this.lightMgr = new FloodFillLightManager(this);
     	this.heightMap = makeHeightMap(blockTypes);
     }
     

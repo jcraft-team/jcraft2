@@ -4,42 +4,46 @@ import java.util.*;
 
 import com.chappelle.jcraft.*;
 import com.chappelle.jcraft.blocks.Block;
-import com.chappelle.jcraft.util.*;
 import com.chappelle.jcraft.world.World;
 import com.chappelle.jcraft.world.chunk.Chunk;
 
 public class FloodFillLightManager implements LightManager
 {
+	private Chunk chunk;
 	private World world;
 	private Queue<LightNode> lightAdditionQueue;
 	private Queue<LightRemovalNode> lightRemovalQueue;
 	private Queue<LightNode> sunlightAdditionQueue;
 	private Queue<LightRemovalNode> sunlightRemovalQueue;
 	
-	public FloodFillLightManager(World world)
+	public FloodFillLightManager(Chunk chunk)
 	{
-		this.world = world;
+		this.chunk = chunk;
+		this.world = chunk.world;
 		lightAdditionQueue = new LinkedList<>();
 		lightRemovalQueue = new LinkedList<>();
 		sunlightAdditionQueue = new LinkedList<>();
 		sunlightRemovalQueue = new LinkedList<>();
-	}
-	
-	public void propagateLight(Chunk chunk)
-	{
-		chunk.isLightUpdating = true;
-		propagateLight();
-		chunk.isLightUpdating = false;
+		initSunlight();
 	}
 	
 	@Override
 	public void propagateLight()
 	{
-		propagateRemovedBlockLights();
-		propagateAddedBlockLights();
-		
-		propagateRemovedSunlight();
-		propagateAddedSunlight();
+		do
+		{
+			propagateRemovedBlockLights();
+			propagateAddedBlockLights();
+			
+			propagateRemovedSunlight();
+			propagateAddedSunlight();
+			
+		}while(stillWorkToDo());
+	}
+	
+	private boolean stillWorkToDo()
+	{
+		return !lightAdditionQueue.isEmpty() && !lightRemovalQueue.isEmpty() && !sunlightAdditionQueue.isEmpty() && !sunlightRemovalQueue.isEmpty();
 	}
 
 	private void propagateRemovedBlockLights()
@@ -462,31 +466,24 @@ public class FloodFillLightManager implements LightManager
 	}
 
 	@Override
-	public void addSunlight(Vector3Int location)
+	public void addSunlight(Vector3Int localBlockLocation)
 	{
-		Chunk chunk = world.getChunkFromBlockCoordinates(location.x, location.z);
-		Vector3Int localBlockLocation = world.getLocalBlockLocation(location, chunk);
-		
 		chunk.setLight(localBlockLocation.x, localBlockLocation.y, localBlockLocation.z, LightType.SKY, LightMap.MAX_LIGHT);
+		
 		sunlightAdditionQueue.add(new LightNode(localBlockLocation, chunk));
-		propagateLight(chunk);
 	}
 
 	@Override
-	public void setBlockLight(Vector3Int location, int light)
+	public void setBlockLight(Vector3Int localBlockLocation, int light)
 	{
-		Chunk chunk = world.getChunkFromBlockCoordinates(location.x, location.z);
-		Vector3Int localBlockLocation = world.getLocalBlockLocation(location, chunk);
 		chunk.setLight(localBlockLocation.x, localBlockLocation.y, localBlockLocation.z, LightType.BLOCK, light);
+		
 		lightAdditionQueue.add(new LightNode(localBlockLocation, chunk));
-		propagateLight(chunk);
 	}
 	
 	@Override
-	public void removeBlockLight(Vector3Int location)
+	public void removeBlockLight(Vector3Int localBlockLocation)
 	{
-		Chunk chunk = world.getChunkFromBlockCoordinates(location.x, location.z);
-		Vector3Int localBlockLocation = world.getLocalBlockLocation(location, chunk);
 		short val = (short)chunk.getLight(localBlockLocation.x, localBlockLocation.y, localBlockLocation.z, LightType.BLOCK);
 		
 		lightRemovalQueue.add(new LightRemovalNode(localBlockLocation, val, chunk));
@@ -495,20 +492,16 @@ public class FloodFillLightManager implements LightManager
 	}
 
 	@Override
-	public void removeSunlight(Vector3Int location)
+	public void removeSunlight(Vector3Int localBlockLocation)
 	{
-		Chunk chunk = world.getChunkFromBlockCoordinates(location.x, location.z);
-		Vector3Int localBlockLocation = world.getLocalBlockLocation(location, chunk);
 		short val = (short)chunk.getLight(localBlockLocation.x, localBlockLocation.y, localBlockLocation.z, LightType.SKY);
 		
 		sunlightRemovalQueue.add(new LightRemovalNode(localBlockLocation, val, chunk));
 		
 		chunk.setLight(localBlockLocation.x, localBlockLocation.y, localBlockLocation.z, LightType.SKY, 0);
-		propagateLight(chunk);
 	}
 
-	@Override
-	public void initChunkSunlight(Chunk chunk)
+	private void initSunlight()
 	{
 		int y = 255;
 		for(int x = 0; x < 16; x++)
@@ -523,13 +516,14 @@ public class FloodFillLightManager implements LightManager
 				}
 			}
 		}
-		propagateLight(chunk);
+		propagateLight();
 	}
 
 	@Override
-	public void rebuildSunlight(Chunk chunk)
+	public void rebuildSunlight()
 	{
 		chunk.getLights().clearSunlight();
-		initChunkSunlight(chunk);
+		
+		initSunlight();
 	}
 }
