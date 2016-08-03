@@ -1,13 +1,6 @@
 package com.chappelle.jcraft;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-
-import com.jamonapi.MonitorFactory;
+import java.io.*;
 
 public class GameSettings
 {
@@ -59,10 +52,6 @@ public class GameSettings
 						{
 							debugEnabled = Boolean.parseBoolean(lineParts[1]);
 						}
-						else if (lineParts[0].equals("profilingEnabled"))
-						{
-							MonitorFactory.setEnabled(Boolean.parseBoolean(lineParts[1]));
-						}
 						else if (lineParts[0].equals("skyEnabled"))
 						{
 							skyEnabled = Boolean.parseBoolean(lineParts[1]);
@@ -102,7 +91,6 @@ public class GameSettings
 			printWriter.println("showSettings=" + showSettings);
 			printWriter.println("frameRate=" + frameRate);
 			printWriter.println("debugEnabled=" + debugEnabled);
-			printWriter.println("profilingEnabled=" + MonitorFactory.isEnabled());
 			printWriter.println("skyEnabled=" + skyEnabled);
 		}
 		catch(IOException e)

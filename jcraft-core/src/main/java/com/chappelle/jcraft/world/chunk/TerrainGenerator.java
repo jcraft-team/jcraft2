@@ -1,12 +1,10 @@
 package com.chappelle.jcraft.world.chunk;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import com.chappelle.jcraft.Vector3Int;
 import com.chappelle.jcraft.util.MathUtils;
 import com.chappelle.jcraft.world.World;
-import com.jamonapi.*;
 
 public class TerrainGenerator
 {
@@ -50,9 +48,7 @@ public class TerrainGenerator
 		byte[][][] blockTypes = new byte[16][256][16];
 		for(Feature gen : features)
 		{
-			Monitor mon = MonitorFactory.start("Gen Feature " + gen.getClass().getSimpleName());
 			gen.generate(x, z, blockTypes);
-			mon.stop();
 		}
 		Chunk chunk = new Chunk(world, x, z, blockTypes);
 		chunkManager.addChunk(chunk);

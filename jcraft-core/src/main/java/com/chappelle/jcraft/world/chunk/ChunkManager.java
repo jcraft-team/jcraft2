@@ -11,7 +11,6 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 import com.chappelle.jcraft.blocks.MeshGenerator;
 import com.chappelle.jcraft.world.World;
-import com.jamonapi.*;
 import com.jme3.scene.Mesh;
 
 public class ChunkManager
@@ -94,18 +93,12 @@ public class ChunkManager
 		@Override
 		public Void call() throws Exception
 		{
-			Monitor mon = MonitorFactory.start("ChunkMeshUpdater");
 			if(!chunk.isLoaded)
 			{
-				Monitor monAddToScene = MonitorFactory.start("ChunkMeshUpdater.addToScene");
 				chunk.addToScene(world.node);
-				monAddToScene.stop();
 				chunks.put(chunk.id, chunk);
 			}
-			Monitor monSetMesh = MonitorFactory.start("ChunkMeshUpdater");
 			chunk.setMesh(opaque, transparent);
-			monSetMesh.stop();
-			mon.stop();
 			return null;
 		}
 	}

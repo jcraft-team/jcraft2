@@ -3,16 +3,10 @@ package com.chappelle.jcraft;
 import java.util.List;
 
 import com.chappelle.jcraft.blocks.Block;
-import com.chappelle.jcraft.inventory.Inventory;
-import com.chappelle.jcraft.inventory.ItemStack;
-import com.chappelle.jcraft.util.AABB;
-import com.chappelle.jcraft.util.MathUtils;
-import com.chappelle.jcraft.util.RayTrace;
+import com.chappelle.jcraft.inventory.*;
+import com.chappelle.jcraft.util.*;
 import com.chappelle.jcraft.world.World;
-import com.jamonapi.*;
-import com.jme3.math.FastMath;
-import com.jme3.math.Quaternion;
-import com.jme3.math.Vector3f;
+import com.jme3.math.*;
 import com.jme3.renderer.Camera;
 
 public class EntityPlayer extends Entity
@@ -305,19 +299,11 @@ public class EntityPlayer extends Entity
 	
 	public void breakBlock()
 	{
-		Monitor monitor = MonitorFactory.start("breakBlock");
-		
-		Monitor rayTraceMon = MonitorFactory.start("pickBlock");
 		RayTrace rayTrace = pickBlock();
-		rayTraceMon.stop();
 		if(rayTrace != null)
 		{
-			System.out.println("Removing block at [" + rayTrace.blockX + ", " + rayTrace.blockY + ", " + rayTrace.blockZ + "]");
-			
 			world.removeBlock(rayTrace.blockX, rayTrace.blockY, rayTrace.blockZ);
 		}
-		
-		monitor.stop();
 	}
 	
 	public RayTrace pickBlock()

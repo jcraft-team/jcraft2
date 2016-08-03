@@ -1,16 +1,13 @@
 package com.chappelle.jcraft.jme3;
 
-import java.io.*;
-import java.util.*;
 import java.util.logging.*;
 
 import com.chappelle.jcraft.*;
 import com.chappelle.jcraft.blocks.Block;
 import com.chappelle.jcraft.util.AABB;
 import com.chappelle.jcraft.world.World;
-import com.chappelle.jcraft.world.chunk.*;
+import com.chappelle.jcraft.world.chunk.TerrainGenerator;
 import com.chappelle.jcraft.world.chunk.gen.*;
-import com.jamonapi.*;
 import com.jme3.app.*;
 import com.jme3.font.BitmapFont;
 import com.jme3.input.*;
@@ -150,11 +147,6 @@ public class JCraft extends SimpleApplication implements ActionListener
 	{
 		debugEnabled = !debugEnabled;
 		updateStatsView();
-	}
-
-	private void toggleProfiling()
-	{
-		MonitorFactory.setEnabled(!MonitorFactory.isEnabled());
 	}
 
 	private void updateStatsView()
@@ -330,10 +322,6 @@ public class JCraft extends SimpleApplication implements ActionListener
 		{
 			toggleDebug();
 		}
-		else if("f4".equals(name) && !isPressed)
-		{
-			toggleProfiling();
-		}
 		else if("f5".equals(name) && !isPressed)
 		{
 			wireframe = !wireframe;
@@ -380,47 +368,6 @@ public class JCraft extends SimpleApplication implements ActionListener
 		super.destroy();
 		world.destroy();
 		GameSettings.save();
-
-		if(MonitorFactory.isEnabled())
-		{
-			printProfilingData();
-		}
-		else
-		{
-			System.out.println("Profiling is disabled so no monitor data will be printed.");
-		}
-	}
-
-	private void printProfilingData()
-	{
-		System.out.println("\r\n\r\n");
-		System.out.println("**********************************************");
-		System.out.println("************* Profiler results ***************");
-		System.out.println("**********************************************");
-		TableBuilder table = new TableBuilder("Label","Hits","Avg","Total","StdDev","Min","Max","Active","Avg Active","Max Active","First Access","Last Access","Last Value");
-		List<Monitor> monitors = new ArrayList<>();
-		for(Monitor mon : MonitorFactory.getRootMonitor().getMonitors())
-		{
-			if(!"com.jamonapi.Exceptions".equalsIgnoreCase(mon.getLabel()))
-			{
-				monitors.add(mon);
-			}
-		}
-		Collections.sort(monitors, new Comparator<Monitor>()
-		{
-			@Override
-			public int compare(Monitor o1, Monitor o2)
-			{
-				Double avg1 = o1.getAvg();
-				Double avg2 = o2.getAvg();
-				return avg2.compareTo(avg1);
-			}
-		});
-		for(Monitor mon : monitors)
-		{
-			table.addRow(mon.getLabel(),mon.getHits(),mon.getAvg(),mon.getTotal(),mon.getStdDev(),mon.getMin(),mon.getMax(),mon.getActive(),mon.getAvgActive(),mon.getMaxActive(),mon.getFirstAccess(),mon.getLastAccess(),mon.getLastValue());
-		}
-		System.out.println(table.toString());
 	}
 
 	// WARNING: This may be buggy. See

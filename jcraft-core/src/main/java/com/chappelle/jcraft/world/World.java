@@ -10,7 +10,6 @@ import com.chappelle.jcraft.lighting.LightType;
 import com.chappelle.jcraft.network.*;
 import com.chappelle.jcraft.util.*;
 import com.chappelle.jcraft.world.chunk.*;
-import com.jamonapi.*;
 import com.jme3.app.Application;
 import com.jme3.asset.AssetManager;
 import com.jme3.audio.AudioNode;
@@ -255,7 +254,6 @@ public class World implements BitSerializable
 	
 	public void removeBlock(Vector3Int location)
 	{
-		Monitor removeBlockMon = MonitorFactory.start("removeBlock");
 		ChunkLocation localBlockState = getLocalBlockState(location);
 		if(localBlockState != null)
 		{
@@ -268,10 +266,7 @@ public class World implements BitSerializable
 				chunk.lightMgr.removeBlockLight(location);
 				chunk.lightMgr.rebuildSunlight(chunk);
 				
-				
-				Monitor rebuildNeighborsSunlightMon = MonitorFactory.start("rebuildNeighborsSunlight");
 				rebuildNeighborsSunlight(chunk);//FIXME: Not great performance, but fixes some lighting issues when breaking blocks underground over chunk boundaries
-				rebuildNeighborsSunlightMon.stop();
 				
 	            //Notify neighbors of block removal
 	            for (Block.Face face : Block.Face.values())
@@ -293,7 +288,6 @@ public class World implements BitSerializable
 	            }
 			}
 		}
-		removeBlockMon.stop();
 	}
 
 	private void rebuildNeighborsSunlight(Chunk chunk)
