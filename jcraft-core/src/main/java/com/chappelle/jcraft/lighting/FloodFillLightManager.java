@@ -501,6 +501,85 @@ public class FloodFillLightManager implements LightManager
 		chunk.setLight(localBlockLocation.x, localBlockLocation.y, localBlockLocation.z, LightType.SKY, 0);
 	}
 
+	public void restoreSunlight(Vector3Int localBlockLocation)
+	{
+		int x = localBlockLocation.x;
+		int y = localBlockLocation.y;
+		int z = localBlockLocation.z;
+
+		if(chunk.isBlockOnSurface(localBlockLocation))//Still causing a dim spot on surface
+		{
+			chunk.setLight(x, y, z, LightType.SKY, 15);
+			sunlightAdditionQueue.add(new LightNode(x,y,z, chunk));
+		}
+		else
+		{
+			Chunk neighbor = null;
+			int light = 0;
+			if(x-1 < 0)
+			{
+				neighbor = world.getChunkNeighbor(chunk, Direction.LEFT);
+				if(neighbor != null)
+				{
+					light = Math.max(light, neighbor.getLight(15,y,z, LightType.SKY));
+				}
+			}
+			else
+			{
+				light = Math.max(light, chunk.getLight(x-1,y,z, LightType.SKY));
+			}
+			
+			if(x+1 > 15)
+			{
+				neighbor = world.getChunkNeighbor(chunk, Direction.RIGHT);
+				if(neighbor != null)
+				{
+					light = Math.max(light, neighbor.getLight(0,y,z, LightType.SKY));
+				}
+			}
+			else
+			{
+				light = Math.max(light, chunk.getLight(x+1,y,z, LightType.SKY));
+			}
+			
+			
+			if(z-1 < 0)
+			{
+				neighbor = world.getChunkNeighbor(chunk, Direction.BACK);
+				if(neighbor != null)
+				{
+					light = Math.max(light, neighbor.getLight(x,y,15, LightType.SKY));
+				}
+			}
+			else
+			{
+				light = Math.max(light, chunk.getLight(x,y,z-1, LightType.SKY));
+			}
+			
+			
+			if(z+1 > 15)
+			{
+				neighbor = world.getChunkNeighbor(chunk, Direction.FRONT);
+				if(neighbor != null)
+				{
+					light = Math.max(light, neighbor.getLight(x,y,0, LightType.SKY));
+				}
+			}
+			else
+			{
+				light = Math.max(light, chunk.getLight(x,y,z+1, LightType.SKY));
+			}
+			
+			if(y+1 < 255)
+			{
+				light = Math.max(light, chunk.getLight(x,y+1,z, LightType.SKY));
+			}
+			
+			chunk.setLight(x, y, z, LightType.SKY, Math.max(light-1, 0));
+			sunlightAdditionQueue.add(new LightNode(x,y,z, chunk));
+		}
+	}
+	
 	private void initSunlight()
 	{
 		int y = 255;
@@ -522,8 +601,8 @@ public class FloodFillLightManager implements LightManager
 	@Override
 	public void rebuildSunlight()
 	{
-		chunk.getLights().clearSunlight();
-		
-		initSunlight();
+//		chunk.getLights().clearSunlight();
+//		
+//		initSunlight();
 	}
 }

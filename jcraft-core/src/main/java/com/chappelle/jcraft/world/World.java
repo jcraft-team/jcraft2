@@ -64,7 +64,7 @@ public class World
 
 		chunkMgr.update();
 		
-		terrainGenerator.generateTerrainAroundPlayer(player.posX, player.posZ, 10);
+		terrainGenerator.generateTerrainAroundPlayer(player.posX, player.posZ, 3);
 	}
 	
 	private void updateTimeOfDay()
@@ -256,9 +256,10 @@ public class World
 				localBlockState.removeBlock();
 				block.onBlockRemoved(this, location);
 				chunk.lightMgr.removeBlockLight(localBlockState.getLocalBlockLocation());
-				chunk.lightMgr.rebuildSunlight();
+				chunk.lightMgr.restoreSunlight(localBlockState.getLocalBlockLocation());
+//				chunk.lightMgr.rebuildSunlight();
 				
-				rebuildNeighborsSunlight(chunk);//FIXME: Not great performance, but fixes some lighting issues when breaking blocks underground over chunk boundaries
+//				rebuildNeighborsSunlight(chunk);//FIXME: Not great performance, but fixes some lighting issues when breaking blocks underground over chunk boundaries
 				
 	            //Notify neighbors of block removal
 	            for (Block.Face face : Block.Face.values())
@@ -418,30 +419,30 @@ public class World
 	{
 		Vector3Int localLocation = new Vector3Int();
 		int localX = (blockLocation.getX() - chunk.getBlockLocation().getX());
-		if(localX == 16)
-		{
-			if(blockLocation.x < 0)
-			{
-				localX = 15;
-			}
-			else
-			{
-				localX = 0;
-			}
-		}
+//		if(localX == 16)
+//		{
+//			if(blockLocation.x < 0)
+//			{
+//				localX = 15;
+//			}
+//			else
+//			{
+//				localX = 0;
+//			}
+//		}
 		int localY = (blockLocation.getY() - chunk.getBlockLocation().getY());
 		int localZ = (blockLocation.getZ() - chunk.getBlockLocation().getZ());
-		if(localZ == 16)
-		{
-			if(blockLocation.z < 0)
-			{
-				localZ = 15;
-			}
-			else
-			{
-				localZ = 0;
-			}
-		}
+//		if(localZ == 16)
+//		{
+//			if(blockLocation.z < 0)
+//			{
+//				localZ = 15;
+//			}
+//			else
+//			{
+//				localZ = 0;
+//			}
+//		}
 		localLocation.set(localX, localY, localZ);
 		return localLocation;
 	}

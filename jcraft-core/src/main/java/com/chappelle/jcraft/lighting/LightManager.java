@@ -12,5 +12,6 @@ public interface LightManager
 	void addSunlight(Vector3Int location);
 	void removeSunlight(Vector3Int location);
 
+	void restoreSunlight(Vector3Int localBlockLocation);
 	void rebuildSunlight();
 }
