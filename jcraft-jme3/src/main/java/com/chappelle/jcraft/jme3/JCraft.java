@@ -3,14 +3,11 @@ package com.chappelle.jcraft.jme3;
 import java.util.logging.*;
 
 import com.chappelle.jcraft.*;
-import com.chappelle.jcraft.blocks.Block;
 import com.chappelle.jcraft.util.AABB;
 import com.chappelle.jcraft.world.World;
-import com.chappelle.jcraft.world.chunk.TerrainGenerator;
-import com.chappelle.jcraft.world.chunk.gen.*;
 import com.jme3.app.*;
 import com.jme3.font.BitmapFont;
-import com.jme3.input.*;
+import com.jme3.input.KeyInput;
 import com.jme3.input.controls.*;
 import com.jme3.math.*;
 import com.jme3.niftygui.NiftyJmeDisplay;
@@ -22,8 +19,6 @@ import de.lessvoid.nifty.Nifty;
 
 public class JCraft extends SimpleApplication implements ActionListener
 {
-	private static final int JUMP_TIME_INTERVAL = 200;
-
 	private static JCraft jcraft;
 	private Nifty nifty;
 	private NiftyJmeDisplay niftyDisplay;
@@ -34,11 +29,6 @@ public class JCraft extends SimpleApplication implements ActionListener
 	public World world;
 	private HUDControl hud;
 	private boolean wireframe;
-
-	/**
-	 * Used for enabling flying by double pressing space
-	 */
-	private long lastJumpPressed;
 
 	public JCraft()
 	{
@@ -80,18 +70,17 @@ public class JCraft extends SimpleApplication implements ActionListener
 		{
 			stateManager.attach(new EnvironmentAppState());
 		}
-		cam.setFrustumPerspective(45f, (float) cam.getWidth() / cam.getHeight(), 0.01f, 500f);
 		initControls();
 		initBlockTerrain();
+		cam.setFrustumPerspective(45f, (float) cam.getWidth() / cam.getHeight(), 0.01f, 500f);
 		cam.lookAtDirection(new Vector3f(1, 0, 1), Vector3f.UNIT_Y);
 
 		// Setup sky
 		viewPort.setBackgroundColor(new ColorRGBA((float) 128 / 255, (float) 173 / 255, (float) 254 / 255, 1));
 
-		
 		// Setup player
 		player = new EntityPlayer(world, cam);
-		hud = makeHUD2(player);
+		hud = new HUDControl(this, settings, player);
 		player.preparePlayerToSpawn();
 		rootNode.addControl(new PlayerControl(this, player));
 
@@ -116,31 +105,14 @@ public class JCraft extends SimpleApplication implements ActionListener
 	private void initializeGUI()
 	{
 		Camera niftyCamera = new Camera(cam.getWidth(), cam.getHeight());
-		ViewPort niftyViewPort = renderManager.createPostView("Nifty View", niftyCamera);// Nifty
-																							// gets
-																							// it's
-																							// own
-																							// view
-																							// port
-																							// so
-																							// we
-																							// can
-																							// still
-																							// write
-																							// to
-																							// gui
-																							// node
+		// Nifty gets it's own view port so we can still write to gui node		
+		ViewPort niftyViewPort = renderManager.createPostView("Nifty View", niftyCamera);
 		niftyDisplay = new NiftyJmeDisplay(assetManager, inputManager, audioRenderer, niftyViewPort);
 		nifty = niftyDisplay.getNifty();
 
 		niftyViewPort.addProcessor(niftyDisplay);
 		nifty.addXml("Interface/hud.xml");
 		nifty.addXml("Interface/inventory.xml");
-	}
-
-	private HUDControl makeHUD2(EntityPlayer player)
-	{
-		return new HUDControl(this, settings, player);
 	}
 
 	private void toggleDebug()
@@ -155,86 +127,27 @@ public class JCraft extends SimpleApplication implements ActionListener
 		stateManager.getState(StatsAppState.class).setDisplayFps(debugEnabled);
 	}
 
-	private void addMapping(String action, Trigger trigger)
-	{
-		inputManager.addMapping(action, trigger);
-		inputManager.addListener(this, action);
-	}
-
-	private void initControls()
-	{
-		addMapping("move_left", new KeyTrigger(KeyInput.KEY_A));
-		addMapping("move_right", new KeyTrigger(KeyInput.KEY_D));
-		addMapping("move_up", new KeyTrigger(KeyInput.KEY_W));
-		addMapping("move_down", new KeyTrigger(KeyInput.KEY_S));
-		addMapping("jump", new KeyTrigger(KeyInput.KEY_SPACE));
-		addMapping("n", new KeyTrigger(KeyInput.KEY_N));
-		addMapping("n", new KeyTrigger(KeyInput.KEY_N));
-		addMapping("RightClick", new MouseButtonTrigger(MouseInput.BUTTON_RIGHT));
-		addMapping("LeftClick", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
-		addMapping("1", new KeyTrigger(KeyInput.KEY_1));
-		addMapping("2", new KeyTrigger(KeyInput.KEY_2));
-		addMapping("3", new KeyTrigger(KeyInput.KEY_3));
-		addMapping("4", new KeyTrigger(KeyInput.KEY_4));
-		addMapping("5", new KeyTrigger(KeyInput.KEY_5));
-		addMapping("6", new KeyTrigger(KeyInput.KEY_6));
-		addMapping("7", new KeyTrigger(KeyInput.KEY_7));
-		addMapping("8", new KeyTrigger(KeyInput.KEY_8));
-		addMapping("9", new KeyTrigger(KeyInput.KEY_9));
-		addMapping("0", new KeyTrigger(KeyInput.KEY_0));
-		addMapping("g", new KeyTrigger(KeyInput.KEY_G));
-		addMapping("u", new KeyTrigger(KeyInput.KEY_U));
-		addMapping("lshift", new KeyTrigger(KeyInput.KEY_LSHIFT));
-		addMapping("lctrl", new KeyTrigger(KeyInput.KEY_LCONTROL));
-		addMapping("f1", new KeyTrigger(KeyInput.KEY_F1));
-		addMapping("f3", new KeyTrigger(KeyInput.KEY_F3));
-		addMapping("f4", new KeyTrigger(KeyInput.KEY_F4));
-		addMapping("f5", new KeyTrigger(KeyInput.KEY_F5));
-		addMapping("e", new KeyTrigger(KeyInput.KEY_E));
-	}
-
 	private void initBlockTerrain()
 	{
 		cubesSettings = new CubesSettings(this);
 		cubesSettings.setDefaultBlockMaterial("Textures/FaithfulBlocks.png");
 
+		long seed = getSeed();
+		System.out.println("Using world seed: " + seed);
+		world = new World(this, cubesSettings, assetManager, cam, seed);
+		world.setTimeOfDayProvider(stateManager.getState(EnvironmentAppState.class));
+		world.addToScene(rootNode);
+	}
+
+	private long getSeed()
+	{
 		long seed = System.currentTimeMillis();
 		String seedStr = System.getProperty("seed");
 		if(seedStr != null)
 		{
 			seed = Long.parseLong(seedStr);
 		}
-		System.out.println("Using world seed: " + seed);
-		world = new World(this, cubesSettings, assetManager, cam, seed);
-		configureTerrainGenerator(seed, world.getTerrainGenerator());
-		world.setTimeOfDayProvider(stateManager.getState(EnvironmentAppState.class));
-		
-		world.addToScene(rootNode);
-	}
-
-	private void configureTerrainGenerator(long seed, TerrainGenerator terrainGenerator)
-	{
-		SimplexNoise.setSeed(seed);//TODO: Need to make this non-static and allow Simplex2DFeature to set it
-		// test commit
-//		terrainGenerator.addFeature(new FlatFeature(Block.grass, 10));
-		
-		
-		terrainGenerator.addFeature(new Simplex3DFeature(seed, 0.01f, 0.1f, 4, 70)); 
-		terrainGenerator.addFeature(new Simplex2DFeature(seed,Block.grass.blockId).setSimplexScale(0.015f).setPersistence(0.2f).setIterations(4).setHeight(60));
-		terrainGenerator.addFeature(new Simplex2DFeature(seed).setSimplexScale(0.01f).setPersistence(0.12f).setIterations(4).setHeight(60));
-		terrainGenerator.addFeature(new Simplex2DFeature(seed).setSimplexScale(0.001f).setPersistence(0.2f).setIterations(4).setHeight(80));
-		terrainGenerator.addFeature(new Simplex2DFeature(seed).setSimplexScale(0.001f).setPersistence(0.09f).setIterations(4).setHeight(100));
-		terrainGenerator.addFeature(new BlockOreFeature(seed));
-		terrainGenerator.addFeature(new WaterFeature(45));
-		terrainGenerator.addFeature(new PlantFeature(seed));
-		terrainGenerator.addFeature(new TreeFeature(seed));
-		
-		
-//		terrainGenerator.addFeature(new ShowNegativeCoordinatesAndChunkBoundariesFeature());
-//		terrainGenerator.addFeature(new ChessBoardFeature());
-//		terrainGenerator.addFeature(new CellNoiseFlatFeature(seed));
-//		terrainGenerator.addFeature(new CellNoise2DFeature(seed));
-//		terrainGenerator.addFeature(new CellNoise3DFeature(seed));
+		return seed;
 	}
 
 	@Override
@@ -244,79 +157,26 @@ public class JCraft extends SimpleApplication implements ActionListener
 		world.update(tpf);
 	}
 
+	private void initControls()
+	{
+		addMapping("f1", new KeyTrigger(KeyInput.KEY_F1));
+		addMapping("f3", new KeyTrigger(KeyInput.KEY_F3));
+		addMapping("f5", new KeyTrigger(KeyInput.KEY_F5));
+		addMapping("e", new KeyTrigger(KeyInput.KEY_E));
+	}
+
+	private void addMapping(String action, Trigger trigger)
+	{
+		inputManager.addMapping(action, trigger);
+		inputManager.addListener(this, action);
+	}
+
 	@Override
 	public void onAction(String name, boolean isPressed, float lastTimePerFrame)
 	{
-		if(name.equals("move_up"))
-		{
-			player.moveForward(isPressed);
-		}
-		else if(name.equals("move_right"))
-		{
-			player.moveRight(isPressed);
-		}
-		else if(name.equals("move_left"))
-		{
-			player.moveLeft(isPressed);
-		}
-		else if(name.equals("move_down"))
-		{
-			player.moveBackward(isPressed);
-		}
-		else if(name.equals("jump"))
-		{
-			long currentTime = System.currentTimeMillis();
-			long timeSinceLastPressed = currentTime - lastJumpPressed;
-			if(!isPressed && timeSinceLastPressed > 0 && timeSinceLastPressed < JUMP_TIME_INTERVAL)
-			{
-				player.toggleFlying();
-			}
-			else
-			{
-				player.jump();
-			}
-			player.moveUp(isPressed);
-			if(!isPressed)
-			{
-				lastJumpPressed = System.currentTimeMillis();
-			}
-		}
-		else if(name.equals("lshift"))
-		{
-			player.moveDown(isPressed);
-		}
-		else if(name.equals("lctrl"))
-		{
-			player.setFastFlying(isPressed);
-		}
-		else if(name.equals("RightClick") && !isPressed)
-		{
-			player.placeBlock();
-		}
-		else if(name.equals("LeftClick") && !isPressed)
-		{
-			player.breakBlock();
-		}
-		else if(name.length() == 1 && Character.isDigit(name.charAt(0)) && !isPressed)
-		{
-			player.selectBlock(Integer.valueOf(name));
-		}
-		else if("f1".equals(name) && !isPressed)
+		if("f1".equals(name) && !isPressed)
 		{
 			toggleToFullscreen();
-		}
-		else if("e".equals(name) && !isPressed)
-		{
-			nifty.fromXml("Interface/inventory.xml", "inventoryScreen", inventoryAppState);
-			inputManager.setCursorVisible(true);
-
-			// player.setEnabled(false);
-			flyCam.setEnabled(false);
-
-		}
-		else if("g".equals(name) && !isPressed)
-		{
-			player.toggleGravity();
 		}
 		else if("f3".equals(name) && !isPressed)
 		{
@@ -324,22 +184,38 @@ public class JCraft extends SimpleApplication implements ActionListener
 		}
 		else if("f5".equals(name) && !isPressed)
 		{
-			wireframe = !wireframe;
-			rootNode.depthFirstTraversal(new SceneGraphVisitor()
+			toggleWireframe();
+		}
+		else if("e".equals(name) && !isPressed)
+		{
+			showInventory();
+		}
+	}
+
+	private void showInventory()
+	{
+		nifty.fromXml("Interface/inventory.xml", "inventoryScreen", inventoryAppState);
+		inputManager.setCursorVisible(true);
+		flyCam.setEnabled(false);
+	}
+
+	private void toggleWireframe()
+	{
+		wireframe = !wireframe;
+		rootNode.depthFirstTraversal(new SceneGraphVisitor()
+		{
+			public void visit(Spatial spatial)
 			{
-				public void visit(Spatial spatial)
+				if(spatial instanceof Geometry)
 				{
-					if(spatial instanceof Geometry)
+					Geometry g = (Geometry)spatial;
+					if(!"blockCursor".equals(g.getName()))//Don't toggle the block cursor
 					{
-						Geometry g = (Geometry)spatial;
-						if(!"blockCursor".equals(g.getName()))//Don't toggle the block cursor
-						{
-							g.getMaterial().getAdditionalRenderState().setWireframe(wireframe);
-						}
+						g.getMaterial().getAdditionalRenderState().setWireframe(wireframe);
 					}
 				}
-			});
-		}
+			}
+		});
 	}
 
 	public HUDControl getHUD()
@@ -347,19 +223,9 @@ public class JCraft extends SimpleApplication implements ActionListener
 		return hud;
 	}
 
-	public BitmapFont getGuiFont()
-	{
-		return guiFont;
-	}
-
 	public void setGuiFont(BitmapFont guiFont)
 	{
 		this.guiFont = guiFont;
-	}
-
-	public CubesSettings getCubesSettings()
-	{
-		return cubesSettings;
 	}
 
 	@Override

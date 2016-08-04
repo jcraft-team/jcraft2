@@ -21,8 +21,6 @@ public class World
 	private static final int THREAD_COUNT = 1;
 	public ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(THREAD_COUNT);
 
-	private long seed;
-	
 	private CubesSettings settings;
 
 	private AssetManager assetManager;
@@ -44,13 +42,12 @@ public class World
 		this.settings = settings;
 		this.assetManager = assetManager;
 		this.cam = cam;
-		this.seed = seed;
         music = new AudioNode(assetManager, SoundConstants.MUSIC_CALM1);
         music.setReverbEnabled(false);
         music.setPositional(false);
         music.setLooping(true);
         this.chunkMgr = new ChunkManager(this);
-        this.terrainGenerator = new TerrainGenerator(this, chunkMgr);
+        this.terrainGenerator = TerrainGeneratorFactory.makeTerrainGenerator(this, chunkMgr, seed);
 	}
 	
 	public TerrainGenerator getTerrainGenerator()
@@ -748,11 +745,6 @@ public class World
 		return null;
     }
     
-
-    public long getSeed()
-    {
-    	return seed;
-    }
 
 	public Material getBlockMaterial()
 	{

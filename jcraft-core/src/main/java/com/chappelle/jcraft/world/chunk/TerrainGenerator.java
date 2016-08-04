@@ -13,11 +13,13 @@ public class TerrainGenerator
 	
 	private List<Feature> features = new ArrayList<Feature>();
 	private GeneratorThread gen;
+	private long seed;
 	
-	public TerrainGenerator(World world, ChunkManager chunkManager)
+	public TerrainGenerator(World world, ChunkManager chunkManager, long seed)
 	{
 		this.world = world;
 		this.chunkManager = chunkManager;
+		this.seed = seed;
 	}
 	
 	public void generateTerrainAroundPlayer(double playerX, double playerZ, int radius)
@@ -31,11 +33,6 @@ public class TerrainGenerator
 		}
 		else
 		{
-//			for(Vector3Int location : playerChunk.getMissingChunkNeighborhoodLocations(radius))
-//			{
-//				generateTerrain(location.x, location.z);
-//			}
-////
 			if(gen == null || !gen.running)
 			{
 				new Thread(gen = new GeneratorThread(playerChunk, radius), "TerrainGen").start();

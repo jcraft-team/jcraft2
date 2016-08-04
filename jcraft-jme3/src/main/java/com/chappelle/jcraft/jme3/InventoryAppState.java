@@ -1,30 +1,19 @@
 package com.chappelle.jcraft.jme3;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import com.chappelle.jcraft.blocks.Sprite;
-import com.chappelle.jcraft.inventory.Inventory;
-import com.chappelle.jcraft.inventory.ItemStack;
+import com.chappelle.jcraft.inventory.*;
 import com.jme3.app.Application;
-import com.jme3.app.state.AbstractAppState;
-import com.jme3.app.state.AppStateManager;
-import com.jme3.input.InputManager;
-import com.jme3.input.KeyInput;
-import com.jme3.input.controls.ActionListener;
-import com.jme3.input.controls.KeyTrigger;
+import com.jme3.app.state.*;
+import com.jme3.input.*;
+import com.jme3.input.controls.*;
 
 import de.lessvoid.nifty.Nifty;
-import de.lessvoid.nifty.builder.ControlBuilder;
-import de.lessvoid.nifty.builder.ImageBuilder;
-import de.lessvoid.nifty.builder.PanelBuilder;
-import de.lessvoid.nifty.builder.TextBuilder;
-import de.lessvoid.nifty.controls.Draggable;
-import de.lessvoid.nifty.controls.Droppable;
-import de.lessvoid.nifty.controls.DroppableDropFilter;
+import de.lessvoid.nifty.builder.*;
+import de.lessvoid.nifty.controls.*;
 import de.lessvoid.nifty.elements.Element;
-import de.lessvoid.nifty.screen.Screen;
-import de.lessvoid.nifty.screen.ScreenController;
+import de.lessvoid.nifty.screen.*;
 
 public class InventoryAppState extends AbstractAppState implements ScreenController, DroppableDropFilter
 {
@@ -63,13 +52,11 @@ public class InventoryAppState extends AbstractAppState implements ScreenControl
     public void initialize(AppStateManager stateManager, Application app)
     {
         super.initialize(stateManager, app);
-        
         inventory = JCraft.getInstance().getPlayer().getInventory();
         
         inputManager = app.getInputManager();
     }
 
-    
     public void bind(Nifty nifty, Screen screen)
     {
         this.screen = screen;
@@ -252,7 +239,6 @@ public class InventoryAppState extends AbstractAppState implements ScreenControl
             {
                 nifty.fromXml("Interface/hud.xml", "hud", JCraft.getInstance().getHUD());
                 inputManager.setCursorVisible(false);
-//                playerControl.setEnabled(true);
                 JCraft.getInstance().getFlyByCamera().setEnabled(true);
                 
             }
