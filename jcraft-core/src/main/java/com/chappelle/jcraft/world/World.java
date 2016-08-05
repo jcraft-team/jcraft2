@@ -47,12 +47,17 @@ public class World
         music.setPositional(false);
         music.setLooping(true);
         this.chunkMgr = new ChunkManager(this);
-        this.terrainGenerator = TerrainGeneratorFactory.makeTerrainGenerator(this, chunkMgr, seed);
+        this.terrainGenerator = new TerrainGenerator(this, chunkMgr, seed);
 	}
 	
 	public TerrainGenerator getTerrainGenerator()
 	{
 		return terrainGenerator;
+	}
+	
+	public ChunkManager getChunkManager()
+	{
+		return chunkMgr;
 	}
 	
 	public void update(float tpf)

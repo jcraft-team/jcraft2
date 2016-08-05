@@ -22,6 +22,11 @@ public class TerrainGenerator
 		this.seed = seed;
 	}
 	
+	public long getSeed()
+	{
+		return seed;
+	}
+	
 	public void generateTerrainAroundPlayer(double playerX, double playerZ, int radius)
 	{
 		int chunkX = MathUtils.floor_double(playerX)/16;

@@ -45,6 +45,11 @@
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
+			<groupId>com.chappelle</groupId>
+			<artifactId>jcraft-terrain-gen</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<groupId>com.jme3</groupId>
 			<artifactId>jme3-core</artifactId>
 			<version>${jme.version}</version>

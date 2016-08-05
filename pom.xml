@@ -26,6 +26,7 @@
 	<modules>
 		<module>jcraft-core</module>
 		<module>jcraft-jme3</module>
+		<module>jcraft-terrain-gen</module>
 	</modules>
 	<build>
 		<plugins>

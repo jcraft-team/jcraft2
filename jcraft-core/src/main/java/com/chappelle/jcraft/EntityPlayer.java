@@ -432,7 +432,7 @@ public class EntityPlayer extends Entity
 		int j = MathUtils.floor_double(this.boundingBox.minY);
 		int k = MathUtils.floor_double(this.posZ);
 		Block block = this.world.getBlock(i, j, k);
-		return block != null && block.blockId == Block.ladder.blockId;
+		return block != null && block.isClimbable;
 	}
 
 }

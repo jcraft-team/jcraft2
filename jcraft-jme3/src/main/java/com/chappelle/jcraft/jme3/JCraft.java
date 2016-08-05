@@ -1,5 +1,6 @@
 package com.chappelle.jcraft.jme3;
 
+import java.util.*;
 import java.util.logging.*;
 
 import com.chappelle.jcraft.*;
@@ -40,26 +41,6 @@ public class JCraft extends SimpleApplication implements ActionListener
 		settings.setHeight(GameSettings.screenHeight);
 		settings.setTitle("JCraft");
 		settings.setFrameRate(GameSettings.frameRate);
-	}
-
-	public AppSettings getAppSettings()
-	{
-		return settings;
-	}
-
-	public Nifty getNifty()
-	{
-		return nifty;
-	}
-
-	public EntityPlayer getPlayer()
-	{
-		return player;
-	}
-
-	public static JCraft getInstance()
-	{
-		return jcraft;
 	}
 
 	@Override
@@ -135,6 +116,13 @@ public class JCraft extends SimpleApplication implements ActionListener
 		long seed = getSeed();
 		System.out.println("Using world seed: " + seed);
 		world = new World(this, cubesSettings, assetManager, cam, seed);
+		Iterator<WorldConfigurer> configurers = ServiceLoader.load(WorldConfigurer.class).iterator();
+		while(configurers.hasNext())
+		{
+			WorldConfigurer worldConfigurer = configurers.next();
+			worldConfigurer.configureWorld(world);
+		}
+
 		world.setTimeOfDayProvider(stateManager.getState(EnvironmentAppState.class));
 		world.addToScene(rootNode);
 	}
@@ -228,16 +216,6 @@ public class JCraft extends SimpleApplication implements ActionListener
 		});
 	}
 
-	public HUDControl getHUD()
-	{
-		return hud;
-	}
-
-	public void setGuiFont(BitmapFont guiFont)
-	{
-		this.guiFont = guiFont;
-	}
-
 	@Override
 	public void destroy()
 	{
@@ -268,6 +246,36 @@ public class JCraft extends SimpleApplication implements ActionListener
 		stateManager.detach(stats);
 		stats = new StatsAppState(guiNode, guiFont);
 		stateManager.attach(stats);
+	}
+
+	public AppSettings getAppSettings()
+	{
+		return settings;
+	}
+
+	public Nifty getNifty()
+	{
+		return nifty;
+	}
+
+	public EntityPlayer getPlayer()
+	{
+		return player;
+	}
+
+	public static JCraft getInstance()
+	{
+		return jcraft;
+	}
+
+	public HUDControl getHUD()
+	{
+		return hud;
+	}
+
+	public void setGuiFont(BitmapFont guiFont)
+	{
+		this.guiFont = guiFont;
 	}
 
 	public static void main(String[] args)
