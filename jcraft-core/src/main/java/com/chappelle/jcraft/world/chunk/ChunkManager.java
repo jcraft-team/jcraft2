@@ -155,4 +155,12 @@ public class ChunkManager
 	{
 		executor.shutdownNow();
 	}
+
+	public void rebuildChunks()
+	{
+		for(Chunk chunk : getLoadedChunks())
+		{
+			chunk.markDirty();
+		}
+	}
 }

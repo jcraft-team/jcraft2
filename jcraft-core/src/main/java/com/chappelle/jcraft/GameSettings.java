@@ -10,6 +10,7 @@ public class GameSettings
 	public static int frameRate = -1;//-1 is unlimited
 	public static boolean debugEnabled;
 	public static boolean skyEnabled;
+	public static boolean ambientOcclusionEnabled = true;
 	
 	private static File optionsFile;
 	
@@ -56,6 +57,10 @@ public class GameSettings
 						{
 							skyEnabled = Boolean.parseBoolean(lineParts[1]);
 						}
+						else if (lineParts[0].equals("ambientOcclusionEnabled"))
+						{
+							ambientOcclusionEnabled = Boolean.parseBoolean(lineParts[1]);
+						}
 					}
 					catch(Exception e)
 					{
@@ -92,6 +97,7 @@ public class GameSettings
 			printWriter.println("frameRate=" + frameRate);
 			printWriter.println("debugEnabled=" + debugEnabled);
 			printWriter.println("skyEnabled=" + skyEnabled);
+			printWriter.println("ambientOcclusionEnabled=" + ambientOcclusionEnabled);
 		}
 		catch(IOException e)
 		{

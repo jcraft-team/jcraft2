@@ -162,6 +162,8 @@ public class JCraft extends SimpleApplication implements ActionListener
 		addMapping("f1", new KeyTrigger(KeyInput.KEY_F1));
 		addMapping("f3", new KeyTrigger(KeyInput.KEY_F3));
 		addMapping("f5", new KeyTrigger(KeyInput.KEY_F5));
+		addMapping("ToggleAmbientOcclusion", new KeyTrigger(KeyInput.KEY_F9));
+		addMapping("RebuildChunks", new KeyTrigger(KeyInput.KEY_F10));
 		addMapping("e", new KeyTrigger(KeyInput.KEY_E));
 	}
 
@@ -189,6 +191,14 @@ public class JCraft extends SimpleApplication implements ActionListener
 		else if("e".equals(name) && !isPressed)
 		{
 			showInventory();
+		}
+		else if("RebuildChunks".equals(name) && !isPressed)
+		{
+			world.rebuildChunks();
+		}
+		else if("ToggleAmbientOcclusion".equals(name) && !isPressed)
+		{
+			GameSettings.ambientOcclusionEnabled = !GameSettings.ambientOcclusionEnabled;
 		}
 	}
 

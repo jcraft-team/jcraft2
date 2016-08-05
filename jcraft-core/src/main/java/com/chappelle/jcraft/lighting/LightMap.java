@@ -36,15 +36,18 @@ public class LightMap
 	
 	public void setLight(int x, int y, int z, LightType type, int lightVal)
 	{
-		if(type == LightType.BLOCK)
+		if(x >= 0 && x < 16 && z >= 0 && z < 16)//sometimes get ArrayIndexOutOfBoundsExceptions. I think it's only when we are in negative land.
 		{
-			// Set the bits 0000XXXX
-			light[y][z][x] = (byte)((light[y][z][x] & 0xF0) | lightVal);
-		}
-		else
-		{
-			// Set the bits XXXX0000
-			light[y][z][x] = (byte)((light[y][z][x] & 0xF) | (lightVal << 4));
+			if(type == LightType.BLOCK)
+			{
+				// Set the bits 0000XXXX
+				light[y][z][x] = (byte)((light[y][z][x] & 0xF0) | lightVal);
+			}
+			else
+			{
+				// Set the bits XXXX0000
+				light[y][z][x] = (byte)((light[y][z][x] & 0xF) | (lightVal << 4));
+			}
 		}
 	}
 

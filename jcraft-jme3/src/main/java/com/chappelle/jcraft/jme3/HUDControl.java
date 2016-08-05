@@ -57,6 +57,7 @@ public class HUDControl extends AbstractControl implements ScreenController, Inv
 	private BitmapText pointedBoundingBoxLabel;
 	private BitmapText timeLabel;
 	private BitmapText loadedChunksLabel;
+	private BitmapText ambientOcclusionLabel;
 	private EntityPlayer player;
 	private World world;
     private Nifty nifty;
@@ -142,6 +143,10 @@ public class HUDControl extends AbstractControl implements ScreenController, Inv
         x = 10;
         y-= 25;
         loadedChunksLabel.setLocalTranslation(x, y, 0);
+
+        x = 10;
+        y-= 25;
+        ambientOcclusionLabel.setLocalTranslation(x, y, 0);
 	}
 	
 	@Override
@@ -234,6 +239,11 @@ public class HUDControl extends AbstractControl implements ScreenController, Inv
             loadedChunksLabel.setText("Loaded Chunks: ");
             debugNode.attachChild(loadedChunksLabel);
             
+            ambientOcclusionLabel = new BitmapText(guiFont, false);
+            ambientOcclusionLabel.setSize(guiFont.getCharSet().getRenderedSize());
+            ambientOcclusionLabel.setText("Ambient Occlusion: ");
+            debugNode.attachChild(ambientOcclusionLabel);
+            
             positionElements();
             
             this.nifty = this.app.getNifty();
@@ -265,6 +275,7 @@ public class HUDControl extends AbstractControl implements ScreenController, Inv
 				timeLabel.setText("Time: ?");
 			}
 			loadedChunksLabel.setText("Loaded Chunks: " + world.getLoadedChunkCount());
+			ambientOcclusionLabel.setText("Ambient Occlusion: " + (GameSettings.ambientOcclusionEnabled == true ? "Enabled" : "Disabled"));
 			if(blockLoc != null && blockLoc.y < 256)
 			{
 				Vector3Int walkedOnBlockLocation = blockLoc.subtract(0, 2, 0);
@@ -294,7 +305,7 @@ public class HUDControl extends AbstractControl implements ScreenController, Inv
 			if(rayTrace != null)
 			{
 				Block block = world.getBlock(rayTrace.blockX, rayTrace.blockY, rayTrace.blockZ);
-				pointedBlockLabel.setText("Pointed Block: " + (block == null ? "Air" : block) + " at [" + rayTrace.blockX + ", " + rayTrace.blockY + ", " + rayTrace.blockZ + "]");
+				pointedBlockLabel.setText("Pointed Block: " + (block == null ? "Air" : block) + " at [" + rayTrace.blockX + ", " + rayTrace.blockY + ", " + rayTrace.blockZ + ", " + rayTrace.sideHit + "]");
 				if(block == null)
 				{
 					pointedLocalBlockLabel.setText("Pointed Local Block: null");

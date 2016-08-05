@@ -99,6 +99,8 @@ public class Block
 
 	public float slipperiness;
 	
+	public float opacity = 1.0f;
+	
 	public static final Block grass = new BlockGrass(1).setStepSound(SoundConstants.DIG_GRASS_2);
 	public static final Block glass = new BlockGlass(2).setStepSound(SoundConstants.STEP_STONE_1);
 	public static final Block door = new BlockDoor(3, true).setStepSound(SoundConstants.STEP_WOOD_1);

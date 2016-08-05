@@ -176,8 +176,23 @@ public class World
         result.setVolume(.3f);
         return result;
     }
+    
+    public void rebuildChunks()
+    {
+    	chunkMgr.rebuildChunks();
+    }
 
-	public Block getBlock(int x, int y, int z)
+    public boolean isOpaqueBlockPresent(int x, int y, int z)
+    {
+    	if(y > 255 || y < 0)
+    	{
+    		return false;
+    	}
+    	Block block = getBlock(new Vector3Int(x, y, z));
+		return block != null && !block.isTransparent;
+    }
+
+    public Block getBlock(int x, int y, int z)
 	{
 		return getBlock(new Vector3Int(x, y, z));
 	}
