@@ -316,6 +316,11 @@ public class Chunk
     	}
     	return result;
     }
+    
+    public boolean isBlockExposedToDirectSunlight(int x, int y, int z)
+    {
+    	return heightMap[x][z] <= y;
+    }
 
     public boolean isBlockOnSurface(Vector3Int location)
     {

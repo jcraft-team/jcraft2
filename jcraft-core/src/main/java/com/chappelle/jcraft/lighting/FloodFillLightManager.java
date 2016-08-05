@@ -507,7 +507,7 @@ public class FloodFillLightManager implements LightManager
 		int y = localBlockLocation.y;
 		int z = localBlockLocation.z;
 
-		if(chunk.isBlockOnSurface(localBlockLocation))//Still causing a dim spot on surface
+		if(chunk.isBlockExposedToDirectSunlight(localBlockLocation.x, localBlockLocation.y, localBlockLocation.z))
 		{
 			chunk.setLight(x, y, z, LightType.SKY, 15);
 			sunlightAdditionQueue.add(new LightNode(x,y,z, chunk));
