@@ -40,7 +40,7 @@ public class EnvironmentAppState extends AbstractAppState implements ViewPortLis
      * number of shadow map splits (&gt;0)
      */
     final private static int shadowMapSplits = 3;
-    private JCraft app;
+    private JCraftApplication app;
     private SkyControl sky;
     private Spatial cubeMap = null;
     private Node sceneNode;
@@ -58,7 +58,7 @@ public class EnvironmentAppState extends AbstractAppState implements ViewPortLis
     {
         super.initialize(stateManager, app);
 
-        this.app = (JCraft) app;
+        this.app = (JCraftApplication) app;
         this.viewPort = this.app.getViewPort();
         this.rootNode = this.app.getRootNode();
         this.assetManager = this.app.getAssetManager();

@@ -22,7 +22,7 @@ public class PlayerControl extends NodeControl implements ActionListener
 	private Vector3f position = new Vector3f();
 	private InputManager inputManager;
 
-	public PlayerControl(JCraft app, EntityPlayer player)
+	public PlayerControl(JCraftApplication app, EntityPlayer player)
 	{
 		this.inputManager = app.getInputManager();
 		

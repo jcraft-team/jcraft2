@@ -39,7 +39,7 @@ public class HUDControl extends AbstractControl implements ScreenController, Inv
 	private Node guiNode;
 	private BitmapText crosshairs;
 	private AssetManager assetManager;
-	private JCraft app;
+	private JCraftApplication app;
 	private AppSettings settings;
 	private BitmapFont guiFont;
 	private BitmapText playerLocationLabel;
@@ -67,7 +67,7 @@ public class HUDControl extends AbstractControl implements ScreenController, Inv
     private Screen screen;
     private boolean inventoryDirty = true;
 	
-	public HUDControl(JCraft app, AppSettings appSettings, EntityPlayer player)
+	public HUDControl(JCraftApplication app, AppSettings appSettings, EntityPlayer player)
 	{
 		this.debugNode = new Node("debug");
 		this.world = app.world;
@@ -265,7 +265,7 @@ public class HUDControl extends AbstractControl implements ScreenController, Inv
 			blockLocationLabel.setText("Block location: " + blockLoc);
 			facingLabel.setText("Facing: " + player.cam.getDirection());
 			
-			EnvironmentAppState env = JCraft.getInstance().getStateManager().getState(EnvironmentAppState.class);
+			EnvironmentAppState env = JCraftApplication.getInstance().getStateManager().getState(EnvironmentAppState.class);
 			if(env != null)
 			{
 				timeLabel.setText("Time: " + env.getTimeOfDay());

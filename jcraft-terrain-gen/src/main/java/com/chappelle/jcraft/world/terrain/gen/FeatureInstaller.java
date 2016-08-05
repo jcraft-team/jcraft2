@@ -1,11 +1,11 @@
 package com.chappelle.jcraft.world.terrain.gen;
 
-import com.chappelle.jcraft.WorldConfigurer;
+import com.chappelle.jcraft.WorldInitializer;
 import com.chappelle.jcraft.blocks.Blocks;
 import com.chappelle.jcraft.world.World;
 import com.chappelle.jcraft.world.chunk.TerrainGenerator;
 
-public class FeatureInstaller implements WorldConfigurer
+public class FeatureInstaller implements WorldInitializer
 {
 	@Override
 	public void configureWorld(World world)

@@ -18,13 +18,13 @@ import com.jme3.system.AppSettings;
 
 import de.lessvoid.nifty.Nifty;
 
-public class JCraft extends SimpleApplication implements ActionListener
+public class JCraftApplication extends SimpleApplication implements ActionListener
 {
 	private static final Level LOG_LEVEL = Level.INFO;
 
-	private final static Logger log = Logger.getLogger(JCraft.class.getName()); 
+	private final static Logger log = Logger.getLogger(JCraftApplication.class.getName()); 
 	
-	private static JCraft jcraft;
+	private static JCraftApplication jcraft;
 	private Nifty nifty;
 	private NiftyJmeDisplay niftyDisplay;
 	public boolean debugEnabled = false;
@@ -34,11 +34,16 @@ public class JCraft extends SimpleApplication implements ActionListener
 	public World world;
 	private HUDControl hud;
 	private boolean wireframe;
+	private List<WorldInitializer> worldInitializers = new ArrayList<>();
+	private List<GameInitializer> gameInitializers = new ArrayList<>();
 
-	public JCraft()
+	public JCraftApplication()
 	{
 		jcraft = this;
 
+		addInitializers(worldInitializers, WorldInitializer.class);
+		addInitializers(gameInitializers, GameInitializer.class);
+		
 		debugEnabled = GameSettings.debugEnabled;
 		settings = new AppSettings(true);
 		settings.setWidth(GameSettings.screenWidth);
@@ -46,7 +51,7 @@ public class JCraft extends SimpleApplication implements ActionListener
 		settings.setTitle("JCraft");
 		settings.setFrameRate(GameSettings.frameRate);
 	}
-
+	
 	@Override
 	public void simpleInitApp()
 	{
@@ -83,8 +88,8 @@ public class JCraft extends SimpleApplication implements ActionListener
 		this.inventoryAppState = new InventoryAppState();
 		stateManager.attach(inventoryAppState);
 		nifty.fromXml("Interface/hud.xml", "hud", hud);
-		
-//		world.getNearbyChunks(5);//TODO:
+
+		initializeGame();
 	}
 
 	private void initializeGUI()
@@ -120,15 +125,26 @@ public class JCraft extends SimpleApplication implements ActionListener
 		long seed = getSeed();
 		log.info("Using world seed: " + seed);
 		world = new World(this, cubesSettings, assetManager, cam, seed);
-		Iterator<WorldConfigurer> configurers = ServiceLoader.load(WorldConfigurer.class).iterator();
-		while(configurers.hasNext())
-		{
-			WorldConfigurer worldConfigurer = configurers.next();
-			worldConfigurer.configureWorld(world);
-		}
+		configureWorld(world);
 
 		world.setTimeOfDayProvider(stateManager.getState(EnvironmentAppState.class));
 		world.addToScene(rootNode);
+	}
+
+	private void configureWorld(World world)
+	{
+		for(WorldInitializer gi : worldInitializers)
+		{
+			gi.configureWorld(world);
+		}
+	}
+
+	private void initializeGame()
+	{
+		for(GameInitializer gi : gameInitializers)
+		{
+			gi.initialize(this);
+		}
 	}
 
 	private long getSeed()
@@ -267,7 +283,7 @@ public class JCraft extends SimpleApplication implements ActionListener
 		return player;
 	}
 
-	public static JCraft getInstance()
+	public static JCraftApplication getInstance()
 	{
 		return jcraft;
 	}
@@ -282,13 +298,22 @@ public class JCraft extends SimpleApplication implements ActionListener
 		this.guiFont = guiFont;
 	}
 
+	private <T> void addInitializers(List<T> list, Class<T> initializerClass)
+	{
+		Iterator<T> initializersIterator = ServiceLoader.load(initializerClass).iterator();
+		while(initializersIterator.hasNext())
+		{
+			list.add(initializersIterator.next());
+		}
+	}
+
 	public static void main(String[] args)
 	{
 		Logger.getLogger("").setLevel(LOG_LEVEL);
 
 		GameSettings.load();
 
-		JCraft app = new JCraft();
+		JCraftApplication app = new JCraftApplication();
 		app.setShowSettings(GameSettings.showSettings);
 		app.start();
 	}

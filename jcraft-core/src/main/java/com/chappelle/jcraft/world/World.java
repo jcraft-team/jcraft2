@@ -35,6 +35,7 @@ public class World
 	public Node node = new Node("world");
 	private ChunkManager chunkMgr;
 	private TerrainGenerator terrainGenerator;
+	private List<WorldListener> listeners = new ArrayList<>();
 	
 	public World(Application app, CubesSettings settings, AssetManager assetManager, Camera cam, long seed)
 	{
@@ -48,6 +49,32 @@ public class World
         music.setLooping(true);
         this.chunkMgr = new ChunkManager(this);
         this.terrainGenerator = new TerrainGenerator(this, chunkMgr, seed);
+	}
+	
+	public void addListener(WorldListener listener)
+	{
+		this.listeners.add(listener);
+	}
+	
+	public void removeListener(WorldListener listener)
+	{
+		this.listeners.remove(listener);
+	}
+	
+	private void fireOnBlockAdded(Block block, Chunk chunk, int x, int y, int z)
+	{
+		for(WorldListener listener : listeners)
+		{
+			listener.onBlockAdded(block, chunk, x, y, z);
+		}
+	}
+
+	private void fireOnBlockRemoved(Block block, Chunk chunk, int x, int y, int z)
+	{
+		for(WorldListener listener : listeners)
+		{
+			listener.onBlockAdded(block, chunk, x, y, z);
+		}
 	}
 	
 	public TerrainGenerator getTerrainGenerator()
@@ -234,11 +261,12 @@ public class World
 		ChunkLocation localBlockState = getLocalBlockState(location);
 		if(localBlockState != null)
 		{
-			Vector3Int localBlockLocation = localBlockState.getLocalBlockLocation();
-			localBlockState.getChunk().lightMgr.setBlockLight(localBlockLocation, block.lightValue);
+			Chunk chunk = localBlockState.getChunk();
+			Vector3Int chunkBlockLocation = localBlockState.getLocalBlockLocation();
+			chunk.lightMgr.setBlockLight(chunkBlockLocation, block.lightValue);
 			if(!block.isTransparent)
 			{
-				localBlockState.getChunk().lightMgr.removeSunlight(localBlockLocation);
+				chunk.lightMgr.removeSunlight(chunkBlockLocation);
 			}
 			
 			//Here we mark neighbor chunks dirty if we broke a block on the border. This is needed
@@ -246,9 +274,10 @@ public class World
 			//expose what looks like a hole in the world. Rebuilding the neighbor fixes it
 			if(isChunkBorder(localBlockState.getLocalBlockLocation()))
 			{
-				markNeighborChunksDirty(localBlockState.getChunk(), localBlockState.getLocalBlockLocation());
+				markNeighborChunksDirty(chunk, localBlockState.getLocalBlockLocation());
 			}
 			localBlockState.setBlock(block);
+			fireOnBlockAdded(block, chunk, chunkBlockLocation.x, chunkBlockLocation.y, chunkBlockLocation.z);
 		}
 	}
 	
@@ -280,14 +309,15 @@ public class World
 				//Here we mark neighbor chunks dirty if we broke a block on the border. This is needed
 				//since we don't render block faces that are covered therefore breaking a block could
 				//expose what looks like a hole in the world. Rebuilding the neighbor fixes it
-				if(isChunkBorder(localBlockState.getLocalBlockLocation()))
+				Vector3Int chunkBlockLocation = localBlockState.getLocalBlockLocation();
+				if(isChunkBorder(chunkBlockLocation))
 				{
-					markNeighborChunksDirty(chunk, localBlockState.getLocalBlockLocation());
+					markNeighborChunksDirty(chunk, chunkBlockLocation);
 				}
 				localBlockState.removeBlock();
 				block.onBlockRemoved(this, location);
-				chunk.lightMgr.removeBlockLight(localBlockState.getLocalBlockLocation());
-				chunk.lightMgr.restoreSunlight(localBlockState.getLocalBlockLocation());
+				chunk.lightMgr.removeBlockLight(chunkBlockLocation);
+				chunk.lightMgr.restoreSunlight(chunkBlockLocation);
 				
 	            //Notify neighbors of block removal
 	            for (Block.Face face : Block.Face.values())
@@ -299,7 +329,7 @@ public class World
 	                    neighbor.onNeighborRemoved(this, location, neighborLocation);
 	                }
 	            }
-	            
+	            fireOnBlockRemoved(block, chunk, chunkBlockLocation.x, chunkBlockLocation.y, chunkBlockLocation.z);
 			}
 		}
 	}

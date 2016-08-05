@@ -52,7 +52,7 @@ public class InventoryAppState extends AbstractAppState implements ScreenControl
     public void initialize(AppStateManager stateManager, Application app)
     {
         super.initialize(stateManager, app);
-        inventory = JCraft.getInstance().getPlayer().getInventory();
+        inventory = JCraftApplication.getInstance().getPlayer().getInventory();
         
         inputManager = app.getInputManager();
     }
@@ -237,9 +237,9 @@ public class InventoryAppState extends AbstractAppState implements ScreenControl
         {
             if ("close".equals(name))
             {
-                nifty.fromXml("Interface/hud.xml", "hud", JCraft.getInstance().getHUD());
+                nifty.fromXml("Interface/hud.xml", "hud", JCraftApplication.getInstance().getHUD());
                 inputManager.setCursorVisible(false);
-                JCraft.getInstance().getFlyByCamera().setEnabled(true);
+                JCraftApplication.getInstance().getFlyByCamera().setEnabled(true);
                 
             }
         }
