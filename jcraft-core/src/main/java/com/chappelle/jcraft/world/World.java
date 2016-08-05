@@ -236,6 +236,13 @@ public class World
 				localBlockState.getChunk().lightMgr.removeSunlight(localBlockLocation);
 			}
 			
+			//Here we mark neighbor chunks dirty if we broke a block on the border. This is needed
+			//since we don't render block faces that are covered therefore breaking a block could
+			//expose what looks like a hole in the world. Rebuilding the neighbor fixes it
+			if(isChunkBorder(localBlockState.getLocalBlockLocation()))
+			{
+				markNeighborChunksDirty(localBlockState.getChunk(), localBlockState.getLocalBlockLocation());
+			}
 			localBlockState.setBlock(block);
 		}
 	}
@@ -265,13 +272,17 @@ public class World
 			if(block.isBreakable())
 			{
 				Chunk chunk = localBlockState.getChunk();
+				//Here we mark neighbor chunks dirty if we broke a block on the border. This is needed
+				//since we don't render block faces that are covered therefore breaking a block could
+				//expose what looks like a hole in the world. Rebuilding the neighbor fixes it
+				if(isChunkBorder(localBlockState.getLocalBlockLocation()))
+				{
+					markNeighborChunksDirty(chunk, localBlockState.getLocalBlockLocation());
+				}
 				localBlockState.removeBlock();
 				block.onBlockRemoved(this, location);
 				chunk.lightMgr.removeBlockLight(localBlockState.getLocalBlockLocation());
 				chunk.lightMgr.restoreSunlight(localBlockState.getLocalBlockLocation());
-//				chunk.lightMgr.rebuildSunlight();
-				
-//				rebuildNeighborsSunlight(chunk);//FIXME: Not great performance, but fixes some lighting issues when breaking blocks underground over chunk boundaries
 				
 	            //Notify neighbors of block removal
 	            for (Block.Face face : Block.Face.values())
@@ -284,22 +295,7 @@ public class World
 	                }
 	            }
 	            
-	            //Here we mark neighbor chunks dirty if we broke a block on the border. This is needed
-	            //since we don't render block faces that are covered therefore breaking a block could
-	            //expose what looks like a hole in the world. Rebuilding the neighbor fixes it
-	            if(isChunkBorder(localBlockState.getLocalBlockLocation()))
-	            {
-	            	markNeighborChunksDirty(chunk, localBlockState.getLocalBlockLocation());
-	            }
 			}
-		}
-	}
-
-	private void rebuildNeighborsSunlight(Chunk chunk)
-	{
-		for(Chunk chunkNeighbor : chunk.getChunkNeighborhood(1))
-		{
-			chunkNeighbor.lightMgr.rebuildSunlight();
 		}
 	}
 

@@ -125,7 +125,6 @@ public class BlockTorch extends Block
 	{
 		setBlockBoundsBasedOnState(world, x, y, z);
 		AABB selectedBoundingBox = super.getSelectedBoundingBox(world, x, y, z);
-		System.out.println(selectedBoundingBox);
 		return selectedBoundingBox;
 	}
 

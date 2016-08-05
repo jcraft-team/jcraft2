@@ -80,7 +80,7 @@ public class Chunk
     {
     	if(heightMap[x][z] == y)
     	{
-    		heightMap[x][z] = findHeight(x, z);
+    		heightMap[x][z] = findHeight(x, z, y);
     	}
     	blockTypes[x][y][z] = 0;
     	markDirty();
@@ -102,7 +102,12 @@ public class Chunk
 
     private int findHeight(int x, int z)
     {
-		for(int y = 255; y >= 0; y--)
+    	return findHeight(x, z, 255);
+    }
+    
+    private int findHeight(int x, int z, int startingHeight)
+    {
+		for(int y = startingHeight; y >= 0; y--)
 		{
 			Block block = getBlock(x, y, z);
 			if(block != null && !block.isTransparent)
