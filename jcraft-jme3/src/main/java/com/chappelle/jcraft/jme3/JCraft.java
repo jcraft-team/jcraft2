@@ -20,6 +20,10 @@ import de.lessvoid.nifty.Nifty;
 
 public class JCraft extends SimpleApplication implements ActionListener
 {
+	private static final Level LOG_LEVEL = Level.INFO;
+
+	private final static Logger log = Logger.getLogger(JCraft.class.getName()); 
+	
 	private static JCraft jcraft;
 	private Nifty nifty;
 	private NiftyJmeDisplay niftyDisplay;
@@ -70,11 +74,11 @@ public class JCraft extends SimpleApplication implements ActionListener
 
 		updateStatsView();
 
-		System.out.println("****************************************************************************");
-		System.out.println("Press F1 for fullscreen, F3 to toggle debug, F4 to toggle profiler.");
-		System.out.println("See key bindings in JCraft class for other controls");
-		System.out.println("****************************************************************************");
-		System.out.println("\r\n\r\n");
+		log.info("****************************************************************************");
+		log.info("Press F1 for fullscreen, F3 to toggle debug, F4 to toggle profiler.");
+		log.info("See key bindings in JCraft class for other controls");
+		log.info("****************************************************************************");
+		log.info("\r\n\r\n");
 
 		this.inventoryAppState = new InventoryAppState();
 		stateManager.attach(inventoryAppState);
@@ -114,7 +118,7 @@ public class JCraft extends SimpleApplication implements ActionListener
 		cubesSettings.setDefaultBlockMaterial("Textures/FaithfulBlocks.png");
 
 		long seed = getSeed();
-		System.out.println("Using world seed: " + seed);
+		log.info("Using world seed: " + seed);
 		world = new World(this, cubesSettings, assetManager, cam, seed);
 		Iterator<WorldConfigurer> configurers = ServiceLoader.load(WorldConfigurer.class).iterator();
 		while(configurers.hasNext())
@@ -280,7 +284,7 @@ public class JCraft extends SimpleApplication implements ActionListener
 
 	public static void main(String[] args)
 	{
-		Logger.getLogger("").setLevel(Level.SEVERE);
+		Logger.getLogger("").setLevel(LOG_LEVEL);
 
 		GameSettings.load();
 

@@ -47,7 +47,6 @@ public class Simplex2DFeature implements Feature
 		}
 		this.blockCount = this.blockIds.length;
 		this.rand = new Random(seed);
-		System.out.println(blockCount);
 	}
 	
 	@Override

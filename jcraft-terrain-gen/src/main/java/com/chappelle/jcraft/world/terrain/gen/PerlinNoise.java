@@ -1,9 +1,13 @@
 package com.chappelle.jcraft.world.terrain.gen;
 
+import java.util.logging.Logger;
+
 // Copyright 2001 Ken Perlin
 
 public final class PerlinNoise
 {
+	private final static Logger log = Logger.getLogger(PerlinNoise.class.getName()); 
+
 	private long seed = 100;
 
 	private static final int P = 8;
@@ -127,11 +131,6 @@ public final class PerlinNoise
 			bz += B;
 		}
 		rz = z - Math.floor(z);
-
-		if(bx < 0 || bx >= B + B + 2)
-		{
-			System.out.println(bx);
-		}
 
 		b0 = p[bx];
 
@@ -287,7 +286,7 @@ public final class PerlinNoise
 						(2/15.0f)*noise.noise(2*x/16.0f, 2*z/16.0f) + 
 						(4/15.0f)*noise.noise(4*x/16.0f, 4*z/16.0f) + 
 						(8/15.0f)*noise.noise(8*x/16.0f, 8*z/16.0f);
-				System.out.println(noiseVal/10000);
+				log.info("" + noiseVal/10000);
 			}
 		}
 	}

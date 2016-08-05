@@ -1,6 +1,7 @@
 package com.chappelle.jcraft;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 import com.chappelle.jcraft.blocks.Block;
 import com.chappelle.jcraft.inventory.*;
@@ -11,6 +12,8 @@ import com.jme3.renderer.Camera;
 
 public class EntityPlayer extends Entity
 {
+	private final static Logger log = Logger.getLogger(EntityPlayer.class.getName()); 
+
 	private static final float MAX_SPEED = 0.08f;
 	private static final float WALK_SPEED = 1.0f;
 	private static final float NORMAL_FLYSPEED = 2.0f;
@@ -375,7 +378,7 @@ public class EntityPlayer extends Entity
 		{
 			flySpeed = NORMAL_FLYSPEED;
 		}
-		System.out.println("flySpeed=" + flySpeed);
+		log.fine("flySpeed=" + flySpeed);
 	}
 	
 	public void selectBlock(int index)
@@ -383,7 +386,7 @@ public class EntityPlayer extends Entity
 		selected = inventory.selectItem(index);
 		if(selected != null)
 		{
-			System.out.println("Selected block is " + selected.getBlock().getClass().getName());
+			log.fine("Selected block is " + selected.getBlock().getClass().getName());
 		}
 	}
 	

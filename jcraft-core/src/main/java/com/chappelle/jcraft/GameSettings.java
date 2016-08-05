@@ -1,9 +1,12 @@
 package com.chappelle.jcraft;
 
 import java.io.*;
+import java.util.logging.Logger;
 
 public class GameSettings
 {
+	private final static Logger log = Logger.getLogger(GameSettings.class.getName()); 
+
 	public static int screenWidth = 1366;
 	public static int screenHeight = 768;
 	public static boolean showSettings;
@@ -23,7 +26,7 @@ public class GameSettings
 		optionsFile = new File(GameFiles.getDataDir(), "jcraft-options.txt");
 		if(optionsFile.exists())
 		{
-			System.out.println("Loading options from " + optionsFile);
+			log.info("Loading options from " + optionsFile);
 			try(BufferedReader bufferedreader = new BufferedReader(new FileReader(optionsFile)))
 			{
 				String line = "";
@@ -90,7 +93,7 @@ public class GameSettings
 		}
 		try(PrintWriter printWriter = new PrintWriter(new FileWriter(optionsFile)))
 		{
-			System.out.println("Saving options to " + optionsFile);
+			log.info("Saving options to " + optionsFile);
 			printWriter.println("screenWidth=" + screenWidth);
 			printWriter.println("screenHeight=" + screenHeight);
 			printWriter.println("showSettings=" + showSettings);

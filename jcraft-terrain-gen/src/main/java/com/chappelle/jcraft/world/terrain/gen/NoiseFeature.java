@@ -3,7 +3,6 @@ package com.chappelle.jcraft.world.terrain.gen;
 import java.util.Random;
 
 import com.chappelle.jcraft.blocks.*;
-import com.chappelle.jcraft.world.Noise;
 import com.chappelle.jcraft.world.chunk.Feature;
 
 public class NoiseFeature implements Feature

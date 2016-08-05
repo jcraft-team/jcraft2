@@ -61,7 +61,6 @@ public class SimplexNoise {  // Simplex noise in 2D, 3D and 4D
   private static void init()
   {
     Random rndm = new Random(seed);
-    System.out.println("Seed=" + seed);
     rndm.nextFloat();
     for(int i=0;i < p.length; i++)
     {
@@ -83,11 +82,9 @@ public class SimplexNoise {  // Simplex noise in 2D, 3D and 4D
 
   public static void pStuff()
   {
-	  System.out.println(p.length);
 	  short l=255, h=0;
 	  for(int i=0;i < p.length; i++)
 	  {
-		  System.out.print(p[i] +" ");
 		  if(p[i] < l)
 		  {
 			  l=p[i];
@@ -97,7 +94,6 @@ public class SimplexNoise {  // Simplex noise in 2D, 3D and 4D
 			  h=p[i];
 		  }
 	  }
-	  System.out.println(l + " - " + h);
   }
 
 
