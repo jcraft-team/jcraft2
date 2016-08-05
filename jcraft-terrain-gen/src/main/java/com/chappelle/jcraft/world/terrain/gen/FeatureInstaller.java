@@ -1,14 +1,18 @@
-package com.chappelle.jcraft.world.chunk;
+package com.chappelle.jcraft.world.terrain.gen;
 
-import com.chappelle.jcraft.blocks.Block;
+import com.chappelle.jcraft.WorldConfigurer;
+import com.chappelle.jcraft.blocks.Blocks;
 import com.chappelle.jcraft.world.World;
-import com.chappelle.jcraft.world.chunk.gen.*;
+import com.chappelle.jcraft.world.chunk.TerrainGenerator;
 
-public class TerrainGeneratorFactory
+public class FeatureInstaller implements WorldConfigurer
 {
-	public static TerrainGenerator makeTerrainGenerator(World world, ChunkManager chunkManager, long seed)
+	@Override
+	public void configureWorld(World world)
 	{
-		TerrainGenerator terrainGenerator = new TerrainGenerator(world, chunkManager, seed);
+		TerrainGenerator terrainGenerator = world.getTerrainGenerator();
+
+		long seed = terrainGenerator.getSeed();
 		SimplexNoise.setSeed(seed);//TODO: Need to make this non-static and allow Simplex2DFeature to set it
 		// test commit
 //		terrainGenerator.addFeature(new FlatFeature(Block.wood, 10));
@@ -16,7 +20,7 @@ public class TerrainGeneratorFactory
 		
 		
 		terrainGenerator.addFeature(new Simplex3DFeature(seed, 0.01f, 0.1f, 4, 70)); 
-		terrainGenerator.addFeature(new Simplex2DFeature(seed,Block.grass.blockId).setSimplexScale(0.015f).setPersistence(0.2f).setIterations(4).setHeight(60));
+		terrainGenerator.addFeature(new Simplex2DFeature(seed,Blocks.grass.blockId).setSimplexScale(0.015f).setPersistence(0.2f).setIterations(4).setHeight(60));
 		terrainGenerator.addFeature(new Simplex2DFeature(seed).setSimplexScale(0.01f).setPersistence(0.12f).setIterations(4).setHeight(60));
 		terrainGenerator.addFeature(new Simplex2DFeature(seed).setSimplexScale(0.001f).setPersistence(0.2f).setIterations(4).setHeight(80));
 		terrainGenerator.addFeature(new Simplex2DFeature(seed).setSimplexScale(0.001f).setPersistence(0.09f).setIterations(4).setHeight(100));
@@ -31,7 +35,5 @@ public class TerrainGeneratorFactory
 //		terrainGenerator.addFeature(new CellNoiseFlatFeature(seed));
 //		terrainGenerator.addFeature(new CellNoise2DFeature(seed));
 //		terrainGenerator.addFeature(new CellNoise3DFeature(seed));
-
-		return terrainGenerator;
 	}
 }

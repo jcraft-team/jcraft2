@@ -1,4 +1,4 @@
-package com.chappelle.jcraft.world.chunk.gen;
+package com.chappelle.jcraft.world.terrain.gen;
 
 import com.chappelle.jcraft.blocks.*;
 import com.chappelle.jcraft.world.chunk.Feature;
@@ -35,7 +35,7 @@ public class CellNoise3DFeature implements Feature
 		{
 			for(int z = 0; z < 16; z++)
 			{
-				blockTypes[x][0][z] = Block.bedrock.blockId;
+				blockTypes[x][0][z] = Blocks.bedrock.blockId;
 				for (int y = 1; y < 100; y++)
 				{
 	                Double c = sumOctave(iterations, x+xOffset, y, z+zOffset, persistence, simplexScale);
@@ -72,39 +72,39 @@ public class CellNoise3DFeature implements Feature
     	byte block = 0;
         if(c>.28)
         {
-            block = Block.woolRed.blockId;
+            block = Blocks.woolRed.blockId;
         }
         if(c>.30)
         {
-            block = Block.woolBlue.blockId;
+            block = Blocks.woolBlue.blockId;
         }
         if(c>.35)
         {
-            block = Block.woolOrange.blockId;
+            block = Blocks.woolOrange.blockId;
         }
         if(c>.40)
         {
-            block = Block.woolYellow.blockId;
+            block = Blocks.woolYellow.blockId;
         }
         if(c>.45)
         {
-            block = Block.woolGreen.blockId;
+            block = Blocks.woolGreen.blockId;
         }
         if(c>.50)
         {
-            block = Block.woolBrown.blockId;
+            block = Blocks.woolBrown.blockId;
         }
         if(c>.55)
         {
-            block = Block.woolPink.blockId;
+            block = Blocks.woolPink.blockId;
         }
         if(c>.60)
         {
-            block = Block.woolMagenta.blockId;
+            block = Blocks.woolMagenta.blockId;
         }
         if(c>.65 )
         {
-        	block = Block.woolBlack.blockId;
+        	block = Blocks.woolBlack.blockId;
         }
         if(c>.70 )
         {

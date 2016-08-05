@@ -1,14 +1,14 @@
-package com.chappelle.jcraft.world.chunk.gen;
+package com.chappelle.jcraft.world.terrain.gen;
 
 import java.util.Random;
 
-import com.chappelle.jcraft.blocks.Block;
+import com.chappelle.jcraft.blocks.*;
 import com.chappelle.jcraft.world.chunk.Feature;
 
 public class PlantFeature implements Feature
 {
 	private Random rand;
-	private byte[] plants = new byte[]{Block.plantRed.blockId, Block.plantYellow.blockId, Block.mushroomBrown.blockId, Block.mushroomRed.blockId, Block.tallGrass.blockId};
+	private byte[] plants = new byte[]{Blocks.plantRed.blockId, Blocks.plantYellow.blockId, Blocks.mushroomBrown.blockId, Blocks.mushroomRed.blockId, Blocks.tallGrass.blockId};
 	
 	public PlantFeature(long seed)
 	{
@@ -24,7 +24,7 @@ public class PlantFeature implements Feature
 			{
 				for(int z = 0; z < 16; z++)
 				{
-					if(blockTypes[x][y][z] == Block.grass.blockId && blockTypes[x][y+1][z] == 0)
+					if(blockTypes[x][y][z] == Blocks.grass.blockId && blockTypes[x][y+1][z] == 0)
 					{
 						if(rand.nextInt(25) == 20)
 						{

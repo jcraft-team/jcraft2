@@ -16,6 +16,7 @@ public class BlockLadder extends Block
 		
 		setShapes(new BlockShape_Ladder());
 		
+		this.isClimbable = true;
 		this.isTransparent = true;
 	}
 	

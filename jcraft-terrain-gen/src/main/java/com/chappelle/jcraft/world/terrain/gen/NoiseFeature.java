@@ -1,8 +1,8 @@
-package com.chappelle.jcraft.world.chunk.gen;
+package com.chappelle.jcraft.world.terrain.gen;
 
 import java.util.Random;
 
-import com.chappelle.jcraft.blocks.Block;
+import com.chappelle.jcraft.blocks.*;
 import com.chappelle.jcraft.world.Noise;
 import com.chappelle.jcraft.world.chunk.Feature;
 
@@ -28,13 +28,13 @@ public class NoiseFeature implements Feature
 			{
 				for(int z = 0; z < 16; z++)
 				{
-					blockTypes[x][y][z] = Block.grass.blockId;
+					blockTypes[x][y][z] = Blocks.grass.blockId;
 				}
 			}
 		}
 
 		int magnitude = 4;
-		generateFromNoise(blockTypes, Block.grass, 0, 0, 16, 16, magnitude);
+		generateFromNoise(blockTypes, Blocks.grass, 0, 0, 16, 16, magnitude);
 		
 //		if(rand.nextInt(5) == 0)
 //		{
@@ -64,16 +64,16 @@ public class NoiseFeature implements Feature
 				int blockHeight = flatChunkHeight + (((int) ((((gridGroundHeight * 100) / gridLargestDifference) / 100) * magnitude)) + 1);
 				for(int y = 0; y < blockHeight; y++)
 				{
-					if(block.blockId == Block.smoothStone.blockId)
+					if(block.blockId == Blocks.smoothStone.blockId)
 					{
 						int randVal = rand.nextInt(8);
 						if(randVal == 0)
 						{
-							blockTypes[x][y][z] = Block.coal.blockId;
+							blockTypes[x][y][z] = Blocks.coal.blockId;
 						}
 						else if(randVal == 1)
 						{
-							blockTypes[x][y][z] = Block.gravel.blockId;
+							blockTypes[x][y][z] = Blocks.gravel.blockId;
 						}
 						else
 						{

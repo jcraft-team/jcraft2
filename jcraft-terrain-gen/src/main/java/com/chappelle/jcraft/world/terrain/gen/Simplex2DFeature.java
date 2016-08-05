@@ -1,8 +1,8 @@
-package com.chappelle.jcraft.world.chunk.gen;
+package com.chappelle.jcraft.world.terrain.gen;
 
 import java.util.Random;
 
-import com.chappelle.jcraft.blocks.Block;
+import com.chappelle.jcraft.blocks.*;
 import com.chappelle.jcraft.world.chunk.Feature;
 
 public class Simplex2DFeature implements Feature
@@ -43,7 +43,7 @@ public class Simplex2DFeature implements Feature
 		this.blockIds = blockIds;
 		if(this.blockIds == null || this.blockIds.length == 0)
 		{
-			this.blockIds = new byte[]{Block.grass.blockId};
+			this.blockIds = new byte[]{Blocks.grass.blockId};
 		}
 		this.blockCount = this.blockIds.length;
 		this.rand = new Random(seed);
@@ -59,7 +59,7 @@ public class Simplex2DFeature implements Feature
 		{
 			for(int z = 0; z < 16; z++)
 			{
-				blockTypes[x][0][z] = Block.bedrock.blockId;
+				blockTypes[x][0][z] = Blocks.bedrock.blockId;
 				Double c = sumOctave(iterations, x+xOffset, z+zOffset, persistence, simplexScale);
 				c = normalize(c, 1, height);
 				for (int y = 1; y < c; y++)
@@ -71,7 +71,7 @@ public class Simplex2DFeature implements Feature
                 {
                     for(int y=c.intValue()+1; y<=waterLevel; y++)
                     {
-                    	blockTypes[x][y][z] = Block.water.blockId;
+                    	blockTypes[x][y][z] = Blocks.water.blockId;
                     }
                 }
 			}

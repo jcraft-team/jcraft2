@@ -1,6 +1,6 @@
-package com.chappelle.jcraft.world.chunk.gen;
+package com.chappelle.jcraft.world.terrain.gen;
 
-import com.chappelle.jcraft.blocks.Block;
+import com.chappelle.jcraft.blocks.*;
 import com.chappelle.jcraft.world.chunk.Feature;
 
 public class Simplex3DFeature implements Feature
@@ -36,12 +36,12 @@ public class Simplex3DFeature implements Feature
                 {
                     if(y == 0)
                     {
-                    	blockTypes[x][0][z] = Block.bedrock.blockId;
+                    	blockTypes[x][0][z] = Blocks.bedrock.blockId;
                     }
                     else
                     {
                     	Double c = sumOctave(iterations, x+xOffset, y, z+zOffset, persistence, simplexScale);
-                    	byte place = Block.grass.blockId;
+                    	byte place = Blocks.grass.blockId;
                     	if(c>.05)
                     	{
 //                    		int b = y % 15;

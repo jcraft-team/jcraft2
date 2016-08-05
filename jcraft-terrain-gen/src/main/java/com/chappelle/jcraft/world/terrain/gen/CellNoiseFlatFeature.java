@@ -1,21 +1,21 @@
-package com.chappelle.jcraft.world.chunk.gen;
+package com.chappelle.jcraft.world.terrain.gen;
 
-import com.chappelle.jcraft.blocks.Block;
+import com.chappelle.jcraft.blocks.Blocks;
 import com.chappelle.jcraft.world.chunk.Feature;
 
-public class CellNoise2DFeature implements Feature
+public class CellNoiseFlatFeature implements Feature
 {
     private final double simplexScale; // range from around 0.015 to around 0.001  The higher the number the more rugged and extreme the terain.
     private final float persistence;
 	private final int iterations; // Use a value of 1 to get very smooth rolling hills.  No need to go higher than 4.
     private CellNoise cellNoise;
 
-	public CellNoise2DFeature(long seed)
+	public CellNoiseFlatFeature(long seed)
 	{
 		this(seed, 0.009f, 0.33f, 4);
 	}
 	
-	public CellNoise2DFeature(long seed, float simplexScale, float persistence, int iterations)
+	public CellNoiseFlatFeature(long seed, float simplexScale, float persistence, int iterations)
 	{
 		
 		short method = 1;
@@ -37,20 +37,9 @@ public class CellNoise2DFeature implements Feature
 			{
                 Double c = sumOctave(iterations, x+xOffset, z+zOffset, persistence, simplexScale);
 				blockTypes[x][0][z] = getBlock(c);
-                for (int y = 0; y < getY(c); y++)
-                {
-                	blockTypes[x][y][z] = getBlock(c);
-                }
-
 			}
 		}
 	}
-	
-    private int getY(Double c)
-    {
-		return normalize(c, 0, 250, -1, 1).intValue();
-    }
-
 	
 	private double sumOctave(int num_iterations, double x, double y, double persistence, double scale)
 	{
@@ -73,14 +62,14 @@ public class CellNoise2DFeature implements Feature
 	    return noise;	
 	}
 	
-	public Double normalize(double value, double floor, double ceiling, double minIn, double maxIn)
+	public double normalize(double value, double floor, double ceiling, double minIn, double maxIn)
 	{
 		return ((ceiling - floor)*(value - minIn)) / (maxIn - minIn) + floor;
 	}
 	
     private byte getBlock(Double c)
     {
-        byte block = Block.woolBlack.blockId;
+        byte block = Blocks.woolBlack.blockId;
 		c = normalize(c, 0, 14, -1, 1);
 		
 		byte c2 = c.byteValue();

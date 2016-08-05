@@ -1,8 +1,8 @@
-package com.chappelle.jcraft.world.chunk.gen;
+package com.chappelle.jcraft.world.terrain.gen;
 
 import java.util.Random;
 
-import com.chappelle.jcraft.blocks.Block;
+import com.chappelle.jcraft.blocks.Blocks;
 import com.chappelle.jcraft.world.chunk.Feature;
 
 public class WaterFeature implements Feature
@@ -27,7 +27,7 @@ public class WaterFeature implements Feature
 				{
 					if(blockTypes[x][y][z] == 0)
 					{
-						blockTypes[x][y][z] = Block.water.blockId;
+						blockTypes[x][y][z] = Blocks.water.blockId;
 					}
 				}
 			}
@@ -48,9 +48,9 @@ public class WaterFeature implements Feature
 	{
 		if(rand.nextFloat() < probability)
 		{
-			if(blockTypes[x][y][z] != Block.water.blockId)
+			if(blockTypes[x][y][z] != Blocks.water.blockId)
 			{
-				blockTypes[x][y][z] = Block.sand.blockId;
+				blockTypes[x][y][z] = Blocks.sand.blockId;
 			}
 			
 			//THIS IS REALLY SLOW

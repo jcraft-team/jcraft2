@@ -1,8 +1,8 @@
-package com.chappelle.jcraft.world.chunk.gen;
+package com.chappelle.jcraft.world.terrain.gen;
 
 import java.util.Random;
 
-import com.chappelle.jcraft.blocks.Block;
+import com.chappelle.jcraft.blocks.*;
 import com.chappelle.jcraft.world.chunk.Feature;
 
 public class TreeFeature implements Feature
@@ -40,7 +40,7 @@ public class TreeFeature implements Feature
 
 	private boolean canPlaceTree(byte[][][] blockTypes, int x, int y, int z, int treeHeight)
 	{
-		if(blockTypes[x][y][z] != Block.grass.blockId)
+		if(blockTypes[x][y][z] != Blocks.grass.blockId)
 		{
 			return false;
 		}
@@ -58,10 +58,10 @@ public class TreeFeature implements Feature
 	{
 		for(int i = 1; i <= treeHeight; i++)
 		{
-			blockTypes[x][y+i][z] = Block.wood.blockId;
+			blockTypes[x][y+i][z] = Blocks.wood.blockId;
 		}
 		int treeTop = y+treeHeight;
-		blockTypes[x][treeTop+1][z] = Block.leaves.blockId;
+		blockTypes[x][treeTop+1][z] = Blocks.leaves.blockId;
 		
 		addLeaves(blockTypes, x, treeTop+1, z);
 		addLeaves(blockTypes, x, treeTop, z);
@@ -71,14 +71,14 @@ public class TreeFeature implements Feature
 	
 	private void addLeaves(byte[][][] blockTypes, int x, int y, int z)
 	{
-		blockTypes[x][y][z+1] = Block.leaves.blockId;
-		blockTypes[x+1][y][z] = Block.leaves.blockId;
-		blockTypes[x][y][z-1] = Block.leaves.blockId;
-		blockTypes[x-1][y][z] = Block.leaves.blockId;
-		blockTypes[x+1][y][z+1] = Block.leaves.blockId;
-		blockTypes[x-1][y][z-1] = Block.leaves.blockId;
-		blockTypes[x+1][y][z-1] = Block.leaves.blockId;
-		blockTypes[x-1][y][z+1] = Block.leaves.blockId;
+		blockTypes[x][y][z+1] = Blocks.leaves.blockId;
+		blockTypes[x+1][y][z] = Blocks.leaves.blockId;
+		blockTypes[x][y][z-1] = Blocks.leaves.blockId;
+		blockTypes[x-1][y][z] = Blocks.leaves.blockId;
+		blockTypes[x+1][y][z+1] = Blocks.leaves.blockId;
+		blockTypes[x-1][y][z-1] = Blocks.leaves.blockId;
+		blockTypes[x+1][y][z-1] = Blocks.leaves.blockId;
+		blockTypes[x-1][y][z+1] = Blocks.leaves.blockId;
 	}
 
 }

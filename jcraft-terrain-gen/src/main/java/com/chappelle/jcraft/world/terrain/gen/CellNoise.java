@@ -1,4 +1,4 @@
-package com.chappelle.jcraft.world.chunk.gen;
+package com.chappelle.jcraft.world.terrain.gen;
 
 /*
  * Copyright (C) 2003, 2004 Jason Bevins (original libnoise code)

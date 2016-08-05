@@ -1,4 +1,4 @@
-package com.chappelle.jcraft.world.chunk.gen;
+package com.chappelle.jcraft.world.terrain.gen;
 
 // Copyright 2001 Ken Perlin
 

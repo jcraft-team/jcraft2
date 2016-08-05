@@ -1,6 +1,6 @@
-package com.chappelle.jcraft.world.chunk.gen;
+package com.chappelle.jcraft.world.terrain.gen;
 
-import com.chappelle.jcraft.blocks.Block;
+import com.chappelle.jcraft.blocks.*;
 import com.chappelle.jcraft.world.chunk.Feature;
 
 public class ChessBoardFeature implements Feature
@@ -19,14 +19,14 @@ public class ChessBoardFeature implements Feature
 			{
 				for(int z = 0; z < 16; z++)
 				{
-			        byte block = Block.woolBlack.blockId;
+			        byte block = Blocks.woolBlack.blockId;
 			        if(z %2 == 0)
 			        {
-			            if(x % 2 == 0) block = Block.woolWhite.blockId;
+			            if(x % 2 == 0) block = Blocks.woolWhite.blockId;
 			        }
 			        else
 			        {
-			            if(x % 2 == 1) block = Block.woolWhite.blockId;
+			            if(x % 2 == 1) block = Blocks.woolWhite.blockId;
 			        }
 					blockTypes[x][y][z] = block;
 					

@@ -1,8 +1,8 @@
-package com.chappelle.jcraft.world.chunk.gen;
+package com.chappelle.jcraft.world.terrain.gen;
 
 import java.util.Random;
 
-import com.chappelle.jcraft.blocks.Block;
+import com.chappelle.jcraft.blocks.*;
 import com.chappelle.jcraft.world.chunk.Feature;
 
 public class BlockOreFeature implements Feature
@@ -24,37 +24,37 @@ public class BlockOreFeature implements Feature
 			
 			if(y < 12)
 			{
-				addCluster(x, y, z, blockTypes, 0.1f, 0.05f, Block.diamond.blockId);
+				addCluster(x, y, z, blockTypes, 0.1f, 0.05f, Blocks.diamond.blockId);
 			}
 			
 			if(y < 50)
 			{
 				x = rand.nextInt(16);
 				z = rand.nextInt(16);
-				addCluster(x, y, z, blockTypes, 0.2f, 0.05f, Block.iron.blockId);
+				addCluster(x, y, z, blockTypes, 0.2f, 0.05f, Blocks.iron.blockId);
 			}
 			if(y < 40)
 			{
 				x = rand.nextInt(16);
 				z = rand.nextInt(16);
-				addCluster(x, y, z, blockTypes, 0.3f, 0.05f, Block.redstone.blockId);
+				addCluster(x, y, z, blockTypes, 0.3f, 0.05f, Blocks.redstone.blockId);
 
 				x = rand.nextInt(16);
 				z = rand.nextInt(16);
-				addCluster(x, y, z, blockTypes, 0.4f, 0.05f, Block.iron.blockId);
+				addCluster(x, y, z, blockTypes, 0.4f, 0.05f, Blocks.iron.blockId);
 			}
 			
 			x = rand.nextInt(16);
 			z = rand.nextInt(16);
-			addCluster(x, y, z, blockTypes, 0.4f, 0.08f, Block.smoothStone.blockId);
+			addCluster(x, y, z, blockTypes, 0.4f, 0.08f, Blocks.smoothStone.blockId);
 			
 			x = rand.nextInt(16);
 			z = rand.nextInt(16);
-			addCluster(x, y, z, blockTypes, 0.4f, 0.08f, Block.coal.blockId);
+			addCluster(x, y, z, blockTypes, 0.4f, 0.08f, Blocks.coal.blockId);
 
 			x = rand.nextInt(16);
 			z = rand.nextInt(16);
-			addCluster(x, y, z, blockTypes, 0.4f, 0.08f, Block.gravel.blockId);
+			addCluster(x, y, z, blockTypes, 0.4f, 0.08f, Blocks.gravel.blockId);
 		}
 	}
 	
@@ -135,7 +135,7 @@ public class BlockOreFeature implements Feature
 
 	private boolean canPlaceOre(byte[][][] blockTypes, int x, int y, int z)
 	{
-		return blockTypes[x][y][z] != 0 && blockTypes[x][y+1][z] != 0 && (blockTypes[x][y][z] == Block.grass.blockId || blockTypes[x][y][z] == Block.smoothStone.blockId || blockTypes[x][y][z] == Block.gravel.blockId);
+		return blockTypes[x][y][z] != 0 && blockTypes[x][y+1][z] != 0 && (blockTypes[x][y][z] == Blocks.grass.blockId || blockTypes[x][y][z] == Blocks.smoothStone.blockId || blockTypes[x][y][z] == Blocks.gravel.blockId);
 	}
 
 }

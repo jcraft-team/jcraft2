@@ -1,6 +1,6 @@
-package com.chappelle.jcraft.world.chunk.gen;
+package com.chappelle.jcraft.world.terrain.gen;
 
-import com.chappelle.jcraft.blocks.Block;
+import com.chappelle.jcraft.blocks.*;
 import com.chappelle.jcraft.world.chunk.Feature;
 
 public class FlatFeature implements Feature
@@ -25,7 +25,7 @@ public class FlatFeature implements Feature
 				{
 					if(y == 0)
 					{
-						blockTypes[x][y][z] = Block.bedrock.blockId;
+						blockTypes[x][y][z] = Blocks.bedrock.blockId;
 					}
 					else
 					{
