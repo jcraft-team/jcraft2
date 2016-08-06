@@ -18,7 +18,7 @@ public class JCraftApplication extends BlockApplication
 	private Nifty nifty;
 	private NiftyJmeDisplay niftyDisplay;
 	private InventoryAppState inventoryAppState;
-	private HUDControl hud;
+	private HotBarControl hud;
 
 	public JCraftApplication()
 	{
@@ -29,24 +29,24 @@ public class JCraftApplication extends BlockApplication
 	public void simpleInitApp()
 	{
 		super.simpleInitApp();
-		initializeGUI();
+		initializeNiftyGUI();
 		if(GameSettings.skyEnabled)
 		{
-			stateManager.attach(new EnvironmentAppState());
+			stateManager.attach(new AdvancedSkyAppState());
 		}
 		initControls();
 
-		hud = new HUDControl(this, settings, player);
-		rootNode.addControl(hud);
+		rootNode.addControl(hud = new HotBarControl(this, settings, player));
+		rootNode.addControl(new CrosshairsControl(this, settings, player));
+		nifty.fromXml("Interface/hud.xml", "hud", hud);
 
 		this.inventoryAppState = new InventoryAppState();
 		stateManager.attach(inventoryAppState);
-		nifty.fromXml("Interface/hud.xml", "hud", hud);
 
-		world.setTimeOfDayProvider(stateManager.getState(EnvironmentAppState.class));
+		world.setTimeOfDayProvider(stateManager.getState(AdvancedSkyAppState.class));
 	}
 
-	private void initializeGUI()
+	private void initializeNiftyGUI()
 	{
 		Camera niftyCamera = new Camera(cam.getWidth(), cam.getHeight());
 		// Nifty gets it's own view port so we can still write to gui node		
@@ -88,14 +88,6 @@ public class JCraftApplication extends BlockApplication
 		flyCam.setEnabled(false);
 	}
 
-	// http://hub.jmonkeyengine.org/t/error-switching-to-fullscreen-using-the-documented-code-sample/32750
-	public void toggleToFullscreen()
-	{
-		super.toggleToFullscreen();
-
-		hud.positionElements();
-	}
-
 	public Nifty getNifty()
 	{
 		return nifty;
@@ -111,7 +103,7 @@ public class JCraftApplication extends BlockApplication
 		return jcraft;
 	}
 
-	public HUDControl getHUD()
+	public HotBarControl getHUD()
 	{
 		return hud;
 	}

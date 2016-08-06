@@ -16,7 +16,7 @@ import com.jme3.scene.shape.Box;
 /**
  * Control that adds a wire frame box around the block the cursor is pointed at.
  */
-public class BlockCursorControl extends NodeControl
+public class HightlightSelectedBlockControl extends NodeControl
 {
 	private Geometry blockCursor;
 	private AssetManager assetManager;
@@ -27,7 +27,7 @@ public class BlockCursorControl extends NodeControl
 	private EntityPlayer player;
 	private Vector3Int previousLocation = new Vector3Int();
 	
-	public BlockCursorControl(World world, EntityPlayer player, AssetManager assetManager)
+	public HightlightSelectedBlockControl(World world, EntityPlayer player, AssetManager assetManager)
 	{
 		this.world = world;
 		this.assetManager = assetManager;

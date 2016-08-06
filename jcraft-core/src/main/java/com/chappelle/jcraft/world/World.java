@@ -51,6 +51,11 @@ public class World
         this.terrainGenerator = new TerrainGenerator(this, chunkMgr, seed);
 	}
 	
+	public TimeOfDayProvider getTimeOfDayProvider()
+	{
+		return timeOfDayProvider;
+	}
+	
 	public void addListener(WorldListener listener)
 	{
 		this.listeners.add(listener);

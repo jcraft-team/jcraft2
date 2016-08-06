@@ -28,7 +28,7 @@ import com.jme3.shadow.EdgeFilteringMode;
 import com.jme3.texture.Image;
 import com.jme3.texture.Texture;
 
-public class EnvironmentAppState extends AbstractAppState implements ViewPortListener, TimeOfDayProvider
+public class AdvancedSkyAppState extends AbstractAppState implements ViewPortListener, TimeOfDayProvider
 {
     private static final float initialTimeOfDay = 12;
     private static final float timeRate = 10f;

@@ -3,6 +3,7 @@ package com.chappelle.jcraft;
 import java.util.*;
 import java.util.logging.Logger;
 
+import com.chappelle.jcraft.debug.*;
 import com.chappelle.jcraft.util.AABB;
 import com.chappelle.jcraft.world.World;
 import com.jme3.app.*;
@@ -43,6 +44,7 @@ public class BlockApplication extends SimpleApplication implements ActionListene
 		settings.setHeight(GameSettings.screenHeight);
 		settings.setTitle("JCraft");
 		settings.setFrameRate(GameSettings.frameRate);
+//		settings.setFullscreen(true);
 	}
 	
 	@Override
@@ -59,11 +61,11 @@ public class BlockApplication extends SimpleApplication implements ActionListene
 		// Setup player
 		player = new EntityPlayer(world, cam);
 		player.preparePlayerToSpawn();
+
+		//AppStates and Controls
+		stateManager.attach(new DebugAppState());
 		rootNode.addControl(new PlayerControl(this, player));
-
 		rootNode.addControl(new BlockCursorControl(world, player, assetManager));
-
-		updateStatsView();
 
 		log.info("****************************************************************************");
 		log.info("Press F1 for fullscreen, F3 to toggle debug, F4 to toggle profiler.");
@@ -77,13 +79,11 @@ public class BlockApplication extends SimpleApplication implements ActionListene
 	private void toggleDebug()
 	{
 		debugEnabled = !debugEnabled;
-		updateStatsView();
-	}
-
-	private void updateStatsView()
-	{
-		stateManager.getState(StatsAppState.class).setDisplayStatView(debugEnabled);
-		stateManager.getState(StatsAppState.class).setDisplayFps(debugEnabled);
+		DebugAppState debugAppState = stateManager.getState(DebugAppState.class);
+		if(debugAppState != null)
+		{
+			debugAppState.setEnabled(debugEnabled);
+		}
 	}
 
 	private void initBlockTerrain()
@@ -200,26 +200,10 @@ public class BlockApplication extends SimpleApplication implements ActionListene
 		GameSettings.save();
 	}
 
-	// WARNING: This may be buggy. See
-	// http://hub.jmonkeyengine.org/t/error-switching-to-fullscreen-using-the-documented-code-sample/32750
 	public void toggleToFullscreen()
 	{
-		java.awt.GraphicsDevice device = java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment()
-				.getDefaultScreenDevice();
-		java.awt.DisplayMode[] modes = device.getDisplayModes();
-
-		int i = modes.length - 1;
-		settings.setResolution(modes[i].getWidth(), modes[i].getHeight());
-		settings.setFrequency(modes[i].getRefreshRate());
-		settings.setBitsPerPixel(modes[i].getBitDepth());
-		settings.setFullscreen(device.isFullScreenSupported());
-		setSettings(settings);
+		settings.setFullscreen(!settings.isFullscreen());
 		restart(); // restart the context to apply changes
-
-		StatsAppState stats = stateManager.getState(StatsAppState.class);
-		stateManager.detach(stats);
-		stats = new StatsAppState(guiNode, guiFont);
-		stateManager.attach(stats);
 	}
 
 	public AppSettings getAppSettings()
@@ -232,6 +216,11 @@ public class BlockApplication extends SimpleApplication implements ActionListene
 		return player;
 	}
 
+	public DebugDataProvider getDebugDataProvider()
+	{
+		return new DebugDataProvider(this);
+	}
+	
 	public static BlockApplication getInstance()
 	{
 		return jcraft;
@@ -240,6 +229,11 @@ public class BlockApplication extends SimpleApplication implements ActionListene
 	public void setGuiFont(BitmapFont guiFont)
 	{
 		this.guiFont = guiFont;
+	}
+	
+	public BitmapFont getGuiFont()
+	{
+		return this.guiFont;
 	}
 
 	private <T> void addInitializers(List<T> list, Class<T> initializerClass)
