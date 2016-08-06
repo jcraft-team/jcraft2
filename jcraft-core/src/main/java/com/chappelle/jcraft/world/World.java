@@ -29,7 +29,7 @@ public class World
 	private Camera cam;
 	private List<Entity> entities = new ArrayList<Entity>();
 	private EntityPlayer player;
-	private TimeOfDayProvider timeOfDayProvider;
+	private TimeOfDayProvider timeOfDayProvider = new FixedTimeOfDayProvider(12);
 	
 	private Application app;
 	public Node node = new Node("world");

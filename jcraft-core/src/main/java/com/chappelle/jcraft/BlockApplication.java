@@ -1,0 +1,253 @@
+package com.chappelle.jcraft;
+
+import java.util.*;
+import java.util.logging.Logger;
+
+import com.chappelle.jcraft.util.AABB;
+import com.chappelle.jcraft.world.World;
+import com.jme3.app.*;
+import com.jme3.font.BitmapFont;
+import com.jme3.input.KeyInput;
+import com.jme3.input.controls.*;
+import com.jme3.math.*;
+import com.jme3.scene.*;
+import com.jme3.system.AppSettings;
+
+/**
+ * Base class for all block applications. Initializes the block terrain, world, player and the camera. Provides
+ * basic debug features like toggleDebug and toggleWireframe.
+ */
+public class BlockApplication extends SimpleApplication implements ActionListener
+{
+	private final static Logger log = Logger.getLogger(BlockApplication.class.getName()); 
+	
+	private static BlockApplication jcraft;
+	private CubesSettings cubesSettings;
+	protected EntityPlayer player;
+	public World world;
+	public boolean debugEnabled = false;
+	private boolean wireframe;
+	private List<WorldInitializer> worldInitializers = new ArrayList<>();
+	private List<GameInitializer> gameInitializers = new ArrayList<>();
+
+	public BlockApplication()
+	{
+		jcraft = this;
+
+		addInitializers(worldInitializers, WorldInitializer.class);
+		addInitializers(gameInitializers, GameInitializer.class);
+		
+		debugEnabled = GameSettings.debugEnabled;
+		settings = new AppSettings(true);
+		settings.setWidth(GameSettings.screenWidth);
+		settings.setHeight(GameSettings.screenHeight);
+		settings.setTitle("JCraft");
+		settings.setFrameRate(GameSettings.frameRate);
+	}
+	
+	@Override
+	public void simpleInitApp()
+	{
+		initControls();
+		initBlockTerrain();
+		cam.setFrustumPerspective(45f, (float) cam.getWidth() / cam.getHeight(), 0.01f, 500f);
+		cam.lookAtDirection(new Vector3f(1, 0, 1), Vector3f.UNIT_Y);
+
+		// Setup sky
+		viewPort.setBackgroundColor(new ColorRGBA((float) 128 / 255, (float) 173 / 255, (float) 254 / 255, 1));
+
+		// Setup player
+		player = new EntityPlayer(world, cam);
+		player.preparePlayerToSpawn();
+		rootNode.addControl(new PlayerControl(this, player));
+
+		rootNode.addControl(new BlockCursorControl(world, player, assetManager));
+
+		updateStatsView();
+
+		log.info("****************************************************************************");
+		log.info("Press F1 for fullscreen, F3 to toggle debug, F4 to toggle profiler.");
+		log.info("See key bindings in JCraft class for other controls");
+		log.info("****************************************************************************");
+		log.info("\r\n\r\n");
+
+		initializeGame();
+	}
+
+	private void toggleDebug()
+	{
+		debugEnabled = !debugEnabled;
+		updateStatsView();
+	}
+
+	private void updateStatsView()
+	{
+		stateManager.getState(StatsAppState.class).setDisplayStatView(debugEnabled);
+		stateManager.getState(StatsAppState.class).setDisplayFps(debugEnabled);
+	}
+
+	private void initBlockTerrain()
+	{
+		cubesSettings = new CubesSettings(this);
+		cubesSettings.setDefaultBlockMaterial("Textures/FaithfulBlocks.png");
+
+		long seed = getSeed();
+		log.info("Using world seed: " + seed);
+		world = new World(this, cubesSettings, assetManager, cam, seed);
+		configureWorld(world);
+
+		world.addToScene(rootNode);
+	}
+
+	private void configureWorld(World world)
+	{
+		for(WorldInitializer gi : worldInitializers)
+		{
+			gi.configureWorld(world);
+		}
+	}
+
+	private void initializeGame()
+	{
+		for(GameInitializer gi : gameInitializers)
+		{
+			gi.initialize(this);
+		}
+	}
+
+	private long getSeed()
+	{
+		long seed = System.currentTimeMillis();
+		String seedStr = System.getProperty("seed");
+		if(seedStr != null)
+		{
+			seed = Long.parseLong(seedStr);
+		}
+		return seed;
+	}
+
+	@Override
+	public void simpleUpdate(float tpf)
+	{
+		AABB.getAABBPool().cleanPool();
+		world.update(tpf);
+	}
+
+	private void initControls()
+	{
+		addMapping("f1", new KeyTrigger(KeyInput.KEY_F1));
+		addMapping("f3", new KeyTrigger(KeyInput.KEY_F3));
+		addMapping("f5", new KeyTrigger(KeyInput.KEY_F5));
+		addMapping("ToggleAmbientOcclusion", new KeyTrigger(KeyInput.KEY_F9));
+		addMapping("RebuildChunks", new KeyTrigger(KeyInput.KEY_F10));
+	}
+
+	private void addMapping(String action, Trigger trigger)
+	{
+		inputManager.addMapping(action, trigger);
+		inputManager.addListener(this, action);
+	}
+
+	@Override
+	public void onAction(String name, boolean isPressed, float lastTimePerFrame)
+	{
+		if("f1".equals(name) && !isPressed)
+		{
+			toggleToFullscreen();
+		}
+		else if("f3".equals(name) && !isPressed)
+		{
+			toggleDebug();
+		}
+		else if("f5".equals(name) && !isPressed)
+		{
+			toggleWireframe();
+		}
+		else if("RebuildChunks".equals(name) && !isPressed)
+		{
+			world.rebuildChunks();
+		}
+		else if("ToggleAmbientOcclusion".equals(name) && !isPressed)
+		{
+			GameSettings.ambientOcclusionEnabled = !GameSettings.ambientOcclusionEnabled;
+		}
+	}
+
+	private void toggleWireframe()
+	{
+		wireframe = !wireframe;
+		rootNode.depthFirstTraversal(new SceneGraphVisitor()
+		{
+			public void visit(Spatial spatial)
+			{
+				if(spatial instanceof Geometry)
+				{
+					Geometry g = (Geometry)spatial;
+					if(!"blockCursor".equals(g.getName()))//Don't toggle the block cursor
+					{
+						g.getMaterial().getAdditionalRenderState().setWireframe(wireframe);
+					}
+				}
+			}
+		});
+	}
+
+	@Override
+	public void destroy()
+	{
+		super.destroy();
+		world.destroy();
+		GameSettings.save();
+	}
+
+	// WARNING: This may be buggy. See
+	// http://hub.jmonkeyengine.org/t/error-switching-to-fullscreen-using-the-documented-code-sample/32750
+	public void toggleToFullscreen()
+	{
+		java.awt.GraphicsDevice device = java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment()
+				.getDefaultScreenDevice();
+		java.awt.DisplayMode[] modes = device.getDisplayModes();
+
+		int i = modes.length - 1;
+		settings.setResolution(modes[i].getWidth(), modes[i].getHeight());
+		settings.setFrequency(modes[i].getRefreshRate());
+		settings.setBitsPerPixel(modes[i].getBitDepth());
+		settings.setFullscreen(device.isFullScreenSupported());
+		setSettings(settings);
+		restart(); // restart the context to apply changes
+
+		StatsAppState stats = stateManager.getState(StatsAppState.class);
+		stateManager.detach(stats);
+		stats = new StatsAppState(guiNode, guiFont);
+		stateManager.attach(stats);
+	}
+
+	public AppSettings getAppSettings()
+	{
+		return settings;
+	}
+
+	public EntityPlayer getPlayer()
+	{
+		return player;
+	}
+
+	public static BlockApplication getInstance()
+	{
+		return jcraft;
+	}
+
+	public void setGuiFont(BitmapFont guiFont)
+	{
+		this.guiFont = guiFont;
+	}
+
+	private <T> void addInitializers(List<T> list, Class<T> initializerClass)
+	{
+		Iterator<T> initializersIterator = ServiceLoader.load(initializerClass).iterator();
+		while(initializersIterator.hasNext())
+		{
+			list.add(initializersIterator.next());
+		}
+	}
+}
