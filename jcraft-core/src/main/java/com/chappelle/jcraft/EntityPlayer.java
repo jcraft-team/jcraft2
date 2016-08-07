@@ -37,6 +37,7 @@ public class EntityPlayer extends Entity
 	
 	public Camera cam;
 	private Inventory inventory;
+	private RayTrace currentRayTrace;
 	
 	public EntityPlayer(World world, Camera cam)
 	{
@@ -75,6 +76,7 @@ public class EntityPlayer extends Entity
 	public void update(float tpf)
 	{
 		super.update(tpf);
+		currentRayTrace = performRayTrace();
 		
 		moveAccordingToUserInputs(tpf);
 		
@@ -91,6 +93,7 @@ public class EntityPlayer extends Entity
 		capSpeed();
 		//At this point all movement should be done(ie. altering of the motion vectors)
 		moveEntity(motionX, motionY, motionZ);
+
 	}
 
 	private void handleLadderMovement()
@@ -302,25 +305,38 @@ public class EntityPlayer extends Entity
 	
 	public void breakBlock()
 	{
-		RayTrace rayTrace = pickBlock();
+		RayTrace rayTrace = getRayTrace();
 		if(rayTrace != null)
 		{
 			world.removeBlock(rayTrace.blockX, rayTrace.blockY, rayTrace.blockZ);
 		}
 	}
 	
-	public RayTrace pickBlock()
+	/**
+	 * Lazy initializes the RayTrace.
+	 * @return
+	 */
+	public RayTrace getRayTrace()
 	{
-		float blockReachDistance = 4.5f;
+		//If this causes problems we can just go back to not caching this.
+		if(currentRayTrace == null)
+		{
+			currentRayTrace = performRayTrace();
+		}
+		return currentRayTrace;
+	}
+
+	private RayTrace performRayTrace()
+	{
+		float blockReachDistance = 5f;
         Vector3f origin = new Vector3f((float)posX, (float)posY, (float)posZ);
         Vector3f look = cam.getDirection().normalize().mult(blockReachDistance).add(new Vector3f((float)posX, (float)posY, (float)posZ));
-		RayTrace rayTraceBlocks = world.rayTraceBlocks(origin, look);
-		return rayTraceBlocks;
+		return world.rayTraceBlocks(origin, look);
 	}
 	
 	public void placeBlock()
 	{
-		RayTrace rayTrace = pickBlock();
+		RayTrace rayTrace = getRayTrace();
 		if(rayTrace != null)
 		{
 			Block selectedBlock = world.getBlock(rayTrace.blockX, rayTrace.blockY, rayTrace.blockZ);

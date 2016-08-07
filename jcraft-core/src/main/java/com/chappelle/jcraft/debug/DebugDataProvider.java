@@ -87,7 +87,7 @@ public class DebugDataProvider
 	private String getRayTraceData()
 	{
 		temp.setLength(0);
-		RayTrace rayTrace = player.pickBlock();
+		RayTrace rayTrace = player.getRayTrace();
 		if(rayTrace != null)
 		{
 			Block block = world.getBlock(rayTrace.blockX, rayTrace.blockY, rayTrace.blockZ);

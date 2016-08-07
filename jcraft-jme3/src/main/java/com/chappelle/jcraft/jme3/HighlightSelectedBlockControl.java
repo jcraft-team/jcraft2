@@ -54,7 +54,7 @@ public class HighlightSelectedBlockControl extends NodeControl
 	{
 		if(isEnabled())
 		{
-			RayTrace rayTrace = player.pickBlock();
+			RayTrace rayTrace = player.getRayTrace();
 			if(rayTrace == null)
 			{
 				blockCursor.setCullHint(Spatial.CullHint.Always);
