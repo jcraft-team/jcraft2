@@ -38,6 +38,7 @@ public class JCraftApplication extends BlockApplication
 
 		rootNode.addControl(hud = new HotBarControl(this, settings, player));
 		rootNode.addControl(new CrosshairsControl(this, settings, player));
+		rootNode.addControl(new HighlightSelectedBlockControl(world, player, assetManager));
 		nifty.fromXml("Interface/hud.xml", "hud", hud);
 
 		this.inventoryAppState = new InventoryAppState();

@@ -55,6 +55,9 @@ public class CrosshairsControl extends AbstractControl
 	{
 		if(settings.getWidth() != width || settings.getHeight() != height)//May have toggled fullscreen mode
 		{
+			width = settings.getWidth();
+			height = settings.getHeight();
+
 			positionElements();
 		}
 	}

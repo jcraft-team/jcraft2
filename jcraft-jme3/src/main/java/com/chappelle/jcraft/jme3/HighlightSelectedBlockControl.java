@@ -1,18 +1,22 @@
-package com.chappelle.jcraft;
+package com.chappelle.jcraft.jme3;
 
+import com.chappelle.jcraft.*;
 import com.chappelle.jcraft.blocks.Block;
 import com.chappelle.jcraft.util.*;
 import com.chappelle.jcraft.world.World;
 import com.jme3.asset.AssetManager;
 import com.jme3.material.Material;
-import com.jme3.math.*;
-import com.jme3.scene.*;
+import com.jme3.math.ColorRGBA;
+import com.jme3.math.Vector3f;
+import com.jme3.scene.Geometry;
+import com.jme3.scene.Node;
+import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 
 /**
  * Control that adds a wire frame box around the block the cursor is pointed at.
  */
-public class BlockCursorControl extends NodeControl
+public class HighlightSelectedBlockControl extends NodeControl
 {
 	private Geometry blockCursor;
 	private AssetManager assetManager;
@@ -23,7 +27,7 @@ public class BlockCursorControl extends NodeControl
 	private EntityPlayer player;
 	private Vector3Int previousLocation = new Vector3Int();
 	
-	public BlockCursorControl(World world, EntityPlayer player, AssetManager assetManager)
+	public HighlightSelectedBlockControl(World world, EntityPlayer player, AssetManager assetManager)
 	{
 		this.world = world;
 		this.assetManager = assetManager;

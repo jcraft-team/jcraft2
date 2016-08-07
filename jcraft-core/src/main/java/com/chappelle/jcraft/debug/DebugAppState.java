@@ -13,16 +13,18 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial.CullHint;
 import com.jme3.scene.shape.Quad;
+import com.jme3.system.AppSettings;
 
 /**
  * Displays debug information in the corner when enabled
  */
 public class DebugAppState extends AbstractAppState
 {
+	private static final int DEBUG_WIDTH = 375;
 	private BlockApplication app;
 	protected DebugView debugView;
 	protected boolean showSettings = true;
-	private boolean showFps = true;
+	private boolean showFps = false;
 	private boolean showStats = true;
 	private boolean darkenBehind = true;
 
@@ -33,7 +35,11 @@ public class DebugAppState extends AbstractAppState
 	protected BitmapFont guiFont;
 	protected Geometry darkenFps;
 	protected Geometry darkenStats;
-
+	private float width;
+	private float height;
+	private AppSettings settings;
+	private StatsAppState stats;
+	
 	public DebugAppState()
 	{
 	}
@@ -125,9 +131,11 @@ public class DebugAppState extends AbstractAppState
 			throw new IllegalArgumentException("DebugAppState is only compatible with a BlockApplication");
 		}
 
-		disableStatsAppState(stateManager);
-
 		this.app = (BlockApplication) app;
+		this.stats = stateManager.getState(StatsAppState.class);
+		this.settings = this.app.getAppSettings();
+		this.width = settings.getWidth();
+		this.height = settings.getHeight();
 
 		if(guiNode == null)
 		{
@@ -151,15 +159,7 @@ public class DebugAppState extends AbstractAppState
 		loadFpsText();
 		loadDebugView();
 		loadDarken();
-	}
-
-	private void disableStatsAppState(AppStateManager stateManager)
-	{
-		StatsAppState statsAppState = stateManager.getState(StatsAppState.class);
-		if(statsAppState != null)
-		{
-			statsAppState.setEnabled(false);
-		}
+		positionElements();
 	}
 
 	/**
@@ -173,13 +173,21 @@ public class DebugAppState extends AbstractAppState
 			fpsText = new BitmapText(guiFont, false);
 		}
 
-		fpsText.setLocalTranslation(0, fpsText.getLineHeight(), 0);
 		fpsText.setText("Frames per second");
 		fpsText.setCullHint(showFps ? CullHint.Never : CullHint.Always);
 		guiNode.attachChild(fpsText);
 
 	}
 
+	private void positionElements()
+	{
+		fpsText.setLocalTranslation(0, fpsText.getLineHeight() + getHeightOffset(), 0);
+		// move it up so it appears above fps text
+		debugView.setLocalTranslation(0, fpsText.getLineHeight() + getHeightOffset(), 0);
+		darkenFps.setLocalTranslation(0, 0 + getHeightOffset(), -1);
+		darkenStats.setLocalTranslation(0, fpsText.getHeight() + getHeightOffset(), -1);
+	}
+	
 	/**
 	 * Attaches Debug View to guiNode and displays it on the screen above FPS
 	 * statistics line.
@@ -188,8 +196,6 @@ public class DebugAppState extends AbstractAppState
 	public void loadDebugView()
 	{
 		debugView = new DebugView("Debug View", app.getAssetManager(), app.getDebugDataProvider());
-		// move it up so it appears above fps text
-		debugView.setLocalTranslation(0, fpsText.getLineHeight(), 0);
 		debugView.setEnabled(showStats);
 		debugView.setCullHint(showStats ? CullHint.Never : CullHint.Always);
 		guiNode.attachChild(debugView);
@@ -201,17 +207,20 @@ public class DebugAppState extends AbstractAppState
 		mat.setColor("Color", new ColorRGBA(0, 0, 0, 0.5f));
 		mat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
 
-		darkenFps = new Geometry("StatsDarken", new Quad(200, fpsText.getLineHeight()));
+		darkenFps = new Geometry("StatsDarken", new Quad(DEBUG_WIDTH, fpsText.getLineHeight()));
 		darkenFps.setMaterial(mat);
-		darkenFps.setLocalTranslation(0, 0, -1);
 		darkenFps.setCullHint(showFps && darkenBehind ? CullHint.Never : CullHint.Always);
 		guiNode.attachChild(darkenFps);
 
-		darkenStats = new Geometry("StatsDarken", new Quad(200, debugView.getHeight()));
+		darkenStats = new Geometry("StatsDarken", new Quad(DEBUG_WIDTH, debugView.getHeight()));
 		darkenStats.setMaterial(mat);
-		darkenStats.setLocalTranslation(0, fpsText.getHeight(), -1);
 		darkenStats.setCullHint(showStats && darkenBehind ? CullHint.Never : CullHint.Always);
 		guiNode.attachChild(darkenStats);
+	}
+	
+	private float getHeightOffset()
+	{
+		return height - (fpsText.getLineHeight() + debugView.getHeight());
 	}
 
 	@Override
@@ -219,6 +228,7 @@ public class DebugAppState extends AbstractAppState
 	{
 		super.setEnabled(enabled);
 
+		setStatsEnabled(enabled);
 		if(enabled)
 		{
 			fpsText.setCullHint(showFps ? CullHint.Never : CullHint.Always);
@@ -237,9 +247,23 @@ public class DebugAppState extends AbstractAppState
 		}
 	}
 
+	private void setStatsEnabled(boolean enabled)
+	{
+		if(stats != null)
+		{
+			stats.setEnabled(enabled);
+		}
+	}
+
 	@Override
 	public void update(float tpf)
 	{
+		if(settings.getWidth() != width || settings.getHeight() != height)//May have toggled fullscreen mode
+		{
+			width = settings.getWidth();
+			height = settings.getHeight();
+			positionElements();
+		}
 		if(showFps)
 		{
 			secondCounter += app.getTimer().getTimePerFrame();

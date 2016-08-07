@@ -65,8 +65,7 @@ public class BlockApplication extends SimpleApplication implements ActionListene
 		//AppStates and Controls
 		stateManager.attach(new DebugAppState());
 		rootNode.addControl(new PlayerControl(this, player));
-		rootNode.addControl(new BlockCursorControl(world, player, assetManager));
-
+		
 		log.info("****************************************************************************");
 		log.info("Press F1 for fullscreen, F3 to toggle debug, F4 to toggle profiler.");
 		log.info("See key bindings in JCraft class for other controls");

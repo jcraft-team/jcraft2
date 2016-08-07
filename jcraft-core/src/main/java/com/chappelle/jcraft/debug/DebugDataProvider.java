@@ -1,22 +1,29 @@
 package com.chappelle.jcraft.debug;
 
+import java.text.*;
 import java.util.*;
+
+import org.apache.commons.lang3.ArrayUtils;
 
 import com.chappelle.jcraft.*;
 import com.chappelle.jcraft.blocks.Block;
 import com.chappelle.jcraft.lighting.LightType;
-import com.chappelle.jcraft.util.RayTrace;
+import com.chappelle.jcraft.util.*;
 import com.chappelle.jcraft.world.*;
 import com.chappelle.jcraft.world.chunk.Chunk;
+import com.jme3.math.Vector3f;
 
 public class DebugDataProvider
 {
 	private String[] labels = new String[]
 			{
-				"Player Location", "Bounding Box", "Selected Block", "Facing",
-				"Time", "Loaded Chunks", "Ambient Occlusion", "Light", "Walking On",
-				"Chunk", "Ray Trace"
+				"Player Location", "Player AABB", "Player Selection", "Player Direction",
+				"Ray Trace", "Walking On", "Chunk", "Loaded Chunks", "Light", "Ambient Occlusion",
+				"Time"
 			};
+	
+	private static final NumberFormat NUMBER_FORMAT_SMALL = new DecimalFormat("#0.0");
+	private static final NumberFormat NUMBER_FORMAT_LARGE = new DecimalFormat("#0.000");
 	
 	private Map<String, String> debugData = new HashMap<>();
 	private final EntityPlayer player;
@@ -27,6 +34,9 @@ public class DebugDataProvider
 	{
 		this.player = app.getPlayer();
 		this.world = app.world;
+		
+		//Do this to make the labels appear in the order as they do above
+		ArrayUtils.reverse(labels);
 	}
 	
 	public String[] getLabels()
@@ -38,10 +48,10 @@ public class DebugDataProvider
 	{
 		debugData.clear();
 		
-		debugData.put("Player Location", "[" + player.posX + "," + player.posY + ", " + player.posZ + "]");
-		debugData.put("Bounding Box", Objects.toString(player.boundingBox));
-		debugData.put("Selected Block", toString(player.getSelectedBlock()));
-		debugData.put("Facing", Objects.toString(player.cam.getDirection()));
+		debugData.put("Player Location", toString(player.posX, player.posY, player.posZ));
+		debugData.put("Player AABB", toString(player.boundingBox));
+		debugData.put("Player Selection", toString(player.getSelectedBlock()));
+		debugData.put("Player Direction", toString(player.cam.getDirection()));
 		debugData.put("Time", Objects.toString(world.getTimeOfDayProvider().getTimeOfDay()));
 		debugData.put("Loaded Chunks", Integer.toString(world.getLoadedChunkCount()));
 		debugData.put("Ambient Occlusion", GameSettings.ambientOcclusionEnabled == true ? "Enabled" : "Disabled");
@@ -61,7 +71,7 @@ public class DebugDataProvider
 			Chunk chunk = world.getChunkFromBlockCoordinates(blockLoc.x, blockLoc.z);
 			if(chunk != null)
 			{
-				debugData.put("Chunk", "" + chunk.location);
+				debugData.put("Chunk", "(" + chunk.location.x + ", " + chunk.location.z + ")");
 			}
 		}
 		debugData.put("Ray Trace", getRayTraceData());
@@ -69,25 +79,28 @@ public class DebugDataProvider
 		return debugData;
 	}
 	
+	private String toString(Vector3f direction)
+	{
+		return "(" + NUMBER_FORMAT_LARGE.format(direction.x) + ", " + NUMBER_FORMAT_LARGE.format(direction.y) + ", " + NUMBER_FORMAT_LARGE.format(direction.z) + ")";
+	}
+
 	private String getRayTraceData()
 	{
 		temp.setLength(0);
-		
 		RayTrace rayTrace = player.pickBlock();
 		if(rayTrace != null)
 		{
 			Block block = world.getBlock(rayTrace.blockX, rayTrace.blockY, rayTrace.blockZ);
 			temp.append(block == null ? "Air" : block);
-			temp.append(" (" + rayTrace.blockX + "," + rayTrace.blockY + "," + rayTrace.blockZ + "," + rayTrace.sideHit + ")");
+			temp.append(" (" + rayTrace.blockX + "," + rayTrace.blockY + "," + rayTrace.blockZ + "|" + rayTrace.sideHit + ")");
 			if(block != null)
 			{
 				ChunkLocation localBlockState = world.getLocalBlockState(new Vector3Int(rayTrace.blockX, rayTrace.blockY, rayTrace.blockZ));
 				if(localBlockState != null)
 				{
 					Vector3Int localBlockLocation = localBlockState.getLocalBlockLocation();
-					temp.append(" --> (" + localBlockLocation.x + "," + rayTrace.blockY + "," + localBlockLocation.y + "," + localBlockLocation.z + ")");
+					temp.append(" --> (" + localBlockLocation.x + "," + localBlockLocation.y + "," + localBlockLocation.z + ")");
 				}
-				temp.append(block.getCollisionBoundingBox(world, rayTrace.blockX, rayTrace.blockY, rayTrace.blockZ));
 			}
 		}
 		else
@@ -100,6 +113,23 @@ public class DebugDataProvider
 		return result;
 	}
 
+	private String toString(double x, double y, double z)
+	{
+		return "(" + NUMBER_FORMAT_SMALL.format(x) + "," + NUMBER_FORMAT_SMALL.format(y) + ", " + NUMBER_FORMAT_SMALL.format(z) + ")";
+	}
+
+	private String toString(AABB aabb)
+	{
+		if(aabb == null)
+		{
+			return "";
+		}
+		else
+		{
+			return "[" + NUMBER_FORMAT_SMALL.format(aabb.minX) + "," + NUMBER_FORMAT_SMALL.format(aabb.minY) + "," + NUMBER_FORMAT_SMALL.format(aabb.minZ) + " -> " + NUMBER_FORMAT_SMALL.format(aabb.maxX) + "," + NUMBER_FORMAT_SMALL.format(aabb.maxY) + "," + NUMBER_FORMAT_SMALL.format(aabb.maxZ) + "]";
+		}
+	}
+	
 	private String toString(Block block)
 	{
 		return block == null ? "Air" : block.getClass().getSimpleName();
