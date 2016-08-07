@@ -1,17 +1,19 @@
 package com.chappelle.jcraft.world.chunk;
 
+import java.io.IOException;
 import java.util.*;
 
 import com.chappelle.jcraft.*;
 import com.chappelle.jcraft.blocks.Block;
 import com.chappelle.jcraft.lighting.*;
+import com.chappelle.jcraft.serialization.*;
 import com.chappelle.jcraft.util.*;
 import com.chappelle.jcraft.world.World;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.queue.RenderQueue.Bucket;
 import com.jme3.scene.*;
 
-public class Chunk
+public class Chunk implements BitSerializable
 {
     public Vector3Int location = new Vector3Int();
     public Vector3Int blockLocation = new Vector3Int();
@@ -32,13 +34,23 @@ public class Chunk
 	public LightManager lightMgr;
 	public boolean isLightUpdating;
 	
+	public Chunk(World world, int x, int z)
+	{
+		this(world, x, z, new byte[16][256][16]);
+	}
+	
     public Chunk(World world, int x, int z, byte[][][] blockTypes)
+    {
+    	this(world, x, z, blockTypes, new byte[256][16][16]);
+    }
+    
+    public Chunk(World world, int x, int z, byte[][][] blockTypes, byte[][][] light)
     {
     	this.world = world;
     	location.set(x, 0, z);
     	blockLocation.set(location.mult(16, 256, 16));
     	this.blockTypes = blockTypes;
-    	lights = new LightMap(new Vector3Int(16, 256, 16), location);
+    	lights = new LightMap();
     	this.metadata = new NibbleArray(16*256*16);
     	node.setLocalTranslation(new Vector3f(blockLocation.getX(), blockLocation.getY(), blockLocation.getZ()));
     	this.id = ChunkCoordIntPair.chunkXZ2Int(x, z); 
@@ -354,12 +366,45 @@ public class Chunk
         Vector3Int neighborLocation = BlockNavigator.getNeighborBlockLocalLocation(location, face);
         return getBlock(neighborLocation);
     }
-    
+
+	@Override
+	public void write(BitOutputStream outputStream)
+	{
+		for(int x = 0; x < blockTypes.length; x++)
+		{
+			for(int y = 0; y < blockTypes[0].length; y++)
+			{
+				for(int z = 0; z < blockTypes[0][0].length; z++)
+				{
+					outputStream.writeBits(blockTypes[x][y][z], 8);
+					outputStream.writeBits(lights.light[y][x][z], 8);
+				}
+			}
+		}
+	}
+
+	@Override
+	public void read(BitInputStream inputStream) throws IOException
+	{
+		for(int x = 0; x < blockTypes.length; x++)
+		{
+			for(int y = 0; y < blockTypes[0].length; y++)
+			{
+				for(int z = 0; z < blockTypes[0][0].length; z++)
+				{
+					blockTypes[x][y][z] = (byte) inputStream.readBits(8);
+					lights.light[y][x][z] = (byte) inputStream.readBits(8);
+				}
+			}
+		}
+		markDirty();
+	}
+	
     public Chunk clone()
     {
     	return new Chunk(world, location.x, location.z, blockTypes.clone());
     }
-    
+
     @Override
     public String toString()
     {

@@ -13,6 +13,11 @@ public class GameFiles
 		{
 			dataDir.mkdirs();
 		}
+		File saveDir = getSaveDir();
+		if(!saveDir.exists())
+		{
+			saveDir.mkdirs();
+		}
 	}
 	/**
 	 * Returns the root folder for which user specific data will be stored. Game saves, options...etc.
@@ -28,6 +33,11 @@ public class GameFiles
     	{
     		return new File(SystemUtils.getUserHome(), ".jcraft");
     	}
+    }
+
+    public static File getSaveDir() 
+    {
+    	return new File(getDataDir(), "saves");
     }
 
 }

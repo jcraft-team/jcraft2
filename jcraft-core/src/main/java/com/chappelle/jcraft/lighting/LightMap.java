@@ -1,21 +1,20 @@
 package com.chappelle.jcraft.lighting;
 
-import com.chappelle.jcraft.Vector3Int;
-
 public class LightMap
 {
 	public final static byte MIN_LIGHT = 0;
 	public final static byte MAX_LIGHT = 15;
  
-	private byte[][][] light;
-	private Vector3Int chunkLocation;
-	private Vector3Int chunkSize;
+	public byte[][][] light;
 	
-	public LightMap(Vector3Int chunkSize, Vector3Int chunkLocation)
+	public LightMap(byte[][][] light)
 	{
-		this.light = new byte[chunkSize.y][chunkSize.z][chunkSize.x];
-		this.chunkSize = chunkSize;
-		this.chunkLocation = chunkLocation;
+		this.light = light;
+	}
+	
+	public LightMap()
+	{
+		this(new byte[256][16][16]);
 	}
 	
 	public int getLight(int x, int y, int z, LightType lightType)
@@ -53,17 +52,7 @@ public class LightMap
 
 	public void clearSunlight()
 	{
-		this.light = new byte[chunkSize.y][chunkSize.z][chunkSize.x];
-//		for(int y = 0; y < chunkSize.y; y++)
-//		{
-//			for(int z = 0; z < chunkSize.z; z++)
-//			{
-//				for(int x = 0; x < chunkSize.x; x++)
-//				{
-//					setLight(x, y, z, LightType.SKY, 0);
-//				}
-//			}
-//		}
+		this.light = new byte[256][16][16];
 	}
 
 	private int getSunlight(int x, int y, int z)
@@ -74,11 +63,5 @@ public class LightMap
 	private int getBlocklight(int x, int y, int z)
 	{
 		return light[y][z][x] & 0xF;	// Get the bits 0000XXXX
-	}
-	
-	@Override
-	public String toString()
-	{
-		return "Lights at Chunk: " + chunkLocation + "\r\n" + light.toString();
 	}
 }

@@ -29,6 +29,7 @@ public class JCraftApplication extends BlockApplication
 	public void simpleInitApp()
 	{
 		super.simpleInitApp();
+		
 		initializeNiftyGUI();
 		if(GameSettings.skyEnabled)
 		{
@@ -63,6 +64,7 @@ public class JCraftApplication extends BlockApplication
 	private void initControls()
 	{
 		addMapping("e", new KeyTrigger(KeyInput.KEY_E));
+		addMapping("save", new KeyTrigger(KeyInput.KEY_F7));
 	}
 
 	private void addMapping(String action, Trigger trigger)

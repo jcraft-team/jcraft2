@@ -23,6 +23,7 @@ public class World
 
 	private CubesSettings settings;
 
+	private final String name;
 	private AssetManager assetManager;
 	private Random random = new Random();
 	private AudioNode music;
@@ -37,9 +38,10 @@ public class World
 	private TerrainGenerator terrainGenerator;
 	private List<WorldListener> listeners = new ArrayList<>();
 	
-	public World(Application app, CubesSettings settings, AssetManager assetManager, Camera cam, long seed)
+	public World(Application app, CubesSettings settings, AssetManager assetManager, Camera cam, String name, long seed)
 	{
 		this.app = app;
+		this.name = name;
 		this.settings = settings;
 		this.assetManager = assetManager;
 		this.cam = cam;
@@ -806,5 +808,10 @@ public class World
 	{
 		executor.shutdown();
 		chunkMgr.destroy();
+	}
+
+	public String getName()
+	{
+		return name;
 	}
 }

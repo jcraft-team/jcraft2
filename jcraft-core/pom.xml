@@ -11,6 +11,11 @@
 	<description>Core game logic</description>
 	<dependencies>
 		<dependency>
+		    <groupId>commons-io</groupId>
+		    <artifactId>commons-io</artifactId>
+		    <version>2.5</version>
+		</dependency>
+		<dependency>
 			<groupId>com.jme3</groupId>
 			<artifactId>jme3-core</artifactId>
 			<version>${jme.version}</version>

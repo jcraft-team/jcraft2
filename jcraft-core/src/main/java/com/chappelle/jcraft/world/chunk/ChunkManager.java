@@ -125,6 +125,11 @@ public class ChunkManager
 		return new ArrayList<Chunk>(chunks.values());
 	}
 	
+	public Chunk[] getLoadedChunksAsArray()
+	{
+		return getLoadedChunks().toArray(new Chunk[]{});
+	}
+	
 	public void addChunk(Chunk chunk)
 	{
 		addedQueue.add(chunk);

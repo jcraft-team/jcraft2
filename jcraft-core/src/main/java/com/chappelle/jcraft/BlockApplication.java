@@ -3,7 +3,10 @@ package com.chappelle.jcraft;
 import java.util.*;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.chappelle.jcraft.debug.*;
+import com.chappelle.jcraft.serialization.*;
 import com.chappelle.jcraft.util.AABB;
 import com.chappelle.jcraft.world.World;
 import com.jme3.app.*;
@@ -30,7 +33,8 @@ public class BlockApplication extends SimpleApplication implements ActionListene
 	private boolean wireframe;
 	private List<WorldInitializer> worldInitializers = new ArrayList<>();
 	private List<GameInitializer> gameInitializers = new ArrayList<>();
-
+	private WorldPersistor worldPersistor;
+	
 	public BlockApplication()
 	{
 		jcraft = this;
@@ -50,6 +54,7 @@ public class BlockApplication extends SimpleApplication implements ActionListene
 	@Override
 	public void simpleInitApp()
 	{
+		worldPersistor = new SimpleWorldPersistor();
 		initControls();
 		initBlockTerrain();
 		cam.setFrustumPerspective(45f, (float) cam.getWidth() / cam.getHeight(), 0.01f, 500f);
@@ -92,7 +97,26 @@ public class BlockApplication extends SimpleApplication implements ActionListene
 
 		long seed = getSeed();
 		log.info("Using world seed: " + seed);
-		world = new World(this, cubesSettings, assetManager, cam, seed);
+		String worldToLoad = System.getProperty("world");
+		if(StringUtils.isNotBlank(worldToLoad))
+		{
+			log.info("Loading world " + worldToLoad);
+			world = worldPersistor.loadWorld(this, worldToLoad);
+			if(world == null)
+			{
+				log.warning("No world with name " + worldToLoad + " was found");
+			}
+			else
+			{
+				log.info("Finished loading world " + worldToLoad);
+			}
+		}
+		if(world == null)
+		{
+			log.info("Creating new world...get ready!");
+			world = new World(this, cubesSettings, assetManager, cam, "JCraftWorld", seed);
+		}
+
 		configureWorld(world);
 
 		world.addToScene(rootNode);
@@ -139,6 +163,7 @@ public class BlockApplication extends SimpleApplication implements ActionListene
 		addMapping("f5", new KeyTrigger(KeyInput.KEY_F5));
 		addMapping("ToggleAmbientOcclusion", new KeyTrigger(KeyInput.KEY_F9));
 		addMapping("RebuildChunks", new KeyTrigger(KeyInput.KEY_F10));
+		addMapping("save", new KeyTrigger(KeyInput.KEY_F7));
 	}
 
 	private void addMapping(String action, Trigger trigger)
@@ -169,6 +194,10 @@ public class BlockApplication extends SimpleApplication implements ActionListene
 		else if("ToggleAmbientOcclusion".equals(name) && !isPressed)
 		{
 			GameSettings.ambientOcclusionEnabled = !GameSettings.ambientOcclusionEnabled;
+		}
+		else if("save".equals(name) && !isPressed)
+		{
+			worldPersistor.save(world);
 		}
 	}
 
