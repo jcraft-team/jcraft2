@@ -10,19 +10,15 @@ public class Util
 
 	private static final float MAX_FLOAT_ROUNDING_DIFFERENCE = 0.0001f;
 
-	public static boolean isValidIndex(byte[][][] array, Vector3Int index)
+	public static boolean isValidIndex(Vector3Int index)
 	{
-		return isValidIndex(array, index.x, index.y, index.z);
+		return isValidIndex(index.x, index.y, index.z);
 	}
 	
-	public static boolean isValidIndex(byte[][][] array, int x, int y, int z)
+	public static boolean isValidIndex(int x, int y, int z)
 	{
-		if(array == null)
-		{
-			throw new IllegalArgumentException("array cannot be null");
-		}
-		return ((x >= 0) && (x < array.length) && (y >= 0)
-				&& (y < array[0].length) && (z >= 0) && (z < array[0][0].length));
+		return ((x >= 0) && (x < 16) && (y >= 0)
+				&& (y < 256) && (z >= 0) && (z < 16));
 	}
 
 	public static boolean isValidIndex(Object[][][] array, Vector3Int index)

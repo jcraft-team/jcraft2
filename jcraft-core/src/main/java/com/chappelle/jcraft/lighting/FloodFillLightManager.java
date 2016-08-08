@@ -284,7 +284,7 @@ public class FloodFillLightManager implements LightManager
 			{
 				if(needsLightUpdated(chunk, location, LightType.SKY, lightLevel))
 				{
-					if(lightLevel == LightMap.MAX_LIGHT)
+					if(lightLevel == 15)
 					{
 						chunk.setLight(location.x, location.y, location.z, LightType.SKY, lightLevel);
 					}
@@ -388,7 +388,7 @@ public class FloodFillLightManager implements LightManager
 			if(location.y >= 0)//Check chunk boundary 
 			{
 				neighborLevel = chunk.getLight(location.x, location.y, location.z, LightType.SKY);
-				if(lightLevel == LightMap.MAX_LIGHT || (neighborLevel != 0 && neighborLevel < lightLevel))
+				if(lightLevel == 15 || (neighborLevel != 0 && neighborLevel < lightLevel))
 				{
 					chunk.setLight(location.x, location.y, location.z, LightType.SKY, 0);
 					sunlightRemovalQueue.add(new LightRemovalNode(location, (short)neighborLevel, chunk));
@@ -468,7 +468,7 @@ public class FloodFillLightManager implements LightManager
 	@Override
 	public void addSunlight(Vector3Int localBlockLocation)
 	{
-		chunk.setLight(localBlockLocation.x, localBlockLocation.y, localBlockLocation.z, LightType.SKY, LightMap.MAX_LIGHT);
+		chunk.setLight(localBlockLocation.x, localBlockLocation.y, localBlockLocation.z, LightType.SKY, 15);
 		
 		sunlightAdditionQueue.add(new LightNode(localBlockLocation, chunk));
 	}
@@ -590,7 +590,7 @@ public class FloodFillLightManager implements LightManager
 				Block block = chunk.getBlock(x, y, z);
 				if(block == null || block.isTransparent)
 				{
-					chunk.setLight(x, y, z, LightType.SKY, LightMap.MAX_LIGHT);
+					chunk.setLight(x, y, z, LightType.SKY, 15);
 					sunlightAdditionQueue.add(new LightNode(x, y, z, chunk));
 				}
 			}

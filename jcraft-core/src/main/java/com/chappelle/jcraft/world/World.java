@@ -519,11 +519,11 @@ public class World
             Vector3Int localBlockLocation = getLocalBlockLocation(blockLocation, chunk);
             if(lightType == null)
             {
-            	return chunk.getLights().getLight(localBlockLocation.x, localBlockLocation.y, localBlockLocation.z);
+            	return chunk.getLight(localBlockLocation.x, localBlockLocation.y, localBlockLocation.z);
             }
             else
             {
-            	return chunk.getLights().getLight(localBlockLocation.x, localBlockLocation.y, localBlockLocation.z, lightType);
+            	return chunk.getLight(localBlockLocation.x, localBlockLocation.y, localBlockLocation.z, lightType);
             }
         }
 		return -1;

@@ -3,9 +3,8 @@ package com.chappelle.jcraft.blocks;
 import java.util.List;
 
 import com.chappelle.jcraft.*;
-import com.chappelle.jcraft.lighting.LightMap;
 import com.chappelle.jcraft.lighting.LightType;
-import com.chappelle.jcraft.util.*;
+import com.chappelle.jcraft.util.BlockNavigator;
 import com.chappelle.jcraft.world.World;
 import com.chappelle.jcraft.world.chunk.Chunk;
 import com.jme3.math.Vector2f;
@@ -110,12 +109,12 @@ public abstract class BlockShape
     	int blockLight = 15;
     	int skyLight = 15;
     	Block block = chunk.getBlock(location);
-		LightMap lights = chunk.getLights();
+    	Chunk chunkToLight = chunk;
+    	boolean noLight = false;
 		int x = location.x;
 		int y = location.y;
 		int z = location.z;
 		World world = chunk.world;
-//		if(!block.isTransparent)
 		if(block.useNeighborLight())//TODO: Investigate how this is different from transparent?
 		{
 			if(face == Block.Face.Top)
@@ -146,11 +145,11 @@ public abstract class BlockShape
 					Chunk neighborChunk = world.getChunkNeighbor(chunk, Direction.FRONT);
 					if(neighborChunk == null)
 					{
-						lights = null;
+						noLight = true;
 					}
 					else
 					{
-						lights = neighborChunk.getLights();
+						chunkToLight = neighborChunk;
 						z = 0;
 					}
 				}
@@ -167,12 +166,12 @@ public abstract class BlockShape
 					Chunk neighborChunk = world.getChunkNeighbor(chunk, Direction.BACK);
 					if(neighborChunk == null)
 					{
-						lights = null;
+						noLight = true;
 					}
 					else
 					{
 						z = 15;
-						lights = neighborChunk.getLights();
+						chunkToLight = neighborChunk;
 					}
 				}
 			}
@@ -188,12 +187,12 @@ public abstract class BlockShape
 					Chunk neighborChunk = world.getChunkNeighbor(chunk, Direction.LEFT);
 					if(neighborChunk == null)
 					{
-						lights = null;
+						noLight = true;
 					}
 					else
 					{
 						x = 15;
-						lights = neighborChunk.getLights();
+						chunkToLight = neighborChunk;
 					}
 				}
 			}
@@ -209,18 +208,18 @@ public abstract class BlockShape
 					Chunk neighborChunk = world.getChunkNeighbor(chunk, Direction.RIGHT);
 					if(neighborChunk == null)
 					{
-						lights = null;
+						noLight = true;
 					}
 					else
 					{
 						x = 0;
-						lights = neighborChunk.getLights();
+						chunkToLight = neighborChunk;
 					}
 				}
 			}
     	}
 
-		if(lights == null)
+		if(noLight)
 		{
 			blockLight = 0;
 			skyLight = 0;
@@ -233,9 +232,9 @@ public abstract class BlockShape
 			}
 			else
 			{
-				blockLight = lights.getLight(x, y, z, LightType.BLOCK);
+				blockLight = chunkToLight.getLight(x, y, z, LightType.BLOCK);
 			}
-			skyLight = lights.getLight(x, y, z, LightType.SKY);
+			skyLight = chunkToLight.getLight(x, y, z, LightType.SKY);
 		}
 
 		float effectiveBlockLight = Math.max(blockLight, 0.35f);

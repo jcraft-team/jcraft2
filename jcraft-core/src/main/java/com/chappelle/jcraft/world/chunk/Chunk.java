@@ -3,6 +3,8 @@ package com.chappelle.jcraft.world.chunk;
 import java.io.IOException;
 import java.util.*;
 
+import org.apache.commons.lang3.BitField;
+
 import com.chappelle.jcraft.*;
 import com.chappelle.jcraft.blocks.Block;
 import com.chappelle.jcraft.lighting.*;
@@ -15,15 +17,19 @@ import com.jme3.scene.*;
 
 public class Chunk implements BitSerializable
 {
-    public Vector3Int location = new Vector3Int();
+	private int[][] heightMap;
+	private BlockState[][][] blockState;
+	private int[][][] data = new int[16][256][16];
+	private BitField blockTypeField  = new BitField(0xFF000000);
+	private BitField blockLightField = new BitField(0x00F00000);
+	private BitField skyLightField   = new BitField(0x000F0000);
+//	private BitField blockStateField = new BitField(0x000000FF);
+
+	public Vector3Int location = new Vector3Int();
     public Vector3Int blockLocation = new Vector3Int();
-    private byte[][][] blockTypes;
-    private int[][] heightMap;
-    private BlockState[][][] blockState;
-    private LightMap lights;
+    
     private boolean needsMeshUpdate = true;
     public World world;
-    private NibbleArray metadata;
     public boolean isLoaded;
     public boolean updateInProgress;
 
@@ -41,21 +47,24 @@ public class Chunk implements BitSerializable
 	
     public Chunk(World world, int x, int z, byte[][][] blockTypes)
     {
-    	this(world, x, z, blockTypes, new byte[256][16][16]);
-    }
-    
-    public Chunk(World world, int x, int z, byte[][][] blockTypes, byte[][][] light)
-    {
     	this.world = world;
     	location.set(x, 0, z);
     	blockLocation.set(location.mult(16, 256, 16));
-    	this.blockTypes = blockTypes;
-    	lights = new LightMap();
-    	this.metadata = new NibbleArray(16*256*16);
+    	this.data = new int[16][256][16];
+    	for(int i = 0; i < 16; i++)
+    	{
+    		for(int j = 0; j < 256; j++)
+    		{
+    			for(int k = 0; k < 16; k++)
+    			{
+    				data[i][j][k] = blockTypeField.setValue(data[i][j][k], blockTypes[i][j][k]);
+    			}
+    		}
+    	}
     	node.setLocalTranslation(new Vector3f(blockLocation.getX(), blockLocation.getY(), blockLocation.getZ()));
     	this.id = ChunkCoordIntPair.chunkXZ2Int(x, z); 
-    	this.lightMgr = new FloodFillLightManager(this);
     	this.heightMap = makeHeightMap(blockTypes);
+    	this.lightMgr = new FloodFillLightManager(this);
     }
     
     public int[][] getHeightMap()
@@ -69,7 +78,8 @@ public class Chunk implements BitSerializable
     	{
     		heightMap[x][z] = y;
     	}
-    	blockTypes[x][y][z] = block.blockId;
+    	
+    	data[x][y][z] = blockTypeField.setValue(data[x][y][z], block.blockId);
     	markDirty();
     }
     
@@ -82,7 +92,7 @@ public class Chunk implements BitSerializable
     {
         if(isValidBlockLocation(x, y, z))
         {
-            int blockType = blockTypes[x][y][z];
+            int blockType = blockTypeField.getValue(data[x][y][z]);
             return Block.blocksList[blockType];
         }
         return null;
@@ -94,7 +104,7 @@ public class Chunk implements BitSerializable
     	{
     		heightMap[x][z] = findHeight(x, z, y);
     	}
-    	blockTypes[x][y][z] = 0;
+    	data[x][y][z] = blockTypeField.setValue(data[x][y][z], 0);
     	markDirty();
     }
 
@@ -221,20 +231,6 @@ public class Chunk implements BitSerializable
 		}
 	}
 	
-
-    public byte getMetadata(int x, int y, int z)
-    {
-    	int index = y + (z * 256) + (x * 16 * 16);
-    	return metadata.get(index);
-    }
-
-    public void setMetadata(int x, int y, int z, byte value)
-    {
-    	int index = y + (z * 256) + (x * 16 * 16);
-    	metadata.set(index, value);
-    	markDirty();
-    }
-    
     public Vector3Int getBlockLocation()
     {
         return blockLocation;
@@ -250,22 +246,52 @@ public class Chunk implements BitSerializable
     	this.needsMeshUpdate = true;
     }
 
-    public void setLight(int x, int y, int z, LightType type, int lightVal)
-    {
-    	lights.setLight(x, y, z, type, lightVal);
-    	markDirty();
-    }
+	public void setLight(int x, int y, int z, LightType type, int lightVal)
+	{
+		if(x >= 0 && x < 16 && z >= 0 && z < 16)//sometimes get ArrayIndexOutOfBoundsExceptions. I think it's only when we are in negative land.
+		{
+			if(type == LightType.BLOCK)
+			{
+				data[x][y][z] = blockLightField.setValue(data[x][y][z], lightVal);
+			}
+			else
+			{
+				data[x][y][z] = skyLightField.setValue(data[x][y][z], lightVal);
+			}
+			markDirty();
+		}
+	}
 
-    public int getLight(int x, int y, int z, LightType type)
-    {
-    	return lights.getLight(x, y, z, type);
-    }
+	private int getSunlight(int x, int y, int z)
+	{
+		return skyLightField.getValue(data[x][y][z]);
+	}
+	
+	public int[][][] getData()
+	{
+		return data;
+	}
+	private int getBlocklight(int x, int y, int z)
+	{
+		return blockLightField.getValue(data[x][y][z]);
+	}
+
+	public int getLight(int x, int y, int z)
+	{
+		int blocklight = getBlocklight(x, y, z);
+		int sunlight = getSunlight(x, y, z); 
+		return Math.max(blocklight, sunlight);
+	}
     
-    public LightMap getLights()
-    {
-    	return lights;
-    }
-
+	public int getLight(int x, int y, int z, LightType lightType)
+	{
+		if(lightType == LightType.BLOCK)
+		{
+			return getBlocklight(x, y, z);
+		}
+		return getSunlight(x, y, z);
+	}
+	
     public Block getNeighborBlock_Global(Vector3Int location, Block.Face face)
     {
         return world.getBlock(getNeighborBlockGlobalLocation(location, face));
@@ -358,7 +384,7 @@ public class Chunk implements BitSerializable
     
     private boolean isValidBlockLocation(int x, int y, int z)
     {
-        return Util.isValidIndex(blockTypes, x, y, z);
+        return Util.isValidIndex(x, y, z);
     }
 
     public Block getNeighborBlock_Local(Vector3Int location, Block.Face face)
@@ -370,14 +396,13 @@ public class Chunk implements BitSerializable
 	@Override
 	public void write(BitOutputStream outputStream)
 	{
-		for(int x = 0; x < blockTypes.length; x++)
+		for(int x = 0; x < 16; x++)
 		{
-			for(int y = 0; y < blockTypes[0].length; y++)
+			for(int y = 0; y < 256; y++)
 			{
-				for(int z = 0; z < blockTypes[0][0].length; z++)
+				for(int z = 0; z < 16; z++)
 				{
-					outputStream.writeBits(blockTypes[x][y][z], 8);
-					outputStream.writeBits(lights.light[y][x][z], 8);
+					outputStream.writeBits(data[x][y][z], 8);
 				}
 			}
 		}
@@ -386,14 +411,13 @@ public class Chunk implements BitSerializable
 	@Override
 	public void read(BitInputStream inputStream) throws IOException
 	{
-		for(int x = 0; x < blockTypes.length; x++)
+		for(int x = 0; x < 16; x++)
 		{
-			for(int y = 0; y < blockTypes[0].length; y++)
+			for(int y = 0; y < 256; y++)
 			{
-				for(int z = 0; z < blockTypes[0][0].length; z++)
+				for(int z = 0; z < 16; z++)
 				{
-					blockTypes[x][y][z] = (byte) inputStream.readBits(8);
-					lights.light[y][x][z] = (byte) inputStream.readBits(8);
+					data[x][y][z] = inputStream.readBits(32);
 				}
 			}
 		}
@@ -402,7 +426,9 @@ public class Chunk implements BitSerializable
 	
     public Chunk clone()
     {
-    	return new Chunk(world, location.x, location.z, blockTypes.clone());
+    	Chunk chunk = new Chunk(world, location.x, location.z);
+    	chunk.data = this.data.clone();
+    	return chunk;
     }
 
     @Override
