@@ -48,7 +48,8 @@ public class BlockShape_Torch extends BlockShape
                 faceLoc_Top_TopLeft, faceLoc_Top_TopRight, faceLoc_Top_BottomLeft, faceLoc_Top_BottomRight);
 
         //Get orientation from the block state
-        Block.Face face = (Block.Face)chunk.getBlockStateValue(blockLocation, BlockTorch.VAR_ORIENTATION);
+        byte blockState = chunk.getBlockState(blockLocation);
+        Block.Face face = BlockTorch.getOrientation(blockState);
         Vector3f normalVector = face.getNormal();
         if(normalVector == null)
         {

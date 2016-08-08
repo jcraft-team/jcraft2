@@ -1,5 +1,7 @@
 package com.chappelle.jcraft.blocks;
 
+import org.apache.commons.lang3.BitField;
+
 import com.chappelle.jcraft.*;
 import com.chappelle.jcraft.blocks.shapes.BlockShape_Ladder;
 import com.chappelle.jcraft.util.*;
@@ -8,8 +10,8 @@ import com.jme3.math.Vector3f;
 
 public class BlockLadder extends Block
 {
-	public static final Short VAR_ORIENTATION = 1;
-	
+	private static final BitField orientationField = new BitField(0x07);//00000111
+
 	public BlockLadder(int blockId)
 	{
 		super(blockId, new BlockSkin[] { new BlockSkin(new BlockSkin_TextureLocation(3, 5), false)});
@@ -23,8 +25,13 @@ public class BlockLadder extends Block
 	@Override
 	public void onBlockPlaced(World world, Vector3Int location, Block.Face face, Vector3f cameraDirectionAsUnitVector)
 	{
-        BlockState blockState = world.getBlockState(location);
-        blockState.put(VAR_ORIENTATION, face.oppositeNormal);
+        byte blockState = world.getBlockState(location);
+        world.setBlockState(location.x, location.y, location.z, (byte)orientationField.setValue(blockState, BlockNavigator.getOppositeFace(face).ordinal()));
+	}
+
+	public static Block.Face getOrientation(byte blockState)
+	{
+		return Block.Face.values()[orientationField.getValue(blockState)];
 	}
 
 	public void onBlockRemoved(World world, Vector3Int location)
@@ -37,8 +44,8 @@ public class BlockLadder extends Block
 
 	public void setBlockBoundsBasedOnState(World world, int x, int y, int z)
 	{
-		BlockState blockState = world.getBlockState(new Vector3Int(x, y, z));
-		Vector3f orientation = (Vector3f)blockState.get(VAR_ORIENTATION);
+		byte blockState = world.getBlockState(new Vector3Int(x, y, z));
+		Vector3f orientation = getOrientation(blockState).normal;
     	Block.Face homeFace = BlockNavigator.getOppositeFace(Block.Face.fromNormal(orientation));
     	if(homeFace == Block.Face.Back)
     	{
@@ -89,8 +96,8 @@ public class BlockLadder extends Block
 	@Override
 	public void onNeighborRemoved(World world, Vector3Int location, Vector3Int myLocation)
 	{
-		BlockState blockState = world.getBlockState(myLocation);
-		Vector3f orientation = (Vector3f)blockState.get(VAR_ORIENTATION);
+		byte blockState = world.getBlockState(myLocation);
+		Vector3f orientation = getOrientation(blockState).normal;
     	Block.Face homeFace = BlockNavigator.getOppositeFace(Block.Face.fromNormal(orientation));
     	if(homeFace == Block.Face.Back)
     	{

@@ -1,5 +1,7 @@
 package com.chappelle.jcraft.blocks;
 
+import org.apache.commons.lang3.BitField;
+
 import com.chappelle.jcraft.*;
 import com.chappelle.jcraft.blocks.shapes.BlockShape_Door;
 import com.chappelle.jcraft.util.*;
@@ -9,10 +11,9 @@ import com.jme3.math.Vector3f;
 
 public class BlockDoor extends Block
 {
-    public static final Short VAL_SECTION_TOP = 1;
-    public static final Short VAR_SECTION = 2;
-    public static final Short VAR_OPEN = 3;
-    public static final Short VAR_ORIENTATION = 4;
+	private static final BitField orientationField = new BitField(0x07);//00000111
+	private static final BitField isOpenField = new BitField(0x8);      //00001000
+    private static final BitField isTopField = new BitField(0x10);      //00010000
 
     private boolean userCanOpen;//Iron doors can't be opened by user
     
@@ -33,18 +34,20 @@ public class BlockDoor extends Block
     @Override
     public void onBlockPlaced(World world, Vector3Int location, Block.Face face, Vector3f cameraDirectionUnitVector)
     {
-        BlockState blockState = world.getBlockState(location);
-        blockState.put(VAR_OPEN, Boolean.FALSE);            
-        blockState.put(VAR_ORIENTATION, cameraDirectionUnitVector);            
+    	byte state = world.getBlockState(location);
+    	int orientation = Block.Face.fromNormal(cameraDirectionUnitVector).ordinal();
+    	state = (byte)orientationField.setValue(state, orientation);
         
         Block bottomBlock = world.getBlock(location.subtract(new Vector3Int(0,1,0)));
         if(this == bottomBlock)
         {
-            blockState.put(VAL_SECTION_TOP, Boolean.TRUE);
+        	state = (byte)isTopField.setBoolean(state, true);
+        	world.setBlockState(location.x, location.y, location.z, state);
         }
         else//This is the bottom door, need to create the top
         {
-            blockState.put(VAL_SECTION_TOP, Boolean.FALSE);
+        	state = (byte)isTopField.setBoolean(state, false);
+        	world.setBlockState(location.x, location.y, location.z, state);
             Vector3Int topLocation = location.add(0,1,0);
             world.setBlock(topLocation, this);
             onBlockPlaced(world, topLocation, null, cameraDirectionUnitVector);
@@ -54,7 +57,7 @@ public class BlockDoor extends Block
 	@Override
 	public void onNeighborRemoved(World world, Vector3Int removedBlockLocation, Vector3Int myLocation)
 	{
-		BlockState blockState = world.getBlockState(myLocation);
+		byte blockState = world.getBlockState(myLocation);
 		boolean top = isTop(blockState);
 		if(top && myLocation.subtract(0, 1, 0).equals(removedBlockLocation))
 		{
@@ -78,12 +81,16 @@ public class BlockDoor extends Block
     	if(userCanOpen)
     	{
     		Vector3Int location = new Vector3Int(x, y, z);
-    		BlockState blockState = world.getBlockState(location);
-    		Boolean open = (Boolean)blockState.get(VAR_OPEN);
-    		blockState.put(VAR_OPEN, !open);
     		
-    		blockState = world.getBlockState(getOtherDoorSection(blockState, location));
-    		blockState.put(VAR_OPEN, !open);
+    		byte blockState = world.getBlockState(location);
+    		boolean open = isOpen(blockState);
+    		blockState = (byte)isOpenField.setBoolean(blockState, !open);
+    		world.setBlockState(x, y, z, blockState);
+    		
+    		Vector3Int otherDoorLocation = getOtherDoorSection(blockState, location);
+			blockState = world.getBlockState(otherDoorLocation);
+    		blockState = (byte)isOpenField.setBoolean(blockState, !open);
+    		world.setBlockState(otherDoorLocation.x, otherDoorLocation.y, otherDoorLocation.z, blockState);
     		
     		if(open)
     		{
@@ -102,7 +109,7 @@ public class BlockDoor extends Block
 		world.playSound(SoundConstants.DIG_WOOD, 4);
 	}
 
-    private Vector3Int getOtherDoorSection(BlockState blockState, Vector3Int blockLocation)
+    private Vector3Int getOtherDoorSection(byte blockState, Vector3Int blockLocation)
     {
     	if(isTop(blockState))
     	{
@@ -114,19 +121,21 @@ public class BlockDoor extends Block
     	}
     }
 
-    private boolean isTop(BlockState blockState)
+    public static boolean isTop(byte blockState)
     {
-        Boolean isTop = (Boolean)blockState.get(VAL_SECTION_TOP);
-        return isTop != null && isTop;
+    	return isTopField.getValue(blockState) == 1 ? true : false;
     }
 
-
+    public static boolean isOpen(byte blockState)
+    {
+    	return isOpenField.getValue(blockState) == 1 ? true : false;
+    }
+    
     @Override
     protected int getSkinIndex(Chunk chunk, Vector3Int location, Face face)
     {
-        BlockState blockState = chunk.getBlockState(location);
-        Boolean isTop = (Boolean)blockState.get(VAL_SECTION_TOP);
-        if (isTop == null || isTop)
+        byte blockState = chunk.getBlockState(location);
+        if (isTop(blockState))
         {
             return 0;
         }
@@ -181,9 +190,9 @@ public class BlockDoor extends Block
 	public void setBlockBoundsBasedOnState(World world, int x, int y, int z)
 	{
 		temp.set(x, y, z);
-		BlockState blockState = world.getBlockState(temp);
-		Boolean open = (Boolean)blockState.get(VAR_OPEN);
-		Vector3f orientation = (Vector3f)blockState.get(VAR_ORIENTATION);
+		byte blockState = world.getBlockState(temp);
+		Boolean open = isOpen(blockState);
+		Vector3f orientation = getOrientation(blockState).normal;
 		Block.Face homeFace = Block.Face.fromNormal(orientation);
 		minX = 0;
 		maxX = 1.0;
@@ -247,5 +256,11 @@ public class BlockDoor extends Block
 	{
 		setBlockBoundsBasedOnState(world, x, y, z);
 		return super.collisionRayTrace(world, x, y, z, startVec, endVec);
+	}
+
+
+	public static Block.Face getOrientation(byte blockState)
+	{
+		return Block.Face.values()[orientationField.getValue(blockState)];
 	}
 }

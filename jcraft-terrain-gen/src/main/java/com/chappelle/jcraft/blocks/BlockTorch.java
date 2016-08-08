@@ -1,5 +1,7 @@
 package com.chappelle.jcraft.blocks;
 
+import org.apache.commons.lang3.BitField;
+
 import com.chappelle.jcraft.*;
 import com.chappelle.jcraft.blocks.shapes.BlockShape_Torch;
 import com.chappelle.jcraft.util.*;
@@ -8,12 +10,13 @@ import com.jme3.math.Vector3f;
 
 public class BlockTorch extends Block
 {
+	private static final BitField orientationField = new BitField(0x07);//00000111
     /**
      * BlockState key that represents the contact normal of the block
      * clicked when placing the torch
      */
-    public static final Short VAR_ORIENTATION = 1;
-    public static final Short VAR_ATTACHED_BLOCK = 2;//TODO: could probably use just this one and remove the VAR_ORIENTATION in the future
+//    public static final Short VAR_ORIENTATION = 1;
+//    public static final Short VAR_ATTACHED_BLOCK = 2;//TODO: could probably use just this one and remove the VAR_ORIENTATION in the future
 	
     private Vector3Int temp = new Vector3Int();
     
@@ -36,9 +39,9 @@ public class BlockTorch extends Block
     	}
     	else
     	{
-    		BlockState blockState = world.getBlockState(location);
-    		blockState.put(VAR_ORIENTATION, face);
-    		blockState.put(VAR_ATTACHED_BLOCK, neighborBlockLocation);
+    		byte blockState = world.getBlockState(location);
+    		world.setBlockState(location.x, location.y, location.z, (byte)orientationField.setValue(blockState, face.ordinal()));
+//    		blockState.put(VAR_ATTACHED_BLOCK, neighborBlockLocation);
     		world.playSound(SoundConstants.DIG_WOOD, 4);
     	}
     }
@@ -47,8 +50,8 @@ public class BlockTorch extends Block
 	public void setBlockBoundsBasedOnState(World world, int x, int y, int z)
 	{
 		temp.set(x, y, z);
-		BlockState blockState = world.getBlockState(temp);
-		Block.Face homeFace = (Block.Face)blockState.get(VAR_ORIENTATION);
+		byte blockState = world.getBlockState(temp);
+		Block.Face homeFace = getOrientation(blockState);
 		float width = 0.15f;
 		float height = 0.6f;
 		float xzOffset = 0.35f;
@@ -95,8 +98,9 @@ public class BlockTorch extends Block
     @Override
     public void onNeighborRemoved(World world, Vector3Int removedBlockLocation, Vector3Int myLocation)
     {
-        BlockState state = world.getBlockState(myLocation);
-        Vector3Int attachedLocation = (Vector3Int)state.get(VAR_ATTACHED_BLOCK);
+        byte state = world.getBlockState(myLocation);
+        Face oppositeFace = BlockNavigator.getOppositeFace(getOrientation(state));
+        Vector3Int attachedLocation = myLocation.add(Vector3Int.fromVector3f(oppositeFace.normal));
         if(removedBlockLocation.equals(attachedLocation))
         {
             world.removeBlock(myLocation);
@@ -135,4 +139,8 @@ public class BlockTorch extends Block
 		return super.collisionRayTrace(world, x, y, z, startVec, endVec);
 	}
 
+	public static Block.Face getOrientation(byte blockState)
+	{
+		return Block.Face.values()[orientationField.getValue(blockState)];
+	}
 }

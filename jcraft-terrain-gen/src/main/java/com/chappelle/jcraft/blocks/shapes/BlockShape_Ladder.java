@@ -31,7 +31,8 @@ public class BlockShape_Ladder extends BlockShape
     	List<Float> colors = meshData.colorList;
     	List<Vector2f> textureCoordinates = meshData.textureCoordinatesList;
 
-    	Vector3f orientation = (Vector3f) chunk.getBlockStateValue(blockLocation, BlockLadder.VAR_ORIENTATION);
+    	byte blockState = chunk.getBlockState(blockLocation);
+    	Vector3f orientation = BlockLadder.getOrientation(blockState).normal;
     	Block.Face homeFace = BlockNavigator.getOppositeFace(Block.Face.fromNormal(orientation));
     	if(homeFace == Block.Face.Back)
     	{

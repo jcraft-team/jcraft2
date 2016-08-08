@@ -529,12 +529,20 @@ public class World
 		return -1;
 	}
 	
-    public BlockState getBlockState(Vector3Int location)
+    public byte getBlockState(Vector3Int location)
     {
         ChunkLocation localState = getLocalBlockState(location);
         Chunk chunk = localState.getChunk();
         return chunk.getBlockState(localState.getLocalBlockLocation());
     }
+    
+	public void setBlockState(int x, int y, int z, byte blockState)
+	{
+		ChunkLocation localState = getLocalBlockState(new Vector3Int(x, y, z));
+		Chunk chunk = localState.getChunk();
+		Vector3Int chunkLocalLocation = localState.getLocalBlockLocation();
+		chunk.setBlockState(chunkLocalLocation.x, chunkLocalLocation.y, chunkLocalLocation.z, blockState);
+	}
 
     public List<AABB> getCollidingBoundingBoxes(Entity entity, AABB boundingBox)
     {

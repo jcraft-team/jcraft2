@@ -18,12 +18,11 @@ import com.jme3.scene.*;
 public class Chunk implements BitSerializable
 {
 	private int[][] heightMap;
-	private BlockState[][][] blockState;
 	private int[][][] data = new int[16][256][16];
 	private BitField blockTypeField  = new BitField(0xFF000000);
 	private BitField blockLightField = new BitField(0x00F00000);
 	private BitField skyLightField   = new BitField(0x000F0000);
-//	private BitField blockStateField = new BitField(0x000000FF);
+	private BitField blockStateField = new BitField(0x000000FF);
 
 	public Vector3Int location = new Vector3Int();
     public Vector3Int blockLocation = new Vector3Int();
@@ -140,48 +139,21 @@ public class Chunk implements BitSerializable
 		return 0;
     }
     
-    public void setBlockState(Vector3Int location, Short key, Object value)
+    public void setBlockState(int x, int y, int z, byte value)
     {
-        Block block = getBlock(location);
-        if(block != null)
-        {
-            BlockState state = getBlockState(location);
-            state.put(key, value);
-        }
+		data[x][y][z] = blockStateField.setValue(data[x][y][z], value);
+    	markDirty();
     }
 
-    public BlockState getBlockState(Vector3Int location)
+    public byte getBlockState(Vector3Int location)
     {
-        BlockState state = getBlockState(location.x, location.y, location.z);
-        if(state == null)
-        {
-            state = new BlockState(this);
-            blockState[location.getX()][location.getY()][location.getZ()] = state;
-        }
-        return state;
+    	return (byte)getBlockState(location.x, location.y, location.z);
     }
     
     
-    private BlockState getBlockState(int x, int y, int z)
+    private byte getBlockState(int x, int y, int z)
     {
-    	if(blockState == null)
-    	{
-    		blockState = new BlockState[16][256][16];
-    	}
-    	return blockState[x][y][z];
-    }
-
-    public Object getBlockStateValue(Vector3Int location, Short key)
-    {
-        BlockState state = getBlockState(location);
-        if(state == null)
-        {
-            return null;
-        }
-        else
-        {
-            return state.get(key);
-        }
+    	return (byte)blockStateField.getValue(data[x][y][z]);
     }
 
     public void addToScene(Node parent)

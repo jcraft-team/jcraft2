@@ -41,11 +41,13 @@ public class BlockShape_Door extends BlockShape
     	List<Float> colors = meshData.colorList;
     	List<Vector2f> textureCoordinates = meshData.textureCoordinatesList;
 
-        Vector3f orientation = (Vector3f) chunk.getBlockStateValue(blockLocation, BlockDoor.VAR_ORIENTATION);
+    	byte blockState = chunk.getBlockState(blockLocation);
+    	Block.Face orientationFace = BlockDoor.getOrientation(blockState);
+        Vector3f orientation = orientationFace.getNormal();
         
         Block.Face homeFace = BlockNavigator.getOppositeFace(Block.Face.fromNormal(orientation));
         Vector3f offsetVector = null;
-        Boolean open = (Boolean)chunk.getBlockStateValue(blockLocation, BlockDoor.VAR_OPEN);
+        Boolean open = BlockDoor.isOpen(blockState);
         if(open)
         {
         	if(isXVector(orientation))
