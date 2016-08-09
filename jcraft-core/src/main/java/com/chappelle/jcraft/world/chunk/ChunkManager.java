@@ -1,6 +1,5 @@
 package com.chappelle.jcraft.world.chunk;
 
-import java.io.File;
 import java.util.*;
 import java.util.concurrent.*;
 

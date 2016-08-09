@@ -1,16 +1,15 @@
 package com.chappelle.jcraft;
 
-import java.io.*;
+import java.io.File;
 import java.util.*;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.chappelle.jcraft.debug.*;
-import com.chappelle.jcraft.serialization.*;
 import com.chappelle.jcraft.util.AABB;
 import com.chappelle.jcraft.world.*;
-import com.jme3.app.*;
+import com.jme3.app.SimpleApplication;
 import com.jme3.font.BitmapFont;
 import com.jme3.input.KeyInput;
 import com.jme3.input.controls.*;
