@@ -252,7 +252,7 @@ public abstract class BlockShape
 			boolean side2 = false;
 			float cornerOpacity = 0.0f;
 			float vertexAO = 0;
-			float vertexAOMult = 1.5f;
+			float vertexAOMult = GameSettings.ambientOcclusionIntensity;
 			
 			if(face == Block.Face.Back)
 			{
