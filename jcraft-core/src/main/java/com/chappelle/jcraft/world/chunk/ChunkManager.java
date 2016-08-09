@@ -8,6 +8,7 @@ import com.chappelle.jcraft.*;
 import com.chappelle.jcraft.blocks.MeshGenerator;
 import com.chappelle.jcraft.util.MathUtils;
 import com.chappelle.jcraft.world.*;
+import com.jme3.math.Vector3f;
 import com.jme3.scene.Mesh;
 
 public class ChunkManager
@@ -31,10 +32,10 @@ public class ChunkManager
 	private ChunkLoaderThread gen;
 	private ChunkPersistanceThread persistanceThread;
 	
-	public ChunkManager(World world)
+	public ChunkManager(World world, VoxelWorldSave voxelWorldSave)
 	{
 		this.world = world;
-		this.voxelWorldSave = new VoxelWorldSave(new File(GameFiles.getSaveDir(), "world.dat"));
+		this.voxelWorldSave = voxelWorldSave;
 		this.persistanceThread = new ChunkPersistanceThread();
 	}
 
@@ -111,6 +112,10 @@ public class ChunkManager
 				if((System.currentTimeMillis() - lastSaveTime) > saveInterval)
 				{
 					System.out.println("Saving...");
+
+					EntityPlayer player = world.getPlayer();
+					voxelWorldSave.putGameData("playerLocation", new Vector3f((float)player.posX, (float)player.posY, (float)player.posZ));
+					voxelWorldSave.putGameData("playerLookDirection", player.cam.getDirection());
 					for(Chunk chunk : getLoadedChunks())
 					{
 						if(chunk.hasChangedSinceLastSave())

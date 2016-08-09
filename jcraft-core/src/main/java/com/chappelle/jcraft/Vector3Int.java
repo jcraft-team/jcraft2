@@ -1,9 +1,11 @@
 package com.chappelle.jcraft;
 
+import java.io.Serializable;
+
 import com.chappelle.jcraft.util.Util;
 import com.jme3.math.Vector3f;
 
-public class Vector3Int
+public class Vector3Int implements Serializable
 {
 	public int x;
 	public int y;

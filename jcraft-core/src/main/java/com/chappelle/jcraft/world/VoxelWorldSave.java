@@ -50,6 +50,7 @@ public class VoxelWorldSave
 	 */
 	private BTreeMap<ChunkCoordIntPair, byte[]> chunkEntries;
 
+	private BTreeMap<String, Serializable> gameData;
 	/**
 	 * Opens or creates the table and data file.
 	 * 
@@ -68,6 +69,7 @@ public class VoxelWorldSave
 
 			// Load data
 			chunkEntries = (BTreeMap<ChunkCoordIntPair, byte[]>) this.db.treeMap("chunks").createOrOpen();
+			gameData = (BTreeMap<String, Serializable>) this.db.treeMap("gameData").createOrOpen();
 		}
 		catch(Exception e)
 		{
@@ -80,7 +82,7 @@ public class VoxelWorldSave
 	 */
 	public void flushSave()
 	{
-		int chunksSaved = 0;
+//		int chunksSaved = 0;
 		HashMap<ChunkCoordIntPair, Integer[][][]> updateJobs = new HashMap<>();
 
 		synchronized(this.writerQueueLock)
@@ -96,7 +98,7 @@ public class VoxelWorldSave
 		// Write jobs to database
 		synchronized(this.connectionLockObject)
 		{
-			long startTime = System.currentTimeMillis();
+//			long startTime = System.currentTimeMillis();
 
 			// Iterate through every update job.
 			for(Entry<ChunkCoordIntPair, Integer[][][]> entry : updateJobs.entrySet())
@@ -122,7 +124,7 @@ public class VoxelWorldSave
 					byte[] data = Snappy.compress(baos.toByteArray());
 
 					this.chunkEntries.put(new ChunkCoordIntPair(chunkX, chunkZ), data);
-					chunksSaved++;
+//					chunksSaved++;
 				}
 				catch(Exception e1)
 				{
@@ -133,7 +135,7 @@ public class VoxelWorldSave
 			// Commit to db
 			this.db.commit();
 
-			System.out.println(String.format("Saved %d chunks in : %d ms", chunksSaved, (System.currentTimeMillis() - startTime)));
+//			System.out.println(String.format("Saved %d chunks in : %d ms", chunksSaved, (System.currentTimeMillis() - startTime)));
 		}
 	}
 
@@ -215,5 +217,19 @@ public class VoxelWorldSave
 			// Create Writer entry
 			this.writerQueue.add(new AbstractMap.SimpleEntry<>(new ChunkCoordIntPair(chunkX, chunkZ), data));
 		}
+	}
+	
+	public void putGameData(String key, Serializable value)
+	{
+		synchronized(gameData)
+		{
+			this.gameData.put(key, value);
+			db.commit();
+		}
+	}
+	
+	public Serializable getGameData(String key)
+	{
+		return this.gameData.get(key);
 	}
 }

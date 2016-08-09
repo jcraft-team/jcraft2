@@ -38,7 +38,7 @@ public class World
 	private List<WorldListener> listeners = new ArrayList<>();
 	private long seed;
 	
-	public World(BlockApplication app, CubesSettings settings, AssetManager assetManager, Camera cam, String name, long seed)
+	public World(BlockApplication app, CubesSettings settings, AssetManager assetManager, Camera cam, String name, long seed, VoxelWorldSave voxelWorldSave)
 	{
 		this.seed = seed;
 		this.app = app;
@@ -50,7 +50,7 @@ public class World
         music.setReverbEnabled(false);
         music.setPositional(false);
         music.setLooping(true);
-        this.chunkMgr = new ChunkManager(this);
+        this.chunkMgr = new ChunkManager(this, voxelWorldSave);
 	}
 	
 	public long getSeed()

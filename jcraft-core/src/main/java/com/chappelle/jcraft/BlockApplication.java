@@ -1,5 +1,6 @@
 package com.chappelle.jcraft;
 
+import java.io.*;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -8,7 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.chappelle.jcraft.debug.*;
 import com.chappelle.jcraft.serialization.*;
 import com.chappelle.jcraft.util.AABB;
-import com.chappelle.jcraft.world.World;
+import com.chappelle.jcraft.world.*;
 import com.jme3.app.*;
 import com.jme3.font.BitmapFont;
 import com.jme3.input.KeyInput;
@@ -33,12 +34,13 @@ public class BlockApplication extends SimpleApplication implements ActionListene
 	private boolean wireframe;
 	private List<WorldInitializer> worldInitializers = new ArrayList<>();
 	private List<GameInitializer> gameInitializers = new ArrayList<>();
-	public WorldPersistor worldPersistor;
+	public VoxelWorldSave voxelWorldSave;
 	
 	public BlockApplication()
 	{
 		jcraft = this;
-
+		this.voxelWorldSave = new VoxelWorldSave(new File(GameFiles.getSaveDir(), "world.dat"));
+		
 		addInitializers(worldInitializers, WorldInitializer.class);
 		addInitializers(gameInitializers, GameInitializer.class);
 		
@@ -54,17 +56,25 @@ public class BlockApplication extends SimpleApplication implements ActionListene
 	@Override
 	public void simpleInitApp()
 	{
-		worldPersistor = new SimpleWorldPersistor();
 		initControls();
 		initBlockTerrain();
 		cam.setFrustumPerspective(45f, (float) cam.getWidth() / cam.getHeight(), 0.01f, 500f);
-		cam.lookAtDirection(new Vector3f(1, 0, 1), Vector3f.UNIT_Y);
-
+		Vector3f lookAt = (Vector3f)voxelWorldSave.getGameData("playerLookDirection");
+		if(lookAt == null)
+		{
+			lookAt = new Vector3f(1, 0, 1);
+		}
+		cam.lookAtDirection(lookAt, Vector3f.UNIT_Y);
 		// Setup sky
 		viewPort.setBackgroundColor(new ColorRGBA((float) 128 / 255, (float) 173 / 255, (float) 254 / 255, 1));
 
 		// Setup player
 		player = new EntityPlayer(world, cam);
+		Vector3f playerLocation = (Vector3f)voxelWorldSave.getGameData("playerLocation");
+		if(playerLocation != null)
+		{
+			player.setPosition(playerLocation.x, playerLocation.y, playerLocation.z);
+		}
 		world.getChunkManager().loadChunksAroundPlayer(player.posX, player.posZ, 3);
 		world.update(0);
 		player.preparePlayerToSpawn();
@@ -104,20 +114,12 @@ public class BlockApplication extends SimpleApplication implements ActionListene
 		if(StringUtils.isNotBlank(worldToLoad))
 		{
 			log.info("Loading world " + worldToLoad);
-//			world = worldPersistor.loadWorld(this, worldToLoad);
-//			if(world == null)
-//			{
-//				log.warning("No world with name " + worldToLoad + " was found");
-//			}
-//			else
-//			{
-//				log.info("Finished loading world " + worldToLoad);
-//			}
+			//TODO: Load specified world
 		}
 		if(world == null)
 		{
 			log.info("Creating new world...get ready!");
-			world = new World(this, cubesSettings, assetManager, cam, "JCraftWorld", seed);
+			world = new World(this, cubesSettings, assetManager, cam, "JCraftWorld", seed, voxelWorldSave);
 		}
 
 		configureWorld(world);
@@ -166,7 +168,6 @@ public class BlockApplication extends SimpleApplication implements ActionListene
 		addMapping("f5", new KeyTrigger(KeyInput.KEY_F5));
 		addMapping("ToggleAmbientOcclusion", new KeyTrigger(KeyInput.KEY_F9));
 		addMapping("RebuildChunks", new KeyTrigger(KeyInput.KEY_F10));
-		addMapping("save", new KeyTrigger(KeyInput.KEY_F7));
 	}
 
 	private void addMapping(String action, Trigger trigger)
@@ -197,10 +198,6 @@ public class BlockApplication extends SimpleApplication implements ActionListene
 		else if("ToggleAmbientOcclusion".equals(name) && !isPressed)
 		{
 			GameSettings.ambientOcclusionEnabled = !GameSettings.ambientOcclusionEnabled;
-		}
-		else if("save".equals(name) && !isPressed)
-		{
-			worldPersistor.save(world);
 		}
 	}
 
