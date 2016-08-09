@@ -30,8 +30,8 @@ import com.jme3.texture.Texture;
 
 public class AdvancedSkyAppState extends AbstractAppState implements ViewPortListener, TimeOfDayProvider
 {
-    private static final float initialTimeOfDay = 12;
-    private static final float timeRate = 10f;
+    private float initialTimeOfDay = 6;
+    private static final float timeRate = 100f;
     /**
      * width and height of rendered shadow maps (pixels per side, &gt;0)
      */
@@ -53,6 +53,11 @@ public class AdvancedSkyAppState extends AbstractAppState implements ViewPortLis
     private AmbientLight ambientLight = null;
     private DirectionalLight mainLight = null;
 
+    public AdvancedSkyAppState(float initialTimeOfDay)
+    {
+    	this.initialTimeOfDay = initialTimeOfDay;
+    }
+    
     @Override
     public void initialize(AppStateManager stateManager, Application app)
     {

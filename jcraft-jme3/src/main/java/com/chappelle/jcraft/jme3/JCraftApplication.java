@@ -33,7 +33,8 @@ public class JCraftApplication extends BlockApplication
 		initializeNiftyGUI();
 		if(GameSettings.skyEnabled)
 		{
-			stateManager.attach(new AdvancedSkyAppState());
+			Float timeOfDay = (Float)voxelWorldSave.getGameData("timeOfDay");
+			stateManager.attach(new AdvancedSkyAppState(timeOfDay == null ? 6 : timeOfDay));
 		}
 		initControls();
 

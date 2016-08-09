@@ -23,6 +23,7 @@ public class WorldSaveTask extends TimerTask
 	{
 		System.out.println("Saving...");
 
+		voxelWorldSave.putGameData("timeOfDay", world.getTimeOfDayProvider().getTimeOfDay());
 		savePlayerData();
 		saveChunkData();
 
