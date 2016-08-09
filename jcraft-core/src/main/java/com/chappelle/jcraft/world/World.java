@@ -6,6 +6,7 @@ import java.util.concurrent.*;
 import com.chappelle.jcraft.*;
 import com.chappelle.jcraft.blocks.*;
 import com.chappelle.jcraft.lighting.LightType;
+import com.chappelle.jcraft.serialization.VoxelWorldSave;
 import com.chappelle.jcraft.util.*;
 import com.chappelle.jcraft.world.chunk.*;
 import com.jme3.app.Application;

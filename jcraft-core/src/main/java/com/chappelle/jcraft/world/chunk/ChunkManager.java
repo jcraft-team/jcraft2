@@ -5,9 +5,9 @@ import java.util.concurrent.*;
 
 import com.chappelle.jcraft.*;
 import com.chappelle.jcraft.blocks.MeshGenerator;
+import com.chappelle.jcraft.serialization.VoxelWorldSave;
 import com.chappelle.jcraft.util.MathUtils;
-import com.chappelle.jcraft.world.*;
-import com.jme3.math.Vector3f;
+import com.chappelle.jcraft.world.World;
 import com.jme3.scene.Mesh;
 
 public class ChunkManager
@@ -29,13 +29,11 @@ public class ChunkManager
 	public ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(THREAD_COUNT);
 	private List<Feature> features = new ArrayList<Feature>();
 	private ChunkLoaderThread gen;
-	private ChunkPersistanceThread persistanceThread;
 	
 	public ChunkManager(World world, VoxelWorldSave voxelWorldSave)
 	{
 		this.world = world;
 		this.voxelWorldSave = voxelWorldSave;
-		this.persistanceThread = new ChunkPersistanceThread();
 	}
 
 	public void update()
@@ -54,10 +52,6 @@ public class ChunkManager
 		}
 		EntityPlayer player = world.getPlayer();
 		loadChunksAroundPlayer(player.posX, player.posZ, 3);
-		if(!persistanceThread.running)
-		{
-			new Thread(persistanceThread, "ChunkPersistor").start();;
-		}
 	}
 
 	public void loadChunksAroundPlayer(double playerX, double playerZ, int radius)
@@ -94,57 +88,6 @@ public class ChunkManager
 			gen.generate(x, z, blockTypes);
 		}
 		return new Chunk(world, x, z, blockTypes);
-	}
-
-	private class ChunkPersistanceThread implements Runnable
-	{
-		public boolean running;
-		private long saveInterval = 1000*5;
-		private long lastSaveTime = System.currentTimeMillis();
-		
-		@Override
-		public void run()
-		{
-			running = true;
-			try
-			{
-				if((System.currentTimeMillis() - lastSaveTime) > saveInterval)
-				{
-					System.out.println("Saving...");
-
-					EntityPlayer player = world.getPlayer();
-					voxelWorldSave.putGameData("playerLocation", new Vector3f((float)player.posX, (float)player.posY, (float)player.posZ));
-					voxelWorldSave.putGameData("playerLookDirection", player.cam.getDirection());
-					for(Chunk chunk : getLoadedChunks())
-					{
-						if(chunk.hasChangedSinceLastSave())
-						{
-							voxelWorldSave.writeChunk(chunk.location.x, chunk.location.z, chunk.getData());
-							chunk.setLastSavedTime(System.currentTimeMillis());
-						}
-					}
-					voxelWorldSave.flushSave();
-					lastSaveTime = System.currentTimeMillis();
-					System.out.println("Finished saving");
-				}
-				else
-				{
-					try
-					{
-						Thread.sleep(1000);
-					}
-					catch(InterruptedException e)
-					{
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-			}
-			finally
-			{
-				running = false;
-			}
-		}
 	}
 
 	private class ChunkLoaderThread implements Runnable

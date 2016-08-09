@@ -1,4 +1,4 @@
-package com.chappelle.jcraft.world;
+package com.chappelle.jcraft.serialization;
 
 import java.io.*;
 import java.util.*;
@@ -8,7 +8,6 @@ import java.util.logging.*;
 import org.mapdb.*;
 import org.xerial.snappy.Snappy;
 
-import com.chappelle.jcraft.serialization.*;
 import com.chappelle.jcraft.world.chunk.ChunkCoordIntPair;
 
 /**

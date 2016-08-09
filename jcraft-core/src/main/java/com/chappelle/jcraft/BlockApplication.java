@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 import org.apache.commons.lang3.StringUtils;
 
 import com.chappelle.jcraft.debug.*;
+import com.chappelle.jcraft.serialization.*;
 import com.chappelle.jcraft.util.AABB;
 import com.chappelle.jcraft.world.*;
 import com.jme3.app.SimpleApplication;
@@ -26,19 +27,28 @@ public class BlockApplication extends SimpleApplication implements ActionListene
 	private final static Logger log = Logger.getLogger(BlockApplication.class.getName()); 
 	
 	private static BlockApplication jcraft;
-	private CubesSettings cubesSettings;
-	protected EntityPlayer player;
+
+	//General game stuff
 	public World world;
-	public boolean debugEnabled = false;
-	private boolean wireframe;
+	protected EntityPlayer player;
+	private CubesSettings cubesSettings;
+	
+	//Plugin api
 	private List<WorldInitializer> worldInitializers = new ArrayList<>();
 	private List<GameInitializer> gameInitializers = new ArrayList<>();
+
+	//Debug settings
+	public boolean debugEnabled = false;
+	private boolean wireframe;
+	
+	//World save objects
 	public VoxelWorldSave voxelWorldSave;
+	private WorldSaveTask worldSaveTask;
+	private Timer worldSaveTimer = new Timer("WorldSave");
 	
 	public BlockApplication()
 	{
 		jcraft = this;
-		this.voxelWorldSave = new VoxelWorldSave(new File(GameFiles.getSaveDir(), "world.dat"));
 		
 		addInitializers(worldInitializers, WorldInitializer.class);
 		addInitializers(gameInitializers, GameInitializer.class);
@@ -56,6 +66,7 @@ public class BlockApplication extends SimpleApplication implements ActionListene
 	public void simpleInitApp()
 	{
 		initControls();
+		this.voxelWorldSave = new VoxelWorldSave(new File(GameFiles.getSaveDir(), "world.dat"));
 		initBlockTerrain();
 		cam.setFrustumPerspective(45f, (float) cam.getWidth() / cam.getHeight(), 0.01f, 500f);
 		Vector3f lookAt = (Vector3f)voxelWorldSave.getGameData("playerLookDirection");
@@ -77,7 +88,6 @@ public class BlockApplication extends SimpleApplication implements ActionListene
 		world.getChunkManager().loadChunksAroundPlayer(player.posX, player.posZ, 3);
 		world.update(0);
 		player.preparePlayerToSpawn();
-		
 
 		//AppStates and Controls
 		stateManager.attach(new DebugAppState());
@@ -90,6 +100,9 @@ public class BlockApplication extends SimpleApplication implements ActionListene
 		log.info("\r\n\r\n");
 
 		initializeGame();
+		
+		worldSaveTask = new WorldSaveTask(world, voxelWorldSave);
+		worldSaveTimer.scheduleAtFixedRate(worldSaveTask, 1*1000, GameSettings.worldSaveInterval);
 	}
 
 	private void toggleDebug()
@@ -223,6 +236,7 @@ public class BlockApplication extends SimpleApplication implements ActionListene
 	public void destroy()
 	{
 		super.destroy();
+		worldSaveTimer.cancel();
 		world.destroy();
 		GameSettings.save();
 	}

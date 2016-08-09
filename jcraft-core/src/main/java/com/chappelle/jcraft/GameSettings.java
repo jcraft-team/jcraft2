@@ -14,6 +14,7 @@ public class GameSettings
 	public static boolean debugEnabled;
 	public static boolean skyEnabled;
 	public static boolean ambientOcclusionEnabled = true;
+	public static long worldSaveInterval = 5*1000;
 	
 	private static File optionsFile;
 	
