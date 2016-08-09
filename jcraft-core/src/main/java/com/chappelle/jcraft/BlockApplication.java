@@ -210,6 +210,7 @@ public class BlockApplication extends SimpleApplication implements ActionListene
 		else if("ToggleAmbientOcclusion".equals(name) && !isPressed)
 		{
 			GameSettings.ambientOcclusionEnabled = !GameSettings.ambientOcclusionEnabled;
+			world.rebuildChunks();
 		}
 	}
 

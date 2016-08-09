@@ -308,7 +308,7 @@ public abstract class BlockShape
 				colors.add((float)effectiveBlockLight);
 				colors.add(Math.max(skyLight - vertexAO, 0.0f));
 				
-				side1 = world.isOpaqueBlockPresent(worldX, y-1, worldZ-1);
+				side1 = world.isOpaqueBlockPresent(worldX, y-1, worldZ+1);
 				side2 = world.isOpaqueBlockPresent(worldX+1, y, worldZ+1);
 				cornerOpacity = getBlockOpacity(world, worldX+1, y-1, worldZ+1);
 				vertexAO = vertexAO(side1, side2, cornerOpacity)*vertexAOMult;
@@ -405,7 +405,7 @@ public abstract class BlockShape
 				colors.add(Math.max(skyLight - vertexAO, 0.0f));
 				
 				side1 = world.isOpaqueBlockPresent(worldX+1, y+1, worldZ);
-				side2 = world.isOpaqueBlockPresent(worldX-1, y, worldZ+1);
+				side2 = world.isOpaqueBlockPresent(worldX+1, y, worldZ-1);
 				cornerOpacity = getBlockOpacity(world, worldX+1, y+1, worldZ-1);
 				vertexAO = vertexAO(side1, side2, cornerOpacity)*vertexAOMult;
 				colors.add((float)effectiveBlockLight);
@@ -456,7 +456,7 @@ public abstract class BlockShape
 			{
 				//bottom left
 				side1 = world.isOpaqueBlockPresent(worldX, y-1, worldZ+1);
-				side2 = world.isOpaqueBlockPresent(worldX-1, y-1, worldZ);
+				side2 = world.isOpaqueBlockPresent(worldX+1, y-1, worldZ);
 				cornerOpacity = getBlockOpacity(world, worldX+1, y-1, worldZ+1);
 				vertexAO = vertexAO(side1, side2, cornerOpacity)*vertexAOMult;
 				colors.add((float)effectiveBlockLight);
@@ -465,7 +465,7 @@ public abstract class BlockShape
 				colors.add(Math.max(skyLight - vertexAO, 0.0f));
 				
 				side1 = world.isOpaqueBlockPresent(worldX, y-1, worldZ+1);
-				side2 = world.isOpaqueBlockPresent(worldX-1, y-11, worldZ);
+				side2 = world.isOpaqueBlockPresent(worldX-1, y-1, worldZ);
 				cornerOpacity = getBlockOpacity(world, worldX-1, y-1, worldZ+1);
 				vertexAO = vertexAO(side1, side2, cornerOpacity)*vertexAOMult;
 				colors.add((float)effectiveBlockLight);
