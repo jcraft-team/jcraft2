@@ -3,7 +3,7 @@ package com.chappelle.jcraft.world.chunk;
 import java.io.IOException;
 import java.util.*;
 
-import org.apache.commons.lang3.BitField;
+import org.apache.commons.lang3.*;
 
 import com.chappelle.jcraft.*;
 import com.chappelle.jcraft.blocks.Block;
@@ -17,8 +17,10 @@ import com.jme3.scene.*;
 
 public class Chunk implements BitSerializable
 {
+	private long lastSavedTime = System.currentTimeMillis();
+	private long lastModifiedTime;
 	private int[][] heightMap;
-	private int[][][] data = new int[16][256][16];
+	private Integer[][][] data = new Integer[16][256][16];
 	private BitField blockTypeField  = new BitField(0xFF000000);
 	private BitField blockLightField = new BitField(0x00F00000);
 	private BitField skyLightField   = new BitField(0x000F0000);
@@ -44,18 +46,42 @@ public class Chunk implements BitSerializable
 		this(world, x, z, new byte[16][256][16]);
 	}
 	
-    public Chunk(World world, int x, int z, byte[][][] blockTypes)
-    {
+	public Chunk(World world, int x, int z, Integer[][][] data)
+	{
     	this.world = world;
     	location.set(x, 0, z);
     	blockLocation.set(location.mult(16, 256, 16));
-    	this.data = new int[16][256][16];
+    	this.data = data;
+    	byte[][][] blockTypes = new byte[16][256][16];
     	for(int i = 0; i < 16; i++)
     	{
     		for(int j = 0; j < 256; j++)
     		{
     			for(int k = 0; k < 16; k++)
     			{
+    				blockTypes[i][j][k] = (byte)blockTypeField.getValue(data[i][j][k]);
+    			}
+    		}
+    	}
+    	node.setLocalTranslation(new Vector3f(blockLocation.getX(), blockLocation.getY(), blockLocation.getZ()));
+    	this.id = ChunkCoordIntPair.chunkXZ2Int(x, z); 
+    	this.heightMap = makeHeightMap(blockTypes);
+    	this.lightMgr = new FloodFillLightManager(this);
+	}
+	
+    public Chunk(World world, int x, int z, byte[][][] blockTypes)
+    {
+    	this.world = world;
+    	location.set(x, 0, z);
+    	blockLocation.set(location.mult(16, 256, 16));
+    	this.data = new Integer[16][256][16];
+    	for(int i = 0; i < 16; i++)
+    	{
+    		for(int j = 0; j < 256; j++)
+    		{
+    			for(int k = 0; k < 16; k++)
+    			{
+    				data[i][j][k] = 0;
     				data[i][j][k] = blockTypeField.setValue(data[i][j][k], blockTypes[i][j][k]);
     			}
     		}
@@ -64,6 +90,16 @@ public class Chunk implements BitSerializable
     	this.id = ChunkCoordIntPair.chunkXZ2Int(x, z); 
     	this.heightMap = makeHeightMap(blockTypes);
     	this.lightMgr = new FloodFillLightManager(this);
+    }
+    
+    public boolean hasChangedSinceLastSave()
+    {
+    	return lastSavedTime < lastModifiedTime;
+    }
+    
+    public void setLastSavedTime(long lastSavedTime)
+    {
+    	this.lastSavedTime = lastSavedTime;
     }
     
     public int[][] getHeightMap()
@@ -216,6 +252,7 @@ public class Chunk implements BitSerializable
     public void markDirty()
     {
     	this.needsMeshUpdate = true;
+    	this.lastModifiedTime = System.currentTimeMillis();
     }
 
 	public void setLight(int x, int y, int z, LightType type, int lightVal)
@@ -239,7 +276,7 @@ public class Chunk implements BitSerializable
 		return skyLightField.getValue(data[x][y][z]);
 	}
 	
-	public int[][][] getData()
+	public Integer[][][] getData()
 	{
 		return data;
 	}

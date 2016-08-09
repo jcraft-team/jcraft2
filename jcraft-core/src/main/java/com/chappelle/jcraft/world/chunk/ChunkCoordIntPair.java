@@ -1,13 +1,17 @@
 package com.chappelle.jcraft.world.chunk;
 
-public class ChunkCoordIntPair
+import java.io.Serializable;
+
+public class ChunkCoordIntPair implements Serializable, Comparable<ChunkCoordIntPair>
 {
 	/** The X position of this Chunk Coordinate Pair */
-	public final int chunkXPos;
+	public int chunkXPos;
 
 	/** The Z position of this Chunk Coordinate Pair */
-	public final int chunkZPos;
+	public int chunkZPos;
 
+	public ChunkCoordIntPair(){}
+	
 	public ChunkCoordIntPair(int x, int z)
 	{
 		this.chunkXPos = x;
@@ -20,6 +24,14 @@ public class ChunkCoordIntPair
 	public static long chunkXZ2Int(int x, int z)
 	{
 		return (long) x & 4294967295L | ((long) z & 4294967295L) << 32;
+	}
+
+	@Override
+	public int compareTo(ChunkCoordIntPair o)
+	{
+		Long myKey = chunkXZ2Int(chunkXPos, chunkZPos);
+		Long otherKey = chunkXZ2Int(o.chunkXPos, o.chunkZPos);
+		return myKey.compareTo(otherKey);
 	}
 
 	public int hashCode()
@@ -49,5 +61,25 @@ public class ChunkCoordIntPair
 	public String toString()
 	{
 		return "[" + this.chunkXPos + ", " + this.chunkZPos + "]";
+	}
+
+	public int getChunkXPos()
+	{
+		return chunkXPos;
+	}
+
+	public void setChunkXPos(int chunkXPos)
+	{
+		this.chunkXPos = chunkXPos;
+	}
+
+	public int getChunkZPos()
+	{
+		return chunkZPos;
+	}
+
+	public void setChunkZPos(int chunkZPos)
+	{
+		this.chunkZPos = chunkZPos;
 	}
 }

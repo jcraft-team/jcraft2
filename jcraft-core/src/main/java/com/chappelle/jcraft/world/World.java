@@ -35,11 +35,12 @@ public class World
 	private Application app;
 	public Node node = new Node("world");
 	private ChunkManager chunkMgr;
-	private TerrainGenerator terrainGenerator;
 	private List<WorldListener> listeners = new ArrayList<>();
+	private long seed;
 	
-	public World(Application app, CubesSettings settings, AssetManager assetManager, Camera cam, String name, long seed)
+	public World(BlockApplication app, CubesSettings settings, AssetManager assetManager, Camera cam, String name, long seed)
 	{
+		this.seed = seed;
 		this.app = app;
 		this.name = name;
 		this.settings = settings;
@@ -50,7 +51,16 @@ public class World
         music.setPositional(false);
         music.setLooping(true);
         this.chunkMgr = new ChunkManager(this);
-        this.terrainGenerator = new TerrainGenerator(this, chunkMgr, seed);
+	}
+	
+	public long getSeed()
+	{
+		return seed;
+	}
+
+	public EntityPlayer getPlayer()
+	{
+		return player;
 	}
 	
 	public TimeOfDayProvider getTimeOfDayProvider()
@@ -84,11 +94,6 @@ public class World
 		}
 	}
 	
-	public TerrainGenerator getTerrainGenerator()
-	{
-		return terrainGenerator;
-	}
-	
 	public ChunkManager getChunkManager()
 	{
 		return chunkMgr;
@@ -100,7 +105,7 @@ public class World
 
 		chunkMgr.update();
 		
-		terrainGenerator.generateTerrainAroundPlayer(player.posX, player.posZ, 3);
+//		terrainGenerator.generateTerrainAroundPlayer(player.posX, player.posZ, 3);
 	}
 	
 	private void updateTimeOfDay()
@@ -178,8 +183,8 @@ public class World
 	public void setPlayer(EntityPlayer player)
 	{
 		this.player = player;
-		terrainGenerator.generateTerrain(MathUtils.floor_double(player.posX)/16, MathUtils.floor_double(player.posZ)/16);
-		chunkMgr.updateNow();
+//		chunkMgr.generateTerrain(MathUtils.floor_double(player.posX)/16, MathUtils.floor_double(player.posZ)/16);
+//		chunkMgr.updateNow();
 	}
 	
 	public void addEntity(Entity entity)
@@ -310,7 +315,7 @@ public class World
 		if(localBlockState != null)
 		{
 			Block block = localBlockState.getBlock();
-			if(block.isBreakable())
+			if(block != null && block.isBreakable())
 			{
 				Chunk chunk = localBlockState.getChunk();
 				//Here we mark neighbor chunks dirty if we broke a block on the border. This is needed

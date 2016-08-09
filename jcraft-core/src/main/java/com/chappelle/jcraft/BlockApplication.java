@@ -33,7 +33,7 @@ public class BlockApplication extends SimpleApplication implements ActionListene
 	private boolean wireframe;
 	private List<WorldInitializer> worldInitializers = new ArrayList<>();
 	private List<GameInitializer> gameInitializers = new ArrayList<>();
-	private WorldPersistor worldPersistor;
+	public WorldPersistor worldPersistor;
 	
 	public BlockApplication()
 	{
@@ -65,7 +65,10 @@ public class BlockApplication extends SimpleApplication implements ActionListene
 
 		// Setup player
 		player = new EntityPlayer(world, cam);
+		world.getChunkManager().loadChunksAroundPlayer(player.posX, player.posZ, 3);
+		world.update(0);
 		player.preparePlayerToSpawn();
+		
 
 		//AppStates and Controls
 		stateManager.attach(new DebugAppState());
@@ -101,15 +104,15 @@ public class BlockApplication extends SimpleApplication implements ActionListene
 		if(StringUtils.isNotBlank(worldToLoad))
 		{
 			log.info("Loading world " + worldToLoad);
-			world = worldPersistor.loadWorld(this, worldToLoad);
-			if(world == null)
-			{
-				log.warning("No world with name " + worldToLoad + " was found");
-			}
-			else
-			{
-				log.info("Finished loading world " + worldToLoad);
-			}
+//			world = worldPersistor.loadWorld(this, worldToLoad);
+//			if(world == null)
+//			{
+//				log.warning("No world with name " + worldToLoad + " was found");
+//			}
+//			else
+//			{
+//				log.info("Finished loading world " + worldToLoad);
+//			}
 		}
 		if(world == null)
 		{

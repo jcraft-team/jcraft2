@@ -8,30 +8,62 @@ import java.util.logging.*;
 import org.apache.commons.io.FileUtils;
 
 import com.chappelle.jcraft.*;
-import com.chappelle.jcraft.world.World;
+import com.chappelle.jcraft.world.*;
 import com.chappelle.jcraft.world.chunk.*;
 
 public class SimpleWorldPersistor implements WorldPersistor
 {
 	private static final Logger log = Logger.getLogger(SimpleWorldPersistor.class.getName());
-
+	private VoxelWorldSave voxelWorldSave;
+	private File worldDataFile;
+	
+	public SimpleWorldPersistor()
+	{
+//		try
+//		{
+//			this.voxelWorldSave = new VoxelWorldSave(GameFiles.getSaveDir());	
+//			this.worldDataFile = new File(GameFiles.getSaveDir(), "world.dat");
+//			if(!worldDataFile.exists())
+//			{
+//				worldDataFile.createNewFile();
+//			}
+//		}
+//		catch(IOException e)
+//		{
+//			throw new RuntimeException(e);
+//		}
+	}
+	public void writeChunk(int chunkX, int chunkZ, Integer[][][] data)
+	{
+		voxelWorldSave.writeChunk(chunkX, chunkZ, data);
+	}
+	
+	public Integer[][][] readChunk(int chunkX, int chunkZ)
+	{
+		return voxelWorldSave.readChunk(chunkX, chunkZ);
+	}
+	
+	private class WorldPersistorThread implements Runnable
+	{
+		@Override
+		public void run()
+		{
+			voxelWorldSave.flushSave();
+		}
+	}
+	
 	@Override
 	public void save(World world)
 	{
-    	File worldSaveDir = new File(GameFiles.getSaveDir(), world.getName());
-    	if(!worldSaveDir.exists())
-    	{
-    		worldSaveDir.mkdirs();
-    	}
-    	for(Chunk chunk : world.getChunkManager().getLoadedChunks())
-    	{
-    		writeChunkToFile(chunk, worldSaveDir);
-    	}
-    	
-    	File worldDataFile = new File(worldSaveDir, "World.dat");
     	try
 		{
-			FileUtils.writeStringToFile(worldDataFile, world.getTerrainGenerator().getSeed() + "", Charset.defaultCharset());
+    		Properties props = new Properties();
+    		props.put("seed", world.getSeed());
+    		props.put("playerX", world.getPlayer().posX);
+    		props.put("playerY", world.getPlayer().posY);
+    		props.put("playerZ", world.getPlayer().posZ);
+    		props.store(new FileOutputStream(worldDataFile), null);
+    		new Thread(new WorldPersistorThread(), "WorldPersistor").start();
 		}
 		catch(IOException e)
 		{
@@ -42,28 +74,24 @@ public class SimpleWorldPersistor implements WorldPersistor
 	@Override
 	public World loadWorld(BlockApplication app, String name)
 	{
-		File worldSaveDir = new File(GameFiles.getSaveDir(), name);
-		if(!worldSaveDir.exists())
-		{
-			return null;
-		}
-		long seed = 0;
+		Properties props = new Properties();
 		try
 		{
-			String seedStr = FileUtils.readFileToString(new File(worldSaveDir, "World.dat"), Charset.defaultCharset());
-			seed = Long.parseLong(seedStr);
+    		props.load(new FileInputStream(worldDataFile));
 		}
 		catch(IOException e)
 		{
 			throw new RuntimeException("Unable to load world '" + name + "'", e);
 		}
-		World world = new World(app, CubesSettings.getInstance(), app.getAssetManager(), app.getCamera(), name, seed);
+		World world = new World(app, CubesSettings.getInstance(), app.getAssetManager(), app.getCamera(), name, Long.parseLong(props.getProperty("seed")));
+		world.getPlayer().setPosition(Double.parseDouble(Objects.toString(props.get("playerX"))), Double.parseDouble(Objects.toString(props.get("playerY"))), Double.parseDouble(Objects.toString(props.get("playerZ"))));
 		ChunkManager chunkManager = world.getChunkManager();
+		
 		List<Chunk> chunks = new ArrayList<>();
-		for(File file : worldSaveDir.listFiles(new ChunkFilenameFilter()))
-		{
-			chunks.add(loadChunkFromFile(world, file));
-		}
+//		for(File file : worldSaveDir.listFiles(new ChunkFilenameFilter()))
+//		{
+//			chunks.add(loadChunkFromFile(world, file));
+//		}
 		for(Chunk chunk : chunks)//Need to do a separate loop so weird things don't happen on chunk boundaries
 		{
 			chunkManager.addChunk(chunk);

@@ -3,16 +3,16 @@ package com.chappelle.jcraft.world.terrain.gen;
 import com.chappelle.jcraft.WorldInitializer;
 import com.chappelle.jcraft.blocks.Blocks;
 import com.chappelle.jcraft.world.World;
-import com.chappelle.jcraft.world.chunk.TerrainGenerator;
+import com.chappelle.jcraft.world.chunk.*;
 
 public class FeatureInstaller implements WorldInitializer
 {
 	@Override
 	public void configureWorld(World world)
 	{
-		TerrainGenerator terrainGenerator = world.getTerrainGenerator();
+		ChunkManager terrainGenerator = world.getChunkManager();
 
-		long seed = terrainGenerator.getSeed();
+		long seed = world.getSeed();
 		SimplexNoise.setSeed(seed);//TODO: Need to make this non-static and allow Simplex2DFeature to set it
 		// test commit
 //		terrainGenerator.addFeature(new FlatFeature(Block.wood, 10));
