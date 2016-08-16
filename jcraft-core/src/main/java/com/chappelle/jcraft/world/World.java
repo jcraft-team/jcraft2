@@ -163,7 +163,10 @@ public class World
 	
 	public void setTimeOfDayProvider(TimeOfDayProvider timeOfDayProvider)
 	{
-		this.timeOfDayProvider = timeOfDayProvider;
+		if(timeOfDayProvider != null)
+		{
+			this.timeOfDayProvider = timeOfDayProvider;
+		}
 	}
 	
 	public int getLoadedChunkCount()

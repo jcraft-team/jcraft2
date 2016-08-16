@@ -9,18 +9,22 @@
 	<packaging>pom</packaging>
 	<properties>
 		<jme.version>3.0.10</jme.version>
+		<jme.groupId>com.jme3</jme.groupId>
+		<junit.version>4.12</junit.version>
+		<mockito.version>1.9.5</mockito.version>
 	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.12</version>
+			<version>${junit.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-all</artifactId>
-			<version>1.9.5</version>
+			<version>${mockito.version}</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 	<modules>

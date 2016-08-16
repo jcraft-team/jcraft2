@@ -1,41 +1,54 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>com.chappelle</groupId>
-    <artifactId>jcraft-parent</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-  </parent>
-  <artifactId>jcraft-jme3</artifactId>
-  <name>JCraft JME3</name>
-  <description>JCraft JMonkey Engine 3</description>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.chappelle</groupId>
+		<artifactId>jcraft-parent</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+	<artifactId>jcraft-jme3</artifactId>
+	<name>JCraft JME3</name>
+	<description>JCraft JMonkey Engine 3</description>
 	<dependencies>
+	<!-- 
 		<dependency>
-			<groupId>com.jme3</groupId>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.7.21</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>12.0.1</version>
+		</dependency>
+ -->
+		<dependency>
+			<groupId>${jme.groupId}</groupId>
 			<artifactId>skycontrol</artifactId>
 			<version>1.0.0</version>
 		</dependency>
 		<dependency>
-			<groupId>com.jme3</groupId>
+			<groupId>${jme.groupId}</groupId>
 			<artifactId>skycontrol-assets</artifactId>
 			<version>1.0.0</version>
 		</dependency>
 		<dependency>
-			<groupId>com.jme3</groupId>
+			<groupId>${jme.groupId}</groupId>
 			<artifactId>utilities-debug-assets</artifactId>
 			<version>1.0.0</version>
 		</dependency>
 		<dependency>
-			<groupId>com.jme3</groupId>
+			<groupId>${jme.groupId}</groupId>
 			<artifactId>utilities-debug</artifactId>
 			<version>1.0.0</version>
 		</dependency>
 		<dependency>
-			<groupId>com.jme3</groupId>
+			<groupId>${jme.groupId}</groupId>
 			<artifactId>jme3-jbullet</artifactId>
 			<version>${jme.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.jme3</groupId>
+			<groupId>${jme.groupId}</groupId>
 			<artifactId>jme3-effects</artifactId>
 			<version>${jme.version}</version>
 		</dependency>
@@ -50,32 +63,32 @@
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>com.jme3</groupId>
+			<groupId>${jme.groupId}</groupId>
 			<artifactId>jme3-core</artifactId>
 			<version>${jme.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.jme3</groupId>
+			<groupId>${jme.groupId}</groupId>
 			<artifactId>jme3-jogg</artifactId>
 			<version>${jme.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.jme3</groupId>
+			<groupId>${jme.groupId}</groupId>
 			<artifactId>jme3-terrain</artifactId>
 			<version>${jme.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.jme3</groupId>
+			<groupId>${jme.groupId}</groupId>
 			<artifactId>jme3-desktop</artifactId>
 			<version>${jme.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.jme3</groupId>
+			<groupId>${jme.groupId}</groupId>
 			<artifactId>jme3-lwjgl</artifactId>
 			<version>${jme.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.jme3</groupId>
+			<groupId>${jme.groupId}</groupId>
 			<artifactId>jme3-niftygui</artifactId>
 			<version>${jme.version}</version>
 		</dependency>

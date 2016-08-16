@@ -85,7 +85,7 @@ public class BlockApplication extends SimpleApplication implements ActionListene
 		{
 			player.setPosition(playerLocation.x, playerLocation.y, playerLocation.z);
 		}
-		world.getChunkManager().loadChunksAroundPlayer(player.posX, player.posZ, 3);
+		world.getChunkManager().loadChunksAroundPlayer(player.posX, player.posZ, GameSettings.chunkRenderDistance);
 		world.update(0);
 		player.preparePlayerToSpawn();
 

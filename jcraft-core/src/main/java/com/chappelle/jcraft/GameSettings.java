@@ -9,6 +9,7 @@ public class GameSettings
 
 	public static int screenWidth = 1366;
 	public static int screenHeight = 768;
+	public static int chunkRenderDistance = 3;
 	public static boolean showSettings;
 	public static int frameRate = -1;//-1 is unlimited
 	public static boolean debugEnabled;
@@ -45,6 +46,10 @@ public class GameSettings
 						else if (lineParts[0].equals("screenHeight"))
 						{
 							screenHeight = Integer.parseInt(lineParts[1]);
+						}
+						else if (lineParts[0].equals("chunkRenderDistance"))
+						{
+							chunkRenderDistance = Integer.parseInt(lineParts[1]);
 						}
 						else if (lineParts[0].equals("showSettings"))
 						{
@@ -98,6 +103,7 @@ public class GameSettings
 			log.info("Saving options to " + optionsFile);
 			printWriter.println("screenWidth=" + screenWidth);
 			printWriter.println("screenHeight=" + screenHeight);
+			printWriter.println("chunkRenderDistance=" + chunkRenderDistance);
 			printWriter.println("showSettings=" + showSettings);
 			printWriter.println("frameRate=" + frameRate);
 			printWriter.println("debugEnabled=" + debugEnabled);

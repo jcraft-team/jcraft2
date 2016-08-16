@@ -7,32 +7,18 @@ import com.jme3.texture.Texture;
 
 public class ChunkMaterial extends Material
 {
-    public static ChunkMaterial makeUnshadedMaterial(AssetManager assetManager, String blockTextureFilePath)
+    public ChunkMaterial(AssetManager assetManager, String blockTextureFilePath)
     {
-    	ChunkMaterial result = new ChunkMaterial("MatDefs/Blocks.j3md", assetManager, blockTextureFilePath, true);
-    	result.setTexture("ColorMap", makeTexture(assetManager, blockTextureFilePath));
-    	result.setBoolean("VertexColor", true);
-    	setupMaterial(result);
-    	return result;
-    }
-
-    private static Texture makeTexture(AssetManager assetManager, String blockTextureFilePath)
-    {
+    	super(assetManager, "MatDefs/Blocks.j3md");
+    	
     	Texture texture = assetManager.loadTexture(blockTextureFilePath);
     	texture.setMagFilter(Texture.MagFilter.Nearest);
     	texture.setMinFilter(Texture.MinFilter.NearestNoMipMaps);
-    	return texture;
-    }
+    	setTexture("ColorMap", texture);
 
-    private static void setupMaterial(ChunkMaterial material)
-    {
-    	material.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
-    	material.setFloat("dayNightLighting", 1.0f);
-    	material.setFloat("AlphaDiscardThreshold", 0.1f);
-    }
-    
-    private ChunkMaterial(String matDef, AssetManager assetManager, String blockTextureFilePath, boolean useVertextColor)
-    {
-    	super(assetManager, matDef);
+    	setBoolean("VertexColor", true);
+    	getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
+    	setFloat("dayNightLighting", 1.0f);
+    	setFloat("AlphaDiscardThreshold", 0.1f);
     }
 }

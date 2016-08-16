@@ -51,7 +51,7 @@ public class ChunkManager
 			});
 		}
 		EntityPlayer player = world.getPlayer();
-		loadChunksAroundPlayer(player.posX, player.posZ, 3);
+		loadChunksAroundPlayer(player.posX, player.posZ, GameSettings.chunkRenderDistance);
 	}
 
 	public void loadChunksAroundPlayer(double playerX, double playerZ, int radius)
