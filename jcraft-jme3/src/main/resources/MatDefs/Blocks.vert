@@ -18,7 +18,7 @@ varying float light;
 varying vec4 vertColor;
 
 uniform float m_dayNightLighting;
-uniform float lightTable[] = float[16](0.05f, 0.067f, 0.085f, 0.106f, 0.129f, 0.156f, 0.186f, 0.221f, 0.261f, 0.309f, 0.367f, 0.437f, 0.525f, 0.638f, 0.789f, 1.0f);
+uniform float lightTable[16] = float[](0.05, 0.067, 0.085, 0.106, 0.129, 0.156, 0.186, 0.221, 0.261, 0.309, 0.367, 0.437, 0.525, 0.638, 0.789, 1.0);
 
 void main()
 {
@@ -37,10 +37,6 @@ void main()
 	{
 		light*=0.5;
 	}
-	inColor.r = light;
-	inColor.g = light;
-	inColor.b = light;
-	inColor.a = 1.0;
 	
     #ifdef NEED_TEXCOORD1
         texCoord1 = inTexCoord;
@@ -52,6 +48,11 @@ void main()
 
     #ifdef HAS_VERTEXCOLOR
         vertColor = inColor;
+		vertColor.r = light;
+		vertColor.g = light;
+		vertColor.b = light;
+		vertColor.a = 1.0;
+        
     #endif
 
     vec4 modelSpacePos = vec4(inPosition, 1.0);
