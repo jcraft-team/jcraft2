@@ -16,6 +16,7 @@ import com.jme3.material.Material;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Node;
+import com.jme3.texture.Texture;
 
 public class World
 {
@@ -818,7 +819,10 @@ public class World
 
 	public Material getBlockMaterial()
 	{
+//		Texture texture = assetManager.loadTexture("Textures/FaithfulBlocks.png");
+//		Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
 		return settings.getBlockMaterial();
+//		return mat;
 	}
 
 	public void destroy()

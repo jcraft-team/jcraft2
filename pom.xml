@@ -8,8 +8,8 @@
 	<description>Parent project for JCraft</description>
 	<packaging>pom</packaging>
 	<properties>
-		<jme.version>3.0.10</jme.version>
-		<jme.groupId>com.jme3</jme.groupId>
+		<jme.version>3.1.0-beta1</jme.version>
+		<jme.groupId>org.jmonkeyengine</jme.groupId>
 		<junit.version>4.12</junit.version>
 		<mockito.version>1.9.5</mockito.version>
 	</properties>
@@ -31,6 +31,7 @@
 		<module>jcraft-core</module>
 		<module>jcraft-jme3</module>
 		<module>jcraft-terrain-gen</module>
+		<module>jcraft-utilities</module>
 	</modules>
 	<build>
 		<plugins>
@@ -47,9 +48,12 @@
 	</build>
 	<repositories>
 		<repository>
-			<id>jme3</id>
-			<name>JME3</name>
-			<url>http://updates.jmonkeyengine.org/maven/</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<id>bintray-jmonkeyengine-org.jmonkeyengine</id>
+			<name>bintray</name>
+			<url>http://dl.bintray.com/jmonkeyengine/org.jmonkeyengine</url>
 		</repository>
 	</repositories>
 </project>

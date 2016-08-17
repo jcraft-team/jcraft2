@@ -18,8 +18,9 @@ public class CubesSettings
 		return INSTANCE;
 	}
 	
-	public CubesSettings(Application application)
+	public CubesSettings(Application application, Material blockMaterial)
 	{
+		this.blockMaterial = blockMaterial;
 		assetManager = application.getAssetManager();
 		INSTANCE = this;
 	}
@@ -34,11 +35,6 @@ public class CubesSettings
 		return blockMaterial;
 	}
 
-	public void setDefaultBlockMaterial(String textureFilePath)
-	{
-		setBlockMaterial(new ChunkMaterial(assetManager, textureFilePath));
-	}
-	
 	public void setBlockMaterial(Material blockMaterial)
 	{
 		this.blockMaterial = blockMaterial;

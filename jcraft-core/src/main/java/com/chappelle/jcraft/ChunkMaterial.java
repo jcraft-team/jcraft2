@@ -10,12 +10,11 @@ public class ChunkMaterial extends Material
     public ChunkMaterial(AssetManager assetManager, String blockTextureFilePath)
     {
     	super(assetManager, "MatDefs/Blocks.j3md");
-    	
     	Texture texture = assetManager.loadTexture(blockTextureFilePath);
     	texture.setMagFilter(Texture.MagFilter.Nearest);
     	texture.setMinFilter(Texture.MinFilter.NearestNoMipMaps);
     	setTexture("ColorMap", texture);
-
+    	
     	setBoolean("VertexColor", true);
     	getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
     	setFloat("dayNightLighting", 1.0f);

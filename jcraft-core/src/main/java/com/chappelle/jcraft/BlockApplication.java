@@ -9,7 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.chappelle.jcraft.debug.*;
 import com.chappelle.jcraft.serialization.*;
 import com.chappelle.jcraft.util.AABB;
-import com.chappelle.jcraft.world.*;
+import com.chappelle.jcraft.world.World;
 import com.jme3.app.SimpleApplication;
 import com.jme3.font.BitmapFont;
 import com.jme3.input.KeyInput;
@@ -117,8 +117,7 @@ public class BlockApplication extends SimpleApplication implements ActionListene
 
 	private void initBlockTerrain()
 	{
-		cubesSettings = new CubesSettings(this);
-		cubesSettings.setDefaultBlockMaterial("Textures/FaithfulBlocks.png");
+		cubesSettings = new CubesSettings(this, new ChunkMaterial(assetManager, "Textures/FaithfulBlocks.png"));
 
 		long seed = getSeed();
 		log.info("Using world seed: " + seed);
@@ -181,7 +180,6 @@ public class BlockApplication extends SimpleApplication implements ActionListene
 		addMapping("ToggleAmbientOcclusion", new KeyTrigger(KeyInput.KEY_F9));
 		addMapping("RebuildChunks", new KeyTrigger(KeyInput.KEY_F10));
 	}
-
 	private void addMapping(String action, Trigger trigger)
 	{
 		inputManager.addMapping(action, trigger);

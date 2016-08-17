@@ -5,20 +5,12 @@ import java.util.logging.*;
 import com.chappelle.jcraft.*;
 import com.jme3.input.KeyInput;
 import com.jme3.input.controls.*;
-import com.jme3.niftygui.NiftyJmeDisplay;
-import com.jme3.renderer.*;
-
-import de.lessvoid.nifty.Nifty;
 
 public class JCraftApplication extends BlockApplication
 {
 	private static final Level LOG_LEVEL = Level.INFO;
 
 	private static JCraftApplication jcraft;
-	private Nifty nifty;
-	private NiftyJmeDisplay niftyDisplay;
-	private InventoryAppState inventoryAppState;
-	private HotBarControl hud;
 
 	public JCraftApplication()
 	{
@@ -34,32 +26,33 @@ public class JCraftApplication extends BlockApplication
 		if(GameSettings.skyEnabled)
 		{
 			Float timeOfDay = (Float)voxelWorldSave.getGameData("timeOfDay");
-			stateManager.attach(new AdvancedSkyAppState(timeOfDay == null ? 6 : timeOfDay));
+			AdvancedSkyAppState sky = new AdvancedSkyAppState(timeOfDay == null ? 6 : timeOfDay);
+			stateManager.attach(sky);
+			world.setTimeOfDayProvider(sky);
 		}
 		initControls();
 
-		rootNode.addControl(hud = new HotBarControl(this, settings, player));
+//		rootNode.addControl(hud = new HotBarControl(this, settings, player));
 		rootNode.addControl(new CrosshairsControl(this, settings, player));
 		rootNode.addControl(new HighlightSelectedBlockControl(world, player, assetManager));
-		nifty.fromXml("Interface/hud.xml", "hud", hud);
+//		nifty.fromXml("Interface/hud.xml", "hud", hud);
 
-		this.inventoryAppState = new InventoryAppState();
-		stateManager.attach(inventoryAppState);
+//		this.inventoryAppState = new InventoryAppState();
+//		stateManager.attach(inventoryAppState);
 
-		world.setTimeOfDayProvider(stateManager.getState(AdvancedSkyAppState.class));
 	}
 
 	private void initializeNiftyGUI()
 	{
-		Camera niftyCamera = new Camera(cam.getWidth(), cam.getHeight());
-		// Nifty gets it's own view port so we can still write to gui node		
-		ViewPort niftyViewPort = renderManager.createPostView("Nifty View", niftyCamera);
-		niftyDisplay = new NiftyJmeDisplay(assetManager, inputManager, audioRenderer, niftyViewPort);
-		nifty = niftyDisplay.getNifty();
-
-		niftyViewPort.addProcessor(niftyDisplay);
-		nifty.addXml("Interface/hud.xml");
-		nifty.addXml("Interface/inventory.xml");
+//		Camera niftyCamera = new Camera(cam.getWidth(), cam.getHeight());
+//		// Nifty gets it's own view port so we can still write to gui node		
+//		ViewPort niftyViewPort = renderManager.createPostView("Nifty View", niftyCamera);
+//		niftyDisplay = new NiftyJmeDisplay(assetManager, inputManager, audioRenderer, niftyViewPort);
+//		nifty = niftyDisplay.getNifty();
+//
+//		niftyViewPort.addProcessor(niftyDisplay);
+//		nifty.addXml("Interface/hud.xml");
+//		nifty.addXml("Interface/inventory.xml");
 	}
 
 	private void initControls()
@@ -87,14 +80,9 @@ public class JCraftApplication extends BlockApplication
 
 	private void showInventory()
 	{
-		nifty.fromXml("Interface/inventory.xml", "inventoryScreen", inventoryAppState);
-		inputManager.setCursorVisible(true);
-		flyCam.setEnabled(false);
-	}
-
-	public Nifty getNifty()
-	{
-		return nifty;
+//		nifty.fromXml("Interface/inventory.xml", "inventoryScreen", inventoryAppState);
+//		inputManager.setCursorVisible(true);
+//		flyCam.setEnabled(false);
 	}
 
 	public EntityPlayer getPlayer()
@@ -105,11 +93,6 @@ public class JCraftApplication extends BlockApplication
 	public static JCraftApplication getInstance()
 	{
 		return jcraft;
-	}
-
-	public HotBarControl getHUD()
-	{
-		return hud;
 	}
 
 	public static void main(String[] args)

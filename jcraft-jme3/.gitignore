@@ -2,3 +2,5 @@
 /.settings/
 /.classpath
 /.project
+/lwjgl64.dll
+/OpenAL64.dll
