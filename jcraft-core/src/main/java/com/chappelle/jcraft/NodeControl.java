@@ -11,21 +11,32 @@ import com.jme3.scene.control.AbstractControl;
  */
 public abstract class NodeControl extends AbstractControl
 {
-	protected abstract void setNode(Node node);
-	
-    @Override
-    public final void setSpatial(Spatial spatial)
-    {
-        super.setSpatial(spatial);
+    protected Node getNode() {
+        return (Node)getSpatial();
+    }
 
-        if (spatial instanceof Node)
-        {
-        	setNode((Node)spatial);
+    @Override
+    public void setSpatial( Spatial s ) {
+        if( s != null && !(s instanceof Node) )
+            throw new RuntimeException( "Node controls must be associated with Nodes or Node subclasses." );
+
+        if( getSpatial() != null ) {
+            detach();
+        }
+        super.setSpatial(s);
+        if( getSpatial() != null ) {
+            attach();
         }
     }
 
-	@Override
-	protected void controlRender(RenderManager rm, ViewPort vp)
-	{
-	}
+    protected abstract void attach();
+    protected abstract void detach();
+
+    @Override
+    protected void controlUpdate( float tpf ) {
+    }
+
+    @Override
+    protected void controlRender( RenderManager rm, ViewPort vp ) {
+    }
 }

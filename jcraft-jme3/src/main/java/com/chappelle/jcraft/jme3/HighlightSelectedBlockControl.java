@@ -35,15 +35,15 @@ public class HighlightSelectedBlockControl extends NodeControl
 	}
 	
     @Override
-    public void setNode(Node node)
+    public void attach()
     {
+    	Node node = getNode();
     	box = new Box(minPoint, maxPoint);
         blockCursor = new Geometry("blockCursor", box);
         Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         mat.getAdditionalRenderState().setWireframe(true);
         mat.setColor("Color", ColorRGBA.Yellow);
         blockCursor.setMaterial(mat);
-
         blockCursor.setCullHint(Spatial.CullHint.Always);
 
         node.attachChild(blockCursor);
@@ -92,5 +92,15 @@ public class HighlightSelectedBlockControl extends NodeControl
 				}
 			}
 		}
+	}
+
+	@Override
+	protected void detach()
+	{
+		this.world = null;
+		this.assetManager = null;
+		this.player = null;
+
+		getNode().detachChild(blockCursor);
 	}
 }

@@ -1,16 +1,12 @@
 package com.chappelle.jcraft.debug;
 
-import com.chappelle.jcraft.BlockApplication;
 import com.jme3.app.*;
-import com.jme3.app.state.AbstractAppState;
-import com.jme3.app.state.AppStateManager;
-import com.jme3.font.BitmapFont;
-import com.jme3.font.BitmapText;
+import com.jme3.app.state.*;
+import com.jme3.font.*;
 import com.jme3.material.Material;
 import com.jme3.material.RenderState.BlendMode;
 import com.jme3.math.ColorRGBA;
-import com.jme3.scene.Geometry;
-import com.jme3.scene.Node;
+import com.jme3.scene.*;
 import com.jme3.scene.Spatial.CullHint;
 import com.jme3.scene.shape.Quad;
 import com.jme3.system.AppSettings;
@@ -21,7 +17,7 @@ import com.jme3.system.AppSettings;
 public class DebugAppState extends AbstractAppState
 {
 	private static final int DEBUG_WIDTH = 375;
-	private BlockApplication app;
+	private SimpleApplication app;
 	protected DebugView debugView;
 	protected boolean showSettings = true;
 	private boolean showFps = false;
@@ -39,15 +35,12 @@ public class DebugAppState extends AbstractAppState
 	private float height;
 	private AppSettings settings;
 	private StatsAppState stats;
+	private DebugDataProvider debugDataProvider;
 	
-	public DebugAppState()
+	public DebugAppState(AppSettings appSettings, DebugDataProvider debugDataProvider)
 	{
-	}
-
-	public DebugAppState(Node guiNode, BitmapFont guiFont)
-	{
-		this.guiNode = guiNode;
-		this.guiFont = guiFont;
+		this.debugDataProvider = debugDataProvider;
+		this.settings = appSettings;
 	}
 
 	/**
@@ -126,14 +119,13 @@ public class DebugAppState extends AbstractAppState
 	{
 		super.initialize(stateManager, app);
 
-		if(!(app instanceof BlockApplication))
+		if(!(app instanceof SimpleApplication))
 		{
-			throw new IllegalArgumentException("DebugAppState is only compatible with a BlockApplication");
+			throw new IllegalArgumentException("DebugAppState is only compatible with a SimpleApplication");
 		}
 
-		this.app = (BlockApplication) app;
+		this.app = (SimpleApplication) app;
 		this.stats = stateManager.getState(StatsAppState.class);
-		this.settings = this.app.getAppSettings();
 		this.width = settings.getWidth();
 		this.height = settings.getHeight();
 
@@ -141,19 +133,11 @@ public class DebugAppState extends AbstractAppState
 		{
 			guiNode = this.app.getGuiNode();
 		}
-		if(guiFont == null)
-		{
-			guiFont = this.app.getGuiFont();
-		}
+		guiFont = app.getAssetManager().loadFont("Interface/Fonts/Default.fnt");
 
 		if(guiNode == null)
 		{
 			throw new RuntimeException("No guiNode specific and cannot be automatically determined.");
-		}
-
-		if(guiFont == null)
-		{
-			guiFont = app.getAssetManager().loadFont("Interface/Fonts/Default.fnt");
 		}
 
 		loadFpsText();
@@ -195,7 +179,7 @@ public class DebugAppState extends AbstractAppState
 	 */
 	public void loadDebugView()
 	{
-		debugView = new DebugView("Debug View", app.getAssetManager(), app.getDebugDataProvider());
+		debugView = new DebugView("Debug View", app.getAssetManager(), debugDataProvider);
 		debugView.setEnabled(showStats);
 		debugView.setCullHint(showStats ? CullHint.Never : CullHint.Always);
 		guiNode.attachChild(debugView);

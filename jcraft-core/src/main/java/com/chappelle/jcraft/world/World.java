@@ -39,8 +39,9 @@ public class World
 	private ChunkManager chunkMgr;
 	private List<WorldListener> listeners = new ArrayList<>();
 	private long seed;
+	private Node parent;
 	
-	public World(BlockApplication app, CubesSettings settings, AssetManager assetManager, Camera cam, String name, long seed, VoxelWorldSave voxelWorldSave)
+	public World(Application app, CubesSettings settings, AssetManager assetManager, Camera cam, String name, long seed, VoxelWorldSave voxelWorldSave)
 	{
 		this.seed = seed;
 		this.app = app;
@@ -159,6 +160,7 @@ public class World
 	
 	public void addToScene(Node parent)
 	{
+		this.parent = parent;
 		parent.attachChild(node);
 	}
 	
@@ -829,6 +831,7 @@ public class World
 	{
 		executor.shutdown();
 		chunkMgr.destroy();
+		parent.detachChild(node);
 	}
 
 	public String getName()

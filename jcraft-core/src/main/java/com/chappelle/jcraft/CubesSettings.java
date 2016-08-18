@@ -1,6 +1,5 @@
 package com.chappelle.jcraft;
 
-import com.jme3.app.Application;
 import com.jme3.asset.AssetManager;
 import com.jme3.material.Material;
 
@@ -18,10 +17,10 @@ public class CubesSettings
 		return INSTANCE;
 	}
 	
-	public CubesSettings(Application application, Material blockMaterial)
+	public CubesSettings(AssetManager assetManager, Material blockMaterial)
 	{
 		this.blockMaterial = blockMaterial;
-		assetManager = application.getAssetManager();
+		this.assetManager = assetManager;
 		INSTANCE = this;
 	}
 	

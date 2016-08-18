@@ -30,10 +30,10 @@ public class DebugDataProvider
 	private final World world;
 	private StringBuilder temp = new StringBuilder();
 	
-	public DebugDataProvider(BlockApplication app)
+	public DebugDataProvider(EntityPlayer player, World world)
 	{
-		this.player = app.getPlayer();
-		this.world = app.world;
+		this.player = player;
+		this.world = world;
 		
 		//Do this to make the labels appear in the order as they do above
 		ArrayUtils.reverse(labels);

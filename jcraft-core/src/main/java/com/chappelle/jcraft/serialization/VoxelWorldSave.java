@@ -50,6 +50,7 @@ public class VoxelWorldSave
 	private BTreeMap<ChunkCoordIntPair, byte[]> chunkEntries;
 
 	private BTreeMap<String, Serializable> gameData;
+	
 	/**
 	 * Opens or creates the table and data file.
 	 * 
@@ -226,9 +227,14 @@ public class VoxelWorldSave
 			db.commit();
 		}
 	}
-	
+
 	public Serializable getGameData(String key)
 	{
 		return this.gameData.get(key);
+	}
+	
+	public void closeDB()
+	{
+		db.close();
 	}
 }

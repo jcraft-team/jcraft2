@@ -1,11 +1,11 @@
 package com.chappelle.jcraft;
 
-import com.chappelle.jcraft.EntityPlayer;
+import com.jme3.app.SimpleApplication;
 import com.jme3.input.*;
 import com.jme3.input.controls.*;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
-import com.jme3.scene.*;
+import com.jme3.scene.Node;
 
 public class PlayerControl extends NodeControl implements ActionListener
 {
@@ -22,7 +22,7 @@ public class PlayerControl extends NodeControl implements ActionListener
 	private Vector3f position = new Vector3f();
 	private InputManager inputManager;
 
-	public PlayerControl(BlockApplication app, EntityPlayer player)
+	public PlayerControl(SimpleApplication app, EntityPlayer player)
 	{
 		this.inputManager = app.getInputManager();
 		
@@ -60,9 +60,15 @@ public class PlayerControl extends NodeControl implements ActionListener
 	}
 	
 	@Override
-	protected void setNode(Node node)
+	protected void attach()
 	{
-		node.attachChild(playerNode);
+		getNode().attachChild(playerNode);
+	}
+
+	@Override
+	protected void detach()
+	{
+		getNode().detachChild(playerNode);
 	}
 
 	@Override
@@ -137,5 +143,4 @@ public class PlayerControl extends NodeControl implements ActionListener
 			player.toggleGravity();
 		}
 	}
-
 }

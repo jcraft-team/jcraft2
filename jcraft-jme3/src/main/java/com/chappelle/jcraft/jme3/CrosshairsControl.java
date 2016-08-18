@@ -1,6 +1,7 @@
 package com.chappelle.jcraft.jme3;
 
 import com.chappelle.jcraft.EntityPlayer;
+import com.jme3.app.SimpleApplication;
 import com.jme3.font.*;
 import com.jme3.renderer.*;
 import com.jme3.scene.*;
@@ -17,30 +18,36 @@ public class CrosshairsControl extends AbstractControl
 	private float width;
 	private float height;
 	
-	public CrosshairsControl(JCraftApplication app, AppSettings appSettings, EntityPlayer player)
+	public CrosshairsControl(SimpleApplication app, AppSettings appSettings, EntityPlayer player)
 	{
 		this.debugNode = new Node("crosshairs");
 		this.guiNode = app.getGuiNode();
 		this.settings = appSettings;
-		this.guiFont = app.getGuiFont();
+		this.guiFont = app.getAssetManager().loadFont("Interface/Fonts/Default.fnt");
+		
 		width = settings.getWidth();
 		height = settings.getHeight();
+		
+        crosshairs = new BitmapText(guiFont, false);
+        crosshairs.setSize(guiFont.getCharSet().getRenderedSize() * 2);
+        crosshairs.setText("+");
 	}
 	
 	@Override
 	public void setSpatial(Spatial spatial) 
 	{
-        if (spatial instanceof Node)
+		if(spatial == null)
+		{
+			guiNode.detachChild(crosshairs);
+			guiNode.detachChild(debugNode);
+		}
+		else if (spatial instanceof Node)
         {
-            guiNode.attachChild(debugNode);
-            
-            crosshairs = new BitmapText(guiFont, false);
-            crosshairs.setSize(guiFont.getCharSet().getRenderedSize() * 2);
-            crosshairs.setText("+");
+            guiNode.attachChild(debugNode);//TODO: Investigate what this node is for
             guiNode.attachChild(crosshairs);
 
+            positionElements();
         }	
-        positionElements();
 	}
 
 	public void positionElements()

@@ -1,36 +1,22 @@
 package com.chappelle.jcraft.jme3;
 
-import jme3utilities.Misc;
-import jme3utilities.MyAsset;
-import jme3utilities.TimeOfDay;
-import jme3utilities.ViewPortListener;
-import jme3utilities.sky.GlobeRenderer;
-import jme3utilities.sky.SkyControl;
-import jme3utilities.sky.Updater;
-
 import com.chappelle.jcraft.world.TimeOfDayProvider;
 import com.jme3.app.Application;
-import com.jme3.app.state.AbstractAppState;
-import com.jme3.app.state.AppStateManager;
+import com.jme3.app.state.*;
 import com.jme3.asset.AssetManager;
-import com.jme3.light.AmbientLight;
-import com.jme3.light.DirectionalLight;
-import com.jme3.light.Light;
+import com.jme3.light.*;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
-import com.jme3.renderer.Camera;
-import com.jme3.renderer.ViewPort;
-import com.jme3.scene.Node;
-import com.jme3.scene.Spatial;
-import com.jme3.shadow.DirectionalLightShadowFilter;
-import com.jme3.shadow.DirectionalLightShadowRenderer;
-import com.jme3.shadow.EdgeFilteringMode;
-import com.jme3.texture.Image;
-import com.jme3.texture.Texture;
+import com.jme3.renderer.*;
+import com.jme3.scene.*;
+import com.jme3.shadow.*;
+import com.jme3.texture.*;
 
-public class AdvancedSkyAppState extends AbstractAppState implements ViewPortListener, TimeOfDayProvider
+import jme3utilities.*;
+import jme3utilities.sky.*;
+
+public class AdvancedSkyAppState extends BaseAppState implements ViewPortListener, TimeOfDayProvider
 {
-    private float initialTimeOfDay = 6;
     private static final float timeRate = 100f;
     /**
      * width and height of rendered shadow maps (pixels per side, &gt;0)
@@ -55,14 +41,13 @@ public class AdvancedSkyAppState extends AbstractAppState implements ViewPortLis
 
     public AdvancedSkyAppState(float initialTimeOfDay)
     {
-    	this.initialTimeOfDay = initialTimeOfDay;
+        timeOfDay = new TimeOfDay(initialTimeOfDay);
+        timeOfDay.setRate(timeRate);
     }
     
-    @Override
-    public void initialize(AppStateManager stateManager, Application app)
-    {
-        super.initialize(stateManager, app);
-
+	@Override
+	protected void initialize(Application app)
+	{
         this.app = (JCraftApplication) app;
         this.viewPort = this.app.getViewPort();
         this.rootNode = this.app.getRootNode();
@@ -72,10 +57,10 @@ public class AdvancedSkyAppState extends AbstractAppState implements ViewPortLis
 
         initializeLights();
         cubeMap = MyAsset.createStarMap(assetManager, "purple-nebula-complex");
-        sceneNode.attachChild(cubeMap);
         this.sky = new SkyControl(assetManager, cam, 0.9f, true, true);
-        sceneNode.addControl(sky);
-        rootNode.attachChild(sceneNode);
+//        sceneNode.attachChild(cubeMap);
+//        sceneNode.addControl(sky);
+//        rootNode.attachChild(sceneNode);
         sky.clearStarMaps();
         sky.setCloudiness(0.8f);
         sky.setCloudModulation(true);
@@ -86,12 +71,10 @@ public class AdvancedSkyAppState extends AbstractAppState implements ViewPortLis
         int meridianSamples = 24;
         int resolution = 512;
         GlobeRenderer moonRenderer = new GlobeRenderer(moonMaterial,Image.Format.Luminance8Alpha8, equatorSamples, meridianSamples, resolution);
-        stateManager.attach(moonRenderer);
+        getStateManager().attach(moonRenderer);
         sky.setMoonRenderer(moonRenderer);
 
-        timeOfDay = new TimeOfDay(initialTimeOfDay);
-        stateManager.attach(timeOfDay);
-        timeOfDay.setRate(timeRate);
+        getStateManager().attach(timeOfDay);
 
         for (Light light : rootNode.getLocalLightList())
         {
@@ -112,7 +95,6 @@ public class AdvancedSkyAppState extends AbstractAppState implements ViewPortLis
         updater.addViewPort(viewPort);
         updater.setAmbientLight(ambientLight);
         updater.setMainLight(mainLight);
-        this.sky.setEnabled(true);
     }
     
     public float getTimeOfDay()
@@ -180,4 +162,33 @@ public class AdvancedSkyAppState extends AbstractAppState implements ViewPortLis
     @Override
     public void removeViewPort(ViewPort unused) {
         /* no action required */
-    }}
+    }
+
+	@Override
+	protected void cleanup(Application app)
+	{
+        this.app = null;
+        this.viewPort = null;
+        this.rootNode = null;
+        this.assetManager = null;
+        this.cam = null;
+	}
+
+	@Override
+	protected void onEnable()
+	{
+		sceneNode.attachChild(cubeMap);
+		sceneNode.addControl(sky);
+		rootNode.attachChild(sceneNode);
+        sky.setEnabled(true);
+	}
+
+	@Override
+	protected void onDisable()
+	{
+		sky.setEnabled(false);
+		sceneNode.removeControl(sky);
+		sceneNode.detachChild(cubeMap);
+		rootNode.detachChild(sceneNode);
+	}
+}
