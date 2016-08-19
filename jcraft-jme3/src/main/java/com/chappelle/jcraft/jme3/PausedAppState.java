@@ -1,7 +1,9 @@
 package com.chappelle.jcraft.jme3;
 
+import com.chappelle.jcraft.GameSettings;
 import com.jme3.app.*;
 import com.jme3.app.state.*;
+import com.jme3.math.Vector3f;
 import com.simsilica.lemur.*;
 
 public class PausedAppState extends BaseAppState
@@ -19,7 +21,12 @@ public class PausedAppState extends BaseAppState
 		pauseOptionsContainer = new Container();
 		pauseOptionsContainer.setLocalTranslation(300, 300, 0);
 		pauseOptionsContainer.addChild(new Label("Game menu"));
+
 		Button startGame = pauseOptionsContainer.addChild(new Button("Back to Game"));
+		startGame.setInsets(new Insets3f(5, 5, 5, 5));
+		startGame.setTextHAlignment(HAlignment.Center);
+		startGame.setTextVAlignment(VAlignment.Center);
+		startGame.setPreferredSize(new Vector3f(500, 35, 0));
 		startGame.addClickCommands(new Command<Button>()
 		{
 			@Override
@@ -31,6 +38,11 @@ public class PausedAppState extends BaseAppState
 			}
 		});
 		Button options = pauseOptionsContainer.addChild(new Button("Options"));
+		options.setInsets(new Insets3f(5, 5, 5, 5));
+		options.setTextHAlignment(HAlignment.Center);
+		options.setTextVAlignment(VAlignment.Center);
+		options.setPreferredSize(new Vector3f(500, 35, 0));
+
 		options.addClickCommands(new Command<Button>()
 		{
 			@Override
@@ -40,6 +52,11 @@ public class PausedAppState extends BaseAppState
 			}
 		});
 		Button exitGame = pauseOptionsContainer.addChild(new Button("Save and Quit to Title"));
+		exitGame.setInsets(new Insets3f(5, 5, 5, 5));
+		exitGame.setTextHAlignment(HAlignment.Center);
+		exitGame.setTextVAlignment(VAlignment.Center);
+		exitGame.setPreferredSize(new Vector3f(500, 35, 0));
+		
 		exitGame.addClickCommands(new Command<Button>()
 		{
 			@Override
@@ -53,6 +70,7 @@ public class PausedAppState extends BaseAppState
 				beginningAppState.setEnabled(true);
 			}
 		});
+		pauseOptionsContainer.setLocalTranslation(GameSettings.screenWidth/2 - pauseOptionsContainer.getPreferredSize().x/2, GameSettings.screenHeight/2 + pauseOptionsContainer.getPreferredSize().y/2, 0);
 	}
 
 	@Override

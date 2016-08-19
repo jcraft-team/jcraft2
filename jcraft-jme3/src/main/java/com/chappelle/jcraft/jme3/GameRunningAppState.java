@@ -113,7 +113,6 @@ public class GameRunningAppState extends BaseInputAppState<JCraftApplication>
 		{
 			stateManager.detach(sky);
 		}
-		viewPort.setBackgroundColor(ColorRGBA.Black);
 		DebugAppState debugAppState = stateManager.getState(DebugAppState.class);
 		if(stateManager.hasState(debugAppState))
 		{

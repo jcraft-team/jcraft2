@@ -1,5 +1,7 @@
 package com.chappelle.jcraft.jme3;
 
+import java.util.*;
+
 import com.chappelle.jcraft.GameSettings;
 import com.chappelle.jcraft.commands.CommandHandler;
 import com.chappelle.jcraft.debug.DebugAppState;
@@ -14,9 +16,11 @@ import com.simsilica.lemur.event.*;
 public class CommandLineAppState extends BaseInputAppState<JCraftApplication>
 {
 	private Container commandLineContainer;
+	private Container messagesContainer;
 	private JCraftApplication application;
 	private CommandHandler commandHandler;
 	private TextField textField;
+	private List<String> messages = new ArrayList<String>();
 	
 	public CommandLineAppState(CommandHandler commandHandler)
 	{
@@ -30,23 +34,46 @@ public class CommandLineAppState extends BaseInputAppState<JCraftApplication>
 		
 		this.application = (JCraftApplication)app;
 		
+		messagesContainer = new Container();
+		messagesContainer.setInsets(new Insets3f(5, 5, 5, 5));
 		commandLineContainer = new Container();
-		commandLineContainer.setLocalTranslation(300, 300, 0);
+		commandLineContainer.addChild(messagesContainer);
 		commandLineContainer.addChild(new Label("Command"));
 		textField = new TextField("");
-		textField.setPreferredWidth(300);
+		textField.setPreferredWidth(GameSettings.screenWidth - 10);
 		textField.getActionMap().put(new KeyAction(KeyInput.KEY_RETURN), new KeyActionListener()
 		{
 			@Override
 			public void keyAction(TextEntryComponent source, KeyAction key)
 			{
-				commandHandler.handleCommand(source.getText());
+				String message = commandHandler.handleCommand(source.getText());
+				if(message != null && message.trim().length() > 0)
+				{
+					messages.add(message);
+				}
 			}
 		});
 		
 		commandLineContainer.addChild(textField);
-		
+		commandLineContainer.setLocalTranslation(0, commandLineContainer.getPreferredSize().y, 0);
 		addMapping("exit", new KeyTrigger(KeyInput.KEY_ESCAPE));
+	}
+
+	@Override
+	public void update(float tpf)
+	{
+		super.update(tpf);
+		
+		if(!messages.isEmpty())
+		{
+			for(String message : messages)
+			{
+				Label label = new Label(message);
+				messagesContainer.addChild(label);
+				commandLineContainer.setLocalTranslation(0, commandLineContainer.getPreferredSize().y, 0);
+			}
+			messages.clear();
+		}
 	}
 
 	@Override

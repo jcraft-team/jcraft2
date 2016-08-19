@@ -1,16 +1,13 @@
 package lemurdemos;
 import com.jme3.app.SimpleApplication;
-import com.simsilica.lemur.Button;
-import com.simsilica.lemur.Command;
-import com.simsilica.lemur.Container;
-import com.simsilica.lemur.GuiGlobals;
-import com.simsilica.lemur.Label;
+import com.simsilica.lemur.*;
 import com.simsilica.lemur.style.BaseStyles;
 
 public class GuiDemo extends SimpleApplication {
 
     public static void main( String... args ) {
         GuiDemo main = new GuiDemo();
+        main.setShowSettings(false);
         main.start();
     }           
 
@@ -38,6 +35,7 @@ public class GuiDemo extends SimpleApplication {
         // Add some elements
         myWindow.addChild(new Label("Hello, World."));
         Button clickMe = myWindow.addChild(new Button("Click Me"));
+        clickMe.setInsets(new Insets3f(0, 5, 0, 5));
         clickMe.addClickCommands(new Command<Button>() {
                 @Override
                 public void execute( Button source ) {

@@ -190,6 +190,7 @@ public class AdvancedSkyAppState extends BaseAppState implements ViewPortListene
 		sceneNode.removeControl(sky);
 		sceneNode.detachChild(cubeMap);
 		rootNode.detachChild(sceneNode);
+		viewPort.setBackgroundColor(ColorRGBA.BlackNoAlpha);
 	}
 
 	@Override

@@ -2,9 +2,10 @@ package com.chappelle.jcraft.jme3;
 
 import java.util.concurrent.*;
 
-import com.chappelle.jcraft.ProgressMonitor;
+import com.chappelle.jcraft.*;
 import com.jme3.app.*;
 import com.jme3.app.state.*;
+import com.jme3.math.Vector3f;
 import com.simsilica.lemur.*;
 
 public class LoadingAppState extends BaseAppState
@@ -34,12 +35,17 @@ public class LoadingAppState extends BaseAppState
 		}
 		application = (SimpleApplication)app;
 		
-		progressContainer = new Container();
 		progressBar = new ProgressBar();
-		progressContainer.setLocalTranslation(300, 300, 0);
-		progressContainer.addChild(progressBar);
 		progressBar.setProgressPercent(0.5);
 		progressBar.setMessage("Initializing");
+		progressBar.getLabel().setInsets(new Insets3f(5, 5, 5, 5));
+		progressBar.getLabel().setTextHAlignment(HAlignment.Center);
+		progressBar.getLabel().setTextVAlignment(VAlignment.Center);
+		progressBar.setPreferredSize(new Vector3f(500, 35, 0));
+
+		progressContainer = new Container();
+		progressContainer.addChild(progressBar);
+		progressContainer.setLocalTranslation(GameSettings.screenWidth/2 - progressContainer.getPreferredSize().x/2, GameSettings.screenHeight/2 + progressContainer.getPreferredSize().y/2, 0);
 	}
 
 	@Override
