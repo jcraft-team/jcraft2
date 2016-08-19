@@ -1,10 +1,7 @@
 package com.chappelle.jcraft.jme3;
 
-import java.io.File;
-import java.util.*;
+import java.util.Timer;
 import java.util.logging.Logger;
-
-import org.apache.commons.lang3.StringUtils;
 
 import com.chappelle.jcraft.*;
 import com.chappelle.jcraft.debug.*;
@@ -16,7 +13,7 @@ import com.jme3.app.state.*;
 import com.jme3.asset.AssetManager;
 import com.jme3.input.*;
 import com.jme3.input.controls.*;
-import com.jme3.math.*;
+import com.jme3.math.ColorRGBA;
 import com.jme3.renderer.*;
 import com.jme3.scene.*;
 import com.jme3.system.AppSettings;
@@ -28,11 +25,7 @@ public class GameRunningAppState extends BaseAppState implements ActionListener
 	//General game stuff
 	public World world;
 	protected EntityPlayer player;
-	private CubesSettings cubesSettings;
 	
-	//Plugin api
-	private List<WorldInitializer> worldInitializers = new ArrayList<>();
-
 	//Debug settings
 	public boolean debugEnabled = false;
 	private boolean wireframe;
@@ -40,10 +33,9 @@ public class GameRunningAppState extends BaseAppState implements ActionListener
 	//World save objects
 	public VoxelWorldSave voxelWorldSave;
 	private WorldSaveTask worldSaveTask;
-	private Timer worldSaveTimer = new Timer("WorldSave");
+	private Timer worldSaveTimer;
 	private InputManager inputManager;
 	private SimpleApplication application;
-	private Camera cam;
 	private ViewPort viewPort;
 	private AppStateManager stateManager;
 	private AssetManager assetManager;
@@ -51,9 +43,12 @@ public class GameRunningAppState extends BaseAppState implements ActionListener
 	private AppSettings settings;
 	private PausedAppState pausedAppState;
 	
-	public GameRunningAppState(AppSettings settings)
+	public GameRunningAppState(EntityPlayer player, World world, VoxelWorldSave voxelWorldSave, AppSettings settings)
 	{
 		this.settings = settings;
+		this.player = player;
+		this.world = world;
+		this.voxelWorldSave = voxelWorldSave;
 	}
 	
 	@Override
@@ -65,7 +60,6 @@ public class GameRunningAppState extends BaseAppState implements ActionListener
 		}
 		application = (SimpleApplication)app;
 		inputManager = app.getInputManager();
-		cam = app.getCamera();
 		viewPort = app.getViewPort();
 		stateManager = app.getStateManager();
 		rootNode = application.getRootNode();
@@ -73,33 +67,8 @@ public class GameRunningAppState extends BaseAppState implements ActionListener
 		debugEnabled = GameSettings.debugEnabled;
 		pausedAppState = new PausedAppState();
 		
-		addInitializers(worldInitializers, WorldInitializer.class);
-		
 		initControls();
-		this.voxelWorldSave = new VoxelWorldSave(new File(GameFiles.getSaveDir(), "world.dat"));
-		initBlockTerrain();
-		cam.setFrustumPerspective(45f, (float) cam.getWidth() / cam.getHeight(), 0.01f, 500f);
-		Vector3f lookAt = (Vector3f)voxelWorldSave.getGameData("playerLookDirection");
-		if(lookAt == null)
-		{
-			lookAt = new Vector3f(1, 0, 1);
-		}
-		cam.lookAtDirection(lookAt, Vector3f.UNIT_Y);
-		// Setup sky
-		viewPort.setBackgroundColor(new ColorRGBA((float) 128 / 255, (float) 173 / 255, (float) 254 / 255, 1));
 
-		// Setup player
-		player = new EntityPlayer(world, cam);
-		Vector3f playerLocation = (Vector3f)voxelWorldSave.getGameData("playerLocation");
-		if(playerLocation != null)
-		{
-			player.setPosition(playerLocation.x, playerLocation.y, playerLocation.z);
-		}
-		world.getChunkManager().loadChunksAroundPlayer(player.posX, player.posZ, GameSettings.chunkRenderDistance);
-		world.update(0);
-		player.preparePlayerToSpawn();
-
-		//AppStates and Controls
 		stateManager.attach(new DebugAppState(settings, new DebugDataProvider(player, world)));
 		rootNode.addControl(new PlayerControl(application, player));
 		
@@ -110,6 +79,7 @@ public class GameRunningAppState extends BaseAppState implements ActionListener
 		log.info("\r\n\r\n");
 
 		worldSaveTask = new WorldSaveTask(world, voxelWorldSave);
+		worldSaveTimer = new Timer("WorldSave");
 		worldSaveTimer.scheduleAtFixedRate(worldSaveTask, 1*1000, GameSettings.worldSaveInterval);
 		
 		if(GameSettings.skyEnabled)
@@ -119,17 +89,22 @@ public class GameRunningAppState extends BaseAppState implements ActionListener
 			stateManager.attach(sky);
 			world.setTimeOfDayProvider(sky);
 		}
+		else
+		{
+			viewPort.setBackgroundColor(new ColorRGBA((float) 128 / 255, (float) 173 / 255, (float) 254 / 255, 1));
+		}
 		initControls();
 
 		rootNode.addControl(new CrosshairsControl(application, settings, player));
 		rootNode.addControl(new HighlightSelectedBlockControl(world, player, assetManager));
+		
+		world.addToScene(rootNode);
 	}
 
 	
 	@Override
 	protected void cleanup(Application app)
 	{
-		
 		AdvancedSkyAppState sky = stateManager.getState(AdvancedSkyAppState.class);
 		if(stateManager.hasState(sky))
 		{
@@ -148,14 +123,12 @@ public class GameRunningAppState extends BaseAppState implements ActionListener
 		//Cancel auto save thread and flush any modified chunks to disk
 		worldSaveTimer.cancel();
 		voxelWorldSave.flushSave();
-		voxelWorldSave.closeDB();
 
 		world.destroy();
 		GameSettings.save();
 
 		this.application = null;
 		inputManager = null;
-		cam = null;
 		viewPort = null;
 		stateManager = null;
 		rootNode = null;
@@ -218,36 +191,6 @@ public class GameRunningAppState extends BaseAppState implements ActionListener
 		}
 	}
 
-	private void initBlockTerrain()
-	{
-		cubesSettings = new CubesSettings(assetManager, new ChunkMaterial(assetManager, "Textures/FaithfulBlocks.png"));
-
-		long seed = getSeed();
-		log.info("Using world seed: " + seed);
-		String worldToLoad = System.getProperty("world");
-		if(StringUtils.isNotBlank(worldToLoad))
-		{
-			log.info("Loading world " + worldToLoad);
-			//TODO: Load specified world
-		}
-		if(world == null)
-		{
-			log.info("Creating new world...get ready!");
-			world = new World(application, cubesSettings, assetManager, cam, "JCraftWorld", seed, voxelWorldSave);
-		}
-
-		configureWorld(world);
-
-		world.addToScene(rootNode);
-	}
-
-	private void configureWorld(World world)
-	{
-		for(WorldInitializer gi : worldInitializers)
-		{
-			gi.configureWorld(world);
-		}
-	}
 
 	@Override
 	public void onAction(String name, boolean isPressed, float lastTimePerFrame)
@@ -278,21 +221,6 @@ public class GameRunningAppState extends BaseAppState implements ActionListener
 			}
 			pausedAppState.setEnabled(true);
 		}
-//		else if("guitoggle".equals(name) && !isPressed)
-//		{
-//			if(isGuiShowing)
-//			{
-//				application.getGuiNode().detachChild(myWindow);
-//			}
-//			else
-//			{
-//				stateManager.getState(OptionPanelState.class).showError("My error", new RuntimeException("Yep it's an error!"));
-////				guiNode.attachChild(myWindow);
-//			}
-//			isGuiShowing = !isGuiShowing;
-//			inputManager.setCursorVisible(isGuiShowing);
-//		}
-		
 	}
 
 	private void toggleWireframe()
@@ -312,25 +240,5 @@ public class GameRunningAppState extends BaseAppState implements ActionListener
 				}
 			}
 		});
-	}
-
-	private long getSeed()
-	{
-		long seed = System.currentTimeMillis();
-		String seedStr = System.getProperty("seed");
-		if(seedStr != null)
-		{
-			seed = Long.parseLong(seedStr);
-		}
-		return seed;
-	}
-
-	private <T> void addInitializers(List<T> list, Class<T> initializerClass)
-	{
-		Iterator<T> initializersIterator = ServiceLoader.load(initializerClass).iterator();
-		while(initializersIterator.hasNext())
-		{
-			list.add(initializersIterator.next());
-		}
 	}
 }

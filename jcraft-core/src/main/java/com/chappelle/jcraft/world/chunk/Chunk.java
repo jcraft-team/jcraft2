@@ -32,7 +32,7 @@ public class Chunk implements BitSerializable
     private boolean needsMeshUpdate = true;
     public World world;
     public boolean isLoaded;
-    public boolean updateInProgress;
+    private boolean isAddedToScene;
 
 	private Geometry optimizedGeometry_Opaque; 
 	private Geometry optimizedGeometry_Transparent; 
@@ -90,6 +90,11 @@ public class Chunk implements BitSerializable
     	this.id = ChunkCoordIntPair.chunkXZ2Int(x, z); 
     	this.heightMap = makeHeightMap(blockTypes);
     	this.lightMgr = new FloodFillLightManager(this);
+    }
+    
+    public boolean isLoadedAndAddedToScene()
+    {
+    	return isLoaded && isAddedToScene;
     }
     
     public boolean hasChangedSinceLastSave()
@@ -195,11 +200,13 @@ public class Chunk implements BitSerializable
     public void addToScene(Node parent)
     {
     	parent.attachChild(node);
+    	isAddedToScene = true;
     }
     
     public void removeFromScene()
     {
     	node.getParent().detachChild(node);
+    	isAddedToScene = false;
     }
 
     /**
@@ -227,7 +234,6 @@ public class Chunk implements BitSerializable
 		optimizedGeometry_Transparent.setMesh(transparentMesh);
 		isLoaded = true;
 		needsMeshUpdate = false;
-		updateInProgress = false;
     }
     
 	public void setDayNightLighting(float dayNightLighting)
@@ -343,32 +349,6 @@ public class Chunk implements BitSerializable
     	return result;
     }
 
-    public List<Vector3Int> getMissingChunkNeighborhoodLocations(int r)
-    {
-    	List<Vector3Int> result = new ArrayList<Vector3Int>();
-    	//Iterates starting in top left corner, then down, then across to the right
-    	int x = location.x - r;
-    	int z = location.z + r;
-    	int gridWidth = r*2 + 1;
-    	for(int xMod = 0; xMod < gridWidth; xMod++)
-    	{
-    		for(int zMod = 0; zMod < gridWidth; zMod++)
-    		{
-    			int chunkX = x+xMod;
-    			int chunkZ = z-zMod;
-    			if(!(chunkX == location.x && chunkZ == location.z))//Exclude this chunk from result
-    			{
-    				Chunk chunk = world.getChunkFromChunkCoordinates(chunkX, chunkZ);
-    				if(chunk == null)
-    				{
-    					result.add(new Vector3Int(chunkX, 0, chunkZ));
-    				}
-    			}
-    		}
-    	}
-    	return result;
-    }
-    
     public boolean isBlockExposedToDirectSunlight(int x, int y, int z)
     {
     	return heightMap[x][z] <= y;

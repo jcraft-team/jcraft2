@@ -1,4 +1,4 @@
-package com.chappelle.jcraft.jme3;
+package lemurdemos;
 import com.jme3.app.SimpleApplication;
 import com.simsilica.lemur.Button;
 import com.simsilica.lemur.Command;

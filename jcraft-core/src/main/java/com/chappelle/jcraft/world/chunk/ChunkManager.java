@@ -79,6 +79,81 @@ public class ChunkManager
 			}
 		}
 	}
+	
+	public void initialize(ProgressMonitor progress, double playerX, double playerZ, int radius)
+	{
+		progress.setNote("Generating terrain");
+		int finishedItems = 0;
+		int chunksToLoad = (int)Math.pow(2*radius+1, 2);//Moore neighborhood
+		int chunkX = MathUtils.floor_double(playerX)/16;
+		int chunkZ = MathUtils.floor_double(playerZ)/16;
+		List<Chunk> initialChunks = new ArrayList<>();
+		Chunk playerChunk = loadChunkFromDisk(chunkX, chunkZ);
+		if(playerChunk == null)
+		{
+			playerChunk = generateChunk(chunkX, chunkZ);
+		}
+		initialChunks.add(playerChunk);
+		chunks.put(playerChunk.id, playerChunk);
+		finishedItems++;
+		progress.setPercentCompleted(finishedItems/(float)chunksToLoad);
+		for(Vector3Int location : getMissingChunkNeighborhoodLocations(playerChunk.location.x, playerChunk.location.z, radius))
+		{
+			Chunk chunk = loadChunkFromDisk(location.x, location.z);
+			if(chunk == null)
+			{
+				chunk = generateChunk(location.x, location.z);
+			}
+			initialChunks.add(chunk);
+			chunks.put(chunk.id, chunk);
+			progress.setPercentCompleted(finishedItems/(float)chunksToLoad);
+		}
+		finishedItems = 0;
+		progress.setNote("Propagating light");
+		for(Chunk chunk : initialChunks)
+		{
+			chunk.lightMgr.propagateLight();
+			finishedItems++;
+			progress.setPercentCompleted(finishedItems/(float)initialChunks.size());
+		}
+		finishedItems = 0;
+		progress.setNote("Generating chunk mesh");
+		for(Chunk chunk : initialChunks)
+		{
+			final Mesh opaque = MeshGenerator.generateOptimizedMesh(chunk, false);
+			final Mesh transparent = MeshGenerator.generateOptimizedMesh(chunk, true);
+			world.enqueue(new ChunkMeshUpdater(chunk, opaque, transparent));
+			finishedItems++;
+			progress.setPercentCompleted(finishedItems/(float)initialChunks.size());
+		}
+	}
+	
+    public List<Vector3Int> getMissingChunkNeighborhoodLocations(int centerX, int centerZ, int r)
+    {
+    	List<Vector3Int> result = new ArrayList<Vector3Int>();
+    	//Iterates starting in top left corner, then down, then across to the right
+    	int x = centerX - r;
+    	int z = centerZ + r;
+    	int gridWidth = r*2 + 1;
+    	for(int xMod = 0; xMod < gridWidth; xMod++)
+    	{
+    		for(int zMod = 0; zMod < gridWidth; zMod++)
+    		{
+    			int chunkX = x+xMod;
+    			int chunkZ = z-zMod;
+    			if(!(chunkX == centerX && chunkZ == centerZ))//Exclude this chunk from result
+    			{
+    				Chunk chunk = world.getChunkFromChunkCoordinates(chunkX, chunkZ);
+    				if(chunk == null)
+    				{
+    					result.add(new Vector3Int(chunkX, 0, chunkZ));
+    				}
+    			}
+    		}
+    	}
+    	return result;
+    }
+    
 
 	public Chunk generateChunk(int x, int z)
 	{
@@ -108,7 +183,7 @@ public class ChunkManager
 			running = true;
 			try
 			{
-				for(Vector3Int location : playerChunk.getMissingChunkNeighborhoodLocations(radius))
+				for(Vector3Int location : getMissingChunkNeighborhoodLocations(playerChunk.location.x, playerChunk.location.z, radius))
 				{
 					Chunk chunk = loadChunkFromDisk(location.x, location.z);
 					if(chunk == null)
@@ -127,7 +202,7 @@ public class ChunkManager
 
 	public void updateNow()
 	{
-		addChunks();
+		addNextChunk();
 		for(Chunk chunk : getLoadedChunks())
 		{
 			if(chunk.isDirty() && chunk.isLoaded)
@@ -140,7 +215,7 @@ public class ChunkManager
 		}
 	}
 
-	private void addChunks()
+	private void addNextChunk()
 	{
 		Chunk chunk = addedQueue.poll();
 		if(chunk != null)
@@ -221,7 +296,7 @@ public class ChunkManager
 		addedQueue.add(chunk);
 		chunks.put(chunk.id, chunk);
 	}
-	
+
 	public void removeChunk(Chunk chunk)
 	{
 		chunks.remove(chunk.id);

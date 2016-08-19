@@ -32,7 +32,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.chappelle.jcraft.jme3;
+package lemurdemos;
 
 import com.jme3.app.FlyCamAppState;
 import com.jme3.app.SimpleApplication;

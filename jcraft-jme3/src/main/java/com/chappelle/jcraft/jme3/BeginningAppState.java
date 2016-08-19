@@ -4,18 +4,17 @@ import com.chappelle.jcraft.GameSettings;
 import com.jme3.app.*;
 import com.jme3.app.state.*;
 import com.simsilica.lemur.*;
-import com.simsilica.lemur.style.BaseStyles;
 
 public class BeginningAppState extends BaseAppState
 {
 	boolean isGuiShowing = false;
 	private Container beginningOptionsContainer;
 	private SimpleApplication application;
-	private GameRunningAppState gameRunningAppState;
+	private AppState loadingAppState;
 	
-	public BeginningAppState(GameRunningAppState gameRunningAppState)
+	public BeginningAppState(AppState loadingAppState)
 	{
-		this.gameRunningAppState = gameRunningAppState;
+		this.loadingAppState = loadingAppState;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -24,10 +23,6 @@ public class BeginningAppState extends BaseAppState
 	{
 		this.application = (SimpleApplication)app;
 		
-		GuiGlobals.initialize(app);
-		BaseStyles.loadGlassStyle();
-		GuiGlobals.getInstance().getStyles().setDefaultStyle("glass");
-
 		app.getStateManager().attach(new OptionPanelState());
 
 		beginningOptionsContainer = new Container();
@@ -41,7 +36,7 @@ public class BeginningAppState extends BaseAppState
 			{
 				AppStateManager stateManager = application.getStateManager();
 				BeginningAppState.this.setEnabled(false);
-				stateManager.attach(gameRunningAppState);
+				stateManager.attach(loadingAppState);
 				
 			}
 		});
@@ -54,7 +49,6 @@ public class BeginningAppState extends BaseAppState
 				application.stop();
 			}
 		});
-		System.out.println("initialize");
 	}
 
 	@Override
