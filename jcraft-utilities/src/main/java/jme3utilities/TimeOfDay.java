@@ -170,4 +170,9 @@ public class TimeOfDay
         timeOfDay += simulatedSeconds;
         timeOfDay = MyMath.modulo(timeOfDay, secondsPerDay);
     }
+    
+    public void setTimeOfDay(double timeOfDay)
+    {
+    	this.timeOfDay = timeOfDay;
+    }
 }

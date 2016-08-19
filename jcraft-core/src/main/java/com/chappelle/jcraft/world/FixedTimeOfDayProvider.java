@@ -15,4 +15,10 @@ public class FixedTimeOfDayProvider implements TimeOfDayProvider
 		return timeOfDay;
 	}
 
+	@Override
+	public void setTimeOfDay(float timeOfDay)
+	{
+		this.timeOfDay = timeOfDay;
+	}
+
 }

@@ -80,5 +80,6 @@ public class CommandLineAppState extends BaseInputAppState<JCraftApplication>
 		getState(GameRunningAppState.class).setPlayerEnabled(true);
 		getState(GameRunningAppState.class).startListeningForInputNextFrame();
 		GuiGlobals.getInstance().requestFocus(getMyApplication().getRootNode());
+		textField.setText("");
 	}
 }

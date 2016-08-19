@@ -4,7 +4,7 @@ import java.util.*;
 import java.util.logging.Logger;
 
 import com.chappelle.jcraft.*;
-import com.chappelle.jcraft.commands.LoggingCommandHandler;
+import com.chappelle.jcraft.commands.*;
 import com.chappelle.jcraft.debug.*;
 import com.chappelle.jcraft.jme3.appstate.BaseInputAppState;
 import com.chappelle.jcraft.serialization.*;
@@ -66,7 +66,7 @@ public class GameRunningAppState extends BaseInputAppState<JCraftApplication>
 		assetManager = app.getAssetManager();
 		debugEnabled = GameSettings.debugEnabled;
 		pausedAppState = new PausedAppState();
-		commandLineAppState = new CommandLineAppState(new LoggingCommandHandler());
+		commandLineAppState = new CommandLineAppState(new SimpleCommandHandler(player, world));
 		
 		initInputMappings();
 

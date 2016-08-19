@@ -191,4 +191,12 @@ public class AdvancedSkyAppState extends BaseAppState implements ViewPortListene
 		sceneNode.detachChild(cubeMap);
 		rootNode.detachChild(sceneNode);
 	}
+
+	@Override
+	public void setTimeOfDay(float timeOfDay)
+	{
+		getStateManager().detach(this.timeOfDay);
+		this.timeOfDay = new TimeOfDay(timeOfDay);
+		getStateManager().attach(this.timeOfDay);
+	}
 }
