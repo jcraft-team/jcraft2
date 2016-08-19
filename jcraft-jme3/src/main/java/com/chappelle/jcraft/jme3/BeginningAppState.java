@@ -1,15 +1,15 @@
 package com.chappelle.jcraft.jme3;
 
 import com.chappelle.jcraft.GameSettings;
+import com.chappelle.jcraft.jme3.appstate.BaseInputAppState;
 import com.jme3.app.*;
 import com.jme3.app.state.*;
 import com.simsilica.lemur.*;
 
-public class BeginningAppState extends BaseAppState
+public class BeginningAppState extends BaseInputAppState<JCraftApplication>
 {
 	boolean isGuiShowing = false;
 	private Container beginningOptionsContainer;
-	private SimpleApplication application;
 	private AppState loadingAppState;
 	
 	public BeginningAppState(AppState loadingAppState)
@@ -21,7 +21,7 @@ public class BeginningAppState extends BaseAppState
 	@Override
 	protected void initialize(Application app)
 	{
-		this.application = (SimpleApplication)app;
+		super.initialize(app);
 		
 		app.getStateManager().attach(new OptionPanelState());
 
@@ -34,7 +34,7 @@ public class BeginningAppState extends BaseAppState
 			@Override
 			public void execute(Button source)
 			{
-				AppStateManager stateManager = application.getStateManager();
+				AppStateManager stateManager = getMyApplication().getStateManager();
 				BeginningAppState.this.setEnabled(false);
 				stateManager.attach(loadingAppState);
 				
@@ -46,29 +46,26 @@ public class BeginningAppState extends BaseAppState
 			@Override
 			public void execute(Button source)
 			{
-				application.stop();
+				getMyApplication().stop();
 			}
 		});
 	}
 
 	@Override
-	protected void cleanup(Application app)
-	{
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	protected void onEnable()
 	{
+		super.onEnable();
+		
 		getState(StatsAppState.class).setEnabled(false);
-		application.getGuiNode().attachChild(beginningOptionsContainer);
+		getMyApplication().getGuiNode().attachChild(beginningOptionsContainer);
 	}
 
 	@Override
 	protected void onDisable()
 	{
+		super.onDisable();
+		
 		getState(StatsAppState.class).setEnabled(GameSettings.debugEnabled);
-		application.getGuiNode().detachChild(beginningOptionsContainer);
+		getMyApplication().getGuiNode().detachChild(beginningOptionsContainer);
 	}
 }

@@ -47,23 +47,18 @@ public class LoadingAppState extends BaseAppState
 	{
 		if(future == null)
 		{
-			System.out.println("Future is null, submitting job");
 			future = pool.submit(loader);
 		}
 		else
 		{
 			if(future.isDone())
 			{
-				System.out.println("Future is done");
 				getStateManager().detach(this);
 			}
 			else
 			{
-				System.out.println("setting progress");
 				progressBar.setMessage(progressMonitor.getNote());
-				float percentCompleted = progressMonitor.getPercentCompleted();
-				progressBar.setProgressPercent(percentCompleted);
-				System.out.println(percentCompleted);
+				progressBar.setProgressPercent(progressMonitor.getPercentCompleted());
 			}
 		}
 	}

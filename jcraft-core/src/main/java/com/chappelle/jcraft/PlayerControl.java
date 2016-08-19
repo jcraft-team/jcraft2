@@ -1,5 +1,7 @@
 package com.chappelle.jcraft;
 
+import java.util.*;
+
 import com.jme3.app.SimpleApplication;
 import com.jme3.input.*;
 import com.jme3.input.controls.*;
@@ -21,6 +23,7 @@ public class PlayerControl extends NodeControl implements ActionListener
 	private EntityPlayer player;
 	private Vector3f position = new Vector3f();
 	private InputManager inputManager;
+	private List<String> actions = new ArrayList<>();
 
 	public PlayerControl(SimpleApplication app, EntityPlayer player)
 	{
@@ -57,29 +60,44 @@ public class PlayerControl extends NodeControl implements ActionListener
 	private void addMapping(String action, Trigger trigger)
 	{
 		inputManager.addMapping(action, trigger);
-		inputManager.addListener(this, action);
+		actions.add(action);
 	}
 	
+	public void startListeningForInput()
+	{
+		inputManager.addListener(this, actions.toArray(new String[]{}));
+	}
+	
+	public void stopListeningForInput()
+	{
+		inputManager.removeListener(this);
+	}
+
 	@Override
 	protected void attach()
 	{
 		getNode().attachChild(playerNode);
+		startListeningForInput();
 	}
 
 	@Override
 	protected void detach()
 	{
 		getNode().detachChild(playerNode);
+		stopListeningForInput();
 	}
 
 	@Override
 	protected void controlUpdate(float tpf)
 	{
-		player.update(tpf);
-		
-		position.set((float)player.posX, (float)player.posY, (float)player.posZ);
-		playerNode.setLocalTranslation(position);
-		cam.setLocation(playerNode.getLocalTranslation());
+		if(isEnabled())
+		{
+			player.update(tpf);
+			
+			position.set((float)player.posX, (float)player.posY, (float)player.posZ);
+			playerNode.setLocalTranslation(position);
+			cam.setLocation(playerNode.getLocalTranslation());
+		}
 	}
 
 	@Override

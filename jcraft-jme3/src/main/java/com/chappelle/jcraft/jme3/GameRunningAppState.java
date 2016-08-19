@@ -1,10 +1,12 @@
 package com.chappelle.jcraft.jme3;
 
-import java.util.Timer;
+import java.util.*;
 import java.util.logging.Logger;
 
 import com.chappelle.jcraft.*;
+import com.chappelle.jcraft.commands.LoggingCommandHandler;
 import com.chappelle.jcraft.debug.*;
+import com.chappelle.jcraft.jme3.appstate.BaseInputAppState;
 import com.chappelle.jcraft.serialization.*;
 import com.chappelle.jcraft.util.AABB;
 import com.chappelle.jcraft.world.World;
@@ -18,7 +20,7 @@ import com.jme3.renderer.*;
 import com.jme3.scene.*;
 import com.jme3.system.AppSettings;
 
-public class GameRunningAppState extends BaseAppState implements ActionListener
+public class GameRunningAppState extends BaseInputAppState<JCraftApplication>
 {
 	private final static Logger log = Logger.getLogger(GameRunningAppState.class.getName()); 
 
@@ -35,13 +37,14 @@ public class GameRunningAppState extends BaseAppState implements ActionListener
 	private WorldSaveTask worldSaveTask;
 	private Timer worldSaveTimer;
 	private InputManager inputManager;
-	private SimpleApplication application;
 	private ViewPort viewPort;
 	private AppStateManager stateManager;
 	private AssetManager assetManager;
 	private Node rootNode;
 	private AppSettings settings;
 	private PausedAppState pausedAppState;
+	private CommandLineAppState commandLineAppState;
+	private PlayerControl playerControl;
 	
 	public GameRunningAppState(EntityPlayer player, World world, VoxelWorldSave voxelWorldSave, AppSettings settings)
 	{
@@ -54,23 +57,21 @@ public class GameRunningAppState extends BaseAppState implements ActionListener
 	@Override
 	protected void initialize(Application app)
 	{
-		if(!(app instanceof SimpleApplication))
-		{
-			throw new IllegalArgumentException("app must extend SimpleApplication");
-		}
-		application = (SimpleApplication)app;
+		super.initialize(app);
+		
 		inputManager = app.getInputManager();
 		viewPort = app.getViewPort();
 		stateManager = app.getStateManager();
-		rootNode = application.getRootNode();
+		rootNode = getMyApplication().getRootNode();
 		assetManager = app.getAssetManager();
 		debugEnabled = GameSettings.debugEnabled;
 		pausedAppState = new PausedAppState();
+		commandLineAppState = new CommandLineAppState(new LoggingCommandHandler());
 		
-		initControls();
+		initInputMappings();
 
 		stateManager.attach(new DebugAppState(settings, new DebugDataProvider(player, world)));
-		rootNode.addControl(new PlayerControl(application, player));
+		rootNode.addControl(playerControl = new PlayerControl(getMyApplication(), player));
 		
 		log.info("****************************************************************************");
 		log.info("Press F1 for fullscreen, F3 to toggle debug, F4 to toggle profiler.");
@@ -93,9 +94,9 @@ public class GameRunningAppState extends BaseAppState implements ActionListener
 		{
 			viewPort.setBackgroundColor(new ColorRGBA((float) 128 / 255, (float) 173 / 255, (float) 254 / 255, 1));
 		}
-		initControls();
+		initInputMappings();
 
-		rootNode.addControl(new CrosshairsControl(application, settings, player));
+		rootNode.addControl(new CrosshairsControl(getMyApplication(), settings, player));
 		rootNode.addControl(new HighlightSelectedBlockControl(world, player, assetManager));
 		
 		world.addToScene(rootNode);
@@ -105,6 +106,8 @@ public class GameRunningAppState extends BaseAppState implements ActionListener
 	@Override
 	protected void cleanup(Application app)
 	{
+		super.cleanup(app);
+		
 		AdvancedSkyAppState sky = stateManager.getState(AdvancedSkyAppState.class);
 		if(stateManager.hasState(sky))
 		{
@@ -127,7 +130,6 @@ public class GameRunningAppState extends BaseAppState implements ActionListener
 		world.destroy();
 		GameSettings.save();
 
-		this.application = null;
 		inputManager = null;
 		viewPort = null;
 		stateManager = null;
@@ -140,45 +142,47 @@ public class GameRunningAppState extends BaseAppState implements ActionListener
 	@Override
 	protected void onEnable()
 	{
-		inputManager.setCursorVisible(false);
-		stateManager.getState(FlyCamAppState.class).setEnabled(true);
+		super.onEnable();
+		
+		setPlayerEnabled(true);
 	}
 
 	@Override
+	public void startListeningForInput()
+	{
+		super.startListeningForInput();
+		playerControl.startListeningForInput();
+	}
+	
+	@Override
 	protected void onDisable()
 	{
-		inputManager.setCursorVisible(true);
-		stateManager.getState(FlyCamAppState.class).setEnabled(false);
+		super.onDisable();
+		
+		setPlayerEnabled(false);
+	}
+	
+	@Override
+	public void stopListeningForInput()
+	{
+		super.stopListeningForInput();
+		playerControl.stopListeningForInput();
+	}
+
+	public void setPlayerEnabled(boolean playerEnabled)
+	{
+		playerControl.setEnabled(playerEnabled);
+		inputManager.setCursorVisible(!playerEnabled);
+		stateManager.getState(FlyCamAppState.class).setEnabled(playerEnabled);
 	}
 
 	@Override
 	public void update(float tpf)
 	{
+		super.update(tpf);
+		
 		AABB.getAABBPool().cleanPool();
 		world.update(tpf);
-	}
-
-	private void addMapping(String action, Trigger trigger)
-	{
-		inputManager.addMapping(action, trigger);
-		inputManager.addListener(this, action);
-	}
-
-
-	private void initControls()
-	{
-		addMapping("f1", new KeyTrigger(KeyInput.KEY_F1));
-		addMapping("f3", new KeyTrigger(KeyInput.KEY_F3));
-		addMapping("f5", new KeyTrigger(KeyInput.KEY_F5));
-		addMapping("ToggleAmbientOcclusion", new KeyTrigger(KeyInput.KEY_F9));
-		addMapping("RebuildChunks", new KeyTrigger(KeyInput.KEY_F10));
-		
-		addMapping("e", new KeyTrigger(KeyInput.KEY_E));
-		addMapping("save", new KeyTrigger(KeyInput.KEY_F7));
-		addMapping("guitoggle", new KeyTrigger(KeyInput.KEY_F8));
-		
-		inputManager.deleteMapping(SimpleApplication.INPUT_MAPPING_EXIT);
-		addMapping("pause", new KeyTrigger(KeyInput.KEY_ESCAPE));
 	}
 
 	private void toggleDebug()
@@ -191,7 +195,23 @@ public class GameRunningAppState extends BaseAppState implements ActionListener
 		}
 	}
 
-
+	private void initInputMappings()
+	{
+		addMapping("f1", new KeyTrigger(KeyInput.KEY_F1));
+		addMapping("f3", new KeyTrigger(KeyInput.KEY_F3));
+		addMapping("f5", new KeyTrigger(KeyInput.KEY_F5));
+		addMapping("ToggleAmbientOcclusion", new KeyTrigger(KeyInput.KEY_F9));
+		addMapping("RebuildChunks", new KeyTrigger(KeyInput.KEY_F10));
+		
+		addMapping("e", new KeyTrigger(KeyInput.KEY_E));
+		addMapping("save", new KeyTrigger(KeyInput.KEY_F7));
+		addMapping("guitoggle", new KeyTrigger(KeyInput.KEY_F8));
+		addMapping("commandline", new KeyTrigger(KeyInput.KEY_SLASH));
+		
+		inputManager.deleteMapping(SimpleApplication.INPUT_MAPPING_EXIT);
+		addMapping("pause", new KeyTrigger(KeyInput.KEY_ESCAPE));
+	}
+	
 	@Override
 	public void onAction(String name, boolean isPressed, float lastTimePerFrame)
 	{
@@ -214,15 +234,26 @@ public class GameRunningAppState extends BaseAppState implements ActionListener
 		}
 		else if("pause".equals(name) && !isPressed)
 		{
-			GameRunningAppState.this.setEnabled(false);
-			if(!stateManager.hasState(pausedAppState))
-			{
-				stateManager.attach(pausedAppState);
-			}
-			pausedAppState.setEnabled(true);
+			pause();
+		}
+		else if("commandline".equals(name) && !isPressed)
+		{
+			showCommandLine();
 		}
 	}
 
+	private void showCommandLine()
+	{
+		enableAppState(commandLineAppState);
+		playerControl.setEnabled(false);
+	}
+
+	private void pause()
+	{
+		GameRunningAppState.this.setEnabled(false);
+		enableAppState(pausedAppState);
+	}
+	
 	private void toggleWireframe()
 	{
 		wireframe = !wireframe;

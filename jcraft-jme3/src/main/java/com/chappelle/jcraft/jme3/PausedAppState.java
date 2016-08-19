@@ -53,7 +53,6 @@ public class PausedAppState extends BaseAppState
 				beginningAppState.setEnabled(true);
 			}
 		});
-		System.out.println("initialize");
 	}
 
 	@Override
