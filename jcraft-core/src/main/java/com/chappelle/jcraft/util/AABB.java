@@ -140,6 +140,16 @@ public class AABB
 		return this;
 	}
 
+	public AABB grow(double amt)
+	{
+		this.minX -= amt;
+		this.minY -= amt;
+		this.minZ -= amt;
+		this.maxX += amt;
+		this.maxY += amt;
+		this.maxZ += amt;
+		return this;
+	}
 	/**
 	 * Returns true if the supplied {@code Vector3f} is completely inside the
 	 * bounding box, false otherwise

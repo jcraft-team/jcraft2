@@ -45,8 +45,6 @@ public class EntityPlayer extends Entity
 		
 		this.cam = cam;
 		world.setPlayer(this);
-
-		initInventory();
 	}
 
 	public Inventory getInventory()
@@ -54,7 +52,7 @@ public class EntityPlayer extends Entity
 		return inventory;
 	}
 	
-	private void initInventory()
+	public void initInventory()
 	{
 		inventory = new Inventory();
 		for(int i = 1; i < 250; i++)
@@ -402,7 +400,7 @@ public class EntityPlayer extends Entity
 		selected = inventory.selectItem(index);
 		if(selected != null)
 		{
-			log.fine("Selected block is " + selected.getBlock().getClass().getName());
+			log.info("Selected block is " + selected.getBlock().getClass().getName());
 		}
 	}
 	

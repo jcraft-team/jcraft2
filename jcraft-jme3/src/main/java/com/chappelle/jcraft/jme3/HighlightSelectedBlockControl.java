@@ -75,10 +75,12 @@ public class HighlightSelectedBlockControl extends NodeControl
 						if(bb != null)
 						{
 							bb.offset(-rayTrace.blockX, -rayTrace.blockY, -rayTrace.blockZ);
+							bb.grow(0.005f);//Prevents the box from jittering when moving the camera
 							minPoint.set((float)bb.minX, (float)bb.minY, (float)bb.minZ);
 							maxPoint.set((float)bb.maxX, (float)bb.maxY, (float)bb.maxZ);
 							box.updateGeometry(minPoint, maxPoint);
 							blockCursor.setLocalTranslation(rayTrace.blockX, rayTrace.blockY, rayTrace.blockZ);
+							System.out.println("Setting block cursor to " + block.getClass().getName());
 						}
 						else
 						{

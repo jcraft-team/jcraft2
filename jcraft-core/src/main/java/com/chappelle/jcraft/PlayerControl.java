@@ -29,6 +29,7 @@ public class PlayerControl extends NodeControl implements ActionListener
 		cam = app.getCamera();
 		
 		this.player = player;
+		this.player.initInventory();
 		
 		addMapping("move_left", new KeyTrigger(KeyInput.KEY_A));
 		addMapping("move_right", new KeyTrigger(KeyInput.KEY_D));
