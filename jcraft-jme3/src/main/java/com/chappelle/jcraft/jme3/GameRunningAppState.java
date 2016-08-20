@@ -46,12 +46,12 @@ public class GameRunningAppState extends BaseInputAppState<JCraftApplication>
 	private CommandLineAppState commandLineAppState;
 	private PlayerControl playerControl;
 	
-	public GameRunningAppState(EntityPlayer player, World world, VoxelWorldSave voxelWorldSave, AppSettings settings)
+	public GameRunningAppState(EntityPlayer player, World world, AppSettings settings)
 	{
 		this.settings = settings;
 		this.player = player;
 		this.world = world;
-		this.voxelWorldSave = voxelWorldSave;
+		this.voxelWorldSave = world.getVoxelWorldSave();
 	}
 	
 	@Override
@@ -172,7 +172,7 @@ public class GameRunningAppState extends BaseInputAppState<JCraftApplication>
 	{
 		playerControl.setEnabled(playerEnabled);
 		inputManager.setCursorVisible(!playerEnabled);
-		stateManager.getState(FlyCamAppState.class).setEnabled(playerEnabled);
+		safeSetEnableAppState(stateManager.getState(FlyCamAppState.class), playerEnabled);
 	}
 
 	@Override

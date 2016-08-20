@@ -23,7 +23,7 @@ public class RayTrace
 
 	/** The vector position of the hit */
 	public Vector3f hitVec;
-
+	
 	public RayTrace(int blockX, int blockY, int blockZ, Block.Face sideHit, Vector3f hitVec)
 	{
 		this.blockX = blockX;

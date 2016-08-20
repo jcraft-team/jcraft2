@@ -332,6 +332,38 @@ public class EntityPlayer extends Entity
 		return world.rayTraceBlocks(origin, look);
 	}
 	
+    public Vector3f getCameraDirectionAsUnitVector()
+    {
+    	Vector3f cameraDirection = cam.getDirection().normalize();
+		float xPos = cameraDirection.angleBetween(Vector3f.UNIT_X);
+    	float xNeg = cameraDirection.angleBetween(Vector3f.UNIT_X.negate());
+    	float zPos = cameraDirection.angleBetween(Vector3f.UNIT_Z);
+    	float zNeg = cameraDirection.angleBetween(Vector3f.UNIT_Z.negate());
+    	if(isFirstArgMin(xPos, xNeg, zPos, zNeg))
+    	{
+    		return Vector3f.UNIT_X;
+    	}
+    	else if(isFirstArgMin(xNeg, xPos, zPos, zNeg))
+    	{
+    		return Vector3f.UNIT_X.negate();
+    	}
+    	else if(isFirstArgMin(zPos, xPos, xNeg, zNeg))
+    	{
+    		return Vector3f.UNIT_Z;
+    	}
+		return Vector3f.UNIT_Z.negate();
+    }
+
+    private static boolean isFirstArgMin(float a, float b, float c, float d)
+    {
+    	if(a < b && a < c && a < d)
+    	{
+    		return true;
+    	}
+    	return false;
+    }
+	
+	
 	public void placeBlock()
 	{
 		RayTrace rayTrace = getRayTrace();
@@ -346,7 +378,7 @@ public class EntityPlayer extends Entity
 				}
 				else
 				{
-					world.setBlock(rayTrace, selected.getBlock());
+					world.setBlock(rayTrace, getCameraDirectionAsUnitVector(), selected.getBlock());
 				}
 			}
 		}

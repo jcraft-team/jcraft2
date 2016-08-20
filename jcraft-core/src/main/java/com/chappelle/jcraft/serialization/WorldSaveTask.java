@@ -1,6 +1,7 @@
 package com.chappelle.jcraft.serialization;
 
 import java.util.TimerTask;
+import java.util.logging.*;
 
 import com.chappelle.jcraft.EntityPlayer;
 import com.chappelle.jcraft.world.World;
@@ -9,6 +10,8 @@ import com.jme3.math.Vector3f;
 
 public class WorldSaveTask extends TimerTask
 {
+	private static final Logger log = Logger.getLogger(WorldSaveTask.class.getName());
+
 	private World world;
 	private VoxelWorldSave voxelWorldSave;
 
@@ -21,13 +24,13 @@ public class WorldSaveTask extends TimerTask
 	@Override
 	public void run()
 	{
-		System.out.println("Saving...");
+		log.log(Level.FINE, "Saving...");
 
 		voxelWorldSave.putGameData("timeOfDay", world.getTimeOfDayProvider().getTimeOfDay());
 		savePlayerData();
 		saveChunkData();
 
-		System.out.println("Finished saving");
+		log.log(Level.FINE, "Finished saving");
 	}
 
 	private void saveChunkData()

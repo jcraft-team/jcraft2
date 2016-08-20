@@ -13,17 +13,15 @@ public class LoadingAppState extends BaseAppState
 	private SimpleApplication application;
 	private Container progressContainer;
 	private ProgressBar progressBar;
-	private AppState nextAppState;
 	private final ProgressMonitor progressMonitor;
 	private Future<Void> future;
 	private ExecutorService pool;
-	private final Callable<Void> loader;
+	private final LoadingCallable loader;
 
-	public LoadingAppState(AppState nextAppState, Callable<Void> loader, ProgressMonitor progressMonitor)
+	public LoadingAppState(LoadingCallable loader)
 	{
-		this.nextAppState = nextAppState;
 		this.loader = loader;
-		this.progressMonitor = progressMonitor;
+		this.progressMonitor = loader.getProgressMonitor();
 	}
 	
 	@Override
@@ -72,6 +70,7 @@ public class LoadingAppState extends BaseAppState
 	@Override
 	protected void cleanup(Application app)
 	{
+		future = null;
 	}
 
 	@Override
@@ -86,6 +85,6 @@ public class LoadingAppState extends BaseAppState
 	{
 		application.getGuiNode().detachChild(progressContainer);
 		pool.shutdown();
-		getStateManager().attach(nextAppState);
+		getStateManager().attach(loader.getNextAppState());
 	}
 }

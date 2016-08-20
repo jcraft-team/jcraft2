@@ -26,10 +26,11 @@ public class SimpleCommandHandler implements CommandHandler
 				if("time".equalsIgnoreCase(commandName) && args.length > 1)
 				{
 					float timeOfDay = Float.parseFloat(args[1]);
-					if(timeOfDay > 0 && timeOfDay < 24)
+					if(timeOfDay <= 0 || timeOfDay >= 24)
 					{
-						world.getTimeOfDayProvider().setTimeOfDay(timeOfDay);
+						timeOfDay = 0;
 					}
+					world.getTimeOfDayProvider().setTimeOfDay(timeOfDay);
 					return String.format("Time of day set to %f", timeOfDay);
 				}
 				else if("position".equalsIgnoreCase(commandName) && args.length == 4)

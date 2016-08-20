@@ -57,12 +57,26 @@ public abstract class BaseInputAppState<T extends Application> extends BaseAppSt
 	
 	protected void enableAppState(AppState appState)
 	{
+		safeSetEnableAppState(appState, true);
+	}
+	
+	protected void disableAppState(AppState appState)
+	{
+		safeSetEnableAppState(appState, false);
+	}
+
+	protected void safeSetEnableAppState(AppState appState, boolean enabled)
+	{
+		if(appState == null)
+		{
+			return;
+		}
 		AppStateManager stateManager = getStateManager();
 		if(!stateManager.hasState(appState))
 		{
 			stateManager.attach(appState);
 		}
-		appState.setEnabled(true);
+		appState.setEnabled(enabled);
 	}
 	
 	protected void addMapping(String action, Trigger trigger)

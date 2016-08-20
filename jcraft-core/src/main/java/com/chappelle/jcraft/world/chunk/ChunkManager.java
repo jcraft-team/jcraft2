@@ -30,10 +30,10 @@ public class ChunkManager
 	private List<Feature> features = new ArrayList<Feature>();
 	private ChunkLoaderThread gen;
 	
-	public ChunkManager(World world, VoxelWorldSave voxelWorldSave)
+	public ChunkManager(World world)
 	{
 		this.world = world;
-		this.voxelWorldSave = voxelWorldSave;
+		this.voxelWorldSave = world.getVoxelWorldSave();
 	}
 
 	public void update()

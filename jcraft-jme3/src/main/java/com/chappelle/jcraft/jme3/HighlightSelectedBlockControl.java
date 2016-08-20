@@ -80,7 +80,6 @@ public class HighlightSelectedBlockControl extends NodeControl
 							maxPoint.set((float)bb.maxX, (float)bb.maxY, (float)bb.maxZ);
 							box.updateGeometry(minPoint, maxPoint);
 							blockCursor.setLocalTranslation(rayTrace.blockX, rayTrace.blockY, rayTrace.blockZ);
-							System.out.println("Setting block cursor to " + block.getClass().getName());
 						}
 						else
 						{

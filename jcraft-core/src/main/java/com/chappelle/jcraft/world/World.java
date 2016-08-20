@@ -1,5 +1,6 @@
 package com.chappelle.jcraft.world;
 
+import java.io.File;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -25,10 +26,8 @@ public class World
 	private CubesSettings settings;
 
 	private final String name;
-	private AssetManager assetManager;
 	private Random random = new Random();
 	private AudioNode music;
-	private Camera cam;
 	private List<Entity> entities = new ArrayList<Entity>();
 	private EntityPlayer player;
 	private TimeOfDayProvider timeOfDayProvider = new FixedTimeOfDayProvider(12);
@@ -39,20 +38,46 @@ public class World
 	private List<WorldListener> listeners = new ArrayList<>();
 	private long seed;
 	private Node parent;
+	private VoxelWorldSave voxelWorldSave;
 	
-	public World(Application app, CubesSettings settings, AssetManager assetManager, Camera cam, String name, long seed, VoxelWorldSave voxelWorldSave)
+	public World(Application app, CubesSettings settings, String name, long seed)
 	{
 		this.seed = seed;
 		this.app = app;
 		this.name = name;
 		this.settings = settings;
-		this.assetManager = assetManager;
-		this.cam = cam;
-        music = new AudioNode(assetManager, SoundConstants.MUSIC_CALM1);
+        music = new AudioNode(app.getAssetManager(), SoundConstants.MUSIC_CALM1);
         music.setReverbEnabled(false);
         music.setPositional(false);
         music.setLooping(true);
-        this.chunkMgr = new ChunkManager(this, voxelWorldSave);
+        this.voxelWorldSave = new VoxelWorldSave(new File(GameFiles.getSaveDir(), "world.dat"));;
+        this.chunkMgr = new ChunkManager(this);
+	}
+	
+	public void spawnPlayer(EntityPlayer player)
+	{
+		Camera camera = player.cam;
+		camera.setFrustumPerspective(45f, (float) camera.getWidth() / camera.getHeight(), 0.01f, 500f);
+		Vector3f lookAt = (Vector3f)voxelWorldSave.getGameData("playerLookDirection");
+		if(lookAt == null)
+		{
+			lookAt = new Vector3f(1, 0, 1);
+		}
+		camera.lookAtDirection(lookAt, Vector3f.UNIT_Y);
+		
+		// Setup player
+		Vector3f playerLocation = (Vector3f)voxelWorldSave.getGameData("playerLocation");
+		if(playerLocation != null)
+		{
+			player.setPosition(playerLocation.x, playerLocation.y, playerLocation.z);
+		}
+
+		player.preparePlayerToSpawn();
+	}
+	
+	public VoxelWorldSave getVoxelWorldSave()
+	{
+		return voxelWorldSave;
 	}
 	
 	public long getSeed()
@@ -221,7 +246,7 @@ public class World
 
     protected AudioNode makeAudio(String location)
     {
-        AudioNode result = new AudioNode(assetManager, location);
+        AudioNode result = new AudioNode(app.getAssetManager(), location);
         result.setReverbEnabled(false);
         result.setVolume(.3f);
         return result;
@@ -257,7 +282,7 @@ public class World
 		return null;
 	}
 
-    public void setBlock(RayTrace rayTrace, Block blockToPlace)
+    public void setBlock(RayTrace rayTrace, Vector3f cameraDirectionUnitVector, Block blockToPlace)
     {
         Vector3Int location = new Vector3Int(rayTrace.blockX, rayTrace.blockY, rayTrace.blockZ);
         Vector3Int newBlockLocation = BlockNavigator.getNeighborBlockLocalLocation(location, rayTrace.sideHit);
@@ -265,7 +290,7 @@ public class World
         if (blockToPlace.canPlaceBlockOn(this, location.x, location.y, location.z, rayTrace.sideHit) && blockToPlace.canPlaceBlockAt(this, newBlockLocation.x, newBlockLocation.y, newBlockLocation.z))
         {
             setBlock(newBlockLocation, blockToPlace);
-            blockToPlace.onBlockPlaced(this, newBlockLocation, placementFace, getCameraDirectionAsUnitVector(cam.getDirection()));
+            blockToPlace.onBlockPlaced(this, newBlockLocation, placementFace, cameraDirectionUnitVector);
         }
     }
 
@@ -508,11 +533,6 @@ public class World
 		return localLocation;
 	}
 
-	public CubesSettings getSettings()
-	{
-		return settings;
-	}
-
 	public int getLight(Vector3Int blockLocation)
 	{
 		return getLight(blockLocation, null);
@@ -585,37 +605,6 @@ public class World
 			}
 		}
 		return boundingBoxes;
-    }
-    
-    private Vector3f getCameraDirectionAsUnitVector(Vector3f cameraDirection)
-    {
-    	cameraDirection = cameraDirection.normalize();
-		float xPos = cameraDirection.angleBetween(Vector3f.UNIT_X);
-    	float xNeg = cameraDirection.angleBetween(Vector3f.UNIT_X.negate());
-    	float zPos = cameraDirection.angleBetween(Vector3f.UNIT_Z);
-    	float zNeg = cameraDirection.angleBetween(Vector3f.UNIT_Z.negate());
-    	if(isFirstArgMin(xPos, xNeg, zPos, zNeg))
-    	{
-    		return Vector3f.UNIT_X;
-    	}
-    	else if(isFirstArgMin(xNeg, xPos, zPos, zNeg))
-    	{
-    		return Vector3f.UNIT_X.negate();
-    	}
-    	else if(isFirstArgMin(zPos, xPos, xNeg, zNeg))
-    	{
-    		return Vector3f.UNIT_Z;
-    	}
-		return Vector3f.UNIT_Z.negate();
-    }
-
-    private boolean isFirstArgMin(float a, float b, float c, float d)
-    {
-    	if(a < b && a < c && a < d)
-    	{
-    		return true;
-    	}
-    	return false;
     }
     
     public RayTrace rayTraceBlocks(Vector3f position, Vector3f collisionEndPoint)
@@ -820,10 +809,7 @@ public class World
 
 	public Material getBlockMaterial()
 	{
-//		Texture texture = assetManager.loadTexture("Textures/FaithfulBlocks.png");
-//		Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
 		return settings.getBlockMaterial();
-//		return mat;
 	}
 
 	public void destroy()
@@ -831,6 +817,7 @@ public class World
 		executor.shutdown();
 		chunkMgr.destroy();
 		parent.detachChild(node);
+		voxelWorldSave.closeDB();
 	}
 
 	public String getName()
