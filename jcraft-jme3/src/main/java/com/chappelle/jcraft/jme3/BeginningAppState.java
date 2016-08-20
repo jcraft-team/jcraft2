@@ -5,10 +5,12 @@ import java.util.logging.Logger;
 
 import com.chappelle.jcraft.*;
 import com.chappelle.jcraft.jme3.appstate.BaseInputAppState;
+import com.chappelle.jcraft.jme3.ui.*;
 import com.chappelle.jcraft.world.World;
 import com.jme3.app.*;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.asset.AssetManager;
+import com.jme3.audio.*;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.simsilica.lemur.*;
@@ -40,7 +42,7 @@ public class BeginningAppState extends BaseInputAppState<JCraftApplication>
 		beginningOptionsContainer.setLayout(new SpringGridLayout());
 		
 		beginningOptionsContainer.addChild(new Label("JCraft"));
-		Button startGame = beginningOptionsContainer.addChild(new Button("Start Game"));
+		Button startGame = beginningOptionsContainer.addChild(new ClickSoundButton("Start Game"));
 		startGame.setInsets(new Insets3f(5, 5, 5, 5));
 		startGame.setTextHAlignment(HAlignment.Center);
 		startGame.setTextVAlignment(VAlignment.Center);
@@ -53,7 +55,7 @@ public class BeginningAppState extends BaseInputAppState<JCraftApplication>
 				startGame();
 			}
 		});
-		Button settingsButton = beginningOptionsContainer.addChild(new Button("Settings"));
+		Button settingsButton = beginningOptionsContainer.addChild(new ClickSoundButton("Settings"));
 		settingsButton.setInsets(new Insets3f(5, 5, 5, 5));
 		settingsButton.setTextHAlignment(HAlignment.Center);
 		settingsButton.setTextVAlignment(VAlignment.Center);
@@ -66,7 +68,7 @@ public class BeginningAppState extends BaseInputAppState<JCraftApplication>
 				//TODO:
 			}
 		});
-		Button exitGame = beginningOptionsContainer.addChild(new Button("Quit Game"));
+		Button exitGame = beginningOptionsContainer.addChild(new ClickSoundButton("Quit Game"));
 		exitGame.setInsets(new Insets3f(5, 5, 5, 5));
 		exitGame.setTextHAlignment(HAlignment.Center);
 		exitGame.setTextVAlignment(VAlignment.Center);
@@ -81,6 +83,16 @@ public class BeginningAppState extends BaseInputAppState<JCraftApplication>
 		});
 		beginningOptionsContainer.setLocalTranslation(GameSettings.screenWidth/2 - beginningOptionsContainer.getPreferredSize().x/2, GameSettings.screenHeight/2 + beginningOptionsContainer.getPreferredSize().y/2, 0);		
 	}
+	
+    protected AudioNode makeAudio(String location)
+    {
+        AudioNode result = new AudioNode(getApplication().getAssetManager(), location, AudioData.DataType.Buffer);
+        result.setReverbEnabled(false);
+        result.setVolume(2.0f);
+        result.setPositional(false);
+        return result;
+    }
+
 
 	private void startGame()
 	{

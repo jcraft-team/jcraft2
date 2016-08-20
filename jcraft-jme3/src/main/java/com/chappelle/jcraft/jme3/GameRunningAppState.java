@@ -1,22 +1,22 @@
 package com.chappelle.jcraft.jme3;
 
-import java.util.*;
+import java.util.Timer;
 import java.util.logging.Logger;
 
 import com.chappelle.jcraft.*;
-import com.chappelle.jcraft.commands.*;
+import com.chappelle.jcraft.commands.SimpleCommandHandler;
 import com.chappelle.jcraft.debug.*;
 import com.chappelle.jcraft.jme3.appstate.BaseInputAppState;
 import com.chappelle.jcraft.serialization.*;
 import com.chappelle.jcraft.util.AABB;
 import com.chappelle.jcraft.world.World;
 import com.jme3.app.*;
-import com.jme3.app.state.*;
+import com.jme3.app.state.AppStateManager;
 import com.jme3.asset.AssetManager;
 import com.jme3.input.*;
-import com.jme3.input.controls.*;
+import com.jme3.input.controls.KeyTrigger;
 import com.jme3.math.ColorRGBA;
-import com.jme3.renderer.*;
+import com.jme3.renderer.ViewPort;
 import com.jme3.scene.*;
 import com.jme3.system.AppSettings;
 

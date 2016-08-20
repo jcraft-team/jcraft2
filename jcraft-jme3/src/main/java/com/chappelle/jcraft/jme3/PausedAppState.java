@@ -1,6 +1,7 @@
 package com.chappelle.jcraft.jme3;
 
 import com.chappelle.jcraft.GameSettings;
+import com.chappelle.jcraft.jme3.ui.ClickSoundButton;
 import com.jme3.app.*;
 import com.jme3.app.state.*;
 import com.jme3.math.Vector3f;
@@ -22,7 +23,7 @@ public class PausedAppState extends BaseAppState
 		pauseOptionsContainer.setLocalTranslation(300, 300, 0);
 		pauseOptionsContainer.addChild(new Label("Game menu"));
 
-		Button startGame = pauseOptionsContainer.addChild(new Button("Back to Game"));
+		Button startGame = pauseOptionsContainer.addChild(new ClickSoundButton("Back to Game"));
 		startGame.setInsets(new Insets3f(5, 5, 5, 5));
 		startGame.setTextHAlignment(HAlignment.Center);
 		startGame.setTextVAlignment(VAlignment.Center);
@@ -37,7 +38,7 @@ public class PausedAppState extends BaseAppState
 				PausedAppState.this.setEnabled(false);
 			}
 		});
-		Button options = pauseOptionsContainer.addChild(new Button("Options"));
+		Button options = pauseOptionsContainer.addChild(new ClickSoundButton("Options"));
 		options.setInsets(new Insets3f(5, 5, 5, 5));
 		options.setTextHAlignment(HAlignment.Center);
 		options.setTextVAlignment(VAlignment.Center);
@@ -51,7 +52,7 @@ public class PausedAppState extends BaseAppState
 				//TODO
 			}
 		});
-		Button exitGame = pauseOptionsContainer.addChild(new Button("Save and Quit to Title"));
+		Button exitGame = pauseOptionsContainer.addChild(new ClickSoundButton("Save and Quit to Title"));
 		exitGame.setInsets(new Insets3f(5, 5, 5, 5));
 		exitGame.setTextHAlignment(HAlignment.Center);
 		exitGame.setTextVAlignment(VAlignment.Center);

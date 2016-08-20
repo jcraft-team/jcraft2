@@ -5,14 +5,13 @@ import java.util.*;
 import java.util.concurrent.*;
 
 import com.chappelle.jcraft.*;
-import com.chappelle.jcraft.blocks.*;
+import com.chappelle.jcraft.blocks.Block;
 import com.chappelle.jcraft.lighting.LightType;
 import com.chappelle.jcraft.serialization.VoxelWorldSave;
 import com.chappelle.jcraft.util.*;
 import com.chappelle.jcraft.world.chunk.*;
 import com.jme3.app.Application;
-import com.jme3.asset.AssetManager;
-import com.jme3.audio.AudioNode;
+import com.jme3.audio.*;
 import com.jme3.material.Material;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
@@ -27,7 +26,6 @@ public class World
 
 	private final String name;
 	private Random random = new Random();
-	private AudioNode music;
 	private List<Entity> entities = new ArrayList<Entity>();
 	private EntityPlayer player;
 	private TimeOfDayProvider timeOfDayProvider = new FixedTimeOfDayProvider(12);
@@ -46,10 +44,6 @@ public class World
 		this.app = app;
 		this.name = name;
 		this.settings = settings;
-        music = new AudioNode(app.getAssetManager(), SoundConstants.MUSIC_CALM1);
-        music.setReverbEnabled(false);
-        music.setPositional(false);
-        music.setLooping(true);
         this.voxelWorldSave = new VoxelWorldSave(new File(GameFiles.getSaveDir(), "world.dat"));;
         this.chunkMgr = new ChunkManager(this);
 	}
@@ -246,9 +240,9 @@ public class World
 
     protected AudioNode makeAudio(String location)
     {
-        AudioNode result = new AudioNode(app.getAssetManager(), location);
+        AudioNode result = new AudioNode(app.getAssetManager(), location, AudioData.DataType.Buffer);
         result.setReverbEnabled(false);
-        result.setVolume(.3f);
+        result.setVolume(4.0f);
         return result;
     }
     
