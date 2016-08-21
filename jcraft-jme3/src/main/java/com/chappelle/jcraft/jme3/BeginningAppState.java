@@ -26,6 +26,8 @@ public class BeginningAppState extends BaseInputAppState<JCraftApplication>
 	public World world;
 	protected EntityPlayer player;
 	private CubesSettings cubesSettings;
+	
+	private SettingsAppState settingsAppState;
 
 	//Plugin api
 	private List<WorldInitializer> worldInitializers = new ArrayList<>();
@@ -36,6 +38,7 @@ public class BeginningAppState extends BaseInputAppState<JCraftApplication>
 	{
 		super.initialize(app);
 		
+		settingsAppState = new SettingsAppState();
 		app.getStateManager().attach(new OptionPanelState());
 
 		beginningOptionsContainer = new Container();
@@ -65,7 +68,7 @@ public class BeginningAppState extends BaseInputAppState<JCraftApplication>
 			@Override
 			public void execute(Button source)
 			{
-				//TODO:
+				showSettings();
 			}
 		});
 		Button exitGame = beginningOptionsContainer.addChild(new ClickSoundButton("Quit Game"));
@@ -84,7 +87,15 @@ public class BeginningAppState extends BaseInputAppState<JCraftApplication>
 		beginningOptionsContainer.setLocalTranslation(GameSettings.screenWidth/2 - beginningOptionsContainer.getPreferredSize().x/2, GameSettings.screenHeight/2 + beginningOptionsContainer.getPreferredSize().y/2, 0);		
 	}
 	
-    protected AudioNode makeAudio(String location)
+    protected void showSettings()
+	{
+    	setEnabled(false);
+    	
+    	settingsAppState.setDoneAppState(BeginningAppState.class);
+    	safeSetEnableAppState(settingsAppState, true);
+	}
+
+	protected AudioNode makeAudio(String location)
     {
         AudioNode result = new AudioNode(getApplication().getAssetManager(), location, AudioData.DataType.Buffer);
         result.setReverbEnabled(false);
@@ -156,8 +167,6 @@ public class BeginningAppState extends BaseInputAppState<JCraftApplication>
 	protected void onDisable()
 	{
 		super.onDisable();
-		
-		safeSetEnableAppState(getState(StatsAppState.class), GameSettings.debugEnabled);
 		
 		getMyApplication().getGuiNode().detachChild(beginningOptionsContainer);
 	}

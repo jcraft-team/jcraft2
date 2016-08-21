@@ -38,7 +38,7 @@ public class PausedAppState extends BaseAppState
 				PausedAppState.this.setEnabled(false);
 			}
 		});
-		Button options = pauseOptionsContainer.addChild(new ClickSoundButton("Options"));
+		Button options = pauseOptionsContainer.addChild(new ClickSoundButton("Settings"));
 		options.setInsets(new Insets3f(5, 5, 5, 5));
 		options.setTextHAlignment(HAlignment.Center);
 		options.setTextVAlignment(VAlignment.Center);
@@ -49,7 +49,11 @@ public class PausedAppState extends BaseAppState
 			@Override
 			public void execute(Button source)
 			{
-				//TODO
+				AppStateManager stateManager = application.getStateManager();
+				SettingsAppState settingsAppState = stateManager.getState(SettingsAppState.class);
+				settingsAppState.setDoneAppState(PausedAppState.class);
+				settingsAppState.setEnabled(true);
+				PausedAppState.this.setEnabled(false);
 			}
 		});
 		Button exitGame = pauseOptionsContainer.addChild(new ClickSoundButton("Save and Quit to Title"));

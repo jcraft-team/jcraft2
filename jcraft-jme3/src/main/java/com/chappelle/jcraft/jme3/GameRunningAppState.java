@@ -143,6 +143,8 @@ public class GameRunningAppState extends BaseInputAppState<JCraftApplication>
 	{
 		super.onEnable();
 		
+		safeSetEnableAppState(getState(StatsAppState.class), GameSettings.debugEnabled);
+		
 		setPlayerEnabled(true);
 	}
 
