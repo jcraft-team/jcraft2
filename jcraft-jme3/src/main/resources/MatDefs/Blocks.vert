@@ -40,6 +40,7 @@ void main(){
 	lightTable[14] = 0.789;
 	lightTable[15] = 1.0;
 	
+	
 	float skyLight = lightTable[int(inColor.a)] * m_dayNightLighting;
 	float blockLight = lightTable[int(inColor.g)];
 	light = max(blockLight, skyLight);
@@ -66,10 +67,12 @@ void main(){
 
     #ifdef HAS_VERTEXCOLOR
         vertColor = inColor;
-		vertColor.r = light;
-		vertColor.g = light;
-		vertColor.b = light;
-		vertColor.a = 1.0;
+        vec3 lightColor = vec3(1.0,197/255.0,143/255.0);
+	    vertColor = clamp(vec4(light * lightColor, inColor.a), vec4(0,0,0,0), vec4(1,1,1,1));
+//		vertColor.r = light;
+//		vertColor.g = light;
+//		vertColor.b = light;
+//		vertColor.a = 1.0;
     #endif
 
     vec4 modelSpacePos = vec4(inPosition, 1.0);
