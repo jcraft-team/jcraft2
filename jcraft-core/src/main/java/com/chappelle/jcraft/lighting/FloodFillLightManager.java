@@ -9,22 +9,20 @@ import com.chappelle.jcraft.world.chunk.Chunk;
 
 public class FloodFillLightManager implements LightManager
 {
-	private Chunk chunk;
 	private World world;
 	private Queue<LightNode> lightAdditionQueue;
 	private Queue<LightRemovalNode> lightRemovalQueue;
 	private Queue<LightNode> sunlightAdditionQueue;
 	private Queue<LightRemovalNode> sunlightRemovalQueue;
 	
-	public FloodFillLightManager(Chunk chunk)
+	public FloodFillLightManager(World world)
 	{
-		this.chunk = chunk;
-		this.world = chunk.world;
+		this.world = world;
 		lightAdditionQueue = new LinkedList<>();
 		lightRemovalQueue = new LinkedList<>();
 		sunlightAdditionQueue = new LinkedList<>();
 		sunlightRemovalQueue = new LinkedList<>();
-		initSunlight();
+//		initSunlight();
 	}
 	
 	@Override
@@ -466,7 +464,7 @@ public class FloodFillLightManager implements LightManager
 	}
 
 	@Override
-	public void addSunlight(Vector3Int localBlockLocation)
+	public void addSunlight(Chunk chunk, Vector3Int localBlockLocation)
 	{
 		chunk.setLight(localBlockLocation.x, localBlockLocation.y, localBlockLocation.z, LightType.SKY, 15);
 		
@@ -474,7 +472,7 @@ public class FloodFillLightManager implements LightManager
 	}
 
 	@Override
-	public void setBlockLight(Vector3Int localBlockLocation, int light)
+	public void setBlockLight(Chunk chunk, Vector3Int localBlockLocation, int light)
 	{
 		chunk.setLight(localBlockLocation.x, localBlockLocation.y, localBlockLocation.z, LightType.BLOCK, light);
 		
@@ -482,7 +480,7 @@ public class FloodFillLightManager implements LightManager
 	}
 	
 	@Override
-	public void removeBlockLight(Vector3Int localBlockLocation)
+	public void removeBlockLight(Chunk chunk, Vector3Int localBlockLocation)
 	{
 		short val = (short)chunk.getLight(localBlockLocation.x, localBlockLocation.y, localBlockLocation.z, LightType.BLOCK);
 		
@@ -492,7 +490,7 @@ public class FloodFillLightManager implements LightManager
 	}
 
 	@Override
-	public void removeSunlight(Vector3Int localBlockLocation)
+	public void removeSunlight(Chunk chunk, Vector3Int localBlockLocation)
 	{
 		short val = (short)chunk.getLight(localBlockLocation.x, localBlockLocation.y, localBlockLocation.z, LightType.SKY);
 		
@@ -501,7 +499,7 @@ public class FloodFillLightManager implements LightManager
 		chunk.setLight(localBlockLocation.x, localBlockLocation.y, localBlockLocation.z, LightType.SKY, 0);
 	}
 
-	public void restoreSunlight(Vector3Int localBlockLocation)
+	public void restoreSunlight(Chunk chunk, Vector3Int localBlockLocation)
 	{
 		int x = localBlockLocation.x;
 		int y = localBlockLocation.y;
@@ -580,7 +578,7 @@ public class FloodFillLightManager implements LightManager
 		}
 	}
 	
-	private void initSunlight()
+	public void initSunlight(Chunk chunk)
 	{
 		int y = 255;
 		for(int x = 0; x < 16; x++)
@@ -596,13 +594,5 @@ public class FloodFillLightManager implements LightManager
 			}
 		}
 		propagateLight();
-	}
-
-	@Override
-	public void rebuildSunlight()
-	{
-//		chunk.getLights().clearSunlight();
-//		
-//		initSunlight();
 	}
 }

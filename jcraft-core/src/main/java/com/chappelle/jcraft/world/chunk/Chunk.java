@@ -38,7 +38,6 @@ public class Chunk implements BitSerializable
 	private Geometry optimizedGeometry_Transparent; 
 	private Node node = new Node();
 	public Long id;
-	public LightManager lightMgr;
 	public boolean isLightUpdating;
 	
 	public Chunk(World world, int x, int z)
@@ -66,7 +65,6 @@ public class Chunk implements BitSerializable
     	node.setLocalTranslation(new Vector3f(blockLocation.getX(), blockLocation.getY(), blockLocation.getZ()));
     	this.id = ChunkCoordIntPair.chunkXZ2Int(x, z); 
     	this.heightMap = makeHeightMap(blockTypes);
-    	this.lightMgr = new FloodFillLightManager(this);
 	}
 	
     public Chunk(World world, int x, int z, byte[][][] blockTypes)
@@ -89,7 +87,7 @@ public class Chunk implements BitSerializable
     	node.setLocalTranslation(new Vector3f(blockLocation.getX(), blockLocation.getY(), blockLocation.getZ()));
     	this.id = ChunkCoordIntPair.chunkXZ2Int(x, z); 
     	this.heightMap = makeHeightMap(blockTypes);
-    	this.lightMgr = new FloodFillLightManager(this);
+    	world.getLightManager().initSunlight(this);
     }
     
     public boolean isLoadedAndAddedToScene()

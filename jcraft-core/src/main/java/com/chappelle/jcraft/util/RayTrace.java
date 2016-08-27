@@ -1,5 +1,6 @@
 package com.chappelle.jcraft.util;
 
+import com.chappelle.jcraft.Enemy;
 import com.chappelle.jcraft.blocks.Block;
 import com.jme3.math.Vector3f;
 
@@ -23,6 +24,13 @@ public class RayTrace
 
 	/** The vector position of the hit */
 	public Vector3f hitVec;
+	
+	public Enemy enemy;
+	
+	public RayTrace(Enemy enemy)
+	{
+		this.enemy = enemy;
+	}
 	
 	public RayTrace(int blockX, int blockY, int blockZ, Block.Face sideHit, Vector3f hitVec)
 	{

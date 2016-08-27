@@ -42,6 +42,27 @@ public class SimpleCommandHandler implements CommandHandler
 					player.update(0);
 					return "Player position set to (" + x + ", " + y + ", " + z + ")";
 				}
+				else if("enemy".equalsIgnoreCase(commandName))
+				{
+					double x = 0;
+					double y = 0;
+					double z = 0;
+					if(args.length == 4)
+					{
+						x = Double.parseDouble(args[1]);
+						y = Double.parseDouble(args[2]);
+						z = Double.parseDouble(args[3]);
+					}
+					else
+					{
+						x = player.posX + 10;
+						y = player.posY + 10;
+						z = player.posZ + 10;
+					}
+					world.spawnEnemy(x, y, z);
+					player.update(0);
+					return "Spawned enemy at (" + x + ", " + y + ", " + z + ")";
+				}
 				else
 				{
 					return String.format("Unknown command: %s", commandName);

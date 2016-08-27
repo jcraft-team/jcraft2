@@ -6,7 +6,7 @@ import java.util.concurrent.*;
 
 import com.chappelle.jcraft.*;
 import com.chappelle.jcraft.blocks.Block;
-import com.chappelle.jcraft.lighting.LightType;
+import com.chappelle.jcraft.lighting.*;
 import com.chappelle.jcraft.serialization.VoxelWorldSave;
 import com.chappelle.jcraft.util.*;
 import com.chappelle.jcraft.world.chunk.*;
@@ -37,6 +37,8 @@ public class World
 	private long seed;
 	private Node parent;
 	private VoxelWorldSave voxelWorldSave;
+	private List<Enemy> enemies = new ArrayList<>();
+	private LightManager lightManager;
 	
 	public World(Application app, CubesSettings settings, String name, long seed)
 	{
@@ -46,6 +48,17 @@ public class World
 		this.settings = settings;
         this.voxelWorldSave = new VoxelWorldSave(new File(GameFiles.getSaveDir(), "world.dat"));;
         this.chunkMgr = new ChunkManager(this);
+        this.lightManager = new FloodFillLightManager(this);
+	}
+	
+	public LightManager getLightManager()
+	{
+		return lightManager;
+	}
+	
+	public void addEnemy(Enemy enemy)
+	{
+		this.enemies.add(enemy);
 	}
 	
 	public void spawnPlayer(EntityPlayer player)
@@ -67,6 +80,14 @@ public class World
 		}
 
 		player.preparePlayerToSpawn();
+	}
+	
+	public void spawnEnemy(double x, double y, double z)
+	{
+		Enemy enemy = new Enemy(this);
+		enemy.setPosition(x, y, z);
+		enemies.add(enemy);
+		parent.addControl(new EnemyControl(app.getAssetManager(), enemy));
 	}
 	
 	public VoxelWorldSave getVoxelWorldSave()
@@ -148,7 +169,7 @@ public class World
 		int morningEnd = 8;
 		int nightStart = 17;
 		int nightEnd = 19;
-		float darkest = 0.2f;
+		float darkest = 0.14f;
 		if(hour < morningEnd && hour > morningStart)//Transition to daylight between 6 and 8
 		{
 			float denominator = morningEnd - morningStart;
@@ -300,10 +321,10 @@ public class World
 		{
 			Chunk chunk = localBlockState.getChunk();
 			Vector3Int chunkBlockLocation = localBlockState.getLocalBlockLocation();
-			chunk.lightMgr.setBlockLight(chunkBlockLocation, block.lightValue);
+			lightManager.setBlockLight(chunk, chunkBlockLocation, block.lightValue);
 			if(!block.isTransparent)
 			{
-				chunk.lightMgr.removeSunlight(chunkBlockLocation);
+				lightManager.removeSunlight(chunk, chunkBlockLocation);
 			}
 			
 			//Here we mark neighbor chunks dirty if we broke a block on the border. This is needed
@@ -353,8 +374,8 @@ public class World
 				}
 				localBlockState.removeBlock();
 				block.onBlockRemoved(this, location);
-				chunk.lightMgr.removeBlockLight(chunkBlockLocation);
-				chunk.lightMgr.restoreSunlight(chunkBlockLocation);
+				lightManager.removeBlockLight(chunk, chunkBlockLocation);
+				lightManager.restoreSunlight(chunk, chunkBlockLocation);
 				
 	            //Notify neighbors of block removal
 	            for (Block.Face face : Block.Face.values())
@@ -601,11 +622,23 @@ public class World
 		return boundingBoxes;
     }
     
+    public RayTrace rayTraceEntities(Vector3f position, Vector3f collisionEndPoint)
+    {
+    	for(Enemy enemy : enemies)
+    	{
+    		if(enemy.boundingBox.isVectorInside(position.subtract(collisionEndPoint)))
+    		{
+    			return new RayTrace(enemy);
+    		}
+    	}
+    	return null;
+    }
+    
     public RayTrace rayTraceBlocks(Vector3f position, Vector3f collisionEndPoint)
     {
-		if (!Double.isNaN(position.x) && !Double.isNaN(position.y) && !Double.isNaN(position.z))
+		if (Util.isValidVector3f(position))
 		{
-			if (!Double.isNaN(collisionEndPoint.x) && !Double.isNaN(collisionEndPoint.y) && !Double.isNaN(collisionEndPoint.z))
+			if (Util.isValidVector3f(collisionEndPoint))
 			{
 				int collisionX = MathUtils.floor_double(collisionEndPoint.x);
 				int collisionY = MathUtils.floor_double(collisionEndPoint.y);
@@ -627,7 +660,7 @@ public class World
 				int maxLoops = 200;
 				while (maxLoops-- >= 0)
 				{
-					if (Double.isNaN(position.x) || Double.isNaN(position.y) || Double.isNaN(position.z))
+					if (!Util.isValidVector3f(position))
 					{
 						return null;
 					}

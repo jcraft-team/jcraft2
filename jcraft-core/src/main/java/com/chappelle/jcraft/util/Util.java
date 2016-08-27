@@ -10,6 +10,11 @@ public class Util
 
 	private static final float MAX_FLOAT_ROUNDING_DIFFERENCE = 0.0001f;
 
+	public static boolean isValidVector3f(Vector3f vec)
+	{
+		return !Double.isNaN(vec.x) && !Double.isNaN(vec.y) && !Double.isNaN(vec.z);
+	}
+	
 	public static boolean isValidIndex(Vector3Int index)
 	{
 		return isValidIndex(index.x, index.y, index.z);

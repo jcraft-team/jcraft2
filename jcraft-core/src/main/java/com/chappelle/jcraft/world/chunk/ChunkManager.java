@@ -106,16 +106,10 @@ public class ChunkManager
 			}
 			initialChunks.add(chunk);
 			chunks.put(chunk.id, chunk);
+			finishedItems++;
 			progress.setPercentCompleted(finishedItems/(float)chunksToLoad);
 		}
-		finishedItems = 0;
-		progress.setNote("Propagating light");
-		for(Chunk chunk : initialChunks)
-		{
-			chunk.lightMgr.propagateLight();
-			finishedItems++;
-			progress.setPercentCompleted(finishedItems/(float)initialChunks.size());
-		}
+		world.getLightManager().propagateLight();
 		finishedItems = 0;
 		progress.setNote("Generating chunk mesh");
 		for(Chunk chunk : initialChunks)
@@ -207,7 +201,7 @@ public class ChunkManager
 		{
 			if(chunk.isDirty() && chunk.isLoaded)
 			{
-				chunk.lightMgr.propagateLight();
+				world.getLightManager().propagateLight();
 				final Mesh opaque = MeshGenerator.generateOptimizedMesh(chunk, false);
 				final Mesh transparent = MeshGenerator.generateOptimizedMesh(chunk, true);
 				world.enqueue(new ChunkMeshUpdater(chunk, opaque, transparent));

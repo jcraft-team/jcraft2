@@ -329,7 +329,15 @@ public class EntityPlayer extends Entity
 		float blockReachDistance = 5f;
         Vector3f origin = new Vector3f((float)posX, (float)posY, (float)posZ);
         Vector3f look = cam.getDirection().normalize().mult(blockReachDistance).add(new Vector3f((float)posX, (float)posY, (float)posZ));
-		return world.rayTraceBlocks(origin, look);
+        RayTrace rayTrace = world.rayTraceEntities(origin, look);
+        if(rayTrace == null)
+        {
+        	return world.rayTraceBlocks(origin, look);
+        }
+        else
+        {
+        	return rayTrace;
+        }
 	}
 	
     public Vector3f getCameraDirectionAsUnitVector()

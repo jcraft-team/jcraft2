@@ -66,29 +66,41 @@ public class HighlightSelectedBlockControl extends NodeControl
 				{
 					previousLocation.set(rayTrace.blockX, rayTrace.blockY, rayTrace.blockZ);
 					
-					Block block = world.getBlock(rayTrace.blockX, rayTrace.blockY, rayTrace.blockZ);
-					if(block != null)
+					if(rayTrace.enemy != null)
 					{
-						blockCursor.setCullHint(Spatial.CullHint.Never);
-						
-						AABB bb = block.getSelectedBoundingBox(world, rayTrace.blockX, rayTrace.blockY, rayTrace.blockZ);
-						if(bb != null)
+						AABB bb = rayTrace.enemy.boundingBox;
+						minPoint.set((float)bb.minX, (float)bb.minY, (float)bb.minZ);
+						maxPoint.set((float)bb.maxX, (float)bb.maxY, (float)bb.maxZ);
+						box.updateGeometry(minPoint, maxPoint);
+						blockCursor.setLocalTranslation(rayTrace.blockX, rayTrace.blockY, rayTrace.blockZ);
+
+					}
+					else
+					{
+						Block block = world.getBlock(rayTrace.blockX, rayTrace.blockY, rayTrace.blockZ);
+						if(block != null)
 						{
-							bb.offset(-rayTrace.blockX, -rayTrace.blockY, -rayTrace.blockZ);
-							bb.grow(0.005f);//Prevents the box from jittering when moving the camera
-							minPoint.set((float)bb.minX, (float)bb.minY, (float)bb.minZ);
-							maxPoint.set((float)bb.maxX, (float)bb.maxY, (float)bb.maxZ);
-							box.updateGeometry(minPoint, maxPoint);
-							blockCursor.setLocalTranslation(rayTrace.blockX, rayTrace.blockY, rayTrace.blockZ);
+							blockCursor.setCullHint(Spatial.CullHint.Never);
+							
+							AABB bb = block.getSelectedBoundingBox(world, rayTrace.blockX, rayTrace.blockY, rayTrace.blockZ);
+							if(bb != null)
+							{
+								bb.offset(-rayTrace.blockX, -rayTrace.blockY, -rayTrace.blockZ);
+								bb.grow(0.005f);//Prevents the box from jittering when moving the camera
+								minPoint.set((float)bb.minX, (float)bb.minY, (float)bb.minZ);
+								maxPoint.set((float)bb.maxX, (float)bb.maxY, (float)bb.maxZ);
+								box.updateGeometry(minPoint, maxPoint);
+								blockCursor.setLocalTranslation(rayTrace.blockX, rayTrace.blockY, rayTrace.blockZ);
+							}
+							else
+							{
+								blockCursor.setCullHint(Spatial.CullHint.Always);
+							}
 						}
 						else
 						{
 							blockCursor.setCullHint(Spatial.CullHint.Always);
 						}
-					}
-					else
-					{
-						blockCursor.setCullHint(Spatial.CullHint.Always);
 					}
 				}
 			}
