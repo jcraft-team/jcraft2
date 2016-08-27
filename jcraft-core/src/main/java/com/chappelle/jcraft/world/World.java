@@ -321,6 +321,10 @@ public class World
 		{
 			Chunk chunk = localBlockState.getChunk();
 			Vector3Int chunkBlockLocation = localBlockState.getLocalBlockLocation();
+			if(!block.isTransparent)
+			{
+				lightManager.removeBlockLight(chunk, chunkBlockLocation);
+			}
 			lightManager.setBlockLight(chunk, chunkBlockLocation, block.lightValue);
 			if(!block.isTransparent)
 			{

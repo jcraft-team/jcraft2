@@ -67,7 +67,8 @@ void main(){
 
     #ifdef HAS_VERTEXCOLOR
         vertColor = inColor;
-        vec3 lightColor = vec3(1.0,197/255.0,143/255.0);
+//        vec3 lightColor = vec3(1.0,197/255.0,143/255.0);
+        vec3 lightColor = vec3(1.0,1.0,1.0);
 	    vertColor = clamp(vec4(light * lightColor, inColor.a), vec4(0,0,0,0), vec4(1,1,1,1));
 //		vertColor.r = light;
 //		vertColor.g = light;
