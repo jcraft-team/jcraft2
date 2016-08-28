@@ -14,10 +14,9 @@ public class EntityPlayer extends Entity
 {
 	private final static Logger log = Logger.getLogger(EntityPlayer.class.getName()); 
 
-	private static final float MAX_SPEED = 0.08f;
-	private static final float WALK_SPEED = 1.0f;
-	private static final float NORMAL_FLYSPEED = 2.0f;
-	private static final float FAST_FLYSPEED = 5.0f;
+	private static final float WALK_SPEED = 0.02f;
+	private static final float NORMAL_FLYSPEED = WALK_SPEED*2;
+	private static final float FAST_FLYSPEED = NORMAL_FLYSPEED*2;
 	private float flySpeed = NORMAL_FLYSPEED;
 
 	private boolean up;
@@ -107,14 +106,14 @@ public class EntityPlayer extends Entity
 	{
 		if(!isFlying)
 		{
-			if(Math.abs(motionX) > MAX_SPEED)
-			{
-				motionX = MAX_SPEED*Math.signum(motionX);
-			}
-			if(Math.abs(motionZ) > MAX_SPEED)
-			{
-				motionZ = MAX_SPEED*Math.signum(motionZ);
-			}
+//			if(Math.abs(motionX) > MAX_SPEED)
+//			{
+//				motionX = MAX_SPEED*Math.signum(motionX);
+//			}
+//			if(Math.abs(motionZ) > MAX_SPEED)
+//			{
+//				motionZ = MAX_SPEED*Math.signum(motionZ);
+//			}
 		}
 	}
 
@@ -125,28 +124,28 @@ public class EntityPlayer extends Entity
 		{
 			speed = flySpeed;
 		}
-		Vector3f camDir = cam.getDirection().mult(tpf*speed);
-		Vector3f camLeft = cam.getLeft().mult(tpf*speed);
-
 		limitCameraRotation();
 		
+		float yaw = angles[1];
 		if(forward)
 		{
-			addVelocity(camDir.x, 0, camDir.z);
+			motionX += speed * FastMath.sin(yaw);
+			motionZ += speed * FastMath.cos(yaw);
 		}
 		if(right)
 		{
-			Vector3f negate = camLeft.negate();
-			addVelocity(negate.x, 0, negate.z);
+			motionX += speed * FastMath.sin(yaw-FastMath.HALF_PI);
+			motionZ += speed * FastMath.cos(yaw-FastMath.HALF_PI);
 		}
 		if(backward)
 		{
-			Vector3f negate = camDir.negate();
-			addVelocity(negate.x, 0, negate.z);
+			motionX += speed * FastMath.sin(yaw+FastMath.PI);
+			motionZ += speed * FastMath.cos(yaw+FastMath.PI);
 		}
 		if(left)
 		{
-			addVelocity(camLeft.x, 0, camLeft.z);
+			motionX += speed * FastMath.sin(yaw+FastMath.HALF_PI);
+			motionZ += speed * FastMath.cos(yaw+FastMath.HALF_PI);
 		}
 		if(isFlying)
 		{
