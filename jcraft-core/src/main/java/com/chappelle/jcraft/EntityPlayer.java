@@ -77,15 +77,9 @@ public class EntityPlayer extends Entity
 		
 		moveAccordingToUserInputs(tpf);
 		
-		this.motionY *= 0.9800000190734863D;
-
 		addFriction();
 		handleLadderMovement();
 		
-		if (isFlying)
-		{
-			this.motionY *= 0.6D;
-		} 
 		
 		capSpeed();
 		//At this point all movement should be done(ie. altering of the motion vectors)
@@ -151,11 +145,11 @@ public class EntityPlayer extends Entity
 		{
 			if(up)
 			{
-				addVelocity(0, flySpeed/10, 0);
+				addVelocity(0, flySpeed, 0);
 			}
 			if(down)
 			{
-				addVelocity(0, -flySpeed/10, 0);
+				addVelocity(0, -flySpeed, 0);
 			}
 		}
 	}

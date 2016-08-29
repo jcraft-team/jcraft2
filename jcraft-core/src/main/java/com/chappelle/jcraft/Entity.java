@@ -91,29 +91,18 @@ public class Entity
 	public void update(float tpf)
 	{
 		//Dampening
-		this.motionX *= 0.98D;
-		this.motionY *= 0.98D;
-		this.motionZ *= 0.98D;
-		if (Math.abs(this.motionX) < 0.005D)
-		{
-			this.motionX = 0.0D;
-		}
-
-		if (Math.abs(this.motionY) < 0.005D)
-		{
-			this.motionY = 0.0D;
-		}
-
-		if (Math.abs(this.motionZ) < 0.005D)
-		{
-			this.motionZ = 0.0D;
-		}
-		
 		if(!isFlying)
 		{
 			//Gravity
 			this.motionY -= 0.008D;
 		}
+		this.motionX *= 0.98D;
+		this.motionY *= 0.98D;
+		this.motionZ *= 0.98D;
+		if (isFlying)
+		{
+			this.motionY *= 0.8D;
+		} 
 		
 		//Update previous position before movement happens
 		prevPosX = posX;

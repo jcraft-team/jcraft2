@@ -507,8 +507,16 @@ public class FloodFillLightManager implements LightManager
 
 		if(chunk.isBlockExposedToDirectSunlight(localBlockLocation.x, localBlockLocation.y, localBlockLocation.z))
 		{
-			chunk.setLight(x, y, z, LightType.SKY, 15);
-			sunlightAdditionQueue.add(new LightNode(x,y,z, chunk));
+			for(int by = localBlockLocation.y; by >= 0; by--)
+			{
+				Block block = chunk.getBlock(x, by, z);
+				if(block != null && !block.isTransparent)
+				{
+					break;
+				}
+				chunk.setLight(x, by, z, LightType.SKY, 15);
+				sunlightAdditionQueue.add(new LightNode(x,by,z, chunk));
+			}
 		}
 		else
 		{
