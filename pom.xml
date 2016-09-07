@@ -32,6 +32,7 @@
 		<module>jcraft-jme3</module>
 		<module>jcraft-terrain-gen</module>
 		<module>jcraft-utilities</module>
+		<module>terasology-terrain-gen</module>
 	</modules>
 	<build>
 		<plugins>

@@ -19,15 +19,15 @@ public class FeatureInstaller implements WorldInitializer
 //		terrainGenerator.addFeature(new AOTestFeature(10));
 		
 		
-		terrainGenerator.addFeature(new Simplex3DFeature(seed, 0.01f, 0.1f, 4, 70)); 
-		terrainGenerator.addFeature(new Simplex2DFeature(seed,Blocks.grass.blockId).setSimplexScale(0.015f).setPersistence(0.2f).setIterations(4).setHeight(60));
-		terrainGenerator.addFeature(new Simplex2DFeature(seed).setSimplexScale(0.01f).setPersistence(0.12f).setIterations(4).setHeight(60));
-		terrainGenerator.addFeature(new Simplex2DFeature(seed).setSimplexScale(0.001f).setPersistence(0.2f).setIterations(4).setHeight(80));
-		terrainGenerator.addFeature(new Simplex2DFeature(seed).setSimplexScale(0.001f).setPersistence(0.09f).setIterations(4).setHeight(100));
-		terrainGenerator.addFeature(new BlockOreFeature(seed));
-		terrainGenerator.addFeature(new WaterFeature(45));
-		terrainGenerator.addFeature(new PlantFeature(seed));
-		terrainGenerator.addFeature(new TreeFeature(seed));
+//		terrainGenerator.addFeature(new Simplex3DFeature(seed, 0.01f, 0.1f, 4, 70)); 
+//		terrainGenerator.addFeature(new Simplex2DFeature(seed,Blocks.grass.blockId).setSimplexScale(0.015f).setPersistence(0.2f).setIterations(4).setHeight(60));
+//		terrainGenerator.addFeature(new Simplex2DFeature(seed).setSimplexScale(0.01f).setPersistence(0.12f).setIterations(4).setHeight(60));
+//		terrainGenerator.addFeature(new Simplex2DFeature(seed).setSimplexScale(0.001f).setPersistence(0.2f).setIterations(4).setHeight(80));
+//		terrainGenerator.addFeature(new Simplex2DFeature(seed).setSimplexScale(0.001f).setPersistence(0.09f).setIterations(4).setHeight(100));
+//		terrainGenerator.addFeature(new BlockOreFeature(seed));
+//		terrainGenerator.addFeature(new WaterFeature(45));
+//		terrainGenerator.addFeature(new PlantFeature(seed));
+//		terrainGenerator.addFeature(new TreeFeature(seed));
 		
 		
 //		terrainGenerator.addFeature(new ShowNegativeCoordinatesAndChunkBoundariesFeature());

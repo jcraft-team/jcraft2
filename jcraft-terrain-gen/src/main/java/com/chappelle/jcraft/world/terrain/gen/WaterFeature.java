@@ -10,10 +10,10 @@ public class WaterFeature implements Feature
 	private int waterLevel;
 	private Random rand;
 	
-	public WaterFeature(int waterLevel)
+	public WaterFeature(long seed, int waterLevel)
 	{
 		this.waterLevel = waterLevel;
-		this.rand = new Random();
+		this.rand = new Random(seed + 3);
 	}
 	
 	@Override
