@@ -3,9 +3,9 @@ package com.chappelle.jcraft.world.terrain.gen;
 import java.util.Random;
 
 import com.chappelle.jcraft.blocks.*;
-import com.chappelle.jcraft.world.chunk.Feature;
+import com.chappelle.jcraft.world.chunk.*;
 
-public class PlantFeature implements Feature
+public class PlantFeature extends AbstractFeature
 {
 	private Random rand;
 	private byte[] plants = new byte[]{Blocks.plantRed.blockId, Blocks.plantYellow.blockId, Blocks.mushroomBrown.blockId, Blocks.mushroomRed.blockId, Blocks.tallGrass.blockId};

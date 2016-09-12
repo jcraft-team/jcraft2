@@ -10,7 +10,7 @@ public class Entity
 	public float yAcceleration = -9.8f;
 
 	/** Sets/indicates whether the player is flying. */
-	public boolean isFlying;
+	public boolean isFlying = true;
 
 	public boolean isAirBorne;
 	private boolean gravityEnabled = true;

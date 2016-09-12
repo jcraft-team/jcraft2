@@ -3,9 +3,9 @@ package com.chappelle.jcraft.world.terrain.gen;
 import java.util.Random;
 
 import com.chappelle.jcraft.blocks.*;
-import com.chappelle.jcraft.world.chunk.Feature;
+import com.chappelle.jcraft.world.chunk.*;
 
-public class Simplex2DFeature implements Feature
+public class Simplex2DFeature extends AbstractFeature
 {
     private double simplexScale;
     private float persistence;

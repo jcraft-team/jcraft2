@@ -3,9 +3,9 @@ package com.chappelle.jcraft.world.terrain.gen;
 import java.util.Random;
 
 import com.chappelle.jcraft.blocks.*;
-import com.chappelle.jcraft.world.chunk.Feature;
+import com.chappelle.jcraft.world.chunk.*;
 
-public class BlockOreFeature implements Feature
+public class BlockOreFeature extends AbstractFeature
 {
 	private Random rand;
 	

@@ -73,7 +73,7 @@ void main(){
 //		vertColor.r = light;
 //		vertColor.g = light;
 //		vertColor.b = light;
-//		vertColor.a = 1.0;
+		vertColor.a = 1.0;
     #endif
 
     vec4 modelSpacePos = vec4(inPosition, 1.0);

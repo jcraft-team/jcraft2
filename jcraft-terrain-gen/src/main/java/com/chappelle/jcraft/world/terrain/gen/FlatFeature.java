@@ -1,9 +1,9 @@
 package com.chappelle.jcraft.world.terrain.gen;
 
 import com.chappelle.jcraft.blocks.*;
-import com.chappelle.jcraft.world.chunk.Feature;
+import com.chappelle.jcraft.world.chunk.*;
 
-public class FlatFeature implements Feature
+public class FlatFeature extends AbstractFeature
 {
 	private int height;
 	private Block block;

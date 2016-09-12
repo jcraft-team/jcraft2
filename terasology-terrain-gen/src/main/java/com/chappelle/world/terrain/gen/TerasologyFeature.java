@@ -4,9 +4,9 @@ import org.terasology.math.geom.Vector2f;
 import org.terasology.utilities.procedural.*;
 
 import com.chappelle.jcraft.blocks.Blocks;
-import com.chappelle.jcraft.world.chunk.Feature;
+import com.chappelle.jcraft.world.chunk.*;
 
-public class TerasologyFeature implements Feature
+public class TerasologyFeature extends AbstractFeature
 {
 	private final Noise surfaceNoise;
 	private final int seaLevel;

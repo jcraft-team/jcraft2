@@ -1,9 +1,9 @@
 package com.chappelle.jcraft.world.terrain.gen;
 
 import com.chappelle.jcraft.blocks.Blocks;
-import com.chappelle.jcraft.world.chunk.Feature;
+import com.chappelle.jcraft.world.chunk.*;
 
-public class CellNoise2DFeature implements Feature
+public class CellNoise2DFeature extends AbstractFeature
 {
     private final double simplexScale; // range from around 0.015 to around 0.001  The higher the number the more rugged and extreme the terain.
     private final float persistence;

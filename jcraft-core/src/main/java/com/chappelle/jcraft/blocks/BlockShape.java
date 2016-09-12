@@ -1,16 +1,35 @@
 package com.chappelle.jcraft.blocks;
 
-import java.util.List;
+import java.util.*;
 
 import com.chappelle.jcraft.*;
 import com.chappelle.jcraft.lighting.LightType;
 import com.chappelle.jcraft.util.BlockNavigator;
 import com.chappelle.jcraft.world.World;
 import com.chappelle.jcraft.world.chunk.Chunk;
-import com.jme3.math.Vector2f;
+import com.jme3.math.*;
+
+import gnu.trove.list.TFloatList;
 
 public abstract class BlockShape
 {
+	protected Map<Block.Face, Boolean> fullSide = new HashMap<>();
+	
+	public BlockShape()
+	{
+		for(Block.Face face : Block.Face.values())
+		{
+			fullSide.put(face, Boolean.TRUE);
+		}
+	}
+	
+    protected void addPositions(TFloatList positions, Vector3f positionsVec3f)
+    {
+    	positions.add(positionsVec3f.x);
+    	positions.add(positionsVec3f.y);
+    	positions.add(positionsVec3f.z);
+    }
+
 	public abstract void addTo(MeshData meshData, Chunk chunk, Block block, Vector3Int blockLocation, boolean isTransparent);
 
 	/**
@@ -34,9 +53,8 @@ public abstract class BlockShape
 			if(blockSkin.isTransparent() == isTransparent)
 			{
 				Chunk neighborChunk = null;
-				Block neighborBlock = null;
 				Vector3Int neighborBlockLocation = BlockNavigator.getNeighborBlockLocalLocation(blockLocation, face);
-				neighborBlock = chunk.getBlock(neighborBlockLocation);
+				Block neighborBlock = chunk.getBlock(neighborBlockLocation);
 				if(neighborBlock == null)//Check neighboring chunks
 				{
 					if(neighborBlockLocation.x < 0)
@@ -73,7 +91,11 @@ public abstract class BlockShape
 					}
 				}
 				
-				if(neighborBlock != null)
+				if(neighborBlock == null)
+				{
+					return true;
+				}
+				else
 				{
 					if(neighborChunk == null)
 					{
@@ -85,16 +107,18 @@ public abstract class BlockShape
 						return true;
 					}
 					BlockShape neighborShape = neighborBlock.getShape(neighborChunk, neighborBlockLocation);
-					return (!(canBeMerged(face) && neighborShape.canBeMerged(BlockNavigator.getOppositeFace(face))));
+					return !isFullSide(face) || !neighborShape.isFullSide(BlockNavigator.getOppositeFace(face));
 				}
-				return true;
 			}
 			return false;
 		}
 	}
 
-	protected abstract boolean canBeMerged(Block.Face face);
-
+	protected boolean isFullSide(Block.Face face)
+	{
+		return fullSide.get(face);
+	}
+	
 	protected Vector2f getTextureCoordinates(Chunk chunk, BlockSkin_TextureLocation textureLocation, float xUnitsToAdd, float yUnitsToAdd)
 	{
 		float textureUnitX = (1f / CubesSettings.getInstance().getTexturesCountX());
@@ -103,8 +127,20 @@ public abstract class BlockShape
 		float y = ((((-1 * textureLocation.getRow()) + (yUnitsToAdd - 1)) * textureUnitY) + 1);
 		return new Vector2f(x, y);
 	}
+
+	protected float getTextureCoordinatesX(Chunk chunk, BlockSkin_TextureLocation textureLocation, float xUnitsToAdd, float yUnitsToAdd)
+	{
+		float textureUnitX = (1f / CubesSettings.getInstance().getTexturesCountX());
+		return (((textureLocation.getColumn() + xUnitsToAdd) * textureUnitX));
+	}
+
+	protected float getTextureCoordinatesY(Chunk chunk, BlockSkin_TextureLocation textureLocation, float xUnitsToAdd, float yUnitsToAdd)
+	{
+		float textureUnitY = (1f / CubesSettings.getInstance().getTexturesCountY());
+		return ((((-1 * textureLocation.getRow()) + (yUnitsToAdd - 1)) * textureUnitY) + 1);
+	}
 	
-    protected void addLighting(List<Float> colors, Chunk chunk, Vector3Int location, Block.Face face)
+    protected void addLighting(TFloatList colors, Chunk chunk, Vector3Int location, Block.Face face)
     {
     	int blockLight = 15;
     	int skyLight = 15;

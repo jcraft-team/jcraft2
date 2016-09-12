@@ -63,11 +63,13 @@
 			<artifactId>jcraft-terrain-gen</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
+		<!-- 
 		<dependency>
 			<groupId>com.chappelle</groupId>
 			<artifactId>terasology-terrain-gen</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
+		 -->
 		<dependency>
 			<groupId>${jme.groupId}</groupId>
 			<artifactId>jme3-core</artifactId>

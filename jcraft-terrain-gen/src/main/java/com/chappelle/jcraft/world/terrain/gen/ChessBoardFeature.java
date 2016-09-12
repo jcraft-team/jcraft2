@@ -1,9 +1,9 @@
 package com.chappelle.jcraft.world.terrain.gen;
 
 import com.chappelle.jcraft.blocks.*;
-import com.chappelle.jcraft.world.chunk.Feature;
+import com.chappelle.jcraft.world.chunk.*;
 
-public class ChessBoardFeature implements Feature
+public class ChessBoardFeature extends AbstractFeature
 {
 	
 	public ChessBoardFeature()

@@ -23,8 +23,7 @@ public class WorldLoadingCallable implements LoadingCallable
 	@Override
 	public Void call() throws Exception
 	{
-		world.getChunkManager().initialize(progressMonitor, player.posX, player.posZ, GameSettings.chunkRenderDistance);
-		world.spawnPlayer(player);
+		world.getChunkManager().initializeChunks(progressMonitor, player.posX, player.posZ, GameSettings.chunkRenderDistance);
 		return null;
 	}
 

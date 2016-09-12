@@ -3,9 +3,9 @@ package com.chappelle.jcraft.world.terrain.gen;
 import java.util.Random;
 
 import com.chappelle.jcraft.blocks.Blocks;
-import com.chappelle.jcraft.world.chunk.Feature;
+import com.chappelle.jcraft.world.chunk.*;
 
-public class WaterFeature implements Feature
+public class WaterFeature extends AbstractFeature
 {
 	private int waterLevel;
 	private Random rand;

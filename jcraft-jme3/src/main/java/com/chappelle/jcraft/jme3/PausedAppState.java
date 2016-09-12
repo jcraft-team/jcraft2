@@ -88,6 +88,7 @@ public class PausedAppState extends BaseAppState
 	protected void onEnable()
 	{
 		application.getGuiNode().attachChild(pauseOptionsContainer);
+		GuiGlobals.getInstance().setCursorEventsEnabled(true);
 	}
 
 	@Override

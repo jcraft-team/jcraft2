@@ -3,9 +3,9 @@ package com.chappelle.jcraft.world.terrain.gen;
 import java.util.Random;
 
 import com.chappelle.jcraft.blocks.*;
-import com.chappelle.jcraft.world.chunk.Feature;
+import com.chappelle.jcraft.world.chunk.*;
 
-public class NoiseFeature implements Feature
+public class NoiseFeature extends AbstractFeature
 {
 	private final Random rand;
 	private final float roughness;

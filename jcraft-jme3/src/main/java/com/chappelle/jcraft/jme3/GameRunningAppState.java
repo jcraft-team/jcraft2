@@ -19,6 +19,7 @@ import com.jme3.math.ColorRGBA;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.*;
 import com.jme3.system.AppSettings;
+import com.simsilica.lemur.GuiGlobals;
 
 public class GameRunningAppState extends BaseInputAppState<JCraftApplication>
 {
@@ -144,8 +145,8 @@ public class GameRunningAppState extends BaseInputAppState<JCraftApplication>
 		super.onEnable();
 		
 		safeSetEnableAppState(getState(StatsAppState.class), GameSettings.debugEnabled);
-		
 		setPlayerEnabled(true);
+		GuiGlobals.getInstance().setCursorEventsEnabled(false);
 	}
 
 	@Override
@@ -226,12 +227,12 @@ public class GameRunningAppState extends BaseInputAppState<JCraftApplication>
 		}
 		else if("RebuildChunks".equals(name) && !isPressed)
 		{
-			world.rebuildChunks();
+			world.getChunkManager().rebuildChunks();
 		}
 		else if("ToggleAmbientOcclusion".equals(name) && !isPressed)
 		{
 			GameSettings.ambientOcclusionEnabled = !GameSettings.ambientOcclusionEnabled;
-			world.rebuildChunks();
+			world.getChunkManager().rebuildChunks();
 		}
 		else if("pause".equals(name) && !isPressed)
 		{

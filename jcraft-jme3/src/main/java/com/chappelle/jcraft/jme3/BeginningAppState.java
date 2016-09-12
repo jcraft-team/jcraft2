@@ -5,11 +5,13 @@ import java.util.logging.Logger;
 
 import com.chappelle.jcraft.*;
 import com.chappelle.jcraft.jme3.appstate.BaseInputAppState;
-import com.chappelle.jcraft.jme3.ui.*;
+import com.chappelle.jcraft.jme3.ui.ClickSoundButton;
+import com.chappelle.jcraft.serialization.VoxelWorldSave;
+import com.chappelle.jcraft.util.Context;
 import com.chappelle.jcraft.world.World;
+import com.chappelle.jcraft.world.chunk.Feature;
 import com.jme3.app.*;
 import com.jme3.app.state.AppStateManager;
-import com.jme3.asset.AssetManager;
 import com.jme3.audio.*;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
@@ -25,13 +27,15 @@ public class BeginningAppState extends BaseInputAppState<JCraftApplication>
 	
 	public World world;
 	protected EntityPlayer player;
-	private CubesSettings cubesSettings;
 	
 	private SettingsAppState settingsAppState;
+	private Context context;
 
-	//Plugin api
-	private List<WorldInitializer> worldInitializers = new ArrayList<>();
-
+	public BeginningAppState(Context context)
+	{
+		this.context = context;
+	}
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void initialize(Application app)
@@ -107,30 +111,26 @@ public class BeginningAppState extends BaseInputAppState<JCraftApplication>
 
 	private void startGame()
 	{
-		AssetManager assetManager = getApplication().getAssetManager();
-		cubesSettings = new CubesSettings(assetManager, new ChunkMaterial(assetManager, "Textures/FaithfulBlocks.png"));
 		long seed = getSeed();
+		context.put(ChunkGenerator.class, new ChunkGeneratorImpl(seed, getFeatures()));
+
 		log.info("Using world seed: " + seed);
 		log.info("Creating new world...get ready!");
-		world = new World(getApplication(), cubesSettings, "JCraftWorld", seed);
-		addInitializers(worldInitializers, WorldInitializer.class);
+		world = new World(getApplication(), context, "JCraftWorld", seed);
 
 		Camera camera = getMyApplication().getCamera();
 		player = new EntityPlayer(world, camera);
-		
-		configureWorld(world);
+		// Setup player
+		Vector3f playerLocation = (Vector3f)context.get(VoxelWorldSave.class).getGameData("playerLocation");
+		if(playerLocation != null)
+		{
+			player.setPosition(playerLocation.x, playerLocation.y, playerLocation.z);
+		}
+
 		
 		AppStateManager stateManager = getMyApplication().getStateManager();
 		BeginningAppState.this.setEnabled(false);
 		stateManager.attach(new LoadingAppState(new WorldLoadingCallable(world, player, getMyApplication().getSettings())));
-	}
-
-	private void configureWorld(World world)
-	{
-		for(WorldInitializer gi : worldInitializers)
-		{
-			gi.configureWorld(world);
-		}
 	}
 
 	private long getSeed()
@@ -144,13 +144,15 @@ public class BeginningAppState extends BaseInputAppState<JCraftApplication>
 		return seed;
 	}
 
-	private <T> void addInitializers(List<T> list, Class<T> initializerClass)
+	private List<Feature> getFeatures()
 	{
-		Iterator<T> initializersIterator = ServiceLoader.load(initializerClass).iterator();
+		List<Feature> result = new ArrayList<>();
+		Iterator<FeatureProvider> initializersIterator = ServiceLoader.load(FeatureProvider.class).iterator();
 		while(initializersIterator.hasNext())
 		{
-			list.add(initializersIterator.next());
+			result.addAll(initializersIterator.next().getFeatures());
 		}
+		return result;
 	}
 
 	@Override
@@ -161,6 +163,7 @@ public class BeginningAppState extends BaseInputAppState<JCraftApplication>
 		disableAppState(getState(StatsAppState.class));
 		
 		getMyApplication().getGuiNode().attachChild(beginningOptionsContainer);
+		
 	}
 
 	@Override

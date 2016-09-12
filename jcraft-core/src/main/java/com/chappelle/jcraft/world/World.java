@@ -1,6 +1,5 @@
 package com.chappelle.jcraft.world;
 
-import java.io.File;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -19,9 +18,6 @@ import com.jme3.scene.Node;
 
 public class World
 {
-	private static final int THREAD_COUNT = 1;
-	public ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(THREAD_COUNT);
-
 	private CubesSettings settings;
 
 	private final String name;
@@ -32,23 +28,32 @@ public class World
 	
 	private Application app;
 	public Node node = new Node("world");
-	private ChunkManager chunkMgr;
+	private ChunkManager chunkManager;
 	private List<WorldListener> listeners = new ArrayList<>();
 	private long seed;
 	private Node parent;
 	private VoxelWorldSave voxelWorldSave;
 	private List<Enemy> enemies = new ArrayList<>();
 	private LightManager lightManager;
+	private final Context context;
 	
-	public World(Application app, CubesSettings settings, String name, long seed)
+	public World(Application app, Context context, String name, long seed)
 	{
+		this.context = context;
+		this.context.put(World.class, this);
 		this.seed = seed;
 		this.app = app;
 		this.name = name;
-		this.settings = settings;
-        this.voxelWorldSave = new VoxelWorldSave(new File(GameFiles.getSaveDir(), "world.dat"));;
-        this.chunkMgr = new ChunkManager(this);
+		this.settings = context.get(CubesSettings.class);
+        this.voxelWorldSave = context.get(VoxelWorldSave.class);
+        
+        this.chunkManager = new ConcurrentChunkManager(context);
+//        this.chunkManager = new NonConcurrentChunkManager(context);
+//        this.chunkManager = new OldChunkManager(context);
+        this.context.put(ChunkManager.class, chunkManager);
+
         this.lightManager = new FloodFillLightManager(this);
+        this.context.put(LightManager.class, lightManager);
 	}
 	
 	public LightManager getLightManager()
@@ -72,13 +77,6 @@ public class World
 		}
 		camera.lookAtDirection(lookAt, Vector3f.UNIT_Y);
 		
-		// Setup player
-		Vector3f playerLocation = (Vector3f)voxelWorldSave.getGameData("playerLocation");
-		if(playerLocation != null)
-		{
-			player.setPosition(playerLocation.x, playerLocation.y, playerLocation.z);
-		}
-
 		player.preparePlayerToSpawn();
 	}
 	
@@ -138,14 +136,14 @@ public class World
 	
 	public ChunkManager getChunkManager()
 	{
-		return chunkMgr;
+		return chunkManager;
 	}
 	
 	public void update(float tpf)
 	{
 		updateTimeOfDay();
 
-		chunkMgr.update();
+		chunkManager.update();
 		
 //		terrainGenerator.generateTerrainAroundPlayer(player.posX, player.posZ, 3);
 	}
@@ -156,7 +154,7 @@ public class World
 		{
 			float hour = timeOfDayProvider.getTimeOfDay();
 			float dayNightLighting = calculateDayNightLighting(hour);
-			for(Chunk chunk : chunkMgr.getLoadedChunks())
+			for(Chunk chunk : chunkManager.getLoadedChunks())
 			{
 				chunk.setDayNightLighting(dayNightLighting);
 			}
@@ -213,7 +211,7 @@ public class World
 	
 	public int getLoadedChunkCount()
 	{
-		return chunkMgr.getLoadedChunkCount();
+		return chunkManager.getLoadedChunks().size();
 	}
 	
 	public List<Chunk> getNearbyChunks(int radius)
@@ -245,7 +243,7 @@ public class World
 	 */
     public void playSound(String name)
     {
-    	makeAudio(name).play();//TODO: Could be a lot of object creation. May want to somehow pool these nodes or something in the future
+//    	makeAudio(name).play();//TODO: Could be a lot of object creation. May want to somehow pool these nodes or something in the future
     }
 
     /**
@@ -256,7 +254,7 @@ public class World
      */
     public void playSound(String name, int fileVariants)
     {
-		playSound(name + (random.nextInt(3) + 1) + ".ogg");
+//		playSound(name + (random.nextInt(3) + 1) + ".ogg");
     }
 
     protected AudioNode makeAudio(String location)
@@ -267,11 +265,6 @@ public class World
         return result;
     }
     
-    public void rebuildChunks()
-    {
-    	chunkMgr.rebuildChunks();
-    }
-
     public boolean isOpaqueBlockPresent(int x, int y, int z)
     {
     	if(y > 255 || y < 0)
@@ -478,13 +471,13 @@ public class World
 	
 	public Chunk getChunkFromChunkCoordinates(int chunkX, int chunkZ)
 	{
-		return chunkMgr.getChunk(chunkX, chunkZ);
+		return chunkManager.getChunk(chunkX, chunkZ);
 	}
 
 	public Chunk getChunkNeighbor(Chunk chunk, Direction direction)
 	{
 		Vector3Int chunkLocation = chunk.location.add(direction.getVector());
-		return chunkMgr.getChunk(chunkLocation.getX(), chunkLocation.getZ());
+		return chunkManager.getChunk(chunkLocation.getX(), chunkLocation.getZ());
 	}
 	
 	/**
@@ -845,8 +838,7 @@ public class World
 
 	public void destroy()
 	{
-		executor.shutdown();
-		chunkMgr.destroy();
+		chunkManager.destroy();
 		parent.detachChild(node);
 		voxelWorldSave.closeDB();
 	}

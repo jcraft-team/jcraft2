@@ -13,4 +13,6 @@ public interface Feature
 	 * @param blockTypes The array of block types in a chunk
 	 */
 	void generate(int chunkX, int chunkZ, byte[][][] blockTypes);
+	
+	void setSeed(long seed);
 }

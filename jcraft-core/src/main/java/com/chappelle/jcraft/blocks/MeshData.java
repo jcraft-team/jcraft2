@@ -1,15 +1,16 @@
 package com.chappelle.jcraft.blocks;
 
-import java.util.LinkedList;
+import com.chappelle.jcraft.util.Vector3fPool;
 
-import com.jme3.math.Vector2f;
-import com.jme3.math.Vector3f;
+import gnu.trove.list.*;
+import gnu.trove.list.array.*;
 
 public class MeshData
 {
-    public LinkedList<Vector3f> positionsList = new LinkedList<Vector3f>();
-    public LinkedList<Short> indicesList = new LinkedList<Short>();
-    public LinkedList<Float> normalsList = new LinkedList<Float>();
-    public LinkedList<Vector2f> textureCoordinatesList = new LinkedList<Vector2f>();
-    public LinkedList<Float> colorList = new LinkedList<>();
+    public TFloatList positionsList = new TFloatArrayList();
+    public TShortList indicesList = new TShortArrayList();
+    public TFloatList normalsList = new TFloatArrayList();
+    public TFloatList textureCoordinatesList = new TFloatArrayList();
+    public TFloatList colorList = new TFloatArrayList();
+    public Vector3fPool vec3Pool = new Vector3fPool();
 }

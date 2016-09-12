@@ -19,8 +19,9 @@ public class Chunk implements BitSerializable
 {
 	private long lastSavedTime = System.currentTimeMillis();
 	private long lastModifiedTime;
+	private long lastMeshUpdateTime;
 	private int[][] heightMap;
-	private Integer[][][] data = new Integer[16][256][16];
+	private int[][][] data = new int[16][256][16];
 	private BitField blockTypeField  = new BitField(0xFF000000);
 	private BitField blockLightField = new BitField(0x00F00000);
 	private BitField skyLightField   = new BitField(0x000F0000);
@@ -29,13 +30,14 @@ public class Chunk implements BitSerializable
 	public Vector3Int location = new Vector3Int();
     public Vector3Int blockLocation = new Vector3Int();
     
-    private boolean needsMeshUpdate = true;
     public World world;
     public boolean isLoaded;
     private boolean isAddedToScene;
 
-	private Geometry optimizedGeometry_Opaque; 
-	private Geometry optimizedGeometry_Transparent; 
+	private Mesh pendingOpaqueMesh; 
+	private Mesh pendingTransparentMesh; 
+	private Geometry geomOpaque; 
+	private Geometry geomTransparent; 
 	private Node node = new Node();
 	public Long id;
 	public boolean isLightUpdating;
@@ -45,7 +47,7 @@ public class Chunk implements BitSerializable
 		this(world, x, z, new byte[16][256][16]);
 	}
 	
-	public Chunk(World world, int x, int z, Integer[][][] data)
+	public Chunk(World world, int x, int z, int[][][] data)
 	{
     	this.world = world;
     	location.set(x, 0, z);
@@ -65,6 +67,7 @@ public class Chunk implements BitSerializable
     	node.setLocalTranslation(new Vector3f(blockLocation.getX(), blockLocation.getY(), blockLocation.getZ()));
     	this.id = ChunkCoordIntPair.chunkXZ2Int(x, z); 
     	this.heightMap = makeHeightMap(blockTypes);
+//    	world.getLightManager().initSunlight(this);
 	}
 	
     public Chunk(World world, int x, int z, byte[][][] blockTypes)
@@ -72,7 +75,7 @@ public class Chunk implements BitSerializable
     	this.world = world;
     	location.set(x, 0, z);
     	blockLocation.set(location.mult(16, 256, 16));
-    	this.data = new Integer[16][256][16];
+    	this.data = new int[16][256][16];
     	for(int i = 0; i < 16; i++)
     	{
     		for(int j = 0; j < 256; j++)
@@ -87,12 +90,22 @@ public class Chunk implements BitSerializable
     	node.setLocalTranslation(new Vector3f(blockLocation.getX(), blockLocation.getY(), blockLocation.getZ()));
     	this.id = ChunkCoordIntPair.chunkXZ2Int(x, z); 
     	this.heightMap = makeHeightMap(blockTypes);
-    	world.getLightManager().initSunlight(this);
+//    	world.getLightManager().initSunlight(this);
+    }
+    
+    public boolean hasPendingMesh()
+    {
+    	return pendingOpaqueMesh != null || pendingTransparentMesh != null;
     }
     
     public boolean isLoadedAndAddedToScene()
     {
     	return isLoaded && isAddedToScene;
+    }
+    
+    public boolean isAddedToScene()
+    {
+    	return isAddedToScene;
     }
     
     public boolean hasChangedSinceLastSave()
@@ -207,6 +220,23 @@ public class Chunk implements BitSerializable
     	isAddedToScene = false;
     }
 
+    public void setPendingMesh(Mesh opaqueMesh, Mesh transparentMesh)
+    {
+    	this.pendingOpaqueMesh = opaqueMesh;
+    	this.pendingTransparentMesh = transparentMesh;
+    	lastMeshUpdateTime = System.currentTimeMillis();
+    }
+    
+    public void setMeshFromPending()
+    {
+    	if(hasPendingMesh())
+    	{
+    		setMesh(pendingOpaqueMesh, pendingTransparentMesh);
+    	}
+		pendingOpaqueMesh = null;
+		pendingTransparentMesh = null;
+    }
+    
     /**
      * Updates the mesh. NEVER CALL THIS FROM A THREAD OTHER THAN THE MAIN THREAD!
      * @param opaqueMesh
@@ -214,32 +244,31 @@ public class Chunk implements BitSerializable
      */
     public void setMesh(Mesh opaqueMesh, Mesh transparentMesh)
     {
-		if(optimizedGeometry_Opaque == null)
+		if(geomOpaque == null)
 		{
-			optimizedGeometry_Opaque = new Geometry("");
-			optimizedGeometry_Opaque.setQueueBucket(Bucket.Opaque);
-			node.attachChild(optimizedGeometry_Opaque);
-			optimizedGeometry_Opaque.setMaterial(world.getBlockMaterial());
+			geomOpaque = new Geometry("");
+			geomOpaque.setQueueBucket(Bucket.Opaque);
+			node.attachChild(geomOpaque);
+			geomOpaque.setMaterial(world.getBlockMaterial());
 		}
-		if(optimizedGeometry_Transparent == null)
+		if(geomTransparent == null)
 		{
-			optimizedGeometry_Transparent = new Geometry("");
-			optimizedGeometry_Transparent.setQueueBucket(Bucket.Transparent);
-			node.attachChild(optimizedGeometry_Transparent);
-			optimizedGeometry_Transparent.setMaterial(world.getBlockMaterial());
+			geomTransparent = new Geometry("");
+			geomTransparent.setQueueBucket(Bucket.Transparent);
+			node.attachChild(geomTransparent);
+			geomTransparent.setMaterial(world.getBlockMaterial());
 		}
-		optimizedGeometry_Opaque.setMesh(opaqueMesh);
-		optimizedGeometry_Transparent.setMesh(transparentMesh);
+		geomOpaque.setMesh(opaqueMesh);
+		geomTransparent.setMesh(transparentMesh);
 		isLoaded = true;
-		needsMeshUpdate = false;
     }
     
 	public void setDayNightLighting(float dayNightLighting)
 	{
-		if(optimizedGeometry_Opaque != null && optimizedGeometry_Transparent != null)
+		if(geomOpaque != null && geomTransparent != null)
 		{
-			this.optimizedGeometry_Opaque.getMaterial().setFloat("dayNightLighting", dayNightLighting);
-			this.optimizedGeometry_Transparent.getMaterial().setFloat("dayNightLighting", dayNightLighting);
+			this.geomOpaque.getMaterial().setFloat("dayNightLighting", dayNightLighting);
+			this.geomTransparent.getMaterial().setFloat("dayNightLighting", dayNightLighting);
 		}
 	}
 	
@@ -250,12 +279,11 @@ public class Chunk implements BitSerializable
 
     public boolean isDirty()
     {
-    	return needsMeshUpdate;
+    	return lastMeshUpdateTime < lastModifiedTime;
     }
     
     public void markDirty()
     {
-    	this.needsMeshUpdate = true;
     	this.lastModifiedTime = System.currentTimeMillis();
     }
 
@@ -280,7 +308,7 @@ public class Chunk implements BitSerializable
 		return skyLightField.getValue(data[x][y][z]);
 	}
 	
-	public Integer[][][] getData()
+	public int[][][] getData()
 	{
 		return data;
 	}
@@ -354,12 +382,7 @@ public class Chunk implements BitSerializable
 
     public boolean isBlockOnSurface(Vector3Int location)
     {
-    	if(location.y == 255)
-    	{
-    		return true;
-    	}
-    	Block topBlock = getBlock(location.add(0, 1, 0));
-		return topBlock == null || !topBlock.isOpaqueCube();
+    	return heightMap[location.x][location.z] == location.y;
     }
 
     private Vector3Int getNeighborBlockGlobalLocation(Vector3Int location, Block.Face face)
