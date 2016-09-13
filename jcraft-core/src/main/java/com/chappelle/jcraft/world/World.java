@@ -8,6 +8,8 @@ import com.chappelle.jcraft.blocks.Block;
 import com.chappelle.jcraft.lighting.*;
 import com.chappelle.jcraft.serialization.VoxelWorldSave;
 import com.chappelle.jcraft.util.*;
+import com.chappelle.jcraft.util.math.*;
+import com.chappelle.jcraft.util.physics.*;
 import com.chappelle.jcraft.world.chunk.*;
 import com.jme3.app.Application;
 import com.jme3.audio.*;
@@ -21,7 +23,6 @@ public class World
 	private CubesSettings settings;
 
 	private final String name;
-	private Random random = new Random();
 	private List<Entity> entities = new ArrayList<Entity>();
 	private EntityPlayer player;
 	private TimeOfDayProvider timeOfDayProvider = new FixedTimeOfDayProvider(12);
@@ -48,8 +49,6 @@ public class World
         this.voxelWorldSave = context.get(VoxelWorldSave.class);
         
         this.chunkManager = new ConcurrentChunkManager(context);
-//        this.chunkManager = new NonConcurrentChunkManager(context);
-//        this.chunkManager = new OldChunkManager(context);
         this.context.put(ChunkManager.class, chunkManager);
 
         this.lightManager = new FloodFillLightManager(this);
@@ -69,7 +68,7 @@ public class World
 	public void spawnPlayer(EntityPlayer player)
 	{
 		Camera camera = player.cam;
-		camera.setFrustumPerspective(45f, (float) camera.getWidth() / camera.getHeight(), 0.01f, 500f);
+		camera.setFrustumPerspective(45f, (float) camera.getWidth() / camera.getHeight(), 0.01f, 1000f);
 		Vector3f lookAt = (Vector3f)voxelWorldSave.getGameData("playerLookDirection");
 		if(lookAt == null)
 		{
@@ -143,9 +142,9 @@ public class World
 	{
 		updateTimeOfDay();
 
+		lightManager.propagateLight();
+
 		chunkManager.update();
-		
-//		terrainGenerator.generateTerrainAroundPlayer(player.posX, player.posZ, 3);
 	}
 	
 	private void updateTimeOfDay()
@@ -293,7 +292,7 @@ public class World
     public void setBlock(RayTrace rayTrace, Vector3f cameraDirectionUnitVector, Block blockToPlace)
     {
         Vector3Int location = new Vector3Int(rayTrace.blockX, rayTrace.blockY, rayTrace.blockZ);
-        Vector3Int newBlockLocation = BlockNavigator.getNeighborBlockLocalLocation(location, rayTrace.sideHit);
+        Vector3Int newBlockLocation = Block.Face.getNeighborBlockLocalLocation(location, rayTrace.sideHit);
         Block.Face placementFace = rayTrace.sideHit;
         if (blockToPlace.canPlaceBlockOn(this, location.x, location.y, location.z, rayTrace.sideHit) && blockToPlace.canPlaceBlockAt(this, newBlockLocation.x, newBlockLocation.y, newBlockLocation.z))
         {
@@ -377,7 +376,7 @@ public class World
 	            //Notify neighbors of block removal
 	            for (Block.Face face : Block.Face.values())
 	            {
-	                Vector3Int neighborLocation = BlockNavigator.getNeighborBlockLocalLocation(location, face);
+	                Vector3Int neighborLocation = Block.Face.getNeighborBlockLocalLocation(location, face);
 	                Block neighbor = getBlock(neighborLocation);
 	                if (neighbor != null)
 	                {

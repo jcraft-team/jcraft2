@@ -24,13 +24,16 @@ public class WorldSaveTask extends TimerTask
 	@Override
 	public void run()
 	{
-		log.log(Level.FINE, "Saving...");
-
-		voxelWorldSave.putGameData("timeOfDay", world.getTimeOfDayProvider().getTimeOfDay());
-		savePlayerData();
-		saveChunkData();
-
-		log.log(Level.FINE, "Finished saving");
+		if(world.getChunkManager().isInitialized())
+		{
+			log.log(Level.FINE, "Saving...");
+			
+			voxelWorldSave.putGameData("timeOfDay", world.getTimeOfDayProvider().getTimeOfDay());
+			savePlayerData();
+			saveChunkData();
+			
+			log.log(Level.FINE, "Finished saving");
+		}
 	}
 
 	private void saveChunkData()

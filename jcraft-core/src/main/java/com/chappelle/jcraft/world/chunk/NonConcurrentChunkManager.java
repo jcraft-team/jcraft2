@@ -1,7 +1,8 @@
 package com.chappelle.jcraft.world.chunk;
 
-import com.chappelle.jcraft.*;
+import com.chappelle.jcraft.ProgressMonitor;
 import com.chappelle.jcraft.util.Context;
+import com.chappelle.jcraft.util.math.*;
 
 public class NonConcurrentChunkManager extends AbstractChunkManager
 {
@@ -57,5 +58,6 @@ public class NonConcurrentChunkManager extends AbstractChunkManager
 	{
 		update();
 		world.spawnPlayer(world.getPlayer());
+		initialized = true;
 	}
 }

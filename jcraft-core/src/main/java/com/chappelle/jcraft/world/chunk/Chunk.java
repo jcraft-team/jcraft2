@@ -10,6 +10,7 @@ import com.chappelle.jcraft.blocks.Block;
 import com.chappelle.jcraft.lighting.*;
 import com.chappelle.jcraft.serialization.*;
 import com.chappelle.jcraft.util.*;
+import com.chappelle.jcraft.util.math.Vector3Int;
 import com.chappelle.jcraft.world.World;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.queue.RenderQueue.Bucket;
@@ -125,7 +126,8 @@ public class Chunk implements BitSerializable
     
 	public void setBlock(int x, int y, int z, Block block)
     {
-    	if(heightMap[x][z] < y)
+		//NOTE: Kind of a hack to check for transparency here. For now it keeps torches flowers and doors from covering the ground
+    	if(heightMap[x][z] < y && !block.isTransparent)
     	{
     		heightMap[x][z] = y;
     	}
@@ -387,7 +389,7 @@ public class Chunk implements BitSerializable
 
     private Vector3Int getNeighborBlockGlobalLocation(Vector3Int location, Block.Face face)
     {
-        Vector3Int neighborLocation = BlockNavigator.getNeighborBlockLocalLocation(location, face);
+        Vector3Int neighborLocation = Block.Face.getNeighborBlockLocalLocation(location, face);
         neighborLocation.addLocal(blockLocation);
         return neighborLocation;
     }
@@ -399,7 +401,7 @@ public class Chunk implements BitSerializable
 
     public Block getNeighborBlock_Local(Vector3Int location, Block.Face face)
     {
-        Vector3Int neighborLocation = BlockNavigator.getNeighborBlockLocalLocation(location, face);
+        Vector3Int neighborLocation = Block.Face.getNeighborBlockLocalLocation(location, face);
         return getBlock(neighborLocation);
     }
 

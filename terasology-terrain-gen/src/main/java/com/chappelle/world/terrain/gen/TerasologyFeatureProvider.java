@@ -2,8 +2,8 @@ package com.chappelle.world.terrain.gen;
 
 import java.util.*;
 
-import com.chappelle.jcraft.FeatureProvider;
 import com.chappelle.jcraft.world.chunk.Feature;
+import com.chappelle.jcraft.world.gen.FeatureProvider;
 import com.chappelle.jcraft.world.terrain.gen.*;
 
 public class TerasologyFeatureProvider implements FeatureProvider
@@ -28,5 +28,11 @@ public class TerasologyFeatureProvider implements FeatureProvider
 	public void setSeed(long seed)
 	{
 		this.seed = seed;
+	}
+
+	@Override
+	public String getId()
+	{
+		return "terasology:default";
 	}
 }

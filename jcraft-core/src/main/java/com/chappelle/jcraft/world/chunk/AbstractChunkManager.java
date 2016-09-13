@@ -6,6 +6,7 @@ import com.chappelle.jcraft.*;
 import com.chappelle.jcraft.blocks.MeshGenerator;
 import com.chappelle.jcraft.serialization.VoxelWorldSave;
 import com.chappelle.jcraft.util.Context;
+import com.chappelle.jcraft.util.math.*;
 import com.chappelle.jcraft.world.World;
 import com.google.common.collect.Maps;
 import com.jme3.math.Vector3f;
@@ -21,6 +22,7 @@ public abstract class AbstractChunkManager implements ChunkManager
 	protected VoxelWorldSave voxelWorldSave;
 	protected ChunkGenerator chunkGenerator;
 	protected Context context;
+	protected boolean initialized;
 	protected abstract void unloadChunk(final Vector2Int chunkLocation);
 	
 	public AbstractChunkManager(Context context)
@@ -143,5 +145,12 @@ public abstract class AbstractChunkManager implements ChunkManager
 				neighbor.markDirty();
 			}
 		}
+	}
+
+	@Override
+	public boolean isInitialized()
+	{
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

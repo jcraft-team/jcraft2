@@ -1,6 +1,6 @@
 package com.chappelle.jcraft.lighting;
 
-import com.chappelle.jcraft.Vector3Int;
+import com.chappelle.jcraft.util.math.Vector3Int;
 import com.chappelle.jcraft.world.chunk.Chunk;
 
 public class LightRemovalNode

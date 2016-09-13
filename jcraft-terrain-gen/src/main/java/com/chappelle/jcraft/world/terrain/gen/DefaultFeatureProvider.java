@@ -2,10 +2,10 @@ package com.chappelle.jcraft.world.terrain.gen;
 
 import java.util.*;
 
-import com.chappelle.jcraft.FeatureProvider;
 import com.chappelle.jcraft.blocks.Blocks;
 import com.chappelle.jcraft.world.World;
 import com.chappelle.jcraft.world.chunk.*;
+import com.chappelle.jcraft.world.gen.FeatureProvider;
 
 public class DefaultFeatureProvider implements FeatureProvider
 {
@@ -45,5 +45,11 @@ public class DefaultFeatureProvider implements FeatureProvider
 	public void setSeed(long seed)
 	{
 		this.seed = seed;
+	}
+
+	@Override
+	public String getId()
+	{
+		return "core:default";
 	}
 }

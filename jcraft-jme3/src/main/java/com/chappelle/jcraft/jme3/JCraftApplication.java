@@ -6,11 +6,25 @@ import java.util.logging.*;
 import com.chappelle.jcraft.*;
 import com.chappelle.jcraft.serialization.*;
 import com.chappelle.jcraft.util.*;
+import com.chappelle.jcraft.world.chunk.ChunkMaterial;
 import com.jme3.app.*;
 import com.jme3.system.AppSettings;
 import com.simsilica.lemur.GuiGlobals;
 import com.simsilica.lemur.style.BaseStyles;
 
+/**
+ * The main application to run. Here are some common VM args when running. Other configurations are in the GameSettings class.
+-Dcom.sun.management.jmxremote.port=7091
+-Dcom.sun.management.jmxremote.authenticate=false
+-Dcom.sun.management.jmxremote.ssl=false
+-XX:+UnlockCommercialFeatures
+-XX:+FlightRecorder
+-Dseed=1470193765295
+-DfeatureProvider=terasology:default
+-Dworld=JCraftWorld
+-Xms256m 
+-Xmx8192m
+ */
 public class JCraftApplication extends SimpleApplication
 {
 	private static final Level LOG_LEVEL = Level.INFO;
@@ -39,8 +53,7 @@ public class JCraftApplication extends SimpleApplication
 
 		rootContext = new ContextImpl();
 		rootContext.put(Application.class, this);
-//		rootContext.put(VoxelWorldSave.class, new VoxelWorldSaveImpl(new File(GameFiles.getSaveDir(), "world.dat")));
-		rootContext.put(VoxelWorldSave.class, new NullVoxelWorldSave());
+		rootContext.put(VoxelWorldSave.class, new VoxelWorldSaveImpl(new File(GameFiles.getSaveDir(), "world.dat")));
 		rootContext.put(CubesSettings.class, new CubesSettings(assetManager, new ChunkMaterial(assetManager, "Textures/FaithfulBlocks.png")));
 		rootContext.put(AppSettings.class, settings);
 

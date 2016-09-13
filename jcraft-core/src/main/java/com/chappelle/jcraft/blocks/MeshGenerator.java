@@ -1,6 +1,6 @@
 package com.chappelle.jcraft.blocks;
 
-import com.chappelle.jcraft.Vector3Int;
+import com.chappelle.jcraft.util.math.Vector3Int;
 import com.chappelle.jcraft.world.chunk.Chunk;
 import com.jme3.scene.*;
 import com.jme3.scene.VertexBuffer.Type;

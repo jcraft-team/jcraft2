@@ -1,6 +1,6 @@
 package com.chappelle.jcraft.blocks;
 
-import com.chappelle.jcraft.util.Vector3fPool;
+import com.chappelle.jcraft.util.math.Vector3fPool;
 
 import gnu.trove.list.*;
 import gnu.trove.list.array.*;

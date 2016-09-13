@@ -1,7 +1,7 @@
 package com.chappelle.jcraft.world;
 
-import com.chappelle.jcraft.Vector3Int;
 import com.chappelle.jcraft.blocks.Block;
+import com.chappelle.jcraft.util.math.Vector3Int;
 import com.chappelle.jcraft.world.chunk.Chunk;
 
 public class ChunkLocation

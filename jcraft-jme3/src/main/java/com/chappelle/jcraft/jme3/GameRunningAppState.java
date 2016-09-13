@@ -8,7 +8,7 @@ import com.chappelle.jcraft.commands.SimpleCommandHandler;
 import com.chappelle.jcraft.debug.*;
 import com.chappelle.jcraft.jme3.appstate.BaseInputAppState;
 import com.chappelle.jcraft.serialization.*;
-import com.chappelle.jcraft.util.AABB;
+import com.chappelle.jcraft.util.physics.AABB;
 import com.chappelle.jcraft.world.World;
 import com.jme3.app.*;
 import com.jme3.app.state.AppStateManager;
@@ -82,7 +82,11 @@ public class GameRunningAppState extends BaseInputAppState<JCraftApplication>
 
 		worldSaveTask = new WorldSaveTask(world, voxelWorldSave);
 		worldSaveTimer = new Timer("WorldSave");
-		worldSaveTimer.scheduleAtFixedRate(worldSaveTask, 1*1000, GameSettings.worldSaveInterval);
+		long autoSaveInterval = GameSettings.autoSaveInterval;
+		if(autoSaveInterval > 0)
+		{
+			worldSaveTimer.scheduleAtFixedRate(worldSaveTask, 1*1000, GameSettings.autoSaveInterval);
+		}
 		
 		if(GameSettings.skyEnabled)
 		{

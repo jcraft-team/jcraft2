@@ -6,6 +6,8 @@ import java.util.logging.Logger;
 import com.chappelle.jcraft.blocks.Block;
 import com.chappelle.jcraft.inventory.*;
 import com.chappelle.jcraft.util.*;
+import com.chappelle.jcraft.util.math.*;
+import com.chappelle.jcraft.util.physics.*;
 import com.chappelle.jcraft.world.World;
 import com.jme3.math.*;
 import com.jme3.renderer.Camera;

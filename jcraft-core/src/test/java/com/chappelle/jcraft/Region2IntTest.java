@@ -6,6 +6,8 @@ import java.util.*;
 
 import org.junit.Test;
 
+import com.chappelle.jcraft.util.math.*;
+
 public class Region2IntTest
 {
 	@Test

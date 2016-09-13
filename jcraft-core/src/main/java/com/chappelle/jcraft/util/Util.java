@@ -2,7 +2,7 @@ package com.chappelle.jcraft.util;
 
 import java.util.Map;
 
-import com.chappelle.jcraft.Vector3Int;
+import com.chappelle.jcraft.util.math.Vector3Int;
 import com.jme3.math.Vector3f;
 
 public class Util

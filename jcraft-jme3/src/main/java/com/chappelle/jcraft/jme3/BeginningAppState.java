@@ -9,7 +9,8 @@ import com.chappelle.jcraft.jme3.ui.ClickSoundButton;
 import com.chappelle.jcraft.serialization.VoxelWorldSave;
 import com.chappelle.jcraft.util.Context;
 import com.chappelle.jcraft.world.World;
-import com.chappelle.jcraft.world.chunk.Feature;
+import com.chappelle.jcraft.world.chunk.*;
+import com.chappelle.jcraft.world.gen.FeatureProvider;
 import com.jme3.app.*;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.audio.*;
@@ -146,15 +147,34 @@ public class BeginningAppState extends BaseInputAppState<JCraftApplication>
 
 	private List<Feature> getFeatures()
 	{
-		List<Feature> result = new ArrayList<>();
-		Iterator<FeatureProvider> initializersIterator = ServiceLoader.load(FeatureProvider.class).iterator();
-		while(initializersIterator.hasNext())
+		String featureProviderId = System.getProperty("featureProvider");
+		if(featureProviderId == null)
 		{
-			result.addAll(initializersIterator.next().getFeatures());
+			featureProviderId = "core:default";
 		}
+		FeatureProvider featureProvider = getFeatureProviders().get(featureProviderId);
+		if(featureProvider == null)
+		{
+			throw new IllegalStateException("No featureProvider with id=" + featureProviderId);
+		}
+		List<Feature> result = new ArrayList<>();
+		result.addAll(featureProvider.getFeatures());
 		return result;
 	}
 
+	private Map<String, FeatureProvider> getFeatureProviders()
+	{
+		Map<String, FeatureProvider> result = new HashMap<>();
+		Iterator<FeatureProvider> featureProviderIter = ServiceLoader.load(FeatureProvider.class).iterator();
+		while(featureProviderIter.hasNext())
+		{
+			FeatureProvider featureProvider = featureProviderIter.next();
+			
+			result.put(featureProvider.getId(), featureProvider);
+		}		
+		return result;
+	}
+	
 	@Override
 	protected void onEnable()
 	{

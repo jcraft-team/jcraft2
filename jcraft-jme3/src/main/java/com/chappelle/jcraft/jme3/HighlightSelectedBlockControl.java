@@ -3,6 +3,8 @@ package com.chappelle.jcraft.jme3;
 import com.chappelle.jcraft.*;
 import com.chappelle.jcraft.blocks.Block;
 import com.chappelle.jcraft.util.*;
+import com.chappelle.jcraft.util.math.Vector3Int;
+import com.chappelle.jcraft.util.physics.*;
 import com.chappelle.jcraft.world.World;
 import com.jme3.asset.AssetManager;
 import com.jme3.material.Material;

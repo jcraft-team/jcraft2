@@ -4,7 +4,7 @@ import java.util.*;
 
 import com.chappelle.jcraft.*;
 import com.chappelle.jcraft.lighting.LightType;
-import com.chappelle.jcraft.util.BlockNavigator;
+import com.chappelle.jcraft.util.math.Vector3Int;
 import com.chappelle.jcraft.world.World;
 import com.chappelle.jcraft.world.chunk.Chunk;
 import com.jme3.math.*;
@@ -53,7 +53,7 @@ public abstract class BlockShape
 			if(blockSkin.isTransparent() == isTransparent)
 			{
 				Chunk neighborChunk = null;
-				Vector3Int neighborBlockLocation = BlockNavigator.getNeighborBlockLocalLocation(blockLocation, face);
+				Vector3Int neighborBlockLocation = Block.Face.getNeighborBlockLocalLocation(blockLocation, face);
 				Block neighborBlock = chunk.getBlock(neighborBlockLocation);
 				if(neighborBlock == null)//Check neighboring chunks
 				{
@@ -107,7 +107,7 @@ public abstract class BlockShape
 						return true;
 					}
 					BlockShape neighborShape = neighborBlock.getShape(neighborChunk, neighborBlockLocation);
-					return !isFullSide(face) || !neighborShape.isFullSide(BlockNavigator.getOppositeFace(face));
+					return !isFullSide(face) || !neighborShape.isFullSide(Block.Face.getOppositeFace(face));
 				}
 			}
 			return false;

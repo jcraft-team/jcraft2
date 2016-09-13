@@ -16,7 +16,11 @@ public class GameSettings
 	public static boolean skyEnabled;
 	public static boolean ambientOcclusionEnabled = true;
 	public static float ambientOcclusionIntensity = 1.0f;
-	public static long worldSaveInterval = 5*1000;
+	
+	/**
+	 * Set to -1 to disable auto-save
+	 */
+	public static long autoSaveInterval = 5*1000;
 	
 	private static File optionsFile;
 	
@@ -71,6 +75,10 @@ public class GameSettings
 						{
 							ambientOcclusionEnabled = Boolean.parseBoolean(lineParts[1]);
 						}
+						else if (lineParts[0].equals("autoSaveInterval"))
+						{
+							autoSaveInterval = Long.parseLong(lineParts[1]);
+						}
 					}
 					catch(Exception e)
 					{
@@ -109,6 +117,7 @@ public class GameSettings
 			printWriter.println("debugEnabled=" + debugEnabled);
 			printWriter.println("skyEnabled=" + skyEnabled);
 			printWriter.println("ambientOcclusionEnabled=" + ambientOcclusionEnabled);
+			printWriter.println("autoSaveInterval=" + autoSaveInterval);
 		}
 		catch(IOException e)
 		{

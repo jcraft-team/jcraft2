@@ -1,6 +1,6 @@
 package com.chappelle.jcraft.world.chunk;
 
-import com.chappelle.jcraft.Vector2Int;
+import com.chappelle.jcraft.util.math.Vector2Int;
 
 public abstract class AbstractChunkTask implements ChunkTask
 {

@@ -5,7 +5,8 @@ import java.util.concurrent.*;
 
 import com.chappelle.jcraft.*;
 import com.chappelle.jcraft.blocks.MeshGenerator;
-import com.chappelle.jcraft.util.*;
+import com.chappelle.jcraft.util.Context;
+import com.chappelle.jcraft.util.math.*;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.jme3.scene.Mesh;
 
@@ -107,6 +108,7 @@ public class OldChunkManager extends AbstractChunkManager
 			finishedItems++;
 			progress.setPercentCompleted(finishedItems/(float)initialChunks.size());
 		}
+		initialized = true;
 	}
 	
     private List<Vector3Int> getMissingChunkNeighborhoodLocations(int centerX, int centerZ, int r)

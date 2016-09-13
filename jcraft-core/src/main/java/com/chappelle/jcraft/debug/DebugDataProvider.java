@@ -9,6 +9,8 @@ import com.chappelle.jcraft.*;
 import com.chappelle.jcraft.blocks.Block;
 import com.chappelle.jcraft.lighting.LightType;
 import com.chappelle.jcraft.util.*;
+import com.chappelle.jcraft.util.math.Vector3Int;
+import com.chappelle.jcraft.util.physics.*;
 import com.chappelle.jcraft.world.*;
 import com.chappelle.jcraft.world.chunk.Chunk;
 import com.jme3.math.Vector3f;

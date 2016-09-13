@@ -5,10 +5,11 @@ import java.util.concurrent.*;
 
 import org.slf4j.*;
 
-import com.chappelle.jcraft.*;
+import com.chappelle.jcraft.ProgressMonitor;
 import com.chappelle.jcraft.lighting.*;
 import com.chappelle.jcraft.util.Context;
 import com.chappelle.jcraft.util.concurrency.*;
+import com.chappelle.jcraft.util.math.*;
 import com.google.common.collect.*;
 
 public class ConcurrentChunkManager extends AbstractChunkManager
@@ -125,6 +126,7 @@ public class ConcurrentChunkManager extends AbstractChunkManager
 			//Need to wait for init to complete so player doesn't spawn under the world.
 			world.spawnPlayer(world.getPlayer());
 			currentRelevantRegion = newRelevantRegion;
+			initialized = true;
 		}
 	}
 	

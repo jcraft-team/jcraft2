@@ -20,14 +20,14 @@ public class TerasologyFeature extends AbstractFeature
 	@Override
 	public void generate(int chunkX, int chunkZ, byte[][][] blockTypes)
 	{
-		float[][] noise = new float[16][16];
+		float[][] heightMapNoise = new float[16][16];
 		int xOffset = chunkX*16;
 		int zOffset = chunkZ*16;
 		for(int x = 0; x < 16; x++)
 		{
 			for(int z = 0; z < 16; z++)
 			{
-				noise[x][z] = surfaceNoise.noise(x+xOffset, (z+zOffset)) * 20 + seaLevel;
+				heightMapNoise[x][z] = surfaceNoise.noise(x+xOffset, (z+zOffset)) * 20 + seaLevel;
 			}
 		}
 
@@ -37,7 +37,7 @@ public class TerasologyFeature extends AbstractFeature
 			{
 				for(int y = 0; y < 256; y++)
 				{
-					float noiseVal = noise[x][z];
+					float noiseVal = heightMapNoise[x][z];
 					if(y < noiseVal)
 					{
 						blockTypes[x][y][z] = Blocks.grass.blockId;

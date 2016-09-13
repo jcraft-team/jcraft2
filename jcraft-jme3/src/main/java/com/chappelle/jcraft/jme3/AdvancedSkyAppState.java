@@ -42,9 +42,9 @@ public class AdvancedSkyAppState extends BaseAppState implements ViewPortListene
 
         cubeMap = MyAsset.createStarMap(assetManager, "purple-nebula-complex");
         this.sky = new SkyControl(assetManager, cam, 0.2f, false, true);
-        sky.setCloudiness(0.8f);
+        sky.setCloudiness(0.0f);
         sky.setCloudYOffset(0.4f);
-
+        sky.setTopVerticalAngle(1.784f);
         getStateManager().attach(timeOfDay);
 
         sky.getSunAndStars().setObserverLatitude(0.2f);

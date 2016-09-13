@@ -1,5 +1,7 @@
 package com.chappelle.jcraft;
 
+import com.chappelle.jcraft.util.math.Vector3Int;
+
 public enum Direction
 {
 	LEFT(new Vector3Int(-1, 0, 0)), 

@@ -2,7 +2,7 @@ package com.chappelle.jcraft;
 
 import java.util.List;
 
-import com.chappelle.jcraft.util.AABB;
+import com.chappelle.jcraft.util.physics.AABB;
 import com.chappelle.jcraft.world.World;
 
 public class Enemy extends Entity

@@ -10,6 +10,8 @@ public interface ChunkManager
 	
 	void initializeChunks(ProgressMonitor progress, double playerX, double playerZ, int radius);
 	
+	boolean isInitialized();
+	
 	Chunk getChunk(int chunkX, int chunkZ);
 	Collection<Chunk> getLoadedChunks();
 	void destroy();
