@@ -4,7 +4,6 @@ import org.terasology.math.geom.Vector2f;
 import org.terasology.utilities.procedural.*;
 
 import com.chappelle.jcraft.blocks.Blocks;
-import com.chappelle.jcraft.world.chunk.*;
 import com.chappelle.jcraft.world.gen.AbstractFeature;
 
 public class TerasologyFeature extends AbstractFeature

@@ -15,6 +15,16 @@
 		</dependency>
 		<dependency>
 			<groupId>com.chappelle</groupId>
+			<artifactId>jcraft-teramath</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.chappelle</groupId>
+			<artifactId>jcraft-terasology-utilities</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.chappelle</groupId>
 			<artifactId>jcraft-terrain-gen</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>

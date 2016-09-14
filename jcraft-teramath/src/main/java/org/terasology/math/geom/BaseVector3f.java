@@ -1,7 +1,6 @@
 package org.terasology.math.geom;
 
 import com.google.common.base.Preconditions;
-import com.jme3.math.Vector3f;
 
 /**
  * A vector/point in 3D space

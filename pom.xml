@@ -33,6 +33,8 @@
 		<module>jcraft-terrain-gen</module>
 		<module>jcraft-utilities</module>
 		<module>terasology-terrain-gen</module>
+		<module>jcraft-teramath</module>
+		<module>jcraft-terasology-utilities</module>
 	</modules>
 	<build>
 		<plugins>
