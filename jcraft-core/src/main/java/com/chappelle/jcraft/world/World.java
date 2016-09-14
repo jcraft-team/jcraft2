@@ -475,6 +475,10 @@ public class World
 
 	public Chunk getChunkNeighbor(Chunk chunk, Direction direction)
 	{
+		if(direction == Direction.UP || direction == Direction.DOWN)
+		{
+			return null;
+		}
 		Vector3Int chunkLocation = chunk.location.add(direction.getVector());
 		return chunkManager.getChunk(chunkLocation.getX(), chunkLocation.getZ());
 	}

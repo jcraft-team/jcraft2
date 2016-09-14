@@ -5,7 +5,7 @@ import java.util.*;
 import com.chappelle.jcraft.blocks.Blocks;
 import com.chappelle.jcraft.world.World;
 import com.chappelle.jcraft.world.chunk.*;
-import com.chappelle.jcraft.world.gen.FeatureProvider;
+import com.chappelle.jcraft.world.gen.*;
 
 public class DefaultFeatureProvider implements FeatureProvider
 {

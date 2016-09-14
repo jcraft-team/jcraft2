@@ -1,4 +1,4 @@
-package com.chappelle.jcraft.world.chunk;
+package com.chappelle.jcraft.world.gen;
 
 public abstract class AbstractFeature implements Feature
 {

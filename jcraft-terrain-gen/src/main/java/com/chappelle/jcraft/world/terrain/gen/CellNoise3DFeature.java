@@ -2,6 +2,7 @@ package com.chappelle.jcraft.world.terrain.gen;
 
 import com.chappelle.jcraft.blocks.*;
 import com.chappelle.jcraft.world.chunk.*;
+import com.chappelle.jcraft.world.gen.AbstractFeature;
 
 public class CellNoise3DFeature extends AbstractFeature
 {

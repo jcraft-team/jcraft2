@@ -2,8 +2,7 @@ package com.chappelle.world.terrain.gen;
 
 import java.util.*;
 
-import com.chappelle.jcraft.world.chunk.Feature;
-import com.chappelle.jcraft.world.gen.FeatureProvider;
+import com.chappelle.jcraft.world.gen.*;
 import com.chappelle.jcraft.world.terrain.gen.*;
 
 public class TerasologyFeatureProvider implements FeatureProvider

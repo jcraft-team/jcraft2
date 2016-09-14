@@ -1,4 +1,4 @@
-package com.chappelle.jcraft.world.chunk;
+package com.chappelle.jcraft.world.gen;
 
 /**
  * Implementors generate terrain features like trees, tall grass, and plants. A feature may

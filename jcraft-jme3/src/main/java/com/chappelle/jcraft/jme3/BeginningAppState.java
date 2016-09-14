@@ -10,7 +10,7 @@ import com.chappelle.jcraft.serialization.VoxelWorldSave;
 import com.chappelle.jcraft.util.Context;
 import com.chappelle.jcraft.world.World;
 import com.chappelle.jcraft.world.chunk.*;
-import com.chappelle.jcraft.world.gen.FeatureProvider;
+import com.chappelle.jcraft.world.gen.*;
 import com.jme3.app.*;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.audio.*;

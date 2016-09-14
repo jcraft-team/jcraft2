@@ -10,7 +10,7 @@ import com.chappelle.jcraft.blocks.Block;
 import com.chappelle.jcraft.lighting.*;
 import com.chappelle.jcraft.serialization.*;
 import com.chappelle.jcraft.util.*;
-import com.chappelle.jcraft.util.math.Vector3Int;
+import com.chappelle.jcraft.util.math.*;
 import com.chappelle.jcraft.world.World;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.queue.RenderQueue.Bucket;
@@ -28,6 +28,7 @@ public class Chunk implements BitSerializable
 	private BitField skyLightField   = new BitField(0x000F0000);
 	private BitField blockStateField = new BitField(0x000000FF);
 
+	public Vector2Int location2i = new Vector2Int();
 	public Vector3Int location = new Vector3Int();
     public Vector3Int blockLocation = new Vector3Int();
     
@@ -53,6 +54,7 @@ public class Chunk implements BitSerializable
     	this.world = world;
     	location.set(x, 0, z);
     	blockLocation.set(location.mult(16, 256, 16));
+    	location2i.set(x, z);
     	this.data = data;
     	byte[][][] blockTypes = new byte[16][256][16];
     	for(int i = 0; i < 16; i++)
@@ -76,6 +78,7 @@ public class Chunk implements BitSerializable
     	this.world = world;
     	location.set(x, 0, z);
     	blockLocation.set(location.mult(16, 256, 16));
+    	location2i.set(x, z);
     	this.data = new int[16][256][16];
     	for(int i = 0; i < 16; i++)
     	{
@@ -342,7 +345,7 @@ public class Chunk implements BitSerializable
 
     public Chunk getChunkNeighbor(Direction dir)
     {
-    	return world.getChunkNeighbor(this, dir);
+		return world.getChunkNeighbor(this, dir);
     }
     
     /**

@@ -8,6 +8,7 @@ import com.chappelle.jcraft.serialization.VoxelWorldSave;
 import com.chappelle.jcraft.util.Context;
 import com.chappelle.jcraft.util.math.*;
 import com.chappelle.jcraft.world.World;
+import com.chappelle.jcraft.world.gen.ChunkGenerator;
 import com.google.common.collect.Maps;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Mesh;
