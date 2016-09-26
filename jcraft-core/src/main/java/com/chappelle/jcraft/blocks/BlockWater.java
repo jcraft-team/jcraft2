@@ -9,7 +9,8 @@ public class BlockWater extends Block
 {
 	public BlockWater(int blockId)
 	{
-		super(blockId, new BlockSkin[] { new BlockSkin(new BlockSkin_TextureLocation(13, 12), false) });
+		super(blockId, new BlockSkin[] { new BlockSkin(new BlockSkin_TextureLocation(13, 12), true) });
+		isTransparent = true;
 	}
 
 	public void onBlockPlaced(World world, Vector3Int location, Vector3f contactNormal, Vector3f cameraDirectionAsUnitVector)
