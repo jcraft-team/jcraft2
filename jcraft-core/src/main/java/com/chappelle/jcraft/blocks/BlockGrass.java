@@ -31,7 +31,7 @@ public class BlockGrass extends Block
 	@Override
 	protected int getSkinIndex(Chunk chunk, Vector3Int location, Block.Face face)
 	{
-		if(chunk == null || chunk.isBlockOnSurface(location))
+//		if(chunk == null || chunk.isBlockOnSurface(location))
 		{
 			switch(face)
 			{
@@ -43,6 +43,6 @@ public class BlockGrass extends Block
 					return 1;
 			}
 		}
-		return 2;
+//		return 2;
 	}
 }

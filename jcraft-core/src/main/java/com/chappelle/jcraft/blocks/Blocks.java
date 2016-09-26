@@ -44,5 +44,7 @@ public class Blocks
 	public static final Block leaves = new BlockLeaves(40).setStepSound(SoundConstants.STEP_GRASS_1);
 	public static final Block tallGrass = new BlockTallGrass(41, 7, 2);
 	public static final Block snow = new BlockSnow(42);
+	public static final Block cactus = new BlockSnow(43);
+	public static final Block dirt = new BlockDirt(44).setStepSound(SoundConstants.DIG_GRASS_2);
 
 }

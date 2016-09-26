@@ -32,8 +32,8 @@ public class ConcurrentChunkManager extends AbstractChunkManager
      * The maximum number of ready chunks to add to the scene(or update) in one frame. 
      * Updates happen on the Main thread so they have to be limited.
      */
-    private static final int MAX_MESH_UPDATES_PER_FRAME = 4;
-    private static final int NUM_TASK_THREADS = 8;
+    private static final int MAX_MESH_UPDATES_PER_FRAME = 2;
+    private static final int NUM_TASK_THREADS = 4;
 
 	private final TaskMaster<ChunkTask> chunkUpdater;
 	private final TaskMaster<ChunkTask> chunkLoader;
@@ -370,7 +370,7 @@ public class ConcurrentChunkManager extends AbstractChunkManager
 			Vector2Int chunk1Pos = chunk1.location2i;
 			Vector2Int chunk2Pos = chunk2.location2i;
 			Vector2Int cameraChunkPosition = toChunkPosition(world.getPlayer().cam.getLocation());
-			return cameraChunkPosition.gridDistance(chunk1Pos) - cameraChunkPosition.gridDistance(chunk2Pos);
+			return cameraChunkPosition.gridDistance(chunk2Pos) - cameraChunkPosition.gridDistance(chunk1Pos);
 		}
 	}
 

@@ -1,7 +1,7 @@
 package com.chappelle.jcraft.blocks.shapes;
 
 import com.chappelle.jcraft.blocks.*;
-import com.chappelle.jcraft.util.math.Vector3Int;
+import com.chappelle.jcraft.util.math.*;
 import com.chappelle.jcraft.world.chunk.Chunk;
 import com.jme3.math.Vector3f;
 
@@ -25,13 +25,15 @@ public class BlockShape_Ladder extends BlockShape
 	}
 
     @Override
-    public void addTo(MeshData meshData, Chunk chunk, Block block, Vector3Int blockLocation, boolean isTransparent)
+    public void addTo(MeshGenContext gen, boolean isTransparent)
     {
-    	TFloatList positions = meshData.positionsList;
-    	TShortList indices = meshData.indicesList;
-    	TFloatList normals = meshData.normalsList;
-    	TFloatList colors = meshData.colorList;
-    	TFloatList textureCoordinates = meshData.textureCoordinatesList;
+    	Chunk chunk = gen.getChunk();
+    	Block block = gen.getBlock();
+    	Vector3Int blockLocation = gen.getLocation();
+    	TFloatList positions = gen.getPositions();
+    	TShortList indices = gen.getIndices();
+    	TFloatList normals = gen.getNormals();
+    	TFloatList textureCoordinates = gen.getTextureCoordinates();
 
     	byte blockState = chunk.getBlockState(blockLocation);
     	Vector3f orientation = BlockLadder.getOrientation(blockState).normal;
@@ -70,8 +72,8 @@ public class BlockShape_Ladder extends BlockShape
         	addPositions(positions, faceLoc_Top_TopLeft);
         	addPositions(positions, faceLoc_Top_BottomLeft);
         	addSquareNormals(normals, 1, 0, 0);
-        	addTextureCoordinates(chunk, textureCoordinates, block.getSkin(chunk, blockLocation, Block.Face.Left).getTextureLocation());
-        	addLighting(colors, chunk, blockLocation, Block.Face.Left);
+        	addTextureCoordinates(gen, textureCoordinates, block.getSkin(chunk, blockLocation, Block.Face.Left).getTextureLocation());
+        	addLighting(gen, Block.Face.Left);
         }
         else if(homeFace == Block.Face.Right)
         {
@@ -81,8 +83,8 @@ public class BlockShape_Ladder extends BlockShape
         	addPositions(positions, faceLoc_Top_BottomRight);
         	addPositions(positions, faceLoc_Top_TopRight);
         	addSquareNormals(normals, -1, 0, 0);
-        	addTextureCoordinates(chunk, textureCoordinates, block.getSkin(chunk, blockLocation, Block.Face.Right).getTextureLocation());
-        	addLighting(colors, chunk, blockLocation, Block.Face.Right);
+        	addTextureCoordinates(gen, textureCoordinates, block.getSkin(chunk, blockLocation, Block.Face.Right).getTextureLocation());
+        	addLighting(gen, Block.Face.Right);
         }
         else if(homeFace == Block.Face.Front)
         {
@@ -92,8 +94,8 @@ public class BlockShape_Ladder extends BlockShape
         	addPositions(positions, faceLoc_Top_BottomLeft);
         	addPositions(positions, faceLoc_Top_BottomRight);
         	addSquareNormals(normals, 0, 0, -1);
-        	addTextureCoordinates(chunk, textureCoordinates,block.getSkin(chunk, blockLocation, Block.Face.Front).getTextureLocation());
-        	addLighting(colors, chunk, blockLocation, Block.Face.Front);
+        	addTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Block.Face.Front).getTextureLocation());
+        	addLighting(gen, Block.Face.Front);
         }
         else if(homeFace == Block.Face.Back)//FIXME: Ray cast not working
         {
@@ -103,8 +105,8 @@ public class BlockShape_Ladder extends BlockShape
         	addPositions(positions, faceLoc_Top_TopRight);
         	addPositions(positions, faceLoc_Top_TopLeft);
         	addSquareNormals(normals, 0, 0, 1);//Normal is reversed from what you would normally think of
-        	addTextureCoordinates(chunk, textureCoordinates, block.getSkin(chunk, blockLocation, Block.Face.Back).getTextureLocation());
-        	addLighting(colors, chunk, blockLocation, Block.Face.Back);
+        	addTextureCoordinates(gen, textureCoordinates, block.getSkin(chunk, blockLocation, Block.Face.Back).getTextureLocation());
+        	addLighting(gen, Block.Face.Back);
         }
     }
 
@@ -126,17 +128,17 @@ public class BlockShape_Ladder extends BlockShape
         }
     }
 
-    private void addTextureCoordinates(Chunk chunk, TFloatList textureCoordinates, BlockSkin_TextureLocation textureLocation){
-        textureCoordinates.add(getTextureCoordinatesX(chunk, textureLocation, 0, 0));
-        textureCoordinates.add(getTextureCoordinatesY(chunk, textureLocation, 0, 0));
+    private void addTextureCoordinates(MeshGenContext gen, TFloatList textureCoordinates, BlockSkin_TextureLocation textureLocation){
+        textureCoordinates.add(getTextureCoordinatesX(gen, textureLocation, 0, 0));
+        textureCoordinates.add(getTextureCoordinatesY(gen, textureLocation, 0, 0));
         
-        textureCoordinates.add(getTextureCoordinatesX(chunk, textureLocation, 1, 0));
-        textureCoordinates.add(getTextureCoordinatesY(chunk, textureLocation, 1, 0));
+        textureCoordinates.add(getTextureCoordinatesX(gen, textureLocation, 1, 0));
+        textureCoordinates.add(getTextureCoordinatesY(gen, textureLocation, 1, 0));
         
-        textureCoordinates.add(getTextureCoordinatesX(chunk, textureLocation, 0, 1));
-        textureCoordinates.add(getTextureCoordinatesY(chunk, textureLocation, 0, 1));
+        textureCoordinates.add(getTextureCoordinatesX(gen, textureLocation, 0, 1));
+        textureCoordinates.add(getTextureCoordinatesY(gen, textureLocation, 0, 1));
         
-        textureCoordinates.add(getTextureCoordinatesX(chunk, textureLocation, 1, 1));
-        textureCoordinates.add(getTextureCoordinatesY(chunk, textureLocation, 1, 1));
+        textureCoordinates.add(getTextureCoordinatesX(gen, textureLocation, 1, 1));
+        textureCoordinates.add(getTextureCoordinatesY(gen, textureLocation, 1, 1));
     }
 }

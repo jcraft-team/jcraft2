@@ -215,8 +215,40 @@ public class World
 	
 	public List<Chunk> getNearbyChunks(int radius)
 	{
-		return getPlayerChunk().getChunkNeighborhood(radius);
+		return getChunkNeighborhood(getPlayerChunk(), radius);
 	}
+
+    /**
+     * Returns the chunk neighbors with a radius of r excluding the current chunk. This is a Moore Neighborhood as in http://mathworld.wolfram.com/MooreNeighborhood.html.
+     * The number of chunks in the grid will be (2*r+1)^2. So if r=10, then then it will return 441 chunks.
+     * @param r The radius
+     * @return A list of neighboring Chunks with a radius of r
+     */
+    public List<Chunk> getChunkNeighborhood(Chunk referenceChunk, int r)
+    {
+    	List<Chunk> result = new ArrayList<Chunk>();
+		//Iterates starting in top left corner, then down, then across to the right
+		int x = referenceChunk.location.x - r;
+		int z = referenceChunk.location.z + r;
+		int gridWidth = r*2 + 1;
+		for(int xMod = 0; xMod < gridWidth; xMod++)
+		{
+			for(int zMod = 0; zMod < gridWidth; zMod++)
+			{
+				int chunkX = x+xMod;
+				int chunkZ = z-zMod;
+				if(!(chunkX == referenceChunk.location.x && chunkZ == referenceChunk.location.z))//Exclude this chunk from result
+				{
+					Chunk chunk = getChunkFromChunkCoordinates(chunkX, chunkZ);
+					if(chunk != null)
+					{
+						result.add(chunk);
+					}
+				}
+			}
+		}
+    	return result;
+    }
 
 	public Chunk getPlayerChunk()
 	{

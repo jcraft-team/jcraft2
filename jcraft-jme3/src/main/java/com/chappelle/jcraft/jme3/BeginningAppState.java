@@ -1,7 +1,12 @@
 package com.chappelle.jcraft.jme3;
 
 import java.util.*;
-import java.util.logging.Logger;
+
+import org.slf4j.*;
+import org.terasology.core.world.generator.facetProviders.*;
+import org.terasology.core.world.generator.rasterizers.*;
+import org.terasology.world.generation.*;
+import org.terasology.world.generator.plugin.WorldGeneratorPluginLibrary;
 
 import com.chappelle.jcraft.*;
 import com.chappelle.jcraft.jme3.appstate.BaseInputAppState;
@@ -9,8 +14,8 @@ import com.chappelle.jcraft.jme3.ui.ClickSoundButton;
 import com.chappelle.jcraft.serialization.VoxelWorldSave;
 import com.chappelle.jcraft.util.Context;
 import com.chappelle.jcraft.world.World;
-import com.chappelle.jcraft.world.chunk.*;
 import com.chappelle.jcraft.world.gen.*;
+import com.google.common.collect.*;
 import com.jme3.app.*;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.audio.*;
@@ -21,7 +26,7 @@ import com.simsilica.lemur.component.SpringGridLayout;
 
 public class BeginningAppState extends BaseInputAppState<JCraftApplication>
 {
-	private final static Logger log = Logger.getLogger(BeginningAppState.class.getName());
+	private final static Logger log = LoggerFactory.getLogger(BeginningAppState.class.getName());
 
 	boolean isGuiShowing = false;
 	private Container beginningOptionsContainer;
@@ -31,6 +36,10 @@ public class BeginningAppState extends BaseInputAppState<JCraftApplication>
 	
 	private SettingsAppState settingsAppState;
 	private Context context;
+	private WorldGeneratorPluginLibrary pluginLibrary;
+	private final List<WorldRasterizer> rasterizers = Lists.newArrayList();
+	private final List<FacetProvider> providersList = Lists.newArrayList();
+	private final Set<Class<? extends WorldFacet>> facetCalculationInProgress = Sets.newHashSet();
 
 	public BeginningAppState(Context context)
 	{
@@ -113,7 +122,33 @@ public class BeginningAppState extends BaseInputAppState<JCraftApplication>
 	private void startGame()
 	{
 		long seed = getSeed();
-		context.put(ChunkGenerator.class, new ChunkGeneratorImpl(seed, getFeatures()));
+		
+		providersList.add(new SeaLevelProvider(40));
+		providersList.add(new PerlinHumidityProvider());
+		providersList.add(new PerlinSurfaceTemperatureProvider());
+		providersList.add(new PerlinBaseSurfaceProvider());
+		providersList.add(new PerlinRiverProvider());
+		providersList.add(new PerlinOceanProvider());
+		providersList.add(new PerlinHillsAndMountainsProvider());
+		providersList.add(new BiomeProvider());
+		providersList.add(new SurfaceToDensityProvider());
+		providersList.add(new DefaultFloraProvider());
+		providersList.add(new DefaultTreeProvider());
+		providersList.add(new MySurfaceProvider());
+		rasterizers.add(new SolidRasterizer());
+		rasterizers.add(new FloraRasterizer());
+		rasterizers.add(new TreeRasterizer());
+		for(FacetProvider provider : providersList)
+		{
+			provider.setSeed(seed);
+		}
+		ListMultimap<Class<? extends WorldFacet>, FacetProvider> providerChains = determineProviderChains();
+		for(WorldRasterizer rasterizer : rasterizers)
+		{
+			rasterizer.initialize();
+		}
+		context.put(ChunkGenerator.class, new FacetBasedChunkGenerator(providerChains, rasterizers, determineBorders(providerChains)));
+//		context.put(ChunkGenerator.class, new ChunkGeneratorImpl(seed, getFeatures()));
 
 		log.info("Using world seed: " + seed);
 		log.info("Creating new world...get ready!");
@@ -133,6 +168,218 @@ public class BeginningAppState extends BaseInputAppState<JCraftApplication>
 		BeginningAppState.this.setEnabled(false);
 		stateManager.attach(new LoadingAppState(new WorldLoadingCallable(world, player, getMyApplication().getSettings())));
 	}
+
+    private ListMultimap<Class<? extends WorldFacet>, FacetProvider> determineProviderChains() {
+        ListMultimap<Class<? extends WorldFacet>, FacetProvider> result = ArrayListMultimap.create();
+        Set<Class<? extends WorldFacet>> facets = new LinkedHashSet<>();
+        for (FacetProvider provider : providersList) {
+            Produces produces = provider.getClass().getAnnotation(Produces.class);
+            if (produces != null) {
+                facets.addAll(Arrays.asList(produces.value()));
+            }
+            Updates updates = provider.getClass().getAnnotation(Updates.class);
+            if (updates != null) {
+                for (Facet facet : updates.value()) {
+                    facets.add(facet.value());
+                }
+            }
+        }
+        for (Class<? extends WorldFacet> facet : facets) {
+            determineProviderChainFor(facet, result);
+            if (log.isDebugEnabled()) {
+                StringBuilder text = new StringBuilder(facet.getSimpleName());
+                text.append(" --> ");
+                Iterator<FacetProvider> it = result.get(facet).iterator();
+                while (it.hasNext()) {
+                    text.append(it.next().getClass().getSimpleName());
+                    if (it.hasNext()) {
+                        text.append(", ");
+                    }
+                }
+                log.debug(text.toString());
+            }
+        }
+
+        return result;
+    }
+
+    private Map<Class<? extends WorldFacet>, Border3D> determineBorders(ListMultimap<Class<? extends WorldFacet>, FacetProvider> providerChains) {
+        Map<Class<? extends WorldFacet>, Border3D> borders = Maps.newHashMap();
+
+        for (Class<? extends WorldFacet> facet : providerChains.keySet()) {
+            ensureBorderCalculatedForFacet(facet, providerChains, borders);
+        }
+
+        return borders;
+    }
+
+    private void ensureBorderCalculatedForFacet(Class<? extends WorldFacet> facet, ListMultimap<Class<? extends WorldFacet>, FacetProvider> providerChains,
+                                                Map<Class<? extends WorldFacet>, Border3D> borders) {
+
+        if (!borders.containsKey(facet)) {
+
+            Border3D border = new Border3D(0, 0, 0);
+            int maxSide = 0;
+            int maxTop = 0;
+            int maxBottom = 0;
+            for (FacetProvider facetProvider : providerChains.values()) {
+                // Find all facets that require it
+                Requires requires = facetProvider.getClass().getAnnotation(Requires.class);
+                Produces produces = facetProvider.getClass().getAnnotation(Produces.class);
+                Updates updates = facetProvider.getClass().getAnnotation(Updates.class);
+                if (requires != null) {
+                    for (Facet requiredFacet : requires.value()) {
+                        if (requiredFacet.value() == facet) {
+
+
+                            FacetBorder requiredBorder = requiredFacet.border();
+
+                            if (produces != null) {
+                                for (Class<? extends WorldFacet> producedFacet : produces.value()) {
+                                    ensureBorderCalculatedForFacet(producedFacet, providerChains, borders);
+                                    Border3D borderForProducedFacet = borders.get(producedFacet);
+                                    border = border.maxWith(
+                                            borderForProducedFacet.getTop() + requiredBorder.top(),
+                                            borderForProducedFacet.getBottom() + requiredBorder.bottom(),
+                                            borderForProducedFacet.getSides() + requiredBorder.sides());
+                                }
+                            }
+                            if (updates != null) {
+                                for (Facet producedFacetAnnotation : updates.value()) {
+                                    Class<? extends WorldFacet> producedFacet = producedFacetAnnotation.value();
+                                    FacetBorder borderForFacetAnnotation = producedFacetAnnotation.border();
+                                    ensureBorderCalculatedForFacet(producedFacet, providerChains, borders);
+                                    Border3D borderForProducedFacet = borders.get(producedFacet);
+                                    border = border.maxWith(
+                                            borderForProducedFacet.getTop() + requiredBorder.top() + borderForFacetAnnotation.top(),
+                                            borderForProducedFacet.getBottom() + requiredBorder.bottom() + borderForFacetAnnotation.bottom(),
+                                            borderForProducedFacet.getSides() + requiredBorder.sides() + borderForFacetAnnotation.sides());
+                                }
+                            }
+                        }
+                    }
+                }
+//Get biggest border for facet?! Create an array of borders and search for maximum.
+// Check if there are update annotation for facet, if there are search for biggest border requested from providers and replace value
+                if(updates != null) {
+                    for (Facet producedFacetAnnotation : updates.value()) {
+                        if (producedFacetAnnotation.value() == facet) {
+
+                            FacetBorder borderForFacetAnnotation = producedFacetAnnotation.border();
+                            if (maxSide < borderForFacetAnnotation.sides()) {
+                                maxSide = borderForFacetAnnotation.sides();
+                            }
+                            if (maxTop < borderForFacetAnnotation.top()) {
+                                maxTop = borderForFacetAnnotation.top();
+                            }
+                            if (maxBottom < borderForFacetAnnotation.bottom()) {
+                                maxBottom = borderForFacetAnnotation.bottom();
+                            }
+
+                        }
+
+                    }
+
+                    border = border.maxWith(maxTop, maxBottom, maxSide);
+                }
+            }
+            borders.put(facet, border);
+        }
+    }
+
+    private void determineProviderChainFor(Class<? extends WorldFacet> facet, ListMultimap<Class<? extends WorldFacet>, FacetProvider> result) {
+        if (result.containsKey(facet)) {
+            return;
+        }
+        if (!facetCalculationInProgress.add(facet)) {
+            throw new RuntimeException("Circular dependency detected when calculating facet provider ordering for " + facet);
+        }
+        Set<FacetProvider> orderedProviders = Sets.newLinkedHashSet();
+
+        // first add all @Produces facet providers
+        FacetProvider producer = null;
+        for (FacetProvider provider : providersList) {
+            if (producesFacet(provider, facet)) {
+                if (producer != null) {
+                    log.warn("Facet already produced by {} and overwritten by {}", producer, provider);
+                }
+                // add all required facets for producing provider
+                for (Facet requirement : requiredFacets(provider)) {
+                    determineProviderChainFor(requirement.value(), result);
+                    orderedProviders.addAll(result.get(requirement.value()));
+                }
+                // add all updated facets for producing provider
+                for (Facet updated : updatedFacets(provider)) {
+                    determineProviderChainFor(updated.value(), result);
+                    orderedProviders.addAll(result.get(updated.value()));
+                }
+                orderedProviders.add(provider);
+                producer = provider;
+            }
+        }
+
+        if (producer == null) {
+            log.warn("No facet provider found that produces {}", facet);
+        }
+
+        // then add all @Updates facet providers
+        providersList.stream().filter(provider -> updatesFacet(provider, facet)).forEach(provider -> {
+            // add all required facets for updating provider
+            for (Facet requirement : requiredFacets(provider)) {
+                determineProviderChainFor(requirement.value(), result);
+                orderedProviders.addAll(result.get(requirement.value()));
+            }
+            // the provider updates this and other facets
+            // just add producers for the other facets
+            for (Facet updated : updatedFacets(provider)) {
+                for (FacetProvider fp : providersList) {
+                    // only add @Produces providers to avoid infinite recursion
+                    if (producesFacet(fp, updated.value())) {
+                        orderedProviders.add(fp);
+                    }
+                }
+            }
+            orderedProviders.add(provider);
+        });
+        result.putAll(facet, orderedProviders);
+        facetCalculationInProgress.remove(facet);
+    }
+
+    private Facet[] requiredFacets(FacetProvider provider) {
+        Requires requirements = provider.getClass().getAnnotation(Requires.class);
+        if (requirements != null) {
+            return requirements.value();
+        }
+        return new Facet[0];
+    }
+
+    private Facet[] updatedFacets(FacetProvider provider) {
+        Updates updates = provider.getClass().getAnnotation(Updates.class);
+        if (updates != null) {
+            return updates.value();
+        }
+        return new Facet[0];
+    }
+
+    private boolean producesFacet(FacetProvider provider, Class<? extends WorldFacet> facet) {
+        Produces produces = provider.getClass().getAnnotation(Produces.class);
+        if (produces != null && Arrays.asList(produces.value()).contains(facet)) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean updatesFacet(FacetProvider provider, Class<? extends WorldFacet> facet) {
+        Updates updates = provider.getClass().getAnnotation(Updates.class);
+        if (updates != null) {
+            for (Facet updatedFacet : updates.value()) {
+                if (updatedFacet.value() == facet) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
 	private long getSeed()
 	{

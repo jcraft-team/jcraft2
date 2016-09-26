@@ -1,6 +1,9 @@
 package com.chappelle.jcraft.world.gen;
 
+import com.chappelle.jcraft.world.chunk.Chunk;
+
 public interface ChunkGenerator
 {
-	void generate(int x, int z, byte[][][] data);
+	void initialize();
+	Chunk generate(int x, int z);
 }

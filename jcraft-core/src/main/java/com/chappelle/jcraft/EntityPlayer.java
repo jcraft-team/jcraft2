@@ -5,7 +5,6 @@ import java.util.logging.Logger;
 
 import com.chappelle.jcraft.blocks.Block;
 import com.chappelle.jcraft.inventory.*;
-import com.chappelle.jcraft.util.*;
 import com.chappelle.jcraft.util.math.*;
 import com.chappelle.jcraft.util.physics.*;
 import com.chappelle.jcraft.world.World;
@@ -16,10 +15,11 @@ public class EntityPlayer extends Entity
 {
 	private final static Logger log = Logger.getLogger(EntityPlayer.class.getName()); 
 
-	private static final float WALK_SPEED = 0.02f;
+	private static final float WALK_SPEED = 1.0f;
 	private static final float NORMAL_FLYSPEED = WALK_SPEED*2;
 	private static final float FAST_FLYSPEED = NORMAL_FLYSPEED*2;
 	private float flySpeed = NORMAL_FLYSPEED;
+	private final float MAX_SPEED = FAST_FLYSPEED;
 
 	private boolean up;
 	private boolean down;
@@ -115,10 +115,14 @@ public class EntityPlayer extends Entity
 
 	private void moveAccordingToUserInputs(float tpf)
 	{
-		float speed = WALK_SPEED;
+		float speed = 1.0f *tpf;
 		if(isFlying)
 		{
-			speed = flySpeed;
+			speed = flySpeed*tpf;
+		}
+		if(speed > MAX_SPEED)
+		{
+			speed = MAX_SPEED;
 		}
 		limitCameraRotation();
 		
@@ -147,11 +151,11 @@ public class EntityPlayer extends Entity
 		{
 			if(up)
 			{
-				addVelocity(0, flySpeed, 0);
+				addVelocity(0, speed, 0);
 			}
 			if(down)
 			{
-				addVelocity(0, -flySpeed, 0);
+				addVelocity(0, -speed, 0);
 			}
 		}
 	}

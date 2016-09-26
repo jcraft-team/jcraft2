@@ -5,7 +5,6 @@ import java.util.*;
 import com.chappelle.jcraft.*;
 import com.chappelle.jcraft.lighting.LightType;
 import com.chappelle.jcraft.util.math.Vector3Int;
-import com.chappelle.jcraft.world.World;
 import com.chappelle.jcraft.world.chunk.Chunk;
 import com.jme3.math.*;
 
@@ -30,7 +29,7 @@ public abstract class BlockShape
     	positions.add(positionsVec3f.z);
     }
 
-	public abstract void addTo(MeshData meshData, Chunk chunk, Block block, Vector3Int blockLocation, boolean isTransparent);
+	public abstract void addTo(MeshGenContext meshGenContext, boolean isTransparent);
 
 	/**
 	 * Determines if a Shape's face should be added to the mesh. Checks neighbor blocks and across chunk boundaries if necessary.
@@ -40,8 +39,11 @@ public abstract class BlockShape
 	 * @param isTransparent Flag indicating whether this is the transparent geometry or not
 	 * @return true if the face should be added, false otherwise
 	 */
-	protected boolean shouldFaceBeAdded(Chunk chunk, Vector3Int blockLocation, Block.Face face, boolean isTransparent)
+//	protected boolean shouldFaceBeAdded(Chunk chunk, Vector3Int blockLocation, Block.Face face, boolean isTransparent)
+	protected boolean shouldFaceBeAdded(MeshGenContext gen, Block.Face face, boolean isTransparent)
 	{
+		Chunk chunk = gen.getChunk();
+		Vector3Int blockLocation = gen.getLocation();
 		if(chunk == null)
 		{
 			return true;
@@ -59,7 +61,7 @@ public abstract class BlockShape
 				{
 					if(neighborBlockLocation.x < 0)
 					{
-						neighborChunk = chunk.getChunkNeighbor(Direction.LEFT);
+						neighborChunk = gen.getChunkNeighbor(Direction.LEFT);
 						if(neighborChunk != null)
 						{
 							neighborBlock = neighborChunk.getBlock(neighborBlockLocation.setX(15));
@@ -67,7 +69,7 @@ public abstract class BlockShape
 					}
 					else if(neighborBlockLocation.x > 15)
 					{
-						neighborChunk = chunk.getChunkNeighbor(Direction.RIGHT);
+						neighborChunk = gen.getChunkNeighbor(Direction.RIGHT);
 						if(neighborChunk != null)
 						{
 							neighborBlock = neighborChunk.getBlock(neighborBlockLocation.setX(0));
@@ -75,7 +77,7 @@ public abstract class BlockShape
 					}
 					else if(neighborBlockLocation.z < 0)
 					{
-						neighborChunk = chunk.getChunkNeighbor(Direction.BACK);
+						neighborChunk = gen.getChunkNeighbor(Direction.BACK);
 						if(neighborChunk != null)
 						{
 							neighborBlock = neighborChunk.getBlock(neighborBlockLocation.setZ(15));
@@ -83,7 +85,7 @@ public abstract class BlockShape
 					}
 					else if(neighborBlockLocation.z > 15)
 					{
-						neighborChunk = chunk.getChunkNeighbor(Direction.FRONT);
+						neighborChunk = gen.getChunkNeighbor(Direction.FRONT);
 						if(neighborChunk != null)
 						{
 							neighborBlock = neighborChunk.getBlock(neighborBlockLocation.setZ(0));
@@ -128,29 +130,33 @@ public abstract class BlockShape
 		return new Vector2f(x, y);
 	}
 
-	protected float getTextureCoordinatesX(Chunk chunk, BlockSkin_TextureLocation textureLocation, float xUnitsToAdd, float yUnitsToAdd)
+	protected float getTextureCoordinatesX(MeshGenContext gen, BlockSkin_TextureLocation textureLocation, float xUnitsToAdd, float yUnitsToAdd)
 	{
-		float textureUnitX = (1f / CubesSettings.getInstance().getTexturesCountX());
+//		float textureUnitX = (1f / CubesSettings.getInstance().getTexturesCountX());
+		float textureUnitX = (1f / gen.getTexturesCountX());
 		return (((textureLocation.getColumn() + xUnitsToAdd) * textureUnitX));
 	}
 
-	protected float getTextureCoordinatesY(Chunk chunk, BlockSkin_TextureLocation textureLocation, float xUnitsToAdd, float yUnitsToAdd)
+	protected float getTextureCoordinatesY(MeshGenContext gen, BlockSkin_TextureLocation textureLocation, float xUnitsToAdd, float yUnitsToAdd)
 	{
-		float textureUnitY = (1f / CubesSettings.getInstance().getTexturesCountY());
+//		float textureUnitY = (1f / CubesSettings.getInstance().getTexturesCountY());
+		float textureUnitY = (1f / gen.getTexturesCountY());
 		return ((((-1 * textureLocation.getRow()) + (yUnitsToAdd - 1)) * textureUnitY) + 1);
 	}
 	
-    protected void addLighting(TFloatList colors, Chunk chunk, Vector3Int location, Block.Face face)
+    protected void addLighting(MeshGenContext gen, Block.Face face)
     {
+    	TFloatList colors = gen.getColorList();
+    	Chunk chunk = gen.getChunk();
+    	Vector3Int location = gen.getLocation();
     	int blockLight = 15;
     	int skyLight = 15;
-    	Block block = chunk.getBlock(location);
+    	Block block = gen.getBlock();
     	Chunk chunkToLight = chunk;
     	boolean noLight = false;
 		int x = location.x;
 		int y = location.y;
 		int z = location.z;
-		World world = chunk.world;
 		if(block.useNeighborLight())//TODO: Investigate how this is different from transparent?
 		{
 			if(face == Block.Face.Top)
@@ -178,7 +184,7 @@ public abstract class BlockShape
 				}
 				else
 				{
-					Chunk neighborChunk = world.getChunkNeighbor(chunk, Direction.FRONT);
+					Chunk neighborChunk = gen.getChunkNeighbor(Direction.FRONT);
 					if(neighborChunk == null)
 					{
 						noLight = true;
@@ -199,7 +205,7 @@ public abstract class BlockShape
 				}
 				else
 				{
-					Chunk neighborChunk = world.getChunkNeighbor(chunk, Direction.BACK);
+					Chunk neighborChunk = gen.getChunkNeighbor(Direction.BACK);
 					if(neighborChunk == null)
 					{
 						noLight = true;
@@ -220,7 +226,7 @@ public abstract class BlockShape
 				}
 				else
 				{
-					Chunk neighborChunk = world.getChunkNeighbor(chunk, Direction.LEFT);
+					Chunk neighborChunk = gen.getChunkNeighbor(Direction.LEFT);
 					if(neighborChunk == null)
 					{
 						noLight = true;
@@ -241,7 +247,7 @@ public abstract class BlockShape
 				}
 				else
 				{
-					Chunk neighborChunk = world.getChunkNeighbor(chunk, Direction.RIGHT);
+					Chunk neighborChunk = gen.getChunkNeighbor(Direction.RIGHT);
 					if(neighborChunk == null)
 					{
 						noLight = true;
@@ -293,9 +299,9 @@ public abstract class BlockShape
 			if(face == Block.Face.Back)
 			{
 				//bottom left corner
-				side1 = world.isOpaqueBlockPresent(worldX+1, y, worldZ-1);
-				side2 = world.isOpaqueBlockPresent(worldX, y-1, worldZ-1);
-				cornerOpacity = getBlockOpacity(world, worldX+1, y-1, worldZ-1);
+				side1 = gen.isOpaqueBlockPresent(worldX+1, y, worldZ-1);
+				side2 = gen.isOpaqueBlockPresent(worldX, y-1, worldZ-1);
+				cornerOpacity = getBlockOpacity(gen, worldX+1, y-1, worldZ-1);
 				vertexAO = vertexAO(side1, side2, cornerOpacity)*vertexAOMult;
 				colors.add((float)effectiveBlockLight);
 				colors.add((float)effectiveBlockLight);
@@ -303,9 +309,9 @@ public abstract class BlockShape
 				colors.add(Math.max(skyLight - vertexAO, 0.0f));
 				
 				//bottom right corner
-				side1 = world.isOpaqueBlockPresent(worldX-1, y, worldZ-1);
-				side2 = world.isOpaqueBlockPresent(worldX, y-1, worldZ-1);
-				cornerOpacity = getBlockOpacity(world, worldX-1, y-1, worldZ-1);
+				side1 = gen.isOpaqueBlockPresent(worldX-1, y, worldZ-1);
+				side2 = gen.isOpaqueBlockPresent(worldX, y-1, worldZ-1);
+				cornerOpacity = getBlockOpacity(gen, worldX-1, y-1, worldZ-1);
 				vertexAO = vertexAO(side1, side2, cornerOpacity)*vertexAOMult;
 				colors.add((float)effectiveBlockLight);
 				colors.add((float)effectiveBlockLight);
@@ -313,9 +319,9 @@ public abstract class BlockShape
 				colors.add(Math.max(skyLight - vertexAO, 0.0f));
 				
 				//Top left corner
-				side1 = world.isOpaqueBlockPresent(worldX+1, y+1, worldZ-1);
-				side2 = world.isOpaqueBlockPresent(worldX, y+1, worldZ-1);
-				cornerOpacity = getBlockOpacity(world, worldX+1, y+1, worldZ-1);
+				side1 = gen.isOpaqueBlockPresent(worldX+1, y+1, worldZ-1);
+				side2 = gen.isOpaqueBlockPresent(worldX, y+1, worldZ-1);
+				cornerOpacity = getBlockOpacity(gen, worldX+1, y+1, worldZ-1);
 				vertexAO = vertexAO(side1, side2, cornerOpacity)*vertexAOMult;
 				colors.add((float)effectiveBlockLight);
 				colors.add((float)effectiveBlockLight);
@@ -323,9 +329,9 @@ public abstract class BlockShape
 				colors.add(Math.max(skyLight - vertexAO, 0.0f));
 				
 				//Top right corner
-				side1 = world.isOpaqueBlockPresent(worldX, y+1, worldZ-1);
-				side2 = world.isOpaqueBlockPresent(worldX-1, y, worldZ-1);
-				cornerOpacity = getBlockOpacity(world, worldX-1, y+1, worldZ-1);
+				side1 = gen.isOpaqueBlockPresent(worldX, y+1, worldZ-1);
+				side2 = gen.isOpaqueBlockPresent(worldX-1, y, worldZ-1);
+				cornerOpacity = getBlockOpacity(gen, worldX-1, y+1, worldZ-1);
 				vertexAO = vertexAO(side1, side2, cornerOpacity)*vertexAOMult;
 				colors.add((float)effectiveBlockLight);
 				colors.add((float)effectiveBlockLight);
@@ -335,36 +341,36 @@ public abstract class BlockShape
 			else if(face == Block.Face.Front)
 			{
 				//bottom left
-				side1 = world.isOpaqueBlockPresent(worldX-1, y, worldZ+1);
-				side2 = world.isOpaqueBlockPresent(worldX, y-1, worldZ+1);
-				cornerOpacity = getBlockOpacity(world, worldX-1, y-1, worldZ+1);
+				side1 = gen.isOpaqueBlockPresent(worldX-1, y, worldZ+1);
+				side2 = gen.isOpaqueBlockPresent(worldX, y-1, worldZ+1);
+				cornerOpacity = getBlockOpacity(gen, worldX-1, y-1, worldZ+1);
 				vertexAO = vertexAO(side1, side2, cornerOpacity)*vertexAOMult;
 				colors.add((float)effectiveBlockLight);
 				colors.add((float)effectiveBlockLight);
 				colors.add((float)effectiveBlockLight);
 				colors.add(Math.max(skyLight - vertexAO, 0.0f));
 				
-				side1 = world.isOpaqueBlockPresent(worldX, y-1, worldZ+1);
-				side2 = world.isOpaqueBlockPresent(worldX+1, y, worldZ+1);
-				cornerOpacity = getBlockOpacity(world, worldX+1, y-1, worldZ+1);
+				side1 = gen.isOpaqueBlockPresent(worldX, y-1, worldZ+1);
+				side2 = gen.isOpaqueBlockPresent(worldX+1, y, worldZ+1);
+				cornerOpacity = getBlockOpacity(gen, worldX+1, y-1, worldZ+1);
 				vertexAO = vertexAO(side1, side2, cornerOpacity)*vertexAOMult;
 				colors.add((float)effectiveBlockLight);
 				colors.add((float)effectiveBlockLight);
 				colors.add((float)effectiveBlockLight);
 				colors.add(Math.max(skyLight - vertexAO, 0.0f));
 				
-				side1 = world.isOpaqueBlockPresent(worldX-1, y, worldZ+1);
-				side2 = world.isOpaqueBlockPresent(worldX, y+1, worldZ+1);
-				cornerOpacity = getBlockOpacity(world, worldX-1, y+1, worldZ+1);
+				side1 = gen.isOpaqueBlockPresent(worldX-1, y, worldZ+1);
+				side2 = gen.isOpaqueBlockPresent(worldX, y+1, worldZ+1);
+				cornerOpacity = getBlockOpacity(gen, worldX-1, y+1, worldZ+1);
 				vertexAO = vertexAO(side1, side2, cornerOpacity)*vertexAOMult;
 				colors.add((float)effectiveBlockLight);
 				colors.add((float)effectiveBlockLight);
 				colors.add((float)effectiveBlockLight);
 				colors.add(Math.max(skyLight - vertexAO, 0.0f));
 				
-				side1 = world.isOpaqueBlockPresent(worldX+1, y, worldZ+1);
-				side2 = world.isOpaqueBlockPresent(worldX, y+1, worldZ+1);
-				cornerOpacity = getBlockOpacity(world, worldX+1, y+1, worldZ+1);
+				side1 = gen.isOpaqueBlockPresent(worldX+1, y, worldZ+1);
+				side2 = gen.isOpaqueBlockPresent(worldX, y+1, worldZ+1);
+				cornerOpacity = getBlockOpacity(gen, worldX+1, y+1, worldZ+1);
 				vertexAO = vertexAO(side1, side2, cornerOpacity)*vertexAOMult;
 				colors.add((float)effectiveBlockLight);
 				colors.add((float)effectiveBlockLight);
@@ -374,36 +380,36 @@ public abstract class BlockShape
 			else if(face == Block.Face.Left)
 			{
 				//bottom left
-				side1 = world.isOpaqueBlockPresent(worldX-1, y, worldZ-1);
-				side2 = world.isOpaqueBlockPresent(worldX-1, y-1, worldZ);
-				cornerOpacity = getBlockOpacity(world, worldX-1, y-1, worldZ-1);
+				side1 = gen.isOpaqueBlockPresent(worldX-1, y, worldZ-1);
+				side2 = gen.isOpaqueBlockPresent(worldX-1, y-1, worldZ);
+				cornerOpacity = getBlockOpacity(gen, worldX-1, y-1, worldZ-1);
 				vertexAO = vertexAO(side1, side2, cornerOpacity)*vertexAOMult;
 				colors.add((float)effectiveBlockLight);
 				colors.add((float)effectiveBlockLight);
 				colors.add((float)effectiveBlockLight);
 				colors.add(Math.max(skyLight - vertexAO, 0.0f));
 				
-				side1 = world.isOpaqueBlockPresent(worldX-1, y, worldZ+1);
-				side2 = world.isOpaqueBlockPresent(worldX-1, y-1, worldZ);
-				cornerOpacity = getBlockOpacity(world, worldX-1, y-1, worldZ+1);
+				side1 = gen.isOpaqueBlockPresent(worldX-1, y, worldZ+1);
+				side2 = gen.isOpaqueBlockPresent(worldX-1, y-1, worldZ);
+				cornerOpacity = getBlockOpacity(gen, worldX-1, y-1, worldZ+1);
 				vertexAO = vertexAO(side1, side2, cornerOpacity)*vertexAOMult;
 				colors.add((float)effectiveBlockLight);
 				colors.add((float)effectiveBlockLight);
 				colors.add((float)effectiveBlockLight);
 				colors.add(Math.max(skyLight - vertexAO, 0.0f));
 				
-				side1 = world.isOpaqueBlockPresent(worldX-1, y+1, worldZ);
-				side2 = world.isOpaqueBlockPresent(worldX-1, y+1, worldZ-1);
-				cornerOpacity = getBlockOpacity(world, worldX-1, y+1, worldZ-1);
+				side1 = gen.isOpaqueBlockPresent(worldX-1, y+1, worldZ);
+				side2 = gen.isOpaqueBlockPresent(worldX-1, y+1, worldZ-1);
+				cornerOpacity = getBlockOpacity(gen, worldX-1, y+1, worldZ-1);
 				vertexAO = vertexAO(side1, side2, cornerOpacity)*vertexAOMult;
 				colors.add((float)effectiveBlockLight);
 				colors.add((float)effectiveBlockLight);
 				colors.add((float)effectiveBlockLight);
 				colors.add(Math.max(skyLight - vertexAO, 0.0f));
 				
-				side1 = world.isOpaqueBlockPresent(worldX-1, y+1, worldZ);
-				side2 = world.isOpaqueBlockPresent(worldX-1, y+1, worldZ+1);
-				cornerOpacity = getBlockOpacity(world, worldX-1, y+1, worldZ+1);
+				side1 = gen.isOpaqueBlockPresent(worldX-1, y+1, worldZ);
+				side2 = gen.isOpaqueBlockPresent(worldX-1, y+1, worldZ+1);
+				cornerOpacity = getBlockOpacity(gen, worldX-1, y+1, worldZ+1);
 				vertexAO = vertexAO(side1, side2, cornerOpacity)*vertexAOMult;
 				colors.add((float)effectiveBlockLight);
 				colors.add((float)effectiveBlockLight);
@@ -413,36 +419,36 @@ public abstract class BlockShape
 			else if(face == Block.Face.Right)
 			{
 				//bottom left
-				side1 = world.isOpaqueBlockPresent(worldX+1, y, worldZ+1);
-				side2 = world.isOpaqueBlockPresent(worldX+1, y-1, worldZ);
-				cornerOpacity = getBlockOpacity(world, worldX+1, y-1, worldZ+1);
+				side1 = gen.isOpaqueBlockPresent(worldX+1, y, worldZ+1);
+				side2 = gen.isOpaqueBlockPresent(worldX+1, y-1, worldZ);
+				cornerOpacity = getBlockOpacity(gen, worldX+1, y-1, worldZ+1);
 				vertexAO = vertexAO(side1, side2, cornerOpacity)*vertexAOMult;
 				colors.add((float)effectiveBlockLight);
 				colors.add((float)effectiveBlockLight);
 				colors.add((float)effectiveBlockLight);
 				colors.add(Math.max(skyLight - vertexAO, 0.0f));
 				
-				side1 = world.isOpaqueBlockPresent(worldX+1, y, worldZ-1);
-				side2 = world.isOpaqueBlockPresent(worldX+1, y-1, worldZ);
-				cornerOpacity = getBlockOpacity(world, worldX+1, y-1, worldZ-1);
+				side1 = gen.isOpaqueBlockPresent(worldX+1, y, worldZ-1);
+				side2 = gen.isOpaqueBlockPresent(worldX+1, y-1, worldZ);
+				cornerOpacity = getBlockOpacity(gen, worldX+1, y-1, worldZ-1);
 				vertexAO = vertexAO(side1, side2, cornerOpacity)*vertexAOMult;
 				colors.add((float)effectiveBlockLight);
 				colors.add((float)effectiveBlockLight);
 				colors.add((float)effectiveBlockLight);
 				colors.add(Math.max(skyLight - vertexAO, 0.0f));
 				
-				side1 = world.isOpaqueBlockPresent(worldX+1, y, worldZ+1);
-				side2 = world.isOpaqueBlockPresent(worldX+1, y+1, worldZ);
-				cornerOpacity = getBlockOpacity(world, worldX+1, y+1, worldZ+1);
+				side1 = gen.isOpaqueBlockPresent(worldX+1, y, worldZ+1);
+				side2 = gen.isOpaqueBlockPresent(worldX+1, y+1, worldZ);
+				cornerOpacity = getBlockOpacity(gen, worldX+1, y+1, worldZ+1);
 				vertexAO = vertexAO(side1, side2, cornerOpacity)*vertexAOMult;
 				colors.add((float)effectiveBlockLight);
 				colors.add((float)effectiveBlockLight);
 				colors.add((float)effectiveBlockLight);
 				colors.add(Math.max(skyLight - vertexAO, 0.0f));
 				
-				side1 = world.isOpaqueBlockPresent(worldX+1, y+1, worldZ);
-				side2 = world.isOpaqueBlockPresent(worldX+1, y, worldZ-1);
-				cornerOpacity = getBlockOpacity(world, worldX+1, y+1, worldZ-1);
+				side1 = gen.isOpaqueBlockPresent(worldX+1, y+1, worldZ);
+				side2 = gen.isOpaqueBlockPresent(worldX+1, y, worldZ-1);
+				cornerOpacity = getBlockOpacity(gen, worldX+1, y+1, worldZ-1);
 				vertexAO = vertexAO(side1, side2, cornerOpacity)*vertexAOMult;
 				colors.add((float)effectiveBlockLight);
 				colors.add((float)effectiveBlockLight);
@@ -452,36 +458,36 @@ public abstract class BlockShape
 			else if(face == Block.Face.Top)
 			{
 				//bottom left
-				side1 = world.isOpaqueBlockPresent(worldX, y+1, worldZ+1);
-				side2 = world.isOpaqueBlockPresent(worldX-1, y+1, worldZ);
-				cornerOpacity = getBlockOpacity(world, worldX-1, y+1, worldZ+1);
+				side1 = gen.isOpaqueBlockPresent(worldX, y+1, worldZ+1);
+				side2 = gen.isOpaqueBlockPresent(worldX-1, y+1, worldZ);
+				cornerOpacity = getBlockOpacity(gen, worldX-1, y+1, worldZ+1);
 				vertexAO = vertexAO(side1, side2, cornerOpacity)*vertexAOMult;
 				colors.add((float)effectiveBlockLight);
 				colors.add((float)effectiveBlockLight);
 				colors.add((float)effectiveBlockLight);
 				colors.add(Math.max(skyLight - vertexAO, 0.0f));
 				
-				side1 = world.isOpaqueBlockPresent(worldX+1, y+1, worldZ);
-				side2 = world.isOpaqueBlockPresent(worldX, y+1, worldZ+1);
-				cornerOpacity = getBlockOpacity(world, worldX+1, y+1, worldZ+1);
+				side1 = gen.isOpaqueBlockPresent(worldX+1, y+1, worldZ);
+				side2 = gen.isOpaqueBlockPresent(worldX, y+1, worldZ+1);
+				cornerOpacity = getBlockOpacity(gen, worldX+1, y+1, worldZ+1);
 				vertexAO = vertexAO(side1, side2, cornerOpacity)*vertexAOMult;
 				colors.add((float)effectiveBlockLight);
 				colors.add((float)effectiveBlockLight);
 				colors.add((float)effectiveBlockLight);
 				colors.add(Math.max(skyLight - vertexAO, 0.0f));
 				
-				side1 = world.isOpaqueBlockPresent(worldX-1, y+1, worldZ);
-				side2 = world.isOpaqueBlockPresent(worldX, y+1, worldZ-1);
-				cornerOpacity = getBlockOpacity(world, worldX-1, y+1, worldZ-1);
+				side1 = gen.isOpaqueBlockPresent(worldX-1, y+1, worldZ);
+				side2 = gen.isOpaqueBlockPresent(worldX, y+1, worldZ-1);
+				cornerOpacity = getBlockOpacity(gen, worldX-1, y+1, worldZ-1);
 				vertexAO = vertexAO(side1, side2, cornerOpacity)*vertexAOMult;
 				colors.add((float)effectiveBlockLight);
 				colors.add((float)effectiveBlockLight);
 				colors.add((float)effectiveBlockLight);
 				colors.add(Math.max(skyLight - vertexAO, 0.0f));
 				
-				side1 = world.isOpaqueBlockPresent(worldX+1, y+1, worldZ);
-				side2 = world.isOpaqueBlockPresent(worldX, y+1, worldZ-1);
-				cornerOpacity = getBlockOpacity(world, worldX+1, y+1, worldZ-1);
+				side1 = gen.isOpaqueBlockPresent(worldX+1, y+1, worldZ);
+				side2 = gen.isOpaqueBlockPresent(worldX, y+1, worldZ-1);
+				cornerOpacity = getBlockOpacity(gen, worldX+1, y+1, worldZ-1);
 				vertexAO = vertexAO(side1, side2, cornerOpacity)*vertexAOMult;
 				colors.add((float)effectiveBlockLight);
 				colors.add((float)effectiveBlockLight);
@@ -491,36 +497,36 @@ public abstract class BlockShape
 			else if(face == Block.Face.Bottom)
 			{
 				//bottom left
-				side1 = world.isOpaqueBlockPresent(worldX, y-1, worldZ+1);
-				side2 = world.isOpaqueBlockPresent(worldX+1, y-1, worldZ);
-				cornerOpacity = getBlockOpacity(world, worldX+1, y-1, worldZ+1);
+				side1 = gen.isOpaqueBlockPresent(worldX, y-1, worldZ+1);
+				side2 = gen.isOpaqueBlockPresent(worldX+1, y-1, worldZ);
+				cornerOpacity = getBlockOpacity(gen, worldX+1, y-1, worldZ+1);
 				vertexAO = vertexAO(side1, side2, cornerOpacity)*vertexAOMult;
 				colors.add((float)effectiveBlockLight);
 				colors.add((float)effectiveBlockLight);
 				colors.add((float)effectiveBlockLight);
 				colors.add(Math.max(skyLight - vertexAO, 0.0f));
 				
-				side1 = world.isOpaqueBlockPresent(worldX, y-1, worldZ+1);
-				side2 = world.isOpaqueBlockPresent(worldX-1, y-1, worldZ);
-				cornerOpacity = getBlockOpacity(world, worldX-1, y-1, worldZ+1);
+				side1 = gen.isOpaqueBlockPresent(worldX, y-1, worldZ+1);
+				side2 = gen.isOpaqueBlockPresent(worldX-1, y-1, worldZ);
+				cornerOpacity = getBlockOpacity(gen, worldX-1, y-1, worldZ+1);
 				vertexAO = vertexAO(side1, side2, cornerOpacity)*vertexAOMult;
 				colors.add((float)effectiveBlockLight);
 				colors.add((float)effectiveBlockLight);
 				colors.add((float)effectiveBlockLight);
 				colors.add(Math.max(skyLight - vertexAO, 0.0f));
 				
-				side1 = world.isOpaqueBlockPresent(worldX, y-1, worldZ-1);
-				side2 = world.isOpaqueBlockPresent(worldX+1, y-1, worldZ);
-				cornerOpacity = getBlockOpacity(world, worldX+1, y-1, worldZ-1);
+				side1 = gen.isOpaqueBlockPresent(worldX, y-1, worldZ-1);
+				side2 = gen.isOpaqueBlockPresent(worldX+1, y-1, worldZ);
+				cornerOpacity = getBlockOpacity(gen, worldX+1, y-1, worldZ-1);
 				vertexAO = vertexAO(side1, side2, cornerOpacity)*vertexAOMult;
 				colors.add((float)effectiveBlockLight);
 				colors.add((float)effectiveBlockLight);
 				colors.add((float)effectiveBlockLight);
 				colors.add(Math.max(skyLight - vertexAO, 0.0f));
 				
-				side1 = world.isOpaqueBlockPresent(worldX-1, y-1, worldZ);
-				side2 = world.isOpaqueBlockPresent(worldX, y-1, worldZ-1);
-				cornerOpacity = getBlockOpacity(world, worldX-1, y-1, worldZ-1);
+				side1 = gen.isOpaqueBlockPresent(worldX-1, y-1, worldZ);
+				side2 = gen.isOpaqueBlockPresent(worldX, y-1, worldZ-1);
+				cornerOpacity = getBlockOpacity(gen, worldX-1, y-1, worldZ-1);
 				vertexAO = vertexAO(side1, side2, cornerOpacity)*vertexAOMult;
 				colors.add((float)effectiveBlockLight);
 				colors.add((float)effectiveBlockLight);
@@ -552,9 +558,9 @@ public abstract class BlockShape
 		}
     }
     
-    private float getBlockOpacity(World world, int x, int y, int z)
+    private float getBlockOpacity(MeshGenContext gen, int x, int y, int z)
     {
-    	Block block = world.getBlock(x, y, z);
+    	Block block = gen.getBlock(x, y, z);
     	if(block != null)
     	{
     		return block.isTransparent ? 0.0f : block.opacity;

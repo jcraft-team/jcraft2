@@ -8,7 +8,6 @@ import com.chappelle.jcraft.blocks.MeshGenerator;
 import com.chappelle.jcraft.util.Context;
 import com.chappelle.jcraft.util.math.*;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.jme3.scene.Mesh;
 
 public class OldChunkManager extends AbstractChunkManager
 {
@@ -102,9 +101,7 @@ public class OldChunkManager extends AbstractChunkManager
 		progress.setNote("Generating chunk mesh");
 		for(Chunk chunk : initialChunks)
 		{
-			final Mesh opaque = MeshGenerator.generateOptimizedMesh(chunk, false);
-			final Mesh transparent = MeshGenerator.generateOptimizedMesh(chunk, true);
-			world.enqueue(new ChunkMeshUpdater(chunk, opaque, transparent));
+			world.enqueue(new ChunkMeshUpdater(chunk, MeshGenerator.generateMesh(world, chunk)));
 			finishedItems++;
 			progress.setPercentCompleted(finishedItems/(float)initialChunks.size());
 		}
@@ -172,9 +169,7 @@ public class OldChunkManager extends AbstractChunkManager
 			if(chunk.isDirty() && chunk.isLoaded)
 			{
 				world.getLightManager().propagateLight();
-				final Mesh opaque = MeshGenerator.generateOptimizedMesh(chunk, false);
-				final Mesh transparent = MeshGenerator.generateOptimizedMesh(chunk, true);
-				world.enqueue(new ChunkMeshUpdater(chunk, opaque, transparent));
+				world.enqueue(new ChunkMeshUpdater(chunk, MeshGenerator.generateMesh(world, chunk)));
 			}
 		}
 	}
@@ -185,23 +180,19 @@ public class OldChunkManager extends AbstractChunkManager
 		if(chunk != null)
 		{
 			//No need to propagate light here. it's already initialized
-			final Mesh opaque = MeshGenerator.generateOptimizedMesh(chunk, false);
-			final Mesh transparent = MeshGenerator.generateOptimizedMesh(chunk, true);
-			world.enqueue(new ChunkMeshUpdater(chunk, opaque, transparent));
+			world.enqueue(new ChunkMeshUpdater(chunk, MeshGenerator.generateMesh(world, chunk)));
 		}
 	}
 	
 	private class ChunkMeshUpdater implements Callable<Void>
 	{
+		private ChunkMesh chunkMesh;
 		private Chunk chunk;
-		private Mesh opaque;
-		private Mesh transparent;
 		
-		public ChunkMeshUpdater(Chunk chunk, Mesh opaque, Mesh transparent)
+		public ChunkMeshUpdater(Chunk chunk, ChunkMesh chunkMesh)
 		{
 			this.chunk = chunk;
-			this.opaque = opaque;
-			this.transparent = transparent;
+			this.chunkMesh = chunkMesh;
 		}
 		
 		@Override
@@ -212,7 +203,7 @@ public class OldChunkManager extends AbstractChunkManager
 				chunk.addToScene(world.node);
 				chunks.put(chunk.id, chunk);
 			}
-			chunk.setMesh(opaque, transparent);
+			chunk.setMesh(chunkMesh);
 			return null;
 		}
 	}

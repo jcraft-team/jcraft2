@@ -18,55 +18,57 @@ public class BlockShape_Flower extends BlockShape
 	}
 	
     @Override
-    public void addTo(MeshData meshData, Chunk chunk, Block block, Vector3Int blockLocation, boolean isTransparent)
+    public void addTo(MeshGenContext gen, boolean isTransparent)
     {
-    	TFloatList positions = meshData.positionsList;
-    	TShortList indices = meshData.indicesList;
-    	TFloatList normals = meshData.normalsList;
-    	TFloatList colors = meshData.colorList;
-    	TFloatList textureCoordinates = meshData.textureCoordinatesList;
-    	Vector3fPool pool = meshData.vec3Pool;
-
+    	Chunk chunk = gen.getChunk();
+    	Block block = gen.getBlock();
+    	Vector3Int blockLocation = gen.getLocation();
+    	TFloatList positions = gen.getPositions();
+    	TShortList indices = gen.getIndices();
+    	TFloatList normals = gen.getNormals();
+    	TFloatList textureCoordinates = gen.getTextureCoordinates();
+    	Vector3fPool pool = gen.getVector3fPool();
+    	
         Vector3f blockLocation3f = pool.get(blockLocation.getX(), blockLocation.getY(), blockLocation.getZ());
 
         float halfWidth = 0.25f;
         float height = 0.7f;
         
     	addFaceIndices(indices, positions.size());
-        addPositions(positions, blockLocation3f.add(new Vector3f(0.5f - halfWidth, 0, 0.5f - halfWidth)));
-        addPositions(positions, blockLocation3f.add(new Vector3f(0.5f + halfWidth, 0, 0.5f + halfWidth)));
-        addPositions(positions, blockLocation3f.add(new Vector3f(0.5f - halfWidth, height, 0.5f - halfWidth)));
-        addPositions(positions, blockLocation3f.add(new Vector3f(0.5f + halfWidth, height, 0.5f + halfWidth)));
+        addPositions(positions, blockLocation3f.add(0.5f - halfWidth, 0, 0.5f - halfWidth));
+        addPositions(positions, blockLocation3f.add(0.5f + halfWidth, 0, 0.5f + halfWidth));
+        addPositions(positions, blockLocation3f.add(0.5f - halfWidth, height, 0.5f - halfWidth));
+        addPositions(positions, blockLocation3f.add(0.5f + halfWidth, height, 0.5f + halfWidth));
         addSquareNormals(normals, -1, 0, -1);
-        addTextureCoordinates(chunk, textureCoordinates, block.getSkin(chunk, blockLocation, Block.Face.Left).getTextureLocation());
-        addLighting(colors, chunk, blockLocation, Block.Face.Left);
+        addTextureCoordinates(gen, textureCoordinates, block.getSkin(chunk, blockLocation, Block.Face.Left).getTextureLocation());
+        addLighting(gen, Block.Face.Left);
 
         addFaceIndices(indices, positions.size());
-        addPositions(positions, blockLocation3f.add(new Vector3f(0.5f + halfWidth, 0, 0.5f + halfWidth)));
-        addPositions(positions, blockLocation3f.add(new Vector3f(0.5f - halfWidth, 0, 0.5f - halfWidth)));
-        addPositions(positions, blockLocation3f.add(new Vector3f(0.5f + halfWidth, height, 0.5f + halfWidth)));
-        addPositions(positions, blockLocation3f.add(new Vector3f(0.5f - halfWidth, height, 0.5f - halfWidth)));
+        addPositions(positions, blockLocation3f.add(0.5f + halfWidth, 0, 0.5f + halfWidth));
+        addPositions(positions, blockLocation3f.add(0.5f - halfWidth, 0, 0.5f - halfWidth));
+        addPositions(positions, blockLocation3f.add(0.5f + halfWidth, height, 0.5f + halfWidth));
+        addPositions(positions, blockLocation3f.add(0.5f - halfWidth, height, 0.5f - halfWidth));
         addSquareNormals(normals, 1, 0, -1);
-        addTextureCoordinates(chunk, textureCoordinates, block.getSkin(chunk, blockLocation, Block.Face.Right).getTextureLocation());
-        addLighting(colors, chunk, blockLocation, Block.Face.Right);
+        addTextureCoordinates(gen, textureCoordinates, block.getSkin(chunk, blockLocation, Block.Face.Right).getTextureLocation());
+        addLighting(gen, Block.Face.Right);
 
         addFaceIndices(indices, positions.size());
-        addPositions(positions, blockLocation3f.add(new Vector3f(0.5f - halfWidth, 0, 0.5f + halfWidth)));
-        addPositions(positions, blockLocation3f.add(new Vector3f(0.5f + halfWidth, 0, 0.5f - halfWidth)));
-        addPositions(positions, blockLocation3f.add(new Vector3f(0.5f - halfWidth, height, 0.5f + halfWidth)));
-        addPositions(positions, blockLocation3f.add(new Vector3f(0.5f + halfWidth, height, 0.5f - halfWidth)));
+        addPositions(positions, blockLocation3f.add(0.5f - halfWidth, 0, 0.5f + halfWidth));
+        addPositions(positions, blockLocation3f.add(0.5f + halfWidth, 0, 0.5f - halfWidth));
+        addPositions(positions, blockLocation3f.add(0.5f - halfWidth, height, 0.5f + halfWidth));
+        addPositions(positions, blockLocation3f.add(0.5f + halfWidth, height, 0.5f - halfWidth));
         addSquareNormals(normals, 1, 0, 1);
-        addTextureCoordinates(chunk, textureCoordinates,block.getSkin(chunk, blockLocation, Block.Face.Front).getTextureLocation());
-        addLighting(colors, chunk, blockLocation, Block.Face.Front);
+        addTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Block.Face.Front).getTextureLocation());
+        addLighting(gen, Block.Face.Front);
 
         addFaceIndices(indices, positions.size());
-        addPositions(positions, blockLocation3f.add(new Vector3f(0.5f + halfWidth, 0, 0.5f - halfWidth)));
-        addPositions(positions, blockLocation3f.add(new Vector3f(0.5f - halfWidth, 0, 0.5f + halfWidth)));
-        addPositions(positions, blockLocation3f.add(new Vector3f(0.5f + halfWidth, height, 0.5f - halfWidth)));
-        addPositions(positions, blockLocation3f.add(new Vector3f(0.5f - halfWidth, height, 0.5f + halfWidth)));
+        addPositions(positions, blockLocation3f.add(0.5f + halfWidth, 0, 0.5f - halfWidth));
+        addPositions(positions, blockLocation3f.add(0.5f - halfWidth, 0, 0.5f + halfWidth));
+        addPositions(positions, blockLocation3f.add(0.5f + halfWidth, height, 0.5f - halfWidth));
+        addPositions(positions, blockLocation3f.add(0.5f - halfWidth, height, 0.5f + halfWidth));
         addSquareNormals(normals, -1, 0, 1);
-        addTextureCoordinates(chunk, textureCoordinates, block.getSkin(chunk, blockLocation, Block.Face.Back).getTextureLocation());
-        addLighting(colors, chunk, blockLocation, Block.Face.Back);
+        addTextureCoordinates(gen, textureCoordinates, block.getSkin(chunk, blockLocation, Block.Face.Back).getTextureLocation());
+        addLighting(gen, Block.Face.Back);
     }
 
     private void addFaceIndices(TShortList indices, int offset){
@@ -87,17 +89,17 @@ public class BlockShape_Flower extends BlockShape
         }
     }
 
-    private void addTextureCoordinates(Chunk chunk, TFloatList textureCoordinates, BlockSkin_TextureLocation textureLocation){
-        textureCoordinates.add(getTextureCoordinatesX(chunk, textureLocation, 0, 0));
-        textureCoordinates.add(getTextureCoordinatesY(chunk, textureLocation, 0, 0));
+    private void addTextureCoordinates(MeshGenContext gen, TFloatList textureCoordinates, BlockSkin_TextureLocation textureLocation){
+        textureCoordinates.add(getTextureCoordinatesX(gen, textureLocation, 0, 0));
+        textureCoordinates.add(getTextureCoordinatesY(gen, textureLocation, 0, 0));
         
-        textureCoordinates.add(getTextureCoordinatesX(chunk, textureLocation, 1, 0));
-        textureCoordinates.add(getTextureCoordinatesY(chunk, textureLocation, 1, 0));
+        textureCoordinates.add(getTextureCoordinatesX(gen, textureLocation, 1, 0));
+        textureCoordinates.add(getTextureCoordinatesY(gen, textureLocation, 1, 0));
         
-        textureCoordinates.add(getTextureCoordinatesX(chunk, textureLocation, 0, 1));
-        textureCoordinates.add(getTextureCoordinatesY(chunk, textureLocation, 0, 1));
+        textureCoordinates.add(getTextureCoordinatesX(gen, textureLocation, 0, 1));
+        textureCoordinates.add(getTextureCoordinatesY(gen, textureLocation, 0, 1));
         
-        textureCoordinates.add(getTextureCoordinatesX(chunk, textureLocation, 1, 1));
-        textureCoordinates.add(getTextureCoordinatesY(chunk, textureLocation, 1, 1));
+        textureCoordinates.add(getTextureCoordinatesX(gen, textureLocation, 1, 1));
+        textureCoordinates.add(getTextureCoordinatesY(gen, textureLocation, 1, 1));
     }
 }

@@ -101,16 +101,12 @@ public abstract class AbstractChunkManager implements ChunkManager
 
 	protected void generateChunkMesh(Chunk chunk)
 	{
-		final Mesh opaque = MeshGenerator.generateOptimizedMesh(chunk, false);
-		final Mesh transparent = MeshGenerator.generateOptimizedMesh(chunk, true);
-		chunk.setPendingMesh(opaque, transparent);
+		chunk.setPendingMesh(MeshGenerator.generateMesh(world, chunk));
 	}
 	
 	protected Chunk generateChunk(int x, int z)
 	{
-		byte[][][] blockTypes = new byte[16][256][16];
-		chunkGenerator.generate(x, z, blockTypes);
-		return new Chunk(world, x, z, blockTypes);
+		return chunkGenerator.generate(x, z);
 	}
 
 	protected Chunk loadChunkFromDisk(int chunkX, int chunkZ)
@@ -118,7 +114,7 @@ public abstract class AbstractChunkManager implements ChunkManager
 		int[][][] chunkDataFromDisk = voxelWorldSave.readChunk(chunkX, chunkZ);
 		if(chunkDataFromDisk != null)
 		{
-			return new Chunk(world, chunkX, chunkZ, chunkDataFromDisk);
+			return new Chunk(chunkX, chunkZ, chunkDataFromDisk);
 		}
 		else
 		{
@@ -140,7 +136,7 @@ public abstract class AbstractChunkManager implements ChunkManager
 	{
 		for(Direction dir : Direction.values())
 		{
-			Chunk neighbor = chunk.getChunkNeighbor(dir);
+			Chunk neighbor = world.getChunkNeighbor(chunk, dir);
 			if(neighbor != null)
 			{
 				neighbor.markDirty();
