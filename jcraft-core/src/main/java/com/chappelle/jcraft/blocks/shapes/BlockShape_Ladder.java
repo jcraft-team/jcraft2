@@ -18,7 +18,7 @@ public class BlockShape_Ladder extends BlockShape
 
 	public BlockShape_Ladder()
 	{
-		for(Block.Face face : Block.Face.values())
+		for(Face face : Face.values())
 		{
 			fullSide.put(face, Boolean.FALSE);
 		}
@@ -37,20 +37,20 @@ public class BlockShape_Ladder extends BlockShape
 
     	byte blockState = chunk.getBlockState(blockLocation);
     	Vector3f orientation = BlockLadder.getOrientation(blockState).normal;
-    	Block.Face homeFace = Block.Face.getOppositeFace(Block.Face.fromNormal(orientation));
-    	if(homeFace == Block.Face.Back)
+    	Face homeFace = Face.getOppositeFace(Face.fromNormal(orientation));
+    	if(homeFace == Face.Back)
     	{
     		extents = back_extents;
     	}
-    	else if(homeFace == Block.Face.Front)
+    	else if(homeFace == Face.Front)
     	{
     		extents = front_extents;
     	}
-    	else if(homeFace == Block.Face.Left)
+    	else if(homeFace == Face.Left)
     	{
     		extents = left_extents;
     	}
-    	else if(homeFace == Block.Face.Right)
+    	else if(homeFace == Face.Right)
     	{
     		extents = right_extents;
     	}
@@ -64,7 +64,7 @@ public class BlockShape_Ladder extends BlockShape
         Vector3f faceLoc_Top_BottomLeft = blockLocation3f.add(new Vector3f((0.5f - extents[2]), (0.5f + extents[0]), (0.5f + extents[4])));
         Vector3f faceLoc_Top_BottomRight = blockLocation3f.add(new Vector3f((0.5f + extents[3]), (0.5f + extents[0]), (0.5f + extents[4])));
 
-        if(homeFace == Block.Face.Left)//FIXME: Ray cast not working
+        if(homeFace == Face.Left)//FIXME: Ray cast not working
         {
         	addFaceIndices(indices, positions.size());
         	addPositions(positions, faceLoc_Bottom_TopLeft);
@@ -72,10 +72,10 @@ public class BlockShape_Ladder extends BlockShape
         	addPositions(positions, faceLoc_Top_TopLeft);
         	addPositions(positions, faceLoc_Top_BottomLeft);
         	addSquareNormals(normals, 1, 0, 0);
-        	addTextureCoordinates(gen, textureCoordinates, block.getSkin(chunk, blockLocation, Block.Face.Left).getTextureLocation());
-        	addLighting(gen, Block.Face.Left);
+        	addTextureCoordinates(gen, textureCoordinates, block.getSkin(chunk, blockLocation, Face.Left).getTextureLocation());
+        	addLighting(gen, Face.Left);
         }
-        else if(homeFace == Block.Face.Right)
+        else if(homeFace == Face.Right)
         {
         	addFaceIndices(indices, positions.size());
         	addPositions(positions, faceLoc_Bottom_BottomRight);
@@ -83,10 +83,10 @@ public class BlockShape_Ladder extends BlockShape
         	addPositions(positions, faceLoc_Top_BottomRight);
         	addPositions(positions, faceLoc_Top_TopRight);
         	addSquareNormals(normals, -1, 0, 0);
-        	addTextureCoordinates(gen, textureCoordinates, block.getSkin(chunk, blockLocation, Block.Face.Right).getTextureLocation());
-        	addLighting(gen, Block.Face.Right);
+        	addTextureCoordinates(gen, textureCoordinates, block.getSkin(chunk, blockLocation, Face.Right).getTextureLocation());
+        	addLighting(gen, Face.Right);
         }
-        else if(homeFace == Block.Face.Front)
+        else if(homeFace == Face.Front)
         {
         	addFaceIndices(indices, positions.size());
         	addPositions(positions, faceLoc_Bottom_BottomLeft);
@@ -94,10 +94,10 @@ public class BlockShape_Ladder extends BlockShape
         	addPositions(positions, faceLoc_Top_BottomLeft);
         	addPositions(positions, faceLoc_Top_BottomRight);
         	addSquareNormals(normals, 0, 0, -1);
-        	addTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Block.Face.Front).getTextureLocation());
-        	addLighting(gen, Block.Face.Front);
+        	addTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Face.Front).getTextureLocation());
+        	addLighting(gen, Face.Front);
         }
-        else if(homeFace == Block.Face.Back)//FIXME: Ray cast not working
+        else if(homeFace == Face.Back)//FIXME: Ray cast not working
         {
         	addFaceIndices(indices, positions.size());
         	addPositions(positions, faceLoc_Bottom_TopRight);
@@ -105,8 +105,8 @@ public class BlockShape_Ladder extends BlockShape
         	addPositions(positions, faceLoc_Top_TopRight);
         	addPositions(positions, faceLoc_Top_TopLeft);
         	addSquareNormals(normals, 0, 0, 1);//Normal is reversed from what you would normally think of
-        	addTextureCoordinates(gen, textureCoordinates, block.getSkin(chunk, blockLocation, Block.Face.Back).getTextureLocation());
-        	addLighting(gen, Block.Face.Back);
+        	addTextureCoordinates(gen, textureCoordinates, block.getSkin(chunk, blockLocation, Face.Back).getTextureLocation());
+        	addLighting(gen, Face.Back);
         }
     }
 

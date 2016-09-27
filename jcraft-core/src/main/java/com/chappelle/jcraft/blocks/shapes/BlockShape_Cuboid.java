@@ -38,17 +38,17 @@ public class BlockShape_Cuboid extends BlockShape
         Vector3f faceLoc_Top_TopRight = pool.add(blockLocation3f, (0.5f + extents[3]), (0.5f + extents[0]), (0.5f - extents[5]));
         Vector3f faceLoc_Top_BottomLeft = pool.add(blockLocation3f, (0.5f - extents[2]), (0.5f + extents[0]), (0.5f + extents[4]));
         Vector3f faceLoc_Top_BottomRight = pool.add(blockLocation3f, (0.5f + extents[3]), (0.5f + extents[0]), (0.5f + extents[4]));
-        if(shouldFaceBeAdded(gen, Block.Face.Top, isTransparent)){
+        if(shouldFaceBeAdded(gen, Face.Top, isTransparent)){
             addFaceIndices(indices, positions.size());
             addPositions(positions, faceLoc_Top_BottomLeft);
             addPositions(positions, faceLoc_Top_BottomRight);
             addPositions(positions, faceLoc_Top_TopLeft);
             addPositions(positions, faceLoc_Top_TopRight);
             addSquareNormals(normals, 0, 1, 0);
-            addTextureCoordinates(gen, textureCoordinates, block.getSkin(chunk, blockLocation, Block.Face.Top).getTextureLocation());
-            addLighting(gen, Block.Face.Top);
+            addTextureCoordinates(gen, textureCoordinates, block.getSkin(chunk, blockLocation, Face.Top).getTextureLocation());
+            addLighting(gen, Face.Top);
         }
-        if(shouldFaceBeAdded(gen, Block.Face.Bottom, isTransparent)){
+        if(shouldFaceBeAdded(gen, Face.Bottom, isTransparent)){
             addFaceIndices(indices, positions.size());
             addPositions(positions, faceLoc_Bottom_BottomRight);
             addPositions(positions, faceLoc_Bottom_BottomLeft);
@@ -56,10 +56,10 @@ public class BlockShape_Cuboid extends BlockShape
             addPositions(positions, faceLoc_Bottom_TopLeft);
             
             addSquareNormals(normals, 0, -1, 0);
-            addTextureCoordinates(gen, textureCoordinates, block.getSkin(chunk, blockLocation, Block.Face.Bottom).getTextureLocation());
-            addLighting(gen, Block.Face.Bottom);
+            addTextureCoordinates(gen, textureCoordinates, block.getSkin(chunk, blockLocation, Face.Bottom).getTextureLocation());
+            addLighting(gen, Face.Bottom);
         }
-        if(shouldFaceBeAdded(gen, Block.Face.Left, isTransparent)){
+        if(shouldFaceBeAdded(gen, Face.Left, isTransparent)){
             addFaceIndices(indices, positions.size());
             addPositions(positions, faceLoc_Bottom_TopLeft);
             addPositions(positions, faceLoc_Bottom_BottomLeft);
@@ -67,10 +67,10 @@ public class BlockShape_Cuboid extends BlockShape
             addPositions(positions, faceLoc_Top_BottomLeft);
 
             addSquareNormals(normals, -1, 0, 0);
-            addTextureCoordinates(gen, textureCoordinates, block.getSkin(chunk, blockLocation, Block.Face.Left).getTextureLocation());
-            addLighting(gen, Block.Face.Left);
+            addTextureCoordinates(gen, textureCoordinates, block.getSkin(chunk, blockLocation, Face.Left).getTextureLocation());
+            addLighting(gen, Face.Left);
         }
-        if(shouldFaceBeAdded(gen, Block.Face.Right, isTransparent)){
+        if(shouldFaceBeAdded(gen, Face.Right, isTransparent)){
             addFaceIndices(indices, positions.size());
             
             addPositions(positions, faceLoc_Bottom_BottomRight);
@@ -79,10 +79,10 @@ public class BlockShape_Cuboid extends BlockShape
             addPositions(positions, faceLoc_Top_TopRight);
 
             addSquareNormals(normals, 1, 0, 0);
-            addTextureCoordinates(gen, textureCoordinates, block.getSkin(chunk, blockLocation, Block.Face.Right).getTextureLocation());
-            addLighting(gen, Block.Face.Right);
+            addTextureCoordinates(gen, textureCoordinates, block.getSkin(chunk, blockLocation, Face.Right).getTextureLocation());
+            addLighting(gen, Face.Right);
         }
-        if(shouldFaceBeAdded(gen, Block.Face.Front, isTransparent)){
+        if(shouldFaceBeAdded(gen, Face.Front, isTransparent)){
             addFaceIndices(indices, positions.size());
             addPositions(positions, faceLoc_Bottom_BottomLeft);
             addPositions(positions, faceLoc_Bottom_BottomRight);
@@ -90,10 +90,10 @@ public class BlockShape_Cuboid extends BlockShape
             addPositions(positions, faceLoc_Top_BottomRight);
             
             addSquareNormals(normals, 0, 0, 1);
-            addTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Block.Face.Front).getTextureLocation());
-            addLighting(gen, Block.Face.Front);
+            addTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Face.Front).getTextureLocation());
+            addLighting(gen, Face.Front);
         }
-        if(shouldFaceBeAdded(gen, Block.Face.Back, isTransparent)){
+        if(shouldFaceBeAdded(gen, Face.Back, isTransparent)){
             addFaceIndices(indices, positions.size());
             addPositions(positions, faceLoc_Bottom_TopRight);
             addPositions(positions, faceLoc_Bottom_TopLeft);
@@ -101,8 +101,8 @@ public class BlockShape_Cuboid extends BlockShape
             addPositions(positions, faceLoc_Top_TopLeft);
             
             addSquareNormals(normals, 0, 0, -1);
-            addTextureCoordinates(gen, textureCoordinates, block.getSkin(chunk, blockLocation, Block.Face.Back).getTextureLocation());
-            addLighting(gen, Block.Face.Back);
+            addTextureCoordinates(gen, textureCoordinates, block.getSkin(chunk, blockLocation, Face.Back).getTextureLocation());
+            addLighting(gen, Face.Back);
         }
     }
 

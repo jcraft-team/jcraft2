@@ -7,7 +7,7 @@ import org.terasology.math.Region3i;
 import org.terasology.math.geom.*;
 import org.terasology.world.biomes.Biome;
 
-import com.chappelle.jcraft.blocks.Block;
+import com.chappelle.jcraft.blocks.*;
 import com.chappelle.jcraft.lighting.LightType;
 import com.chappelle.jcraft.serialization.*;
 import com.chappelle.jcraft.util.Util;
@@ -132,7 +132,7 @@ public class Chunk implements BitSerializable
 		try
 		{
 			
-			if(heightMap[x][z] < y && !block.isTransparent)
+			if(heightMap[x][z] < y)
 			{
 				heightMap[x][z] = y;
 			}
@@ -365,9 +365,9 @@ public class Chunk implements BitSerializable
         return Util.isValidIndex(x, y, z);
     }
 
-    public Block getNeighborBlock_Local(Vector3Int location, Block.Face face)
+    public Block getNeighborBlock_Local(Vector3Int location, Face face)
     {
-        Vector3Int neighborLocation = Block.Face.getNeighborBlockLocalLocation(location, face);
+        Vector3Int neighborLocation = Face.getNeighborBlockLocalLocation(location, face);
         return getBlock(neighborLocation);
     }
 

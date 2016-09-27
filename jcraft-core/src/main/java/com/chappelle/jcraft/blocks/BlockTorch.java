@@ -29,9 +29,9 @@ public class BlockTorch extends Block
     }
 
     @Override
-    public void onBlockPlaced(World world, Vector3Int location, Block.Face face, Vector3f cameraDirectionUnitVector)
+    public void onBlockPlaced(World world, Vector3Int location, Face face, Vector3f cameraDirectionUnitVector)
     {
-    	Vector3Int neighborBlockLocation = Block.Face.getNeighborBlockLocalLocation(location, Block.Face.getOppositeFace(face));
+    	Vector3Int neighborBlockLocation = Face.getNeighborBlockLocalLocation(location, Face.getOppositeFace(face));
     	Block attachedBlock = world.getBlock(neighborBlockLocation);
     	if(attachedBlock.blockId == this.blockId)
     	{
@@ -51,41 +51,41 @@ public class BlockTorch extends Block
 	{
 		temp.set(x, y, z);
 		byte blockState = world.getBlockState(temp);
-		Block.Face homeFace = getOrientation(blockState);
+		Face homeFace = getOrientation(blockState);
 		float width = 0.15f;
 		float height = 0.6f;
 		float xzOffset = 0.35f;
 		float yOffset = 0.3f;
-		minX = 0.5 - width;
-		minY = 0;
-		minZ = 0.5 - width;
-		maxX = 0.5 + width;
-		maxY = height;
-		maxZ = 0.5 + width;
-		if(homeFace != Block.Face.Top)
+		bounds.minX = 0.5 - width;
+		bounds.minY = 0;
+		bounds.minZ = 0.5 - width;
+		bounds.maxX = 0.5 + width;
+		bounds.maxY = height;
+		bounds.maxZ = 0.5 + width;
+		if(homeFace != Face.Top)
 		{
-			minY += yOffset;
-			maxY += yOffset;
+			bounds.minY += yOffset;
+			bounds.maxY += yOffset;
 		}
-		if(homeFace == Block.Face.Front)
+		if(homeFace == Face.Front)
 		{
-			minZ -= xzOffset;
-			maxZ -= xzOffset;
+			bounds.minZ -= xzOffset;
+			bounds.maxZ -= xzOffset;
 		}
-		else if(homeFace == Block.Face.Back)
+		else if(homeFace == Face.Back)
 		{
-			minZ += xzOffset;
-			maxZ += xzOffset;
+			bounds.minZ += xzOffset;
+			bounds.maxZ += xzOffset;
 		}
-		else if(homeFace == Block.Face.Left)
+		else if(homeFace == Face.Left)
 		{
-			minX += xzOffset;
-			maxX += xzOffset;
+			bounds.minX += xzOffset;
+			bounds.maxX += xzOffset;
 		}
-		else if(homeFace == Block.Face.Right)
+		else if(homeFace == Face.Right)
 		{
-			minX -= xzOffset;
-			maxX -= xzOffset;
+			bounds.minX -= xzOffset;
+			bounds.maxX -= xzOffset;
 		}
 	}
     
@@ -99,7 +99,7 @@ public class BlockTorch extends Block
     public void onNeighborRemoved(World world, Vector3Int removedBlockLocation, Vector3Int myLocation)
     {
         byte state = world.getBlockState(myLocation);
-        Face oppositeFace = Block.Face.getOppositeFace(getOrientation(state));
+        Face oppositeFace = Face.getOppositeFace(getOrientation(state));
         Vector3Int attachedLocation = myLocation.add(Vector3Int.fromVector3f(oppositeFace.normal));
         if(removedBlockLocation.equals(attachedLocation))
         {
@@ -113,9 +113,9 @@ public class BlockTorch extends Block
 	}
 
     @Override
-    public boolean isValidPlacementFace(Block.Face face)
+    public boolean isValidPlacementFace(Face face)
     {
-        return face != Block.Face.Bottom;
+        return face != Face.Bottom;
     }
 
     @Override
@@ -139,8 +139,8 @@ public class BlockTorch extends Block
 		return super.collisionRayTrace(world, x, y, z, startVec, endVec);
 	}
 
-	public static Block.Face getOrientation(byte blockState)
+	public static Face getOrientation(byte blockState)
 	{
-		return Block.Face.values()[orientationField.getValue(blockState)];
+		return Face.values()[orientationField.getValue(blockState)];
 	}
 }

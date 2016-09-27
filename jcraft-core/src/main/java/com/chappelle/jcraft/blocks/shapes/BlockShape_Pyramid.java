@@ -11,11 +11,11 @@ public class BlockShape_Pyramid extends BlockShape{
 
 	public BlockShape_Pyramid()
 	{
-		for(Block.Face face : Block.Face.values())
+		for(Face face : Face.values())
 		{
 			fullSide.put(face, Boolean.FALSE);
 		}
-		fullSide.put(Block.Face.Bottom, Boolean.TRUE);
+		fullSide.put(Face.Bottom, Boolean.TRUE);
 	}
 
     @Override
@@ -36,7 +36,7 @@ public class BlockShape_Pyramid extends BlockShape{
         Vector3f faceLoc_Bottom_BottomRight = blockLocation3f.add(new Vector3f(1, 0, 1));
         Vector3f faceLoc_Top = blockLocation3f.add(new Vector3f(0.5f, 1, 0.5f));
         int indexOffset = positions.size()/3;
-        if(shouldFaceBeAdded(gen, Block.Face.Bottom, isTransparent)){
+        if(shouldFaceBeAdded(gen, Face.Bottom, isTransparent)){
         	addPositions(positions, faceLoc_Bottom_BottomRight);
         	addPositions(positions, faceLoc_Bottom_BottomLeft);
         	addPositions(positions, faceLoc_Bottom_TopRight);
@@ -53,7 +53,7 @@ public class BlockShape_Pyramid extends BlockShape{
                 normals.add(-1f);
                 normals.add(0f);
             }
-            BlockSkin_TextureLocation textureLocationBottom = block.getSkin(chunk, blockLocation, Block.Face.Bottom).getTextureLocation();
+            BlockSkin_TextureLocation textureLocationBottom = block.getSkin(chunk, blockLocation, Face.Bottom).getTextureLocation();
             textureCoordinates.add(getTextureCoordinatesX(gen, textureLocationBottom, 0, 0));
             textureCoordinates.add(getTextureCoordinatesY(gen, textureLocationBottom, 0, 0));
             
@@ -75,7 +75,7 @@ public class BlockShape_Pyramid extends BlockShape{
         indices.add((short) (indexOffset + 2));
         indexOffset += 3;
         addTriangleNormals(normals, 0, 0, 1);
-        addTextureCoordinates_Side(gen, textureCoordinates, block, chunk, blockLocation, Block.Face.Front);
+        addTextureCoordinates_Side(gen, textureCoordinates, block, chunk, blockLocation, Face.Front);
         //Left
         addPositions(positions, faceLoc_Bottom_TopLeft);
         addPositions(positions, faceLoc_Bottom_BottomLeft);
@@ -85,7 +85,7 @@ public class BlockShape_Pyramid extends BlockShape{
         indices.add((short) (indexOffset + 2));
         indexOffset += 3;
         addTriangleNormals(normals, -1, 0, 0);
-        addTextureCoordinates_Side(gen, textureCoordinates, block, chunk, blockLocation, Block.Face.Left);
+        addTextureCoordinates_Side(gen, textureCoordinates, block, chunk, blockLocation, Face.Left);
         //Back
         addPositions(positions, faceLoc_Bottom_TopRight);
         addPositions(positions, faceLoc_Bottom_TopLeft);
@@ -95,7 +95,7 @@ public class BlockShape_Pyramid extends BlockShape{
         indices.add((short) (indexOffset + 2));
         indexOffset += 3;
         addTriangleNormals(normals, 0, 0, -1);
-        addTextureCoordinates_Side(gen, textureCoordinates, block, chunk, blockLocation, Block.Face.Back);
+        addTextureCoordinates_Side(gen, textureCoordinates, block, chunk, blockLocation, Face.Back);
         //Right
         addPositions(positions, faceLoc_Bottom_BottomRight);
         addPositions(positions, faceLoc_Bottom_TopRight);
@@ -105,7 +105,7 @@ public class BlockShape_Pyramid extends BlockShape{
         indices.add((short) (indexOffset + 2));
         indexOffset += 3;
         addTriangleNormals(normals, 1, 0, 0);
-        addTextureCoordinates_Side(gen, textureCoordinates, block, chunk, blockLocation, Block.Face.Right);
+        addTextureCoordinates_Side(gen, textureCoordinates, block, chunk, blockLocation, Face.Right);
     }
     
     private void addTriangleNormals(TFloatList normals, float x, float y, float z){
@@ -116,7 +116,7 @@ public class BlockShape_Pyramid extends BlockShape{
         }
     }
     
-    private void addTextureCoordinates_Side(MeshGenContext gen, TFloatList textureCoordinates, Block block, Chunk chunk, Vector3Int blockLocation, Block.Face face){
+    private void addTextureCoordinates_Side(MeshGenContext gen, TFloatList textureCoordinates, Block block, Chunk chunk, Vector3Int blockLocation, Face face){
         BlockSkin_TextureLocation textureLocation = block.getSkin(chunk, blockLocation, face).getTextureLocation();
         textureCoordinates.add(getTextureCoordinatesX(gen, textureLocation, 0, 0));
         textureCoordinates.add(getTextureCoordinatesY(gen, textureLocation, 0, 0));

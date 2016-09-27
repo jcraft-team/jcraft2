@@ -12,12 +12,12 @@ public class BlockFlower extends Block
 	{
 		super(blockId, new BlockSkin[] { new BlockSkin(new BlockSkin_TextureLocation(textureCol, textureRow), true) });
 		setShapes(new BlockShape_Flower());
-		minX = 0.3f;
-		minY = 0;
-		minZ = 0.3f;
-		maxX = 0.6f;
-		maxY = 0.4f;
-		maxZ = 0.6f;
+		bounds.minX = 0.3f;
+		bounds.minY = 0;
+		bounds.minZ = 0.3f;
+		bounds.maxX = 0.6f;
+		bounds.maxY = 0.4f;
+		bounds.maxZ = 0.6f;
 		
 		this.isTransparent = true;
 	}
@@ -67,6 +67,6 @@ public class BlockFlower extends Block
 	@Override
 	public boolean isValidPlacementFace(Face face)
 	{
-		return face == Block.Face.Top;
+		return face == Face.Top;
 	}
 }

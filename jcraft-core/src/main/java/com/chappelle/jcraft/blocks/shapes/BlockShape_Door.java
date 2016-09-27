@@ -20,7 +20,7 @@ public class BlockShape_Door extends BlockShape
     {
 		this.extents = openExtents;
 		
-		for(Block.Face face : Block.Face.values())
+		for(Face face : Face.values())
 		{
 			fullSide.put(face, Boolean.FALSE);
 		}
@@ -43,10 +43,10 @@ public class BlockShape_Door extends BlockShape
     	TFloatList textureCoordinates = gen.getTextureCoordinates();
 
     	byte blockState = chunk.getBlockState(blockLocation);
-    	Block.Face orientationFace = BlockDoor.getOrientation(blockState);
+    	Face orientationFace = BlockDoor.getOrientation(blockState);
         Vector3f orientation = orientationFace.getNormal();
         
-        Block.Face homeFace = Block.Face.getOppositeFace(Block.Face.fromNormal(orientation));
+        Face homeFace = Face.getOppositeFace(Face.fromNormal(orientation));
         Vector3f offsetVector = null;
         Boolean open = BlockDoor.isOpen(blockState);
         if(open)
@@ -91,7 +91,7 @@ public class BlockShape_Door extends BlockShape
         vectors.add(blockLocation3f);
         vectors.add(offsetVector);
         
-        if(shouldFaceBeAdded(gen, Block.Face.Top, isTransparent)){
+        if(shouldFaceBeAdded(gen, Face.Top, isTransparent)){
             addFaceIndices(indices, positions.size());
             addPositions(positions, faceLoc_Top_BottomLeft);
             addPositions(positions, faceLoc_Top_BottomRight);
@@ -99,20 +99,20 @@ public class BlockShape_Door extends BlockShape
             addPositions(positions, faceLoc_Top_TopRight);
             addSquareNormals(normals, 0, 1, 0);
             
-            addTopBottomTextureCoordinates(gen, textureCoordinates, block.getSkin(chunk, blockLocation, Block.Face.Top).getTextureLocation());
-            addLighting(gen, Block.Face.Top);
+            addTopBottomTextureCoordinates(gen, textureCoordinates, block.getSkin(chunk, blockLocation, Face.Top).getTextureLocation());
+            addLighting(gen, Face.Top);
         }
-        if(shouldFaceBeAdded(gen, Block.Face.Bottom, isTransparent)){
+        if(shouldFaceBeAdded(gen, Face.Bottom, isTransparent)){
             addFaceIndices(indices, positions.size());
             addPositions(positions, faceLoc_Bottom_BottomRight);
             addPositions(positions, faceLoc_Bottom_BottomLeft);
             addPositions(positions, faceLoc_Bottom_TopRight);
             addPositions(positions, faceLoc_Bottom_TopLeft);
             addSquareNormals(normals, 0, -1, 0);
-            addTopBottomTextureCoordinates(gen, textureCoordinates, block.getSkin(chunk, blockLocation, Block.Face.Bottom).getTextureLocation());
-            addLighting(gen, Block.Face.Bottom);
+            addTopBottomTextureCoordinates(gen, textureCoordinates, block.getSkin(chunk, blockLocation, Face.Bottom).getTextureLocation());
+            addLighting(gen, Face.Bottom);
         }
-        if(shouldFaceBeAdded(gen, Block.Face.Left, isTransparent)){
+        if(shouldFaceBeAdded(gen, Face.Left, isTransparent)){
             addFaceIndices(indices, positions.size());
             addPositions(positions, faceLoc_Bottom_TopLeft);
             addPositions(positions, faceLoc_Bottom_BottomLeft);
@@ -121,45 +121,45 @@ public class BlockShape_Door extends BlockShape
             addSquareNormals(normals, -1, 0, 0);
             if(open)
             {
-            	if(homeFace == Block.Face.Front)
+            	if(homeFace == Face.Front)
             	{
-            		addBackTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Block.Face.Front).getTextureLocation());
+            		addBackTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Face.Front).getTextureLocation());
             	}
-            	else if(homeFace == Block.Face.Back)
+            	else if(homeFace == Face.Back)
             	{
-            		addFrontTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Block.Face.Front).getTextureLocation());
+            		addFrontTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Face.Front).getTextureLocation());
             	}
-            	else if(homeFace == Block.Face.Left)
+            	else if(homeFace == Face.Left)
             	{
-            		addHingeTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Block.Face.Front).getTextureLocation());
+            		addHingeTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Face.Front).getTextureLocation());
             	}
-            	else if(homeFace == Block.Face.Right)
+            	else if(homeFace == Face.Right)
             	{
-            		addFrameTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Block.Face.Front).getTextureLocation());
+            		addFrameTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Face.Front).getTextureLocation());
             	}
             }
             else
             {
-            	if(homeFace == Block.Face.Front)
+            	if(homeFace == Face.Front)
             	{
-            		addHingeTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Block.Face.Front).getTextureLocation());
+            		addHingeTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Face.Front).getTextureLocation());
             	}
-            	else if(homeFace == Block.Face.Back)
+            	else if(homeFace == Face.Back)
             	{
-            		addFrameTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Block.Face.Front).getTextureLocation());
+            		addFrameTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Face.Front).getTextureLocation());
             	}
-            	else if(homeFace == Block.Face.Left)
+            	else if(homeFace == Face.Left)
             	{
-            		addFrontTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Block.Face.Front).getTextureLocation());
+            		addFrontTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Face.Front).getTextureLocation());
             	}
-            	else if(homeFace == Block.Face.Right)
+            	else if(homeFace == Face.Right)
             	{
-            		addBackTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Block.Face.Front).getTextureLocation());
+            		addBackTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Face.Front).getTextureLocation());
             	}
             }
-            addLighting(gen, Block.Face.Left);
+            addLighting(gen, Face.Left);
         }
-        if(shouldFaceBeAdded(gen, Block.Face.Right, isTransparent)){
+        if(shouldFaceBeAdded(gen, Face.Right, isTransparent)){
             addFaceIndices(indices, positions.size());
             addPositions(positions, faceLoc_Bottom_BottomRight);
             addPositions(positions, faceLoc_Bottom_TopRight);
@@ -169,45 +169,45 @@ public class BlockShape_Door extends BlockShape
             
             if(open)
             {
-            	if(homeFace == Block.Face.Front)
+            	if(homeFace == Face.Front)
             	{
-            		addFrontTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Block.Face.Front).getTextureLocation());
+            		addFrontTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Face.Front).getTextureLocation());
             	}
-            	else if(homeFace == Block.Face.Back)
+            	else if(homeFace == Face.Back)
             	{
-            		addBackTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Block.Face.Front).getTextureLocation());
+            		addBackTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Face.Front).getTextureLocation());
             	}
-            	else if(homeFace == Block.Face.Left)
+            	else if(homeFace == Face.Left)
             	{
-            		addFrameTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Block.Face.Front).getTextureLocation());
+            		addFrameTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Face.Front).getTextureLocation());
             	}
-            	else if(homeFace == Block.Face.Right)
+            	else if(homeFace == Face.Right)
             	{
-            		addHingeTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Block.Face.Front).getTextureLocation());
+            		addHingeTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Face.Front).getTextureLocation());
             	}
             }
             else
             {
-            	if(homeFace == Block.Face.Front)
+            	if(homeFace == Face.Front)
             	{
-            		addFrameTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Block.Face.Front).getTextureLocation());
+            		addFrameTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Face.Front).getTextureLocation());
             	}
-            	else if(homeFace == Block.Face.Back)
+            	else if(homeFace == Face.Back)
             	{
-            		addHingeTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Block.Face.Front).getTextureLocation());
+            		addHingeTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Face.Front).getTextureLocation());
             	}
-            	else if(homeFace == Block.Face.Left)
+            	else if(homeFace == Face.Left)
             	{
-            		addBackTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Block.Face.Front).getTextureLocation());
+            		addBackTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Face.Front).getTextureLocation());
             	}
-            	else if(homeFace == Block.Face.Right)
+            	else if(homeFace == Face.Right)
             	{
-            		addFrontTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Block.Face.Front).getTextureLocation());
+            		addFrontTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Face.Front).getTextureLocation());
             	}
             }
-            addLighting(gen, Block.Face.Right);
+            addLighting(gen, Face.Right);
         }
-        if(shouldFaceBeAdded(gen, Block.Face.Front, isTransparent)){
+        if(shouldFaceBeAdded(gen, Face.Front, isTransparent)){
             addFaceIndices(indices, positions.size());
             addPositions(positions, faceLoc_Bottom_BottomLeft);
             addPositions(positions, faceLoc_Bottom_BottomRight);
@@ -216,45 +216,45 @@ public class BlockShape_Door extends BlockShape
             addSquareNormals(normals, 0, 0, 1);
             if(open)
             {
-            	if(homeFace == Block.Face.Front)
+            	if(homeFace == Face.Front)
             	{
-            		addHingeTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Block.Face.Front).getTextureLocation());
+            		addHingeTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Face.Front).getTextureLocation());
             	}
-            	else if(homeFace == Block.Face.Back)
+            	else if(homeFace == Face.Back)
             	{
-            		addFrameTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Block.Face.Front).getTextureLocation());
+            		addFrameTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Face.Front).getTextureLocation());
             	}
-            	else if(homeFace == Block.Face.Left)
+            	else if(homeFace == Face.Left)
             	{
-            		addFrontTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Block.Face.Front).getTextureLocation());
+            		addFrontTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Face.Front).getTextureLocation());
             	}
-            	else if(homeFace == Block.Face.Right)
+            	else if(homeFace == Face.Right)
             	{
-            		addBackTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Block.Face.Front).getTextureLocation());
+            		addBackTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Face.Front).getTextureLocation());
             	}
             }
             else
             {
-            	if(homeFace == Block.Face.Front)
+            	if(homeFace == Face.Front)
             	{
-            		addFrontTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Block.Face.Front).getTextureLocation());
+            		addFrontTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Face.Front).getTextureLocation());
             	}
-            	else if(homeFace == Block.Face.Back)
+            	else if(homeFace == Face.Back)
             	{
-            		addBackTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Block.Face.Front).getTextureLocation());
+            		addBackTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Face.Front).getTextureLocation());
             	}
-            	else if(homeFace == Block.Face.Left)
+            	else if(homeFace == Face.Left)
             	{
-            		addFrameTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Block.Face.Front).getTextureLocation());
+            		addFrameTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Face.Front).getTextureLocation());
             	}
-            	else if(homeFace == Block.Face.Right)
+            	else if(homeFace == Face.Right)
             	{
-            		addHingeTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Block.Face.Front).getTextureLocation());
+            		addHingeTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Face.Front).getTextureLocation());
             	}
             }
-            addLighting(gen, Block.Face.Front);
+            addLighting(gen, Face.Front);
         }
-        if(shouldFaceBeAdded(gen, Block.Face.Back, isTransparent)){
+        if(shouldFaceBeAdded(gen, Face.Back, isTransparent)){
             addFaceIndices(indices, positions.size());
             addPositions(positions, faceLoc_Bottom_TopRight);
             addPositions(positions, faceLoc_Bottom_TopLeft);
@@ -263,43 +263,43 @@ public class BlockShape_Door extends BlockShape
             addSquareNormals(normals, 0, 0, -1);
             if(open)
             {
-            	if(homeFace == Block.Face.Front)
+            	if(homeFace == Face.Front)
             	{
-            		addFrameTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Block.Face.Front).getTextureLocation());
+            		addFrameTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Face.Front).getTextureLocation());
             	}
-            	else if(homeFace == Block.Face.Back)
+            	else if(homeFace == Face.Back)
             	{
-            		addHingeTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Block.Face.Front).getTextureLocation());
+            		addHingeTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Face.Front).getTextureLocation());
             	}
-            	else if(homeFace == Block.Face.Left)
+            	else if(homeFace == Face.Left)
             	{
-            		addBackTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Block.Face.Front).getTextureLocation());
+            		addBackTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Face.Front).getTextureLocation());
             	}
-            	else if(homeFace == Block.Face.Right)
+            	else if(homeFace == Face.Right)
             	{
-            		addFrontTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Block.Face.Front).getTextureLocation());
+            		addFrontTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Face.Front).getTextureLocation());
             	}
             }
             else
             {
-            	if(homeFace == Block.Face.Front)
+            	if(homeFace == Face.Front)
             	{
-            		addBackTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Block.Face.Front).getTextureLocation());
+            		addBackTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Face.Front).getTextureLocation());
             	}
-            	else if(homeFace == Block.Face.Back)
+            	else if(homeFace == Face.Back)
             	{
-            		addFrontTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Block.Face.Front).getTextureLocation());
+            		addFrontTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Face.Front).getTextureLocation());
             	}
-            	else if(homeFace == Block.Face.Left)
+            	else if(homeFace == Face.Left)
             	{
-            		addHingeTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Block.Face.Front).getTextureLocation());
+            		addHingeTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Face.Front).getTextureLocation());
             	}
-            	else if(homeFace == Block.Face.Right)
+            	else if(homeFace == Face.Right)
             	{
-            		addFrameTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Block.Face.Front).getTextureLocation());
+            		addFrameTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Face.Front).getTextureLocation());
             	}
             }
-            addLighting(gen, Block.Face.Back);
+            addLighting(gen, Face.Back);
         }
     }
 

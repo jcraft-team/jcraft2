@@ -23,15 +23,15 @@ public class BlockLadder extends Block
 	}
 	
 	@Override
-	public void onBlockPlaced(World world, Vector3Int location, Block.Face face, Vector3f cameraDirectionAsUnitVector)
+	public void onBlockPlaced(World world, Vector3Int location, Face face, Vector3f cameraDirectionAsUnitVector)
 	{
         byte blockState = world.getBlockState(location);
-        world.setBlockState(location.x, location.y, location.z, (byte)orientationField.setValue(blockState, Block.Face.getOppositeFace(face).ordinal()));
+        world.setBlockState(location.x, location.y, location.z, (byte)orientationField.setValue(blockState, Face.getOppositeFace(face).ordinal()));
 	}
 
-	public static Block.Face getOrientation(byte blockState)
+	public static Face getOrientation(byte blockState)
 	{
-		return Block.Face.values()[orientationField.getValue(blockState)];
+		return Face.values()[orientationField.getValue(blockState)];
 	}
 
 	public void onBlockRemoved(World world, Vector3Int location)
@@ -46,42 +46,42 @@ public class BlockLadder extends Block
 	{
 		byte blockState = world.getBlockState(new Vector3Int(x, y, z));
 		Vector3f orientation = getOrientation(blockState).normal;
-    	Block.Face homeFace = Block.Face.getOppositeFace(Block.Face.fromNormal(orientation));
-    	if(homeFace == Block.Face.Back)
+    	Face homeFace = Face.getOppositeFace(Face.fromNormal(orientation));
+    	if(homeFace == Face.Back)
     	{
-    		minX = 0;
-    		minY = 0;
-    		minZ = 1;
-    		maxX = 1;
-    		maxY = 1;
-    		maxZ = 0.9f;
+    		bounds.minX = 0;
+    		bounds.minY = 0;
+    		bounds.minZ = 1;
+    		bounds.maxX = 1;
+    		bounds.maxY = 1;
+    		bounds.maxZ = 0.9f;
     	}
-    	else if(homeFace == Block.Face.Front)
+    	else if(homeFace == Face.Front)
     	{
-    		minX = 0;
-    		minY = 0;
-    		minZ = 0;
-    		maxX = 1;
-    		maxY = 1;
-    		maxZ = 0.1;
+    		bounds.minX = 0;
+    		bounds.minY = 0;
+    		bounds.minZ = 0;
+    		bounds.maxX = 1;
+    		bounds.maxY = 1;
+    		bounds.maxZ = 0.1;
     	}
-    	else if(homeFace == Block.Face.Left)
+    	else if(homeFace == Face.Left)
     	{
-    		minX = 1;
-    		minY = 0;
-    		minZ = 0;
-    		maxX = 0.9f;
-    		maxY = 1;
-    		maxZ = 1;
+    		bounds.minX = 1;
+    		bounds.minY = 0;
+    		bounds.minZ = 0;
+    		bounds.maxX = 0.9f;
+    		bounds.maxY = 1;
+    		bounds.maxZ = 1;
     	}
-    	else if(homeFace == Block.Face.Right)
+    	else if(homeFace == Face.Right)
     	{
-    		minX = 0;
-    		minY = 0;
-    		minZ = 0;
-    		maxX = 0.1f;
-    		maxY = 1;
-    		maxZ = 1;
+    		bounds.minX = 0;
+    		bounds.minY = 0;
+    		bounds.minZ = 0;
+    		bounds.maxX = 0.1f;
+    		bounds.maxY = 1;
+    		bounds.maxZ = 1;
     	}
 	}
 	
@@ -98,29 +98,29 @@ public class BlockLadder extends Block
 	{
 		byte blockState = world.getBlockState(myLocation);
 		Vector3f orientation = getOrientation(blockState).normal;
-    	Block.Face homeFace = Block.Face.getOppositeFace(Block.Face.fromNormal(orientation));
-    	if(homeFace == Block.Face.Back)
+    	Face homeFace = Face.getOppositeFace(Face.fromNormal(orientation));
+    	if(homeFace == Face.Back)
     	{
     		if(myLocation.z + 1 == location.z)
     		{
     			world.removeBlock(myLocation);
     		}
     	}
-    	else if(homeFace == Block.Face.Front)
+    	else if(homeFace == Face.Front)
     	{
     		if(myLocation.z - 1 == location.z)
     		{
     			world.removeBlock(myLocation);
     		}
     	}
-    	else if(homeFace == Block.Face.Left)
+    	else if(homeFace == Face.Left)
     	{
     		if(myLocation.x + 1 == location.x)
     		{
     			world.removeBlock(myLocation);
     		}
     	}
-    	else if(homeFace == Block.Face.Right)
+    	else if(homeFace == Face.Right)
     	{
     		if(myLocation.x - 1 == location.x)
     		{
@@ -138,7 +138,7 @@ public class BlockLadder extends Block
 	@Override
 	public boolean isValidPlacementFace(Face face)
 	{
-		return face != Block.Face.Top && face != Block.Face.Bottom;
+		return face != Face.Top && face != Face.Bottom;
 	}
 
 	@Override

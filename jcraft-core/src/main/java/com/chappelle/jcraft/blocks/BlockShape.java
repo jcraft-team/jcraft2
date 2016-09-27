@@ -12,11 +12,11 @@ import gnu.trove.list.TFloatList;
 
 public abstract class BlockShape
 {
-	protected Map<Block.Face, Boolean> fullSide = new HashMap<>();
+	protected Map<Face, Boolean> fullSide = new HashMap<>();
 	
 	public BlockShape()
 	{
-		for(Block.Face face : Block.Face.values())
+		for(Face face : Face.values())
 		{
 			fullSide.put(face, Boolean.TRUE);
 		}
@@ -40,7 +40,7 @@ public abstract class BlockShape
 	 * @return true if the face should be added, false otherwise
 	 */
 //	protected boolean shouldFaceBeAdded(Chunk chunk, Vector3Int blockLocation, Block.Face face, boolean isTransparent)
-	protected boolean shouldFaceBeAdded(MeshGenContext gen, Block.Face face, boolean isTransparent)
+	protected boolean shouldFaceBeAdded(MeshGenContext gen, Face face, boolean isTransparent)
 	{
 		Chunk chunk = gen.getChunk();
 		Vector3Int blockLocation = gen.getLocation();
@@ -55,7 +55,7 @@ public abstract class BlockShape
 			if(blockSkin.isTransparent() == isTransparent)
 			{
 				Chunk neighborChunk = null;
-				Vector3Int neighborBlockLocation = Block.Face.getNeighborBlockLocalLocation(blockLocation, face);
+				Vector3Int neighborBlockLocation = Face.getNeighborBlockLocalLocation(blockLocation, face);
 				Block neighborBlock = chunk.getBlock(neighborBlockLocation);
 				if(neighborBlock == null)//Check neighboring chunks
 				{
@@ -109,14 +109,14 @@ public abstract class BlockShape
 						return true;
 					}
 					BlockShape neighborShape = neighborBlock.getShape(neighborChunk, neighborBlockLocation);
-					return !isFullSide(face) || !neighborShape.isFullSide(Block.Face.getOppositeFace(face));
+					return !isFullSide(face) || !neighborShape.isFullSide(Face.getOppositeFace(face));
 				}
 			}
 			return false;
 		}
 	}
 
-	protected boolean isFullSide(Block.Face face)
+	protected boolean isFullSide(Face face)
 	{
 		return fullSide.get(face);
 	}
@@ -144,7 +144,7 @@ public abstract class BlockShape
 		return ((((-1 * textureLocation.getRow()) + (yUnitsToAdd - 1)) * textureUnitY) + 1);
 	}
 	
-    protected void addLighting(MeshGenContext gen, Block.Face face)
+    protected void addLighting(MeshGenContext gen, Face face)
     {
     	TFloatList colors = gen.getColorList();
     	Chunk chunk = gen.getChunk();
@@ -159,11 +159,11 @@ public abstract class BlockShape
 		int z = location.z;
 		if(block.useNeighborLight())//TODO: Investigate how this is different from transparent?
 		{
-			if(face == Block.Face.Top)
+			if(face == Face.Top)
 			{
 				y = (location.y+1)&255;
 			}
-			else if(face == Block.Face.Bottom)
+			else if(face == Face.Bottom)
 			{
 				int neighborY = location.y-1;
 				if(neighborY >= 0)
@@ -175,7 +175,7 @@ public abstract class BlockShape
 					y = 0;
 				}
 			}
-			else if(face == Block.Face.Front)
+			else if(face == Face.Front)
 			{
 				int neighborZ = location.z + 1;
 				if(neighborZ < 16)
@@ -196,7 +196,7 @@ public abstract class BlockShape
 					}
 				}
 			}
-			else if(face == Block.Face.Back)
+			else if(face == Face.Back)
 			{
 				int neighborZ = location.z - 1;
 				if(neighborZ >= 0)
@@ -217,7 +217,7 @@ public abstract class BlockShape
 					}
 				}
 			}
-			else if(face == Block.Face.Left)
+			else if(face == Face.Left)
 			{
 				int neighborX = location.x - 1;
 				if(neighborX >= 0)
@@ -238,7 +238,7 @@ public abstract class BlockShape
 					}
 				}
 			}
-			else if(face == Block.Face.Right)
+			else if(face == Face.Right)
 			{
 				int neighborX = location.x + 1;
 				if(neighborX < 16)
@@ -296,7 +296,7 @@ public abstract class BlockShape
 			float vertexAO = 0;
 			float vertexAOMult = GameSettings.ambientOcclusionIntensity;
 			
-			if(face == Block.Face.Back)
+			if(face == Face.Back)
 			{
 				//bottom left corner
 				side1 = gen.isOpaqueBlockPresent(worldX+1, y, worldZ-1);
@@ -338,7 +338,7 @@ public abstract class BlockShape
 				colors.add((float)effectiveBlockLight);
 				colors.add(Math.max(skyLight - vertexAO, 0.0f));
 			}
-			else if(face == Block.Face.Front)
+			else if(face == Face.Front)
 			{
 				//bottom left
 				side1 = gen.isOpaqueBlockPresent(worldX-1, y, worldZ+1);
@@ -377,7 +377,7 @@ public abstract class BlockShape
 				colors.add((float)effectiveBlockLight);
 				colors.add(Math.max(skyLight - vertexAO, 0.0f));
 			}
-			else if(face == Block.Face.Left)
+			else if(face == Face.Left)
 			{
 				//bottom left
 				side1 = gen.isOpaqueBlockPresent(worldX-1, y, worldZ-1);
@@ -416,7 +416,7 @@ public abstract class BlockShape
 				colors.add((float)effectiveBlockLight);
 				colors.add(Math.max(skyLight - vertexAO, 0.0f));
 			}
-			else if(face == Block.Face.Right)
+			else if(face == Face.Right)
 			{
 				//bottom left
 				side1 = gen.isOpaqueBlockPresent(worldX+1, y, worldZ+1);
@@ -455,7 +455,7 @@ public abstract class BlockShape
 				colors.add((float)effectiveBlockLight);
 				colors.add(Math.max(skyLight - vertexAO, 0.0f));
 			}
-			else if(face == Block.Face.Top)
+			else if(face == Face.Top)
 			{
 				//bottom left
 				side1 = gen.isOpaqueBlockPresent(worldX, y+1, worldZ+1);
@@ -494,7 +494,7 @@ public abstract class BlockShape
 				colors.add((float)effectiveBlockLight);
 				colors.add(Math.max(skyLight - vertexAO, 0.0f));
 			}
-			else if(face == Block.Face.Bottom)
+			else if(face == Face.Bottom)
 			{
 				//bottom left
 				side1 = gen.isOpaqueBlockPresent(worldX, y-1, worldZ+1);

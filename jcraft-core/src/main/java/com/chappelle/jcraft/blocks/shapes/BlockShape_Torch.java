@@ -11,7 +11,7 @@ public class BlockShape_Torch extends BlockShape
 {
     public BlockShape_Torch()
     {
-    	for(Block.Face face : Block.Face.values())
+    	for(Face face : Face.values())
     	{
     		fullSide.put(face, Boolean.FALSE);
     	}
@@ -50,13 +50,13 @@ public class BlockShape_Torch extends BlockShape
 
         //Get orientation from the block state
         byte blockState = chunk.getBlockState(blockLocation);
-        Block.Face face = BlockTorch.getOrientation(blockState);
+        Face face = BlockTorch.getOrientation(blockState);
         Vector3f normalVector = face.getNormal();
         if(normalVector == null)
         {
             normalVector = Vector3f.UNIT_Z.clone();
         }
-        if (face != Block.Face.Top)
+        if (face != Face.Top)
         {
             //Apply rotation to offsets   
             vectors.rotate(getRotation(face));
@@ -64,7 +64,7 @@ public class BlockShape_Torch extends BlockShape
         
         //Set the rotated points at the block location
         Vector3f blockLocation3f = new Vector3f(blockLocation.getX() + 0.5f, blockLocation.getY() + 0.29f, blockLocation.getZ() + 0.5f);
-        if (face != Block.Face.Top)
+        if (face != Face.Top)
         {
             blockLocation3f.addLocal(0.0f, 0.3f, 0.0f);
             
@@ -75,7 +75,7 @@ public class BlockShape_Torch extends BlockShape
 
 
         //Add to mesh
-        if (shouldFaceBeAdded(gen, Block.Face.Top, isTransparent))
+        if (shouldFaceBeAdded(gen, Face.Top, isTransparent))
         {
             addFaceIndices(indices, positions.size());
             addPositions(positions, faceLoc_Top_BottomLeft);
@@ -84,10 +84,10 @@ public class BlockShape_Torch extends BlockShape
             addPositions(positions, faceLoc_Top_TopRight);
             addSquareNormals(normals, 0, 1, 0);
 
-            addTopTextureCoordinates(gen, textureCoordinates, block.getSkin(chunk, blockLocation, Block.Face.Top).getTextureLocation());
-            addLighting(gen, Block.Face.Top);            
+            addTopTextureCoordinates(gen, textureCoordinates, block.getSkin(chunk, blockLocation, Face.Top).getTextureLocation());
+            addLighting(gen, Face.Top);            
         }
-        if (shouldFaceBeAdded(gen, Block.Face.Bottom, isTransparent))
+        if (shouldFaceBeAdded(gen, Face.Bottom, isTransparent))
         {
             addFaceIndices(indices, positions.size());
             addPositions(positions, faceLoc_Bottom_BottomRight);
@@ -95,10 +95,10 @@ public class BlockShape_Torch extends BlockShape
             addPositions(positions, faceLoc_Bottom_TopRight);
             addPositions(positions, faceLoc_Bottom_TopLeft);
             addSquareNormals(normals, 0, -1, 0);
-            addTextureCoordinates(gen, textureCoordinates, block.getSkin(chunk, blockLocation, Block.Face.Bottom).getTextureLocation());
-            addLighting(gen, Block.Face.Bottom);
+            addTextureCoordinates(gen, textureCoordinates, block.getSkin(chunk, blockLocation, Face.Bottom).getTextureLocation());
+            addLighting(gen, Face.Bottom);
         }
-        if (shouldFaceBeAdded(gen, Block.Face.Left, isTransparent))
+        if (shouldFaceBeAdded(gen, Face.Left, isTransparent))
         {
             addFaceIndices(indices, positions.size());
             addPositions(positions, faceLoc_Bottom_TopLeft);
@@ -106,10 +106,10 @@ public class BlockShape_Torch extends BlockShape
             addPositions(positions, faceLoc_Top_TopLeft);
             addPositions(positions, faceLoc_Top_BottomLeft);
             addSquareNormals(normals, -1, 0, 0);
-            addTextureCoordinates(gen, textureCoordinates, block.getSkin(chunk, blockLocation, Block.Face.Left).getTextureLocation());
-            addLighting(gen, Block.Face.Left);
+            addTextureCoordinates(gen, textureCoordinates, block.getSkin(chunk, blockLocation, Face.Left).getTextureLocation());
+            addLighting(gen, Face.Left);
         }
-        if (shouldFaceBeAdded(gen, Block.Face.Right, isTransparent))
+        if (shouldFaceBeAdded(gen, Face.Right, isTransparent))
         {
             addFaceIndices(indices, positions.size());
             addPositions(positions, faceLoc_Bottom_BottomRight);
@@ -117,10 +117,10 @@ public class BlockShape_Torch extends BlockShape
             addPositions(positions, faceLoc_Top_BottomRight);
             addPositions(positions, faceLoc_Top_TopRight);
             addSquareNormals(normals, 1, 0, 0);
-            addTextureCoordinates(gen, textureCoordinates, block.getSkin(chunk, blockLocation, Block.Face.Right).getTextureLocation());
-            addLighting(gen, Block.Face.Right);
+            addTextureCoordinates(gen, textureCoordinates, block.getSkin(chunk, blockLocation, Face.Right).getTextureLocation());
+            addLighting(gen, Face.Right);
         }
-        if (shouldFaceBeAdded(gen, Block.Face.Front, isTransparent))
+        if (shouldFaceBeAdded(gen, Face.Front, isTransparent))
         {
             addFaceIndices(indices, positions.size());
             addPositions(positions, faceLoc_Bottom_BottomLeft);
@@ -128,10 +128,10 @@ public class BlockShape_Torch extends BlockShape
             addPositions(positions, faceLoc_Top_BottomLeft);
             addPositions(positions, faceLoc_Top_BottomRight);
             addSquareNormals(normals, 0, 0, 1);
-            addTextureCoordinates(gen, textureCoordinates, block.getSkin(chunk, blockLocation, Block.Face.Front).getTextureLocation());
-            addLighting(gen, Block.Face.Front);
+            addTextureCoordinates(gen, textureCoordinates, block.getSkin(chunk, blockLocation, Face.Front).getTextureLocation());
+            addLighting(gen, Face.Front);
         }
-        if (shouldFaceBeAdded(gen, Block.Face.Back, isTransparent))
+        if (shouldFaceBeAdded(gen, Face.Back, isTransparent))
         {
             addFaceIndices(indices, positions.size());
             addPositions(positions, faceLoc_Bottom_TopRight);
@@ -139,29 +139,29 @@ public class BlockShape_Torch extends BlockShape
             addPositions(positions, faceLoc_Top_TopRight);
             addPositions(positions, faceLoc_Top_TopLeft);
             addSquareNormals(normals, 0, 0, -1);
-            addTextureCoordinates(gen, textureCoordinates, block.getSkin(chunk, blockLocation, Block.Face.Back).getTextureLocation());
-            addLighting(gen, Block.Face.Back);
+            addTextureCoordinates(gen, textureCoordinates, block.getSkin(chunk, blockLocation, Face.Back).getTextureLocation());
+            addLighting(gen, Face.Back);
         }
     }
 
-    private Quaternion getRotation(Block.Face face)
+    private Quaternion getRotation(Face face)
     {
         Quaternion q = new Quaternion();
         float angle = 45.0f;
 
-        if (face == Block.Face.Left)
+        if (face == Face.Left)
         {
             q.fromAngleNormalAxis(angle * FastMath.DEG_TO_RAD, Vector3f.UNIT_Z);
         }
-        else if (face == Block.Face.Right)
+        else if (face == Face.Right)
         {
             q.fromAngleNormalAxis((360 - angle) * FastMath.DEG_TO_RAD, Vector3f.UNIT_Z);
         }
-        else if (face == Block.Face.Front)
+        else if (face == Face.Front)
         {
             q.fromAngleNormalAxis(angle * FastMath.DEG_TO_RAD, Vector3f.UNIT_X);
         }
-        else if (face == Block.Face.Back)
+        else if (face == Face.Back)
         {
             q.fromAngleNormalAxis((360 - angle) * FastMath.DEG_TO_RAD, Vector3f.UNIT_X);
         }
@@ -227,7 +227,7 @@ public class BlockShape_Torch extends BlockShape
     }
 
     @Override
-    protected boolean shouldFaceBeAdded(MeshGenContext gen, Block.Face face, boolean isTransparent)
+    protected boolean shouldFaceBeAdded(MeshGenContext gen, Face face, boolean isTransparent)
     {
         return true;
     }

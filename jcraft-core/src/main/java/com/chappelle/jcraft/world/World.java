@@ -4,7 +4,7 @@ import java.util.*;
 import java.util.concurrent.*;
 
 import com.chappelle.jcraft.*;
-import com.chappelle.jcraft.blocks.Block;
+import com.chappelle.jcraft.blocks.*;
 import com.chappelle.jcraft.lighting.*;
 import com.chappelle.jcraft.serialization.VoxelWorldSave;
 import com.chappelle.jcraft.util.*;
@@ -51,7 +51,8 @@ public class World
         this.chunkManager = new ConcurrentChunkManager(context);
         this.context.put(ChunkManager.class, chunkManager);
 
-        this.lightManager = new FloodFillLightManager(this);
+//        this.lightManager = new FloodFillLightManager(this);
+        this.lightManager = new RecursiveFloodFillLightManager(this);
         this.context.put(LightManager.class, lightManager);
 	}
 	
@@ -324,8 +325,8 @@ public class World
     public void setBlock(RayTrace rayTrace, Vector3f cameraDirectionUnitVector, Block blockToPlace)
     {
         Vector3Int location = new Vector3Int(rayTrace.blockX, rayTrace.blockY, rayTrace.blockZ);
-        Vector3Int newBlockLocation = Block.Face.getNeighborBlockLocalLocation(location, rayTrace.sideHit);
-        Block.Face placementFace = rayTrace.sideHit;
+        Vector3Int newBlockLocation = Face.getNeighborBlockLocalLocation(location, rayTrace.sideHit);
+        Face placementFace = rayTrace.sideHit;
         if (blockToPlace.canPlaceBlockOn(this, location.x, location.y, location.z, rayTrace.sideHit) && blockToPlace.canPlaceBlockAt(this, newBlockLocation.x, newBlockLocation.y, newBlockLocation.z))
         {
             setBlock(newBlockLocation, blockToPlace);
@@ -406,9 +407,9 @@ public class World
 				lightManager.restoreSunlight(chunk, chunkBlockLocation);
 				
 	            //Notify neighbors of block removal
-	            for (Block.Face face : Block.Face.values())
+	            for (Face face : Face.values())
 	            {
-	                Vector3Int neighborLocation = Block.Face.getNeighborBlockLocalLocation(location, face);
+	                Vector3Int neighborLocation = Face.getNeighborBlockLocalLocation(location, face);
 	                Block neighbor = getBlock(neighborLocation);
 	                if (neighbor != null)
 	                {

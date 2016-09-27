@@ -338,7 +338,9 @@ public class FloodFillLightManager implements LightManager
 	{
 		if(needsLightUpdated(chunk, location, LightType.SKY, lightLevel))
 		{
-			chunk.setLight(location.x, location.y, location.z, LightType.SKY, lightLevel - 1);
+			Block block = chunk.getBlock(location);
+			int lightToSubtract = block == null ? 0 : block.getBlockedSkylight();
+			chunk.setLight(location.x, location.y, location.z, LightType.SKY, Math.max(0, lightLevel - 1 - lightToSubtract));
 			sunlightAdditionQueue.add(new LightNode(location, chunk));
 		}
 	}

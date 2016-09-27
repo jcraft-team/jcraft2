@@ -29,7 +29,7 @@ public class BlockGrass extends Block
 	}
 
 	@Override
-	protected int getSkinIndex(Chunk chunk, Vector3Int location, Block.Face face)
+	protected int getSkinIndex(Chunk chunk, Vector3Int location, Face face)
 	{
 //		if(chunk == null || chunk.isBlockOnSurface(location))
 		{

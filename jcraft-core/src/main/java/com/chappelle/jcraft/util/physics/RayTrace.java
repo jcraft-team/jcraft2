@@ -1,7 +1,7 @@
 package com.chappelle.jcraft.util.physics;
 
 import com.chappelle.jcraft.Enemy;
-import com.chappelle.jcraft.blocks.Block;
+import com.chappelle.jcraft.blocks.Face;
 import com.jme3.math.Vector3f;
 
 public class RayTrace
@@ -20,7 +20,7 @@ public class RayTrace
 	 * trace. Bottom = 0, Top = 1, East = 2, West = 3, North = 4, South = 5.
 	 */
 //	public int sideHit;
-	public Block.Face sideHit;
+	public Face sideHit;
 
 	/** The vector position of the hit */
 	public Vector3f hitVec;
@@ -32,7 +32,7 @@ public class RayTrace
 		this.enemy = enemy;
 	}
 	
-	public RayTrace(int blockX, int blockY, int blockZ, Block.Face sideHit, Vector3f hitVec)
+	public RayTrace(int blockX, int blockY, int blockZ, Face sideHit, Vector3f hitVec)
 	{
 		this.blockX = blockX;
 		this.blockY = blockY;

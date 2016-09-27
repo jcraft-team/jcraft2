@@ -302,6 +302,30 @@ public class AABB
 		}
 	}
 
+	/**
+	 * Checks if a vector is within the Y and Z bounds of the block.
+	 */
+	public boolean isVecInsideYZBounds(Vector3f v)
+	{
+		return v == null ? false : v.y >= this.minY && v.y <= this.maxY && v.z >= this.minZ && v.z <= this.maxZ;
+	}
+
+	/**
+	 * Checks if a vector is within the X and Z bounds of the block.
+	 */
+	public boolean isVecInsideXZBounds(Vector3f v)
+	{
+		return v == null ? false : v.x >= this.minX && v.x <= this.maxX && v.z >= this.minZ && v.z <= this.maxZ;
+	}
+
+	/**
+	 * Checks if a vector is within the X and Y bounds of the block.
+	 */
+	public boolean isVecInsideXYBounds(Vector3f v)
+	{
+		return v == null ? false : v.x >= this.minX && v.x <= this.maxX && v.z >= this.minY && v.y <= this.maxY;
+	}
+
 	public String toString()
 	{
 		return "aabb[" + this.minX + ", " + this.minY + ", " + this.minZ + " -> " + this.maxX + ", " + this.maxY + ", "	+ this.maxZ + "]";

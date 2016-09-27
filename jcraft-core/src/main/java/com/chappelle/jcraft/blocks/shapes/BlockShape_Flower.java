@@ -11,7 +11,7 @@ public class BlockShape_Flower extends BlockShape
 {
 	public BlockShape_Flower()
 	{
-		for(Block.Face face : Block.Face.values())
+		for(Face face : Face.values())
 		{
 			fullSide.put(face, Boolean.FALSE);
 		}
@@ -40,8 +40,8 @@ public class BlockShape_Flower extends BlockShape
         addPositions(positions, blockLocation3f.add(0.5f - halfWidth, height, 0.5f - halfWidth));
         addPositions(positions, blockLocation3f.add(0.5f + halfWidth, height, 0.5f + halfWidth));
         addSquareNormals(normals, -1, 0, -1);
-        addTextureCoordinates(gen, textureCoordinates, block.getSkin(chunk, blockLocation, Block.Face.Left).getTextureLocation());
-        addLighting(gen, Block.Face.Left);
+        addTextureCoordinates(gen, textureCoordinates, block.getSkin(chunk, blockLocation, Face.Left).getTextureLocation());
+        addLighting(gen, Face.Left);
 
         addFaceIndices(indices, positions.size());
         addPositions(positions, blockLocation3f.add(0.5f + halfWidth, 0, 0.5f + halfWidth));
@@ -49,8 +49,8 @@ public class BlockShape_Flower extends BlockShape
         addPositions(positions, blockLocation3f.add(0.5f + halfWidth, height, 0.5f + halfWidth));
         addPositions(positions, blockLocation3f.add(0.5f - halfWidth, height, 0.5f - halfWidth));
         addSquareNormals(normals, 1, 0, -1);
-        addTextureCoordinates(gen, textureCoordinates, block.getSkin(chunk, blockLocation, Block.Face.Right).getTextureLocation());
-        addLighting(gen, Block.Face.Right);
+        addTextureCoordinates(gen, textureCoordinates, block.getSkin(chunk, blockLocation, Face.Right).getTextureLocation());
+        addLighting(gen, Face.Right);
 
         addFaceIndices(indices, positions.size());
         addPositions(positions, blockLocation3f.add(0.5f - halfWidth, 0, 0.5f + halfWidth));
@@ -58,8 +58,8 @@ public class BlockShape_Flower extends BlockShape
         addPositions(positions, blockLocation3f.add(0.5f - halfWidth, height, 0.5f + halfWidth));
         addPositions(positions, blockLocation3f.add(0.5f + halfWidth, height, 0.5f - halfWidth));
         addSquareNormals(normals, 1, 0, 1);
-        addTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Block.Face.Front).getTextureLocation());
-        addLighting(gen, Block.Face.Front);
+        addTextureCoordinates(gen, textureCoordinates,block.getSkin(chunk, blockLocation, Face.Front).getTextureLocation());
+        addLighting(gen, Face.Front);
 
         addFaceIndices(indices, positions.size());
         addPositions(positions, blockLocation3f.add(0.5f + halfWidth, 0, 0.5f - halfWidth));
@@ -67,8 +67,8 @@ public class BlockShape_Flower extends BlockShape
         addPositions(positions, blockLocation3f.add(0.5f + halfWidth, height, 0.5f - halfWidth));
         addPositions(positions, blockLocation3f.add(0.5f - halfWidth, height, 0.5f + halfWidth));
         addSquareNormals(normals, -1, 0, 1);
-        addTextureCoordinates(gen, textureCoordinates, block.getSkin(chunk, blockLocation, Block.Face.Back).getTextureLocation());
-        addLighting(gen, Block.Face.Back);
+        addTextureCoordinates(gen, textureCoordinates, block.getSkin(chunk, blockLocation, Face.Back).getTextureLocation());
+        addLighting(gen, Face.Back);
     }
 
     private void addFaceIndices(TShortList indices, int offset){

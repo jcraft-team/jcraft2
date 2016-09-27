@@ -138,6 +138,7 @@ public class BeginningAppState extends BaseInputAppState<JCraftApplication>
 		rasterizers.add(new SolidRasterizer());
 		rasterizers.add(new FloraRasterizer());
 		rasterizers.add(new TreeRasterizer());
+		rasterizers.add(new BedrockRasterizer());
 		for(FacetProvider provider : providersList)
 		{
 			provider.setSeed(seed);

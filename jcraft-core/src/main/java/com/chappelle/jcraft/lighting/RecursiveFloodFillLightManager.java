@@ -3,7 +3,7 @@ package com.chappelle.jcraft.lighting;
 import java.util.*;
 
 import com.chappelle.jcraft.*;
-import com.chappelle.jcraft.blocks.Block;
+import com.chappelle.jcraft.blocks.*;
 import com.chappelle.jcraft.util.math.Vector3Int;
 import com.chappelle.jcraft.world.World;
 import com.chappelle.jcraft.world.chunk.Chunk;
@@ -240,12 +240,17 @@ public class RecursiveFloodFillLightManager implements LightManager
 	
 	private void propagateSunlightDown(Chunk chunk, int x, int y, int z)
 	{
+		int downwardLight = 15;
 		for(int i = y; i >= 0; i--)
 		{
 			Block block = chunk.getBlock(x, i, z);
 			if(block == null || block.isTransparent)
 			{
-				chunk.setLight(x, i, z, LightType.SKY, 15);
+				if(block == Blocks.water)
+				{
+					downwardLight = downwardLight - block.getBlockedSkylight();
+				}
+				chunk.setLight(x, i, z, LightType.SKY, Math.max(downwardLight, 0));
 				
 				LightAxis(chunk, x, i, z, LightType.SKY, Direction.LEFT);
 				LightAxis(chunk, x, i, z, LightType.SKY, Direction.RIGHT);

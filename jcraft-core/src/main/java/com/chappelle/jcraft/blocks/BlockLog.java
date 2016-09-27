@@ -28,7 +28,7 @@ public class BlockLog extends Block
 	}
 	
 	@Override
-	protected int getSkinIndex(Chunk chunk, Vector3Int location, Block.Face face)
+	protected int getSkinIndex(Chunk chunk, Vector3Int location, Face face)
 	{
 		switch(face)
 		{

@@ -32,10 +32,10 @@ public class BlockDoor extends Block
 	
 	
     @Override
-    public void onBlockPlaced(World world, Vector3Int location, Block.Face face, Vector3f cameraDirectionUnitVector)
+    public void onBlockPlaced(World world, Vector3Int location, Face face, Vector3f cameraDirectionUnitVector)
     {
     	byte state = world.getBlockState(location);
-    	int orientation = Block.Face.fromNormal(cameraDirectionUnitVector).ordinal();
+    	int orientation = Face.fromNormal(cameraDirectionUnitVector).ordinal();
     	state = (byte)orientationField.setValue(state, orientation);
         
         Block bottomBlock = world.getBlock(location.subtract(new Vector3Int(0,1,0)));
@@ -182,7 +182,7 @@ public class BlockDoor extends Block
 	@Override
 	public boolean isValidPlacementFace(Face face)
 	{
-		return face == Block.Face.Top;
+		return face == Face.Top;
 	}
 
 
@@ -193,59 +193,59 @@ public class BlockDoor extends Block
 		byte blockState = world.getBlockState(temp);
 		Boolean open = isOpen(blockState);
 		Vector3f orientation = getOrientation(blockState).normal;
-		Block.Face homeFace = Block.Face.fromNormal(orientation);
-		minX = 0;
-		maxX = 1.0;
-		minZ = 0;
-		maxZ = 1.0;
-		if(homeFace == Block.Face.Front)
+		Face homeFace = Face.fromNormal(orientation);
+		bounds.minX = 0;
+		bounds.maxX = 1.0;
+		bounds.minZ = 0;
+		bounds.maxZ = 1.0;
+		if(homeFace == Face.Front)
 		{
 			if(open)
 			{
-				this.minX = 0.9f;
-				this.maxX = 1.0f;
+				bounds.minX = 0.9f;
+				bounds.maxX = 1.0f;
 			}
 			else
 			{
-				this.maxZ = 0.1;
+				bounds.maxZ = 0.1;
 			}
 		}
-		else if(homeFace == Block.Face.Back)
+		else if(homeFace == Face.Back)
 		{
 			if(open)
 			{
-				this.minX = 0f;
-				this.maxX = 0.1f;
+				bounds.minX = 0f;
+				bounds.maxX = 0.1f;
 			}
 			else
 			{
-				this.maxZ = 0.9;
+				bounds.maxZ = 0.9;
 			}
 		}
-		else if(homeFace == Block.Face.Left)
+		else if(homeFace == Face.Left)
 		{
 			if(open)
 			{
-				this.minZ = 0.9f;
-				this.maxZ = 1.0f;
+				bounds.minZ = 0.9f;
+				bounds.maxZ = 1.0f;
 			}
 			else
 			{
-				this.minX = 1.0;
-				this.maxX = 0.9f;
+				bounds.minX = 1.0;
+				bounds.maxX = 0.9f;
 			}
 		}
-		else if(homeFace == Block.Face.Right)
+		else if(homeFace == Face.Right)
 		{
 			if(open)
 			{
-				this.minZ = 0f;
-				this.maxZ = 0.1f;
+				bounds.minZ = 0f;
+				bounds.maxZ = 0.1f;
 			}
 			else
 			{
-				this.minX = 0;
-				this.maxX = 0.1f;
+				bounds.minX = 0;
+				bounds.maxX = 0.1f;
 			}
 		}
 	}
@@ -259,8 +259,8 @@ public class BlockDoor extends Block
 	}
 
 
-	public static Block.Face getOrientation(byte blockState)
+	public static Face getOrientation(byte blockState)
 	{
-		return Block.Face.values()[orientationField.getValue(blockState)];
+		return Face.values()[orientationField.getValue(blockState)];
 	}
 }

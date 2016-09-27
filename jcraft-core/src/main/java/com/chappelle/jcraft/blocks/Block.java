@@ -12,141 +12,24 @@ public class Block
 {
 	public static final Block[] blocksList = new Block[4096];
 	
-	public static enum Face
-	{
-		Top(Vector3f.UNIT_Y), Bottom(Vector3f.UNIT_Y.negate()), Left(Vector3f.UNIT_X.negate()), Right(Vector3f.UNIT_X), Front(Vector3f.UNIT_Z), Back(Vector3f.UNIT_Z.negate());
-
-		public Vector3f normal;
-		public Vector3f oppositeNormal;
-		
-		private Face(Vector3f normal)
-		{
-			this.normal = normal;
-			this.oppositeNormal = normal.negate();
-		}
-		
-		public Vector3f getNormal()
-		{
-			return normal;
-		}
-		
-		public static Block.Face fromNormal(Vector3f normal)
-		{
-			return fromNormal(Vector3Int.fromVector3f(normal));
-		}
-
-		public static Block.Face fromNormal(Vector3Int normal)
-		{
-			int x = normal.getX();
-			int y = normal.getY();
-			int z = normal.getZ();
-			if(x != 0)
-			{
-				if(x > 0)
-				{
-					return Block.Face.Right;
-				}
-				else
-				{
-					return Block.Face.Left;
-				}
-			}
-			else if(y != 0)
-			{
-				if(y > 0)
-				{
-					return Block.Face.Top;
-				}
-				else
-				{
-					return Block.Face.Bottom;
-				}
-			}
-			else if(z != 0)
-			{
-				if(z > 0)
-				{
-					return Block.Face.Front;
-				}
-				else
-				{
-					return Block.Face.Back;
-				}
-			}
-			return null;
-		}
-
-	    public static Block.Face getOppositeFace(Block.Face face)
-	    {
-	        switch(face){
-	            case Top:       return Block.Face.Bottom;
-	            case Bottom:    return Block.Face.Top;
-	            case Left:      return Block.Face.Right;
-	            case Right:     return Block.Face.Left;
-	            case Front:     return Block.Face.Back;
-	            case Back:      return Block.Face.Front;
-	        }
-	        return null;
-	    }
-	    
-	    public static Vector3Int getNeighborBlockLocalLocation(Vector3Int location, Block.Face face)
-	    {
-	        Vector3Int neighborLocation = getNeighborBlockLocation_Relative(face);
-	        neighborLocation.addLocal(location);
-	        return neighborLocation;
-	    }
-	    
-	    public static Vector3Int getNeighborBlockLocation_Relative(Block.Face face)
-	    {
-	        Vector3Int neighborLocation = new Vector3Int();
-	        switch(face)
-	        {
-	            case Top:
-	                neighborLocation.set(0, 1, 0);
-	                break;
-	            
-	            case Bottom:
-	                neighborLocation.set(0, -1, 0);
-	                break;
-	            
-	            case Left:
-	                neighborLocation.set(-1, 0, 0);
-	                break;
-	            
-	            case Right:
-	                neighborLocation.set(1, 0, 0);
-	                break;
-	            
-	            case Front:
-	                neighborLocation.set(0, 0, 1);
-	                break;
-	            
-	            case Back:
-	                neighborLocation.set(0, 0, -1);
-	                break;
-	        }
-	        return neighborLocation;
-	    }
-	    
-	};
-
+	protected AABB bounds;
 	/** minimum X for the block bounds (local coordinates) */
-	protected double minX;
+//	protected double minX;
 
 	/** minimum Y for the block bounds (local coordinates) */
-	protected double minY;
+//	protected double minY;
 
 	/** minimum Z for the block bounds (local coordinates) */
-	protected double minZ;
+//	protected double minZ;
 
 	/** maximum X for the block bounds (local coordinates) */
-	protected double maxX;
+//	protected double maxX;
 
 	/** maximum Y for the block bounds (local coordinates) */
-	protected double maxY;
+//	protected double maxY;
 
 	/** maximum Z for the block bounds (local coordinates) */
-	protected double maxZ;
+//	protected double maxZ;
 
 	public float slipperiness;
 	
@@ -175,6 +58,8 @@ public class Block
      * Returns true if light should pass through this block, false otherwise
      */
 	public boolean isTransparent;
+	public boolean replacementAllowed;
+	public boolean isLiquid;
 	
 	public boolean isClimbable;
 	
@@ -189,7 +74,8 @@ public class Block
 		this.blockId = (byte)blockId;
 		this.slipperiness = DEFAULT_SLIPPERINESS;
 		blocksList[blockId] = this;
-		this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
+		bounds = AABB.getBoundingBox(0, 0, 0, 1, 1, 1);
+//		this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
 		
         int skinIndex = 0;
         if(skins.length < 5)
@@ -207,15 +93,15 @@ public class Block
 	/**
 	 * Sets the bounds of the block. minX, minY, minZ, maxX, maxY, maxZ
 	 */
-	public final void setBlockBounds(float par1, float par2, float par3, float par4, float par5, float par6)
-	{
-		this.minX = (double) par1;
-		this.minY = (double) par2;
-		this.minZ = (double) par3;
-		this.maxX = (double) par4;
-		this.maxY = (double) par5;
-		this.maxZ = (double) par6;
-	}
+//	public final void setBlockBounds(float par1, float par2, float par3, float par4, float par5, float par6)
+//	{
+//		this.minX = (double) par1;
+//		this.minY = (double) par2;
+//		this.minZ = (double) par3;
+//		this.maxX = (double) par4;
+//		this.maxY = (double) par5;
+//		this.maxZ = (double) par6;
+//	}
 
 	protected void setShapes(BlockShape... shapes)
 	{
@@ -251,17 +137,7 @@ public class Block
 		return true;
 	}
 	
-	public boolean isAffectedByGravity()
-	{
-		return false;
-	}
-	
-	public Geometry makeBlockGeometry()
-	{
-		return null;
-	}
-
-	public void onBlockPlaced(World world, Vector3Int location, Block.Face face, Vector3f cameraDirectionAsUnitVector)
+	public void onBlockPlaced(World world, Vector3Int location, Face face, Vector3f cameraDirectionAsUnitVector)
 	{
 		// TODO Auto-generated method stub
 		
@@ -292,12 +168,13 @@ public class Block
 	
 	public AABB getCollisionBoundingBox(World world, int x, int y, int z)
 	{
-		return AABB.getAABBPool().getAABB((double) x + this.minX, (double) y + this.minY, (double) z + this.minZ, (double) x + this.maxX, (double) y + this.maxY, (double) z + this.maxZ);
+		return bounds.getOffsetBoundingBox(x, y, z);
+//		return AABB.getAABBPool().getAABB((double) x + this.minX, (double) y + this.minY, (double) z + this.minZ, (double) x + this.maxX, (double) y + this.maxY, (double) z + this.maxZ);
 	}
 
 	public AABB getSelectedBoundingBox(World world, int x, int y, int z)
 	{
-		return AABB.getAABBPool().getAABB((double) x + this.minX, (double) y + this.minY, (double) z + this.minZ, (double) x + this.maxX, (double) y + this.maxY, (double) z + this.maxZ);
+		return getCollisionBoundingBox(world, x, y, z);
 	}
 
 	public boolean isOpaqueCube()
@@ -346,39 +223,39 @@ public class Block
 		this.setBlockBoundsBasedOnState(world, x, y, z);
 		startVec = startVec.add((-x), (-y), (-z));
 		endVec = endVec.add((-x), (-y), (-z));
-		Vector3f minXVec = MathUtils.getIntermediateWithXValue(startVec, endVec, this.minX);
-		Vector3f maxXVec = MathUtils.getIntermediateWithXValue(startVec, endVec, this.maxX);
-		Vector3f minYVec = MathUtils.getIntermediateWithYValue(startVec, endVec, this.minY);
-		Vector3f maxYVec = MathUtils.getIntermediateWithYValue(startVec, endVec, this.maxY);
-		Vector3f minZVec = MathUtils.getIntermediateWithZValue(startVec, endVec, this.minZ);
-		Vector3f maxZVec = MathUtils.getIntermediateWithZValue(startVec, endVec, this.maxZ);
+		Vector3f minXVec = MathUtils.getIntermediateWithXValue(startVec, endVec, bounds.minX);
+		Vector3f maxXVec = MathUtils.getIntermediateWithXValue(startVec, endVec, bounds.maxX);
+		Vector3f minYVec = MathUtils.getIntermediateWithYValue(startVec, endVec, bounds.minY);
+		Vector3f maxYVec = MathUtils.getIntermediateWithYValue(startVec, endVec, bounds.maxY);
+		Vector3f minZVec = MathUtils.getIntermediateWithZValue(startVec, endVec, bounds.minZ);
+		Vector3f maxZVec = MathUtils.getIntermediateWithZValue(startVec, endVec, bounds.maxZ);
 
-		if (!this.isVecInsideYZBounds(minXVec))
+		if (!bounds.isVecInsideYZBounds(minXVec))
 		{
 			minXVec = null;
 		}
 
-		if (!this.isVecInsideYZBounds(maxXVec))
+		if (!bounds.isVecInsideYZBounds(maxXVec))
 		{
 			maxXVec = null;
 		}
 
-		if (!this.isVecInsideXZBounds(minYVec))
+		if (!bounds.isVecInsideXZBounds(minYVec))
 		{
 			minYVec = null;
 		}
 
-		if (!this.isVecInsideXZBounds(maxYVec))
+		if (!bounds.isVecInsideXZBounds(maxYVec))
 		{
 			maxYVec = null;
 		}
 
-		if (!this.isVecInsideXYBounds(minZVec))
+		if (!bounds.isVecInsideXYBounds(minZVec))
 		{
 			minZVec = null;
 		}
 
-		if (!this.isVecInsideXYBounds(maxZVec))
+		if (!bounds.isVecInsideXYBounds(maxZVec))
 		{
 			maxZVec = null;
 		}
@@ -421,35 +298,35 @@ public class Block
 		} 
 		else
 		{
-			Block.Face sideHit = null;
+			Face sideHit = null;
 			if (hitVec == minXVec)
 			{
-				sideHit = Block.Face.Left;
+				sideHit = Face.Left;
 			}
 
 			if (hitVec == maxXVec)
 			{
-				sideHit = Block.Face.Right;
+				sideHit = Face.Right;
 			}
 
 			if (hitVec == minYVec)
 			{
-				sideHit = Block.Face.Bottom;
+				sideHit = Face.Bottom;
 			}
 
 			if (hitVec == maxYVec)
 			{
-				sideHit = Block.Face.Top;
+				sideHit = Face.Top;
 			}
 
 			if (hitVec == minZVec)
 			{
-				sideHit = Block.Face.Back;
+				sideHit = Face.Back;
 			}
 
 			if (hitVec == maxZVec)
 			{
-				sideHit = Block.Face.Front;
+				sideHit = Face.Front;
 			}
 
 			return new RayTrace(x, y, z, sideHit, hitVec.add((float)x, (float)y, (float)z));
@@ -458,10 +335,11 @@ public class Block
 	
 	public boolean canPlaceBlockAt(World world, int x, int y, int z)
 	{
-		return world.getBlock(x, y, z) == null;
+		Block block = world.getBlock(x, y, z);
+		return block == null || block.replacementAllowed;
 	}
 	
-	public boolean canPlaceBlockOn(World world, int x, int y, int z, Block.Face face)
+	public boolean canPlaceBlockOn(World world, int x, int y, int z, Face face)
 	{
 		Block block = world.getBlock(x, y, z);
 		if(block == null)
@@ -471,35 +349,11 @@ public class Block
 		return isValidPlacementFace(face) && block.isOpaqueCube();
 	}
 	
-	public boolean isValidPlacementFace(Block.Face face)
+	public boolean isValidPlacementFace(Face face)
 	{
 		return true;
 	}
 	
-	/**
-	 * Checks if a vector is within the Y and Z bounds of the block.
-	 */
-	private boolean isVecInsideYZBounds(Vector3f v)
-	{
-		return v == null ? false : v.y >= this.minY && v.y <= this.maxY && v.z >= this.minZ && v.z <= this.maxZ;
-	}
-
-	/**
-	 * Checks if a vector is within the X and Z bounds of the block.
-	 */
-	private boolean isVecInsideXZBounds(Vector3f v)
-	{
-		return v == null ? false : v.x >= this.minX && v.x <= this.maxX && v.z >= this.minZ && v.z <= this.maxZ;
-	}
-
-	/**
-	 * Checks if a vector is within the X and Y bounds of the block.
-	 */
-	private boolean isVecInsideXYBounds(Vector3f v)
-	{
-		return v == null ? false : v.x >= this.minX && v.x <= this.maxX && v.z >= this.minY && v.y <= this.maxY;
-	}
-
 	public int getStackSize()
 	{
 		return 64;
