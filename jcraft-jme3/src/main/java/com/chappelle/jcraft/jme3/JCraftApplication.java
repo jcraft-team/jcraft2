@@ -54,10 +54,16 @@ public class JCraftApplication extends SimpleApplication
 		rootContext = new ContextImpl();
 		rootContext.put(Application.class, this);
 		rootContext.put(VoxelWorldSave.class, new VoxelWorldSaveImpl(new File(GameFiles.getSaveDir(), "world.dat")));
-		rootContext.put(CubesSettings.class, new CubesSettings(assetManager, new ChunkMaterial(assetManager, "Textures/FaithfulBlocks.png")));
+		ChunkMaterial chunkMaterial = new ChunkMaterial(assetManager, "Textures/FaithfulBlocks.png");
+		rootContext.put(ChunkMaterial.class, chunkMaterial);
+		rootContext.put(CubesSettings.class, new CubesSettings(assetManager, chunkMaterial));
 		rootContext.put(AppSettings.class, settings);
-
 		stateManager.attach(new BeginningAppState(rootContext));
+	}
+	
+	public Context getRootContext()
+	{
+		return rootContext;
 	}
 	
 	public AppSettings getSettings()

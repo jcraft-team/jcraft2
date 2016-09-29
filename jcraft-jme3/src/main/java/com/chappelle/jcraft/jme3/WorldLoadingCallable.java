@@ -23,7 +23,10 @@ public class WorldLoadingCallable implements LoadingCallable
 	@Override
 	public Void call() throws Exception
 	{
+		int chunkRenderDistance = GameSettings.chunkRenderDistance;
+		GameSettings.chunkRenderDistance = Math.min(chunkRenderDistance, 6);
 		world.getChunkManager().initializeChunks(progressMonitor, player.posX, player.posZ, GameSettings.chunkRenderDistance);
+		GameSettings.chunkRenderDistance = chunkRenderDistance;
 		return null;
 	}
 

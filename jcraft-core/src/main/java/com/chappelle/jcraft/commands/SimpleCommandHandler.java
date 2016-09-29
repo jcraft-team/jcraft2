@@ -33,6 +33,12 @@ public class SimpleCommandHandler implements CommandHandler
 					world.getTimeOfDayProvider().setTimeOfDay(timeOfDay);
 					return String.format("Time of day set to %f", timeOfDay);
 				}
+				else if("cam".equalsIgnoreCase(commandName) && args.length == 2)
+				{
+					float fovY = Float.parseFloat(args[1]);
+					player.cam.setFrustumPerspective(fovY, player.cam.getWidth()/player.cam.getHeight(), 1, 1000);
+					return String.format("Field of view set to %f", fovY);
+				}
 				else if("position".equalsIgnoreCase(commandName) && args.length == 4)
 				{
 					double x = Double.parseDouble(args[1]);

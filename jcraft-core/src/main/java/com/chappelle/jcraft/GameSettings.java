@@ -3,17 +3,21 @@ package com.chappelle.jcraft;
 import java.io.*;
 import java.util.logging.Logger;
 
+import com.jme3.math.ColorRGBA;
+
 public class GameSettings
 {
 	private final static Logger log = Logger.getLogger(GameSettings.class.getName()); 
 
 	public static int screenWidth = 1366;
 	public static int screenHeight = 768;
+	public static int fieldOfView = 70;
 	public static int chunkRenderDistance = 3;
 	public static boolean showSettings;
 	public static int frameRate = -1;//-1 is unlimited
 	public static boolean debugEnabled;
 	public static boolean skyEnabled;
+	public static ColorRGBA defaultSkyColor = new ColorRGBA((float) 173 / 255, (float) 203 / 255, (float) 255 / 255, 1);
 	public static boolean ambientOcclusionEnabled = true;
 	public static float ambientOcclusionIntensity = 1.0f;
 	

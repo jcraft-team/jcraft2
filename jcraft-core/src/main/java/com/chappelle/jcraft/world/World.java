@@ -69,7 +69,7 @@ public class World
 	public void spawnPlayer(EntityPlayer player)
 	{
 		Camera camera = player.cam;
-		camera.setFrustumPerspective(45f, (float) camera.getWidth() / camera.getHeight(), 0.01f, 1000f);
+		camera.setFrustumPerspective(GameSettings.fieldOfView, (float) camera.getWidth() / camera.getHeight(), 0.1f, 1000f);
 		Vector3f lookAt = (Vector3f)voxelWorldSave.getGameData("playerLookDirection");
 		if(lookAt == null)
 		{

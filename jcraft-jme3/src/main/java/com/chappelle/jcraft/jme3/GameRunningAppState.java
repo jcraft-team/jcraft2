@@ -15,7 +15,6 @@ import com.jme3.app.state.AppStateManager;
 import com.jme3.asset.AssetManager;
 import com.jme3.input.*;
 import com.jme3.input.controls.KeyTrigger;
-import com.jme3.math.ColorRGBA;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.*;
 import com.jme3.system.AppSettings;
@@ -97,7 +96,7 @@ public class GameRunningAppState extends BaseInputAppState<JCraftApplication>
 		}
 		else
 		{
-			viewPort.setBackgroundColor(new ColorRGBA((float) 128 / 255, (float) 173 / 255, (float) 254 / 255, 1));
+			viewPort.setBackgroundColor(GameSettings.defaultSkyColor);
 		}
 		initInputMappings();
 

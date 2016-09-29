@@ -12,10 +12,16 @@ uniform vec4 m_Color;
 uniform sampler2D m_ColorMap;
 uniform sampler2D m_LightMap;
 
+uniform vec4 m_FogColor;
+uniform float m_FogStart;
+uniform float m_FogEnd;
+
 varying vec2 texCoord1;
 varying vec2 texCoord2;
 
 varying vec4 vertColor;
+
+varying float cameraDistance;
 
 void main(){
     vec4 color = vec4(1.0);
@@ -46,6 +52,12 @@ void main(){
            discard;
         }
     #endif
+
+    #ifdef HAS_FOG
+	        float fogFactor = (m_FogEnd - cameraDistance)/(m_FogEnd - m_FogStart);
+	        fogFactor = clamp(fogFactor, 0.0, 1.0);
+	        color = mix(m_FogColor, color, fogFactor);
+    #endif 
 
     gl_FragColor = color;
 }

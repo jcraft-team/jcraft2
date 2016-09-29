@@ -2,6 +2,11 @@ MaterialDef Blocks {
 
     MaterialParameters {
         Float dayNightLighting;
+        Color FogColor
+        Float FogStart
+        Float FogEnd
+        
+        
         Texture2D ColorMap
         Texture2D LightMap
         Color Color (Color)
@@ -64,7 +69,9 @@ MaterialDef Blocks {
         WorldParameters {
             WorldViewProjectionMatrix
             ViewProjectionMatrix
-            ViewMatrix
+            ViewMatrix            
+            WorldMatrix
+            CameraPosition
         }
 
         Defines {
@@ -76,6 +83,7 @@ MaterialDef Blocks {
             HAS_COLOR : Color
             NUM_BONES : NumberOfBones
             DISCARD_ALPHA : AlphaDiscardThreshold
+            HAS_FOG : FogStart
         }
     }
 

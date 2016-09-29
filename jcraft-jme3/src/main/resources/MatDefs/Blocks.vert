@@ -20,6 +20,9 @@ varying float light;
 varying vec4 vertColor;
 uniform float m_dayNightLighting;
 
+uniform vec3 g_CameraPosition;
+varying float cameraDistance;
+
 void main(){
 	light=0.0;
 	float lightTable[16];
@@ -80,6 +83,11 @@ void main(){
     #ifdef NUM_BONES
         Skinning_Compute(modelSpacePos);
     #endif
+    
+    vec4 worldPos = vec4(inPosition, 1.0);
+    worldPos = TransformWorld(worldPos);
+    cameraDistance = distance(worldPos.xyz, g_CameraPosition);
+
 
     gl_Position = TransformWorldViewProjection(modelSpacePos);
 }

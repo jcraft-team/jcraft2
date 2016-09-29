@@ -1,6 +1,7 @@
 package com.chappelle.jcraft.jme3;
 
 import com.chappelle.jcraft.world.TimeOfDayProvider;
+import com.chappelle.jcraft.world.chunk.ChunkMaterial;
 import com.jme3.app.Application;
 import com.jme3.app.state.BaseAppState;
 import com.jme3.asset.AssetManager;
@@ -23,6 +24,7 @@ public class AdvancedSkyAppState extends BaseAppState implements ViewPortListene
     private Node rootNode;
     private ViewPort viewPort;
     private TimeOfDay timeOfDay;
+    private ChunkMaterial chunkMaterial;
 
     public AdvancedSkyAppState(float initialTimeOfDay)
     {
@@ -34,6 +36,7 @@ public class AdvancedSkyAppState extends BaseAppState implements ViewPortListene
 	protected void initialize(Application app)
 	{
         this.app = (JCraftApplication) app;
+        chunkMaterial = this.app.getRootContext().get(ChunkMaterial.class);
         this.viewPort = this.app.getViewPort();
         this.rootNode = this.app.getRootNode();
         this.assetManager = this.app.getAssetManager();
@@ -65,6 +68,12 @@ public class AdvancedSkyAppState extends BaseAppState implements ViewPortListene
         float hour = timeOfDay.getHour();
         sky.getSunAndStars().setHour(hour);
         sky.getSunAndStars().orientExternalSky(cubeMap);
+        
+        ColorRGBA hazeColor = sky.getHazeColor();
+        if(hazeColor != null)
+        {
+        	chunkMaterial.setFogColor(hazeColor);
+        }
     }
 
    /**

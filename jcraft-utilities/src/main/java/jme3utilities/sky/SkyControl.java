@@ -162,6 +162,8 @@ public class SkyControl
     // *************************************************************************
     // constructors
 
+    private ColorRGBA hazeColor;
+    
     /**
      * Instantiate a disabled control for no clouds, full moon, no cloud
      * modulation, no lights, no shadows, and no viewports. For a visible sky,
@@ -556,6 +558,7 @@ public class SkyControl
             baseColor = MyColor.interpolateLinear(nightWeight, twilight, blend);
         }
         topMaterial.setHazeColor(baseColor);
+        hazeColor = baseColor;
         if (bottomMaterial != null) {
             bottomMaterial.setColor("Color", baseColor);
         }
@@ -719,4 +722,9 @@ public class SkyControl
 
         return worldDirection;
     }
+
+	public ColorRGBA getHazeColor()
+	{
+		return hazeColor;
+	}
 }

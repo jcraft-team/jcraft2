@@ -163,7 +163,6 @@ public class BeginningAppState extends BaseInputAppState<JCraftApplication>
 		{
 			player.setPosition(playerLocation.x, playerLocation.y, playerLocation.z);
 		}
-
 		
 		AppStateManager stateManager = getMyApplication().getStateManager();
 		BeginningAppState.this.setEnabled(false);
