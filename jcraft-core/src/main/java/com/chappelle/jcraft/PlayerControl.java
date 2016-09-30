@@ -32,7 +32,6 @@ public class PlayerControl extends NodeControl implements ActionListener
 		cam = app.getCamera();
 		
 		this.player = player;
-		this.player.initInventory();
 		
 		addMapping("move_left", new KeyTrigger(KeyInput.KEY_A));
 		addMapping("move_right", new KeyTrigger(KeyInput.KEY_D));
@@ -155,7 +154,7 @@ public class PlayerControl extends NodeControl implements ActionListener
 		}
 		else if(name.length() == 1 && Character.isDigit(name.charAt(0)) && !isPressed)
 		{
-			player.selectBlock(Integer.valueOf(name));
+			player.setSelectedBlock(Integer.parseInt(name));
 		}
 		else if("g".equals(name) && !isPressed)
 		{

@@ -33,6 +33,11 @@ public class SimpleCommandHandler implements CommandHandler
 					world.getTimeOfDayProvider().setTimeOfDay(timeOfDay);
 					return String.format("Time of day set to %f", timeOfDay);
 				}
+				else if("select".equalsIgnoreCase(commandName) && args.length == 2)
+				{
+					player.setSelectedBlock(Integer.parseInt(args[1]));
+					return "Selected block: " + player.getSelectedBlock().blockId;
+				}
 				else if("cam".equalsIgnoreCase(commandName) && args.length == 2)
 				{
 					float fovY = Float.parseFloat(args[1]);

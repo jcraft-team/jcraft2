@@ -3,7 +3,7 @@ package com.chappelle.jcraft.lighting;
 import java.util.*;
 
 import com.chappelle.jcraft.*;
-import com.chappelle.jcraft.blocks.Block;
+import com.chappelle.jcraft.blocks.*;
 import com.chappelle.jcraft.util.math.Vector3Int;
 import com.chappelle.jcraft.world.World;
 import com.chappelle.jcraft.world.chunk.Chunk;
@@ -283,13 +283,16 @@ public class FloodFillLightManager implements LightManager
 			{
 				if(needsLightUpdated(chunk, location, LightType.SKY, lightLevel))
 				{
-					if(lightLevel == 15)
+					Block block = chunk.getBlock(location);
+					int blockedLight = block == null ? 0 : block.getBlockedSkylight();
+					int downwardLightLevel = lightLevel - blockedLight;
+					if(downwardLightLevel == 15)
 					{
-						chunk.setLight(location.x, location.y, location.z, LightType.SKY, lightLevel);
+						chunk.setLight(location.x, location.y, location.z, LightType.SKY, downwardLightLevel);
 					}
 					else
 					{
-						chunk.setLight(location.x, location.y, location.z, LightType.SKY, lightLevel - 1);
+						chunk.setLight(location.x, location.y, location.z, LightType.SKY, Math.max(0, downwardLightLevel - 1));
 					}
 					sunlightAdditionQueue.add(new LightNode(location, chunk));
 				}

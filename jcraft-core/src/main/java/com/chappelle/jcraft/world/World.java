@@ -51,8 +51,8 @@ public class World
         this.chunkManager = new ConcurrentChunkManager(context);
         this.context.put(ChunkManager.class, chunkManager);
 
-//        this.lightManager = new FloodFillLightManager(this);
-        this.lightManager = new RecursiveFloodFillLightManager(this);
+        this.lightManager = new FloodFillLightManager(this);
+//        this.lightManager = new RecursiveFloodFillLightManager(this);
         this.context.put(LightManager.class, lightManager);
 	}
 	

@@ -1,50 +1,70 @@
 package com.chappelle.jcraft.blocks;
 
+import com.chappelle.jcraft.blocks.shapes.*;
+import com.chappelle.jcraft.util.physics.AABB;
+import com.jme3.math.ColorRGBA;
+
 public class Blocks
 {
-	public static final Block grass = new BlockGrass(1).setStepSound(SoundConstants.DIG_GRASS_2);
-	public static final Block glass = new BlockGlass(2).setStepSound(SoundConstants.STEP_STONE_1);
-	public static final Block door = new BlockDoor(3, true).setStepSound(SoundConstants.STEP_WOOD_1);
-	public static final Block torch = new BlockTorch(4).setLightValue(14);
-	public static final Block cobbleStone = new BlockStone(5, 0, 1).setStepSound(SoundConstants.STEP_STONE_1);
-	public static final Block ice = new BlockIce(6).setStepSound(SoundConstants.STEP_STONE_4);
-	public static final Block ladder = new BlockLadder(7).setStepSound(SoundConstants.STEP_WOOD_4);
-	public static final Block glowstone = new BlockGlowstone(8).setLightValue(15).setStepSound(SoundConstants.STEP_STONE_3);
-	public static final Block sand = new BlockSand(9).setStepSound(SoundConstants.DIG_SAND_2);
-	public static final Block coal = new BlockCoal(10);
-	public static final Block gravel = new BlockGravel(11);
-	public static final Block diamond = new BlockDiamond(12);
-	public static final Block bedrock = new BlockBedrock(13);
-	public static final Block gold = new BlockGold(14);
-	public static final Block plantRed = new BlockFlower(15, 12, 0);
-	public static final Block plantYellow = new BlockFlower(16, 13, 0);
-	public static final Block mushroomBrown = new BlockFlower(17, 13, 1);
-	public static final Block mushroomRed = new BlockFlower(18, 12, 1);
-	public static final Block water = new BlockWater(19);
-	public static final Block woolWhite = new BlockWool(20, 0, 4);
-	public static final Block woolBlack = new BlockWool(21, 1, 7);
-	public static final Block woolRed = new BlockWool(22, 1, 8);
-	public static final Block woolGreen = new BlockWool(23, 1, 9);
-	public static final Block woolBrown = new BlockWool(24, 1, 10);
-	public static final Block woolBlue = new BlockWool(25, 1, 11);
-	public static final Block woolPurple = new BlockWool(26, 1, 12);
-	public static final Block woolCyan = new BlockWool(27, 1, 13);
-	public static final Block woolSilver = new BlockWool(28, 1, 14);
-	public static final Block woolGray = new BlockWool(29, 2, 7);
-	public static final Block woolPink = new BlockWool(30, 2, 8);
-	public static final Block woolLime = new BlockWool(31, 2, 9);
-	public static final Block woolYellow = new BlockWool(32, 2, 10);
-	public static final Block woolLightBlue = new BlockWool(33, 2, 11);
-	public static final Block woolMagenta = new BlockWool(34, 2, 12);
-	public static final Block woolOrange = new BlockWool(35, 2, 13);
-	public static final Block smoothStone = new BlockStone(36, 1, 0).setStepSound(SoundConstants.STEP_STONE_1);
-	public static final Block redstone = new BlockRedstoneOre(37).setStepSound(SoundConstants.STEP_STONE_1);
-	public static final Block iron = new BlockIronOre(38).setStepSound(SoundConstants.STEP_STONE_1);
-	public static final Block wood = new BlockLog(39).setStepSound(SoundConstants.STEP_WOOD_1);
-	public static final Block leaves = new BlockLeaves(40).setStepSound(SoundConstants.STEP_GRASS_1);
-	public static final Block tallGrass = new BlockTallGrass(41, 7, 2);
-	public static final Block snow = new BlockSnow(42);
-	public static final Block cactus = new BlockSnow(43);
-	public static final Block dirt = new BlockDirt(44).setStepSound(SoundConstants.DIG_GRASS_2);
+	private static int nextId = 1;
+	
+	public static final Block grass = new Block(nextId++, new BlockSkin[] { new BlockSkin(new BlockSkin_TextureLocation(0, 0), false),new BlockSkin(new BlockSkin_TextureLocation(2, 0), false),new BlockSkin(new BlockSkin_TextureLocation(3, 0), false),new BlockSkin(new BlockSkin_TextureLocation(3, 0), false),new BlockSkin(new BlockSkin_TextureLocation(3, 0), false),new BlockSkin(new BlockSkin_TextureLocation(3, 0), false)}).setStepSound(SoundConstants.DIG_GRASS_2);
+	public static final Block glass = new Block(nextId++, new BlockSkin[] { new BlockSkin(new BlockSkin_TextureLocation(1, 3), true)}).setStepSound(SoundConstants.STEP_STONE_1).setTransparent(true);
+	public static final Block door = new BlockDoor(nextId++, true).setStepSound(SoundConstants.STEP_WOOD_1);
+	public static final Block torch = new BlockTorch(nextId++).setLightValue(14);
+	public static final Block cobbleStone = new Block(nextId++, 1, 0).setStepSound(SoundConstants.STEP_STONE_1);
+	public static final Block ice = new Block(nextId++, new BlockSkin[]{new BlockSkin(new BlockSkin_TextureLocation(3, 4), true)}).setStepSound(SoundConstants.STEP_STONE_4).setTransparent(true).setSlipperiness(0.98f);
+	public static final Block ladder = new BlockLadder(nextId++).setStepSound(SoundConstants.STEP_WOOD_4);
+	public static final Block glowstone = new Block(nextId++, 6, 9).setLightValue(15).setStepSound(SoundConstants.STEP_STONE_3);
+	public static final Block sand = new Block(nextId++, 1, 2).setStepSound(SoundConstants.DIG_SAND_2);
+	public static final Block coal = new Block(nextId++, 2, 2);
+	public static final Block gravel = new Block(nextId++, 1, 3);
+	public static final Block diamond = new Block(nextId++, 3, 2);
+	public static final Block bedrock = new Block(nextId++, 1, 1).setBreakable(false);
+	public static final Block gold = new Block(nextId++, 2, 0);
 
+	public static final Block plantRed = new BlockFlower(nextId++, 12, 0).setShapes(new BlockShape_Flower()).bounds(AABB.fromWidthAndHeight(0.25, 0.4)).setTransparent(true);
+	public static final Block plantYellow = new BlockFlower(nextId++, 13, 0).setShapes(new BlockShape_Flower()).bounds(AABB.fromWidthAndHeight(0.25, 0.4)).setTransparent(true);
+	public static final Block mushroomBrown = new BlockFlower(nextId++, 13, 1).setShapes(new BlockShape_Flower()).bounds(AABB.fromWidthAndHeight(0.25, 0.4)).setTransparent(true);
+	public static final Block mushroomRed = new BlockFlower(nextId++, 12, 1).setShapes(new BlockShape_Flower()).bounds(AABB.fromWidthAndHeight(0.25, 0.4)).setTransparent(true);
+	public static final Block water = new Block(nextId++, new BlockSkin[] { new BlockSkin(new BlockSkin_TextureLocation(13, 12), true) }).setTransparent(true).setReplacementAllowed(true).setLiquid(true).setCollidable(false).setSelectable(false).setBlockedSkylight(2);
+	public static final Block woolWhite = new Block(nextId++, 4, 0);
+	public static final Block woolBlack = new Block(nextId++, 7, 1);
+	public static final Block woolRed = new Block(nextId++, 8, 1);
+	public static final Block woolGreen = new Block(nextId++, 9, 1);
+	public static final Block woolBrown = new Block(nextId++, 10, 1);
+	public static final Block woolBlue = new Block(nextId++, 11, 1);
+	public static final Block woolPurple = new Block(nextId++, 12, 1);
+	public static final Block woolCyan = new Block(nextId++, 13, 1);
+	public static final Block woolSilver = new Block(nextId++, 14, 1);
+	public static final Block woolGray = new Block(nextId++, 7, 2);
+	public static final Block woolPink = new Block(nextId++, 8, 2);
+	public static final Block woolLime = new Block(nextId++, 9, 2);
+	public static final Block woolYellow = new Block(nextId++, 10, 2);
+	public static final Block woolLightBlue = new Block(nextId++, 11, 2);
+	public static final Block woolMagenta = new Block(nextId++, 12, 2);
+	public static final Block woolOrange = new Block(nextId++, 13, 2);
+	public static final Block smoothStone = new Block(nextId++, 0, 1).setStepSound(SoundConstants.STEP_STONE_1);
+	public static final Block redstone = new Block(nextId++, 3, 3).setStepSound(SoundConstants.STEP_STONE_1);
+	public static final Block iron = new Block(nextId++, 2, 1).setStepSound(SoundConstants.STEP_STONE_1);
+	public static final Block wood = new Block(nextId++, new BlockSkin[] { new BlockSkin(new BlockSkin_TextureLocation(5, 1), false), new BlockSkin(new BlockSkin_TextureLocation(5, 1), false), new BlockSkin(new BlockSkin_TextureLocation(4, 1), false), new BlockSkin(new BlockSkin_TextureLocation(4, 1), false), new BlockSkin(new BlockSkin_TextureLocation(4, 1), false), new BlockSkin(new BlockSkin_TextureLocation(4, 1), false) }).setStepSound(SoundConstants.STEP_WOOD_1);
+	public static final Block leaves = new Block(nextId++, new BlockSkin[] { new BlockSkin(new BlockSkin_TextureLocation(4, 8), true) }).setStepSound(SoundConstants.STEP_GRASS_1).setTransparent(true).setBlockedSkylight(2);
+	public static final Block tallGrass = new BlockFlower(nextId++, 7, 2).setShapes(new BlockShape_Flower()).bounds(AABB.fromWidthAndHeight(0.25, 0.75)).setTransparent(true).setColor(new ColorRGBA(1, 0, 0, 0));
+	public static final Block snow = new Block(nextId++, new BlockSkin[]{
+			new BlockSkin(new BlockSkin_TextureLocation(2, 4), false),
+			new BlockSkin(new BlockSkin_TextureLocation(2, 0), false),
+			new BlockSkin(new BlockSkin_TextureLocation(4, 4), false),
+			new BlockSkin(new BlockSkin_TextureLocation(4, 4), false),
+			new BlockSkin(new BlockSkin_TextureLocation(4, 4), false),
+			new BlockSkin(new BlockSkin_TextureLocation(4, 4), false)
+			});
+	public static final Block cactus = new Block(nextId++, new BlockSkin[]{
+			new BlockSkin(new BlockSkin_TextureLocation(5, 4), true),
+			new BlockSkin(new BlockSkin_TextureLocation(5, 4), true),
+			new BlockSkin(new BlockSkin_TextureLocation(6, 4), true),
+			new BlockSkin(new BlockSkin_TextureLocation(6, 4), true),
+			new BlockSkin(new BlockSkin_TextureLocation(6, 4), true),
+			new BlockSkin(new BlockSkin_TextureLocation(6, 4), true)
+	}).setShapes(new BlockShape_Cuboid(new float[] { 0.5f, 0.5f, 0.4f, 0.4f, 0.4f, 0.4f }));
+	public static final Block dirt = new Block(nextId++, 0, 2).setStepSound(SoundConstants.DIG_GRASS_2);
 }

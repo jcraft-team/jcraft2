@@ -26,6 +26,17 @@ public class AABB
 		return new AABB(minX, minY, minZ, maxX, maxY, maxZ);
 	}
 
+	/**
+	 * Assumes bounds are within a cube of size 1
+	 * @param width
+	 * @param height
+	 * @return
+	 */
+	public static AABB fromWidthAndHeight(double width, double height)
+	{
+		return new AABB(width, 0, width, 1 - width, height, 1 - width);
+	}
+	
 	protected AABB(double minX, double minY, double minZ, double maxX, double maxY, double maxZ)
 	{
 		this.minX = minX;

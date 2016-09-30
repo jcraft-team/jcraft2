@@ -233,7 +233,8 @@ public class ConcurrentChunkManager extends AbstractChunkManager
 			{
 				Vector2Int chunkLocation = getPosition();
 				Chunk chunk = loadOrCreateChunk(chunkLocation);
-				LightManager lightManager = new RecursiveFloodFillLightManager(world);
+//				LightManager lightManager = new RecursiveFloodFillLightManager(world);
+				LightManager lightManager = new FloodFillLightManager(world);
 				lightManager.initSunlight(chunk);
 				nearCache.put(chunkLocation, chunk);
 				

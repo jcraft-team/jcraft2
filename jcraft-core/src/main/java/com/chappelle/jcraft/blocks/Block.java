@@ -6,40 +6,21 @@ import com.chappelle.jcraft.util.physics.*;
 import com.chappelle.jcraft.world.World;
 import com.chappelle.jcraft.world.chunk.Chunk;
 import com.jme3.math.*;
-import com.jme3.scene.Geometry;
 
 public class Block
 {
 	public static final Block[] blocksList = new Block[4096];
 	
 	protected AABB bounds;
-	/** minimum X for the block bounds (local coordinates) */
-//	protected double minX;
 
-	/** minimum Y for the block bounds (local coordinates) */
-//	protected double minY;
-
-	/** minimum Z for the block bounds (local coordinates) */
-//	protected double minZ;
-
-	/** maximum X for the block bounds (local coordinates) */
-//	protected double maxX;
-
-	/** maximum Y for the block bounds (local coordinates) */
-//	protected double maxY;
-
-	/** maximum Z for the block bounds (local coordinates) */
-//	protected double maxZ;
-
-	public float slipperiness;
+	public float slipperiness = DEFAULT_SLIPPERINESS;
 	
 	public float opacity = 1.0f;
-	
 	
 	/**
 	 * Light values are multiplied by each of these color components
 	 */
-	public ColorRGBA color = new ColorRGBA(1, 1, 1, 1);
+	private ColorRGBA color = new ColorRGBA(1, 1, 1, 1);
 
 	private BlockShape[] shapes = new BlockShape[] { new BlockShape_Cube() };
 	private BlockSkin[] skins;
@@ -47,12 +28,17 @@ public class Block
 	/** ID of the block. */
 	public final byte blockId;
 	
+	private boolean selectable = true;
+	private boolean collidable = true;
+	private boolean breakable = true;
+	
 	public String stepSound;
 	
 	public static final float DEFAULT_SLIPPERINESS = 0.85F;
 	
 	public int lightValue;
-	private Sprite sprite;
+	private int blockedSkylight;
+	private int stackSize;
 	
     /**
      * Returns true if light should pass through this block, false otherwise
@@ -63,49 +49,23 @@ public class Block
 	
 	public boolean isClimbable;
 	
+	public Block(int blockId, int textureRow, int textureColumn)
+	{
+		this(blockId, new BlockSkin(new BlockSkin_TextureLocation(textureColumn, textureRow), false));
+	}
+	
 	public Block(int blockId, BlockSkin... skins)
 	{
 		this.skins = skins;
-		
-		if(blockId > 255)
-		{
-			throw new RuntimeException("Only block ids less than 256 are supported!");
-		}
 		this.blockId = (byte)blockId;
-		this.slipperiness = DEFAULT_SLIPPERINESS;
 		blocksList[blockId] = this;
 		bounds = AABB.getBoundingBox(0, 0, 0, 1, 1, 1);
-//		this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
-		
-        int skinIndex = 0;
-        if(skins.length < 5)
-        {
-            skinIndex = 0;
-        }
-        else
-        {
-            skinIndex = 4;
-        }
-        BlockSkin_TextureLocation textureLocation = skins[skinIndex].getTextureLocation();
-        sprite = new Sprite(textureLocation.getColumn()*32, textureLocation.getRow()*32, 32, 32);
 	}
 	
-	/**
-	 * Sets the bounds of the block. minX, minY, minZ, maxX, maxY, maxZ
-	 */
-//	public final void setBlockBounds(float par1, float par2, float par3, float par4, float par5, float par6)
-//	{
-//		this.minX = (double) par1;
-//		this.minY = (double) par2;
-//		this.minZ = (double) par3;
-//		this.maxX = (double) par4;
-//		this.maxY = (double) par5;
-//		this.maxZ = (double) par6;
-//	}
-
-	protected void setShapes(BlockShape... shapes)
+	public Block setShapes(BlockShape... shapes)
 	{
 		this.shapes = shapes;
+		return this;
 	}
 
 	public BlockShape getShape(Chunk chunk, Vector3Int location)
@@ -134,7 +94,7 @@ public class Block
 
 	public boolean isBreakable()
 	{
-		return true;
+		return breakable;
 	}
 	
 	public void onBlockPlaced(World world, Vector3Int location, Face face, Vector3f cameraDirectionAsUnitVector)
@@ -168,13 +128,12 @@ public class Block
 	
 	public AABB getCollisionBoundingBox(World world, int x, int y, int z)
 	{
-		return bounds.getOffsetBoundingBox(x, y, z);
-//		return AABB.getAABBPool().getAABB((double) x + this.minX, (double) y + this.minY, (double) z + this.minZ, (double) x + this.maxX, (double) y + this.maxY, (double) z + this.maxZ);
+		return collidable ? bounds.getOffsetBoundingBox(x, y, z) : null; 
 	}
 
 	public AABB getSelectedBoundingBox(World world, int x, int y, int z)
 	{
-		return getCollisionBoundingBox(world, x, y, z);
+		return selectable ? bounds.getOffsetBoundingBox(x, y, z) : null;
 	}
 
 	public boolean isOpaqueCube()
@@ -210,6 +169,12 @@ public class Block
 		return this;
 	}
 	
+	public Block bounds(AABB bounds)
+	{
+		this.bounds = bounds;
+		return this;
+	}
+	
 	public void setBlockBoundsBasedOnState(World world, int x, int y, int z)
 	{
 	}
@@ -220,6 +185,10 @@ public class Block
 	 */
 	public RayTrace collisionRayTrace(World world, int x, int y, int z, Vector3f startVec, Vector3f endVec)
 	{
+		if(collidable == false)
+		{
+			return null;
+		}
 		this.setBlockBoundsBasedOnState(world, x, y, z);
 		startVec = startVec.add((-x), (-y), (-z));
 		endVec = endVec.add((-x), (-y), (-z));
@@ -356,16 +325,70 @@ public class Block
 	
 	public int getStackSize()
 	{
-		return 64;
+		return stackSize;
 	}
 
-	public Sprite getSprite()
-	{
-		return sprite;
-	}
-	
 	public int getBlockedSkylight()
 	{
-		return 0;
+		return blockedSkylight;
+	}
+	
+	public Block setTransparent(boolean transparent)
+	{
+		this.isTransparent = transparent;
+		return this;
+	}
+
+	public ColorRGBA getColor()
+	{
+		return color;
+	}
+
+	public Block setColor(ColorRGBA color)
+	{
+		this.color = color;
+		return this;
+	}
+	
+	public Block setBreakable(boolean breakable)
+	{
+		this.breakable = breakable;
+		return this;
+	}
+
+	public Block setReplacementAllowed(boolean replacementAllowed)
+	{
+		this.replacementAllowed = replacementAllowed;
+		return this;
+	}
+
+	public Block setLiquid(boolean liquid)
+	{
+		this.isLiquid = liquid;
+		return this;
+	}
+	
+	public Block setBlockedSkylight(int blockedSkylight)
+	{
+		this.blockedSkylight = blockedSkylight;
+		return this;
+	}
+	
+	public Block setSelectable(boolean selectable)
+	{
+		this.selectable = selectable;
+		return this;
+	}
+
+	public Block setCollidable(boolean collidable)
+	{
+		this.collidable = collidable;
+		return this;
+	}
+	
+	public Block setSlipperiness(float slipperiness)
+	{
+		this.slipperiness = slipperiness;
+		return this;
 	}
 }

@@ -11,15 +11,6 @@ public class BlockFlower extends Block
 	public BlockFlower(int blockId, int textureCol, int textureRow)
 	{
 		super(blockId, new BlockSkin[] { new BlockSkin(new BlockSkin_TextureLocation(textureCol, textureRow), true) });
-		setShapes(new BlockShape_Flower());
-		bounds.minX = 0.3f;
-		bounds.minY = 0;
-		bounds.minZ = 0.3f;
-		bounds.maxX = 0.6f;
-		bounds.maxY = 0.4f;
-		bounds.maxZ = 0.6f;
-		
-		this.isTransparent = true;
 	}
 
 	public void onBlockPlaced(World world, Vector3Int location, Vector3f contactNormal, Vector3f cameraDirectionAsUnitVector)

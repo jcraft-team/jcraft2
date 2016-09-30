@@ -3,8 +3,7 @@ package com.chappelle.jcraft;
 import java.util.List;
 import java.util.logging.Logger;
 
-import com.chappelle.jcraft.blocks.Block;
-import com.chappelle.jcraft.inventory.*;
+import com.chappelle.jcraft.blocks.*;
 import com.chappelle.jcraft.util.math.*;
 import com.chappelle.jcraft.util.physics.*;
 import com.chappelle.jcraft.world.World;
@@ -34,10 +33,9 @@ public class EntityPlayer extends Entity
 	//Temporary array for limiting camera rotation
 	private float[] angles = new float[3];
 
-	private ItemStack selected;
+	private Block selected = Blocks.grass;
 	
 	public Camera cam;
-	private Inventory inventory;
 	private RayTrace currentRayTrace;
 	
 	public EntityPlayer(World world, Camera cam)
@@ -48,29 +46,6 @@ public class EntityPlayer extends Entity
 		world.setPlayer(this);
 	}
 
-	public Inventory getInventory()
-	{
-		return inventory;
-	}
-	
-	public void initInventory()
-	{
-		inventory = new Inventory();
-		for(int i = 1; i < 250; i++)
-		{
-			Block block = Block.blocksList[i];
-			if(block != null)
-			{
-				inventory.add(block, 64);
-			}
-			else
-			{
-				break;
-			}
-		}
-		selectBlock(1);
-	}
-	
 	@Override
 	public void update(float tpf)
 	{
@@ -385,7 +360,7 @@ public class EntityPlayer extends Entity
 				}
 				else
 				{
-					world.setBlock(rayTrace, getCameraDirectionAsUnitVector(), selected.getBlock());
+					world.setBlock(rayTrace, getCameraDirectionAsUnitVector(), selected);
 				}
 			}
 		}
@@ -434,18 +409,15 @@ public class EntityPlayer extends Entity
 		log.fine("flySpeed=" + flySpeed);
 	}
 	
-	public void selectBlock(int index)
+	public Block setSelectedBlock(int blockId)
 	{
-		selected = inventory.selectItem(index);
-		if(selected != null)
-		{
-			log.info("Selected block is " + selected.getBlock().getClass().getName());
-		}
+		selected = Block.blocksList[blockId];
+		return selected;
 	}
 	
 	public Block getSelectedBlock()
 	{
-		return selected == null ? null : selected.getBlock();
+		return selected;
 	}
 	
 	public void preparePlayerToSpawn()
