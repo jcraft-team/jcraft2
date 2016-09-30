@@ -189,7 +189,7 @@ public class BlockShape_Torch extends BlockShape
         }
     }
 
-    private void addTextureCoordinates(MeshGenContext gen, TFloatList textureCoordinates, BlockSkin_TextureLocation textureLocation)
+    private void addTextureCoordinates(MeshGenContext gen, TFloatList textureCoordinates, TextureLocation textureLocation)
     {
         float xOffset = 14.0f / 32.0f;
         float topYOffset = 12 / 32.0f;
@@ -207,7 +207,7 @@ public class BlockShape_Torch extends BlockShape
         textureCoordinates.add(getTextureCoordinatesY(gen, textureLocation, 1 - xOffset, 1 - topYOffset));
     }
 
-    private void addTopTextureCoordinates(MeshGenContext gen, TFloatList textureCoordinates, BlockSkin_TextureLocation textureLocation)
+    private void addTopTextureCoordinates(MeshGenContext gen, TFloatList textureCoordinates, TextureLocation textureLocation)
     {
         float xOffset = 14.0f / 32.0f;
         float topYOffset = 12 / 32.0f;

@@ -53,7 +53,7 @@ public class BlockShape_Pyramid extends BlockShape{
                 normals.add(-1f);
                 normals.add(0f);
             }
-            BlockSkin_TextureLocation textureLocationBottom = block.getSkin(chunk, blockLocation, Face.Bottom).getTextureLocation();
+            TextureLocation textureLocationBottom = block.getSkin(chunk, blockLocation, Face.Bottom).getTextureLocation();
             textureCoordinates.add(getTextureCoordinatesX(gen, textureLocationBottom, 0, 0));
             textureCoordinates.add(getTextureCoordinatesY(gen, textureLocationBottom, 0, 0));
             
@@ -117,7 +117,7 @@ public class BlockShape_Pyramid extends BlockShape{
     }
     
     private void addTextureCoordinates_Side(MeshGenContext gen, TFloatList textureCoordinates, Block block, Chunk chunk, Vector3Int blockLocation, Face face){
-        BlockSkin_TextureLocation textureLocation = block.getSkin(chunk, blockLocation, face).getTextureLocation();
+        TextureLocation textureLocation = block.getSkin(chunk, blockLocation, face).getTextureLocation();
         textureCoordinates.add(getTextureCoordinatesX(gen, textureLocation, 0, 0));
         textureCoordinates.add(getTextureCoordinatesY(gen, textureLocation, 0, 0));
         

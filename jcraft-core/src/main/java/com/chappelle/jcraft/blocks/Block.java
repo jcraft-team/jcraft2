@@ -11,7 +11,7 @@ public class Block
 {
 	public static final Block[] blocksList = new Block[4096];
 	
-	protected AABB bounds;
+	protected AABB bounds = AABB.getBoundingBox(0, 0, 0, 1, 1, 1);
 
 	public float slipperiness = DEFAULT_SLIPPERINESS;
 	
@@ -23,7 +23,7 @@ public class Block
 	private ColorRGBA color = new ColorRGBA(1, 1, 1, 1);
 
 	private BlockShape[] shapes = new BlockShape[] { new BlockShape_Cube() };
-	private BlockSkin[] skins;
+	private Skin[] skins;
 
 	/** ID of the block. */
 	public final byte blockId;
@@ -51,15 +51,14 @@ public class Block
 	
 	public Block(int blockId, int textureRow, int textureColumn)
 	{
-		this(blockId, new BlockSkin(new BlockSkin_TextureLocation(textureColumn, textureRow), false));
+		this(blockId, new Skin(textureRow, textureColumn, false));
 	}
 	
-	public Block(int blockId, BlockSkin... skins)
+	public Block(int blockId, Skin... skins)
 	{
 		this.skins = skins;
 		this.blockId = (byte)blockId;
 		blocksList[blockId] = this;
-		bounds = AABB.getBoundingBox(0, 0, 0, 1, 1, 1);
 	}
 	
 	public Block setShapes(BlockShape... shapes)
@@ -78,18 +77,18 @@ public class Block
 		return 0;
 	}
 
-	public BlockSkin getSkin(Chunk chunk, Vector3Int location, Face face)
+	public Skin getSkin(Chunk chunk, Vector3Int location, Face face)
 	{
 		return skins[getSkinIndex(chunk, location, face)];
 	}
 
 	protected int getSkinIndex(Chunk chunk, Vector3Int location, Face face)
 	{
-		if(skins.length == 6)
+		if(skins.length == 6 || face.ordinal() < skins.length - 1)
 		{
 			return face.ordinal();
 		}
-		return 0;
+		return skins.length - 1;
 	}
 
 	public boolean isBreakable()

@@ -51,7 +51,7 @@ public abstract class BlockShape
 		else
 		{
 			Block block = chunk.getBlock(blockLocation);
-			BlockSkin blockSkin = block.getSkin(chunk, blockLocation, face);
+			Skin blockSkin = block.getSkin(chunk, blockLocation, face);
 			if(blockSkin.isTransparent() == isTransparent)
 			{
 				Chunk neighborChunk = null;
@@ -103,7 +103,7 @@ public abstract class BlockShape
 					{
 						neighborChunk = chunk;
 					}
-					BlockSkin neighborBlockSkin = neighborBlock.getSkin(neighborChunk, blockLocation, face);
+					Skin neighborBlockSkin = neighborBlock.getSkin(neighborChunk, blockLocation, face);
 					if(blockSkin.isTransparent() != neighborBlockSkin.isTransparent())
 					{
 						return true;
@@ -121,7 +121,7 @@ public abstract class BlockShape
 		return fullSide.get(face);
 	}
 	
-	protected Vector2f getTextureCoordinates(Chunk chunk, BlockSkin_TextureLocation textureLocation, float xUnitsToAdd, float yUnitsToAdd)
+	protected Vector2f getTextureCoordinates(Chunk chunk, TextureLocation textureLocation, float xUnitsToAdd, float yUnitsToAdd)
 	{
 		float textureUnitX = (1f / CubesSettings.getInstance().getTexturesCountX());
 		float textureUnitY = (1f / CubesSettings.getInstance().getTexturesCountY());
@@ -130,14 +130,14 @@ public abstract class BlockShape
 		return new Vector2f(x, y);
 	}
 
-	protected float getTextureCoordinatesX(MeshGenContext gen, BlockSkin_TextureLocation textureLocation, float xUnitsToAdd, float yUnitsToAdd)
+	protected float getTextureCoordinatesX(MeshGenContext gen, TextureLocation textureLocation, float xUnitsToAdd, float yUnitsToAdd)
 	{
 //		float textureUnitX = (1f / CubesSettings.getInstance().getTexturesCountX());
 		float textureUnitX = (1f / gen.getTexturesCountX());
 		return (((textureLocation.getColumn() + xUnitsToAdd) * textureUnitX));
 	}
 
-	protected float getTextureCoordinatesY(MeshGenContext gen, BlockSkin_TextureLocation textureLocation, float xUnitsToAdd, float yUnitsToAdd)
+	protected float getTextureCoordinatesY(MeshGenContext gen, TextureLocation textureLocation, float xUnitsToAdd, float yUnitsToAdd)
 	{
 //		float textureUnitY = (1f / CubesSettings.getInstance().getTexturesCountY());
 		float textureUnitY = (1f / gen.getTexturesCountY());

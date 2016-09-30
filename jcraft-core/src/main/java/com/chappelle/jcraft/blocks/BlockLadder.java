@@ -14,7 +14,7 @@ public class BlockLadder extends Block
 
 	public BlockLadder(int blockId)
 	{
-		super(blockId, new BlockSkin[] { new BlockSkin(new BlockSkin_TextureLocation(3, 5), false)});
+		super(blockId, new Skin[] { new Skin(new TextureLocation(5, 3), false)});
 		
 		setShapes(new BlockShape_Ladder());
 		

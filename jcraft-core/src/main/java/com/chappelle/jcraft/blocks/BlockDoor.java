@@ -21,7 +21,7 @@ public class BlockDoor extends Block
     
 	public BlockDoor(int blockId, boolean userCanOpen)
 	{
-		super(blockId, new BlockSkin[] { new BlockSkin(new BlockSkin_TextureLocation(1, 5), true), new BlockSkin(new BlockSkin_TextureLocation(1, 6), false)});
+		super(blockId, new Skin[] { new Skin(new TextureLocation(5, 1), true), new Skin(new TextureLocation(6, 1), false)});
 		
 		this.userCanOpen = userCanOpen;
 		

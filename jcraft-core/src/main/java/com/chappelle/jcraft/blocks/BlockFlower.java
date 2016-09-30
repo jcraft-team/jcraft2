@@ -1,6 +1,5 @@
 package com.chappelle.jcraft.blocks;
 
-import com.chappelle.jcraft.blocks.shapes.BlockShape_Flower;
 import com.chappelle.jcraft.util.math.Vector3Int;
 import com.chappelle.jcraft.util.physics.AABB;
 import com.chappelle.jcraft.world.World;
@@ -10,7 +9,7 @@ public class BlockFlower extends Block
 {
 	public BlockFlower(int blockId, int textureCol, int textureRow)
 	{
-		super(blockId, new BlockSkin[] { new BlockSkin(new BlockSkin_TextureLocation(textureCol, textureRow), true) });
+		super(blockId, new Skin[] { new Skin(new TextureLocation(textureRow, textureCol), true) });
 	}
 
 	public void onBlockPlaced(World world, Vector3Int location, Vector3f contactNormal, Vector3f cameraDirectionAsUnitVector)

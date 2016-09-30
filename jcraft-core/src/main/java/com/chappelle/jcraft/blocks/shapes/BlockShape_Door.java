@@ -321,7 +321,7 @@ public class BlockShape_Door extends BlockShape
         }
     }
 
-    private void addHingeTextureCoordinates(MeshGenContext gen, TFloatList textureCoordinates, BlockSkin_TextureLocation textureLocation)
+    private void addHingeTextureCoordinates(MeshGenContext gen, TFloatList textureCoordinates, TextureLocation textureLocation)
     {
         float xOffset = 6.0f / 32.0f;
 
@@ -344,7 +344,7 @@ public class BlockShape_Door extends BlockShape
         textureCoordinates.add(v3Y);
     }
 
-    private void addFrameTextureCoordinates(MeshGenContext gen, TFloatList textureCoordinates, BlockSkin_TextureLocation textureLocation)
+    private void addFrameTextureCoordinates(MeshGenContext gen, TFloatList textureCoordinates, TextureLocation textureLocation)
     {
     	float xOffset1 = 4.0f / 32.0f;
     	float xOffset2 = 6.0f / 32.0f;
@@ -368,7 +368,7 @@ public class BlockShape_Door extends BlockShape
     	textureCoordinates.add(v4Y);
     }
 
-    private void addTopBottomTextureCoordinates(MeshGenContext gen, TFloatList textureCoordinates, BlockSkin_TextureLocation textureLocation)
+    private void addTopBottomTextureCoordinates(MeshGenContext gen, TFloatList textureCoordinates, TextureLocation textureLocation)
     {
     	float yOffset = 4.0f / 32.0f;
     	
@@ -391,7 +391,7 @@ public class BlockShape_Door extends BlockShape
     	textureCoordinates.add(v2Y);
     }
 
-    private void addBackTextureCoordinates(MeshGenContext gen, TFloatList textureCoordinates, BlockSkin_TextureLocation textureLocation){
+    private void addBackTextureCoordinates(MeshGenContext gen, TFloatList textureCoordinates, TextureLocation textureLocation){
         textureCoordinates.add(getTextureCoordinatesX(gen, textureLocation, 1, 0));
         textureCoordinates.add(getTextureCoordinatesY(gen, textureLocation, 1, 0));
         
@@ -405,7 +405,7 @@ public class BlockShape_Door extends BlockShape
         textureCoordinates.add(getTextureCoordinatesY(gen, textureLocation, 0, 1));
     }
 
-    private void addFrontTextureCoordinates(MeshGenContext gen, TFloatList textureCoordinates, BlockSkin_TextureLocation textureLocation){
+    private void addFrontTextureCoordinates(MeshGenContext gen, TFloatList textureCoordinates, TextureLocation textureLocation){
     	textureCoordinates.add(getTextureCoordinatesX(gen, textureLocation, 0, 0));
     	textureCoordinates.add(getTextureCoordinatesY(gen, textureLocation, 0, 0));
     	

@@ -22,7 +22,7 @@ public class BlockTorch extends Block
     
     public BlockTorch(int blockId)
     {
-    	super(blockId, new BlockSkin(new BlockSkin_TextureLocation(0, 5), true));
+    	super(blockId, new Skin(new TextureLocation(5, 0), true));
     	
     	setShapes(new BlockShape_Torch());
     	this.isTransparent = true;

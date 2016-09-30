@@ -128,7 +128,7 @@ public class BlockShape_Ladder extends BlockShape
         }
     }
 
-    private void addTextureCoordinates(MeshGenContext gen, TFloatList textureCoordinates, BlockSkin_TextureLocation textureLocation){
+    private void addTextureCoordinates(MeshGenContext gen, TFloatList textureCoordinates, TextureLocation textureLocation){
         textureCoordinates.add(getTextureCoordinatesX(gen, textureLocation, 0, 0));
         textureCoordinates.add(getTextureCoordinatesY(gen, textureLocation, 0, 0));
         
