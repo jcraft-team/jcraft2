@@ -37,6 +37,7 @@ public class Block
 	public static final float DEFAULT_SLIPPERINESS = 0.85F;
 	
 	public int lightValue;
+	private boolean useNeighborLight = true;
 	private int blockedSkylight;
 	private int stackSize;
 	
@@ -153,7 +154,13 @@ public class Block
 	
 	public boolean useNeighborLight()
 	{
-		return true;
+		return useNeighborLight;
+	}
+	
+	public Block setUseNeighborLight(boolean useNeighborLight)
+	{
+		this.useNeighborLight = useNeighborLight;
+		return this;
 	}
 	
 	@Override

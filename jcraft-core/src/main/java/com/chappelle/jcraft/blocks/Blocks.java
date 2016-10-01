@@ -56,9 +56,9 @@ public class Blocks
 			new Skin(4, 4, false),
 			});
 	public static final Block cactus = new Block(nextId++, new Skin[]{
-			new Skin(4, 5, true),
-			new Skin(4, 5, true),
-			new Skin(4, 6, true),
-	}).setShapes(new BlockShape_Cuboid(new float[] { 0.5f, 0.5f, 0.4f, 0.4f, 0.4f, 0.4f }));
+			new Skin(4, 5, 0.1f, 0.1f, true),
+			new Skin(4, 5, 0.1f, 0.1f, true),
+			new Skin(4, 6, 0.1f, 0.0f, true),
+	}).setShapes(new BlockShape_Cuboid(new float[] { 0.5f, 0.5f, 0.35f, 0.35f, 0.35f, 0.35f })).setTransparent(true).setUseNeighborLight(false).bounds(AABB.getBoundingBox(0.15f, 0, 0.15f, 0.85f, 1, 0.85f));
 	public static final Block dirt = new Block(nextId++, 0, 2).setStepSound(SoundConstants.DIG_GRASS_2);
 }

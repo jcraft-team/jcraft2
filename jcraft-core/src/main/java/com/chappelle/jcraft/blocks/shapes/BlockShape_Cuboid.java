@@ -14,7 +14,15 @@ public class BlockShape_Cuboid extends BlockShape
 
     public BlockShape_Cuboid(float[] extents)
     {
+    	super();
+    	
         this.extents = extents;
+        
+        Face[] faces = Face.values();
+        for(int i = 0; i < 6; i++)
+        {
+        	fullSide.put(faces[i], extents[i] >= 0.5);
+        }
     }
 
     @Override
@@ -130,16 +138,16 @@ public class BlockShape_Cuboid extends BlockShape
     }
 
     private void addTextureCoordinates(MeshGenContext gen, TFloatList textureCoordinates, TextureLocation textureLocation){
-        textureCoordinates.add(getTextureCoordinatesX(gen, textureLocation, 0, 0));
-        textureCoordinates.add(getTextureCoordinatesY(gen, textureLocation, 0, 0));
+        textureCoordinates.add(getTextureCoordinatesX(gen, textureLocation, 0 + textureLocation.getxOffset(), 0));
+        textureCoordinates.add(getTextureCoordinatesY(gen, textureLocation, 0, 0 + textureLocation.getyOffset()));
         
-        textureCoordinates.add(getTextureCoordinatesX(gen, textureLocation, 1, 0));
-        textureCoordinates.add(getTextureCoordinatesY(gen, textureLocation, 1, 0));
+        textureCoordinates.add(getTextureCoordinatesX(gen, textureLocation, 1 - textureLocation.getxOffset(), 0));
+        textureCoordinates.add(getTextureCoordinatesY(gen, textureLocation, 1, 0 + textureLocation.getyOffset()));
         
-        textureCoordinates.add(getTextureCoordinatesX(gen, textureLocation, 0, 1));
-        textureCoordinates.add(getTextureCoordinatesY(gen, textureLocation, 0, 1));
+        textureCoordinates.add(getTextureCoordinatesX(gen, textureLocation, 0 + textureLocation.getxOffset(), 1));
+        textureCoordinates.add(getTextureCoordinatesY(gen, textureLocation, 0, 1 - textureLocation.getyOffset()));
         
-        textureCoordinates.add(getTextureCoordinatesX(gen, textureLocation, 1, 1));
-        textureCoordinates.add(getTextureCoordinatesY(gen, textureLocation, 1, 1));
+        textureCoordinates.add(getTextureCoordinatesX(gen, textureLocation, 1 - textureLocation.getxOffset(), 1));
+        textureCoordinates.add(getTextureCoordinatesY(gen, textureLocation, 1, 1 - textureLocation.getyOffset()));
     }
 }
