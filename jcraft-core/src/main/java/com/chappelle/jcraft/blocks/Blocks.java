@@ -27,7 +27,7 @@ public class Blocks
 	public static final Block plantYellow = new BlockFlower(nextId++, 13, 0).setShapes(new BlockShape_Flower()).bounds(AABB.fromWidthAndHeight(0.25, 0.4)).setTransparent(true);
 	public static final Block mushroomBrown = new BlockFlower(nextId++, 13, 1).setShapes(new BlockShape_Flower()).bounds(AABB.fromWidthAndHeight(0.25, 0.4)).setTransparent(true);
 	public static final Block mushroomRed = new BlockFlower(nextId++, 12, 1).setShapes(new BlockShape_Flower()).bounds(AABB.fromWidthAndHeight(0.25, 0.4)).setTransparent(true);
-	public static final Block water = new Block(nextId++, new Skin[] { new Skin(12, 13, true) }).setTransparent(true).setReplacementAllowed(true).setLiquid(true).setCollidable(false).setSelectable(false).setBlockedSkylight(2);
+	public static final Block water = new Block(nextId++, new Skin[] { new Skin(12, 13, true) }).setTransparent(true).setReplacementAllowed(true).setLiquid(true).setCollidable(false).setSelectable(false).setBlockedSkylight(1).setShapes(new BlockShape_Cuboid(new float[]{0.4f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f}));
 	public static final Block woolWhite = new Block(nextId++, 4, 0);
 	public static final Block woolBlack = new Block(nextId++, 7, 1);
 	public static final Block woolRed = new Block(nextId++, 8, 1);

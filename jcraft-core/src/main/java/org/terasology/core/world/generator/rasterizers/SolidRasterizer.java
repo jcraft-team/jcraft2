@@ -64,7 +64,7 @@ public class SolidRasterizer implements WorldRasterizer {
         for (Vector3i pos : ChunkConstants.CHUNK_REGION) {
             pos2d.set(pos.x, pos.z);
             Biome biome = biomeFacet.get(pos2d);
-            chunk.setBiome(pos.x, pos.y, pos.z, biome);
+            chunk.setBiome(biome);
 
             int posY = pos.y;
             float density = solidityFacet.get(pos);

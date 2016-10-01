@@ -8,7 +8,6 @@ import org.apache.commons.lang3.ArrayUtils;
 import com.chappelle.jcraft.*;
 import com.chappelle.jcraft.blocks.Block;
 import com.chappelle.jcraft.lighting.LightType;
-import com.chappelle.jcraft.util.*;
 import com.chappelle.jcraft.util.math.Vector3Int;
 import com.chappelle.jcraft.util.physics.*;
 import com.chappelle.jcraft.world.*;
@@ -73,7 +72,7 @@ public class DebugDataProvider
 			Chunk chunk = world.getChunkFromBlockCoordinates(blockLoc.x, blockLoc.z);
 			if(chunk != null)
 			{
-				debugData.put("Chunk", "(" + chunk.location.x + ", " + chunk.location.z + ")");
+				debugData.put("Chunk", chunk.getBiome().getName() + " (" + chunk.location.x + ", " + chunk.location.z + ")");
 			}
 		}
 		debugData.put("Ray Trace", getRayTraceData());

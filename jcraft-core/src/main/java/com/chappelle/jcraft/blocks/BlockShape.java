@@ -103,6 +103,10 @@ public abstract class BlockShape
 					{
 						neighborChunk = chunk;
 					}
+					if(neighborBlock.isLiquid && block.isLiquid)
+					{
+						return false;
+					}
 					Skin neighborBlockSkin = neighborBlock.getSkin(neighborChunk, blockLocation, face);
 					if(blockSkin.isTransparent() != neighborBlockSkin.isTransparent())
 					{

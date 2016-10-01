@@ -27,7 +27,7 @@ public class Chunk implements BitSerializable
 	private BitField blockLightField = new BitField(0x00F00000);
 	private BitField skyLightField   = new BitField(0x000F0000);
 	private BitField blockStateField = new BitField(0x000000FF);
-
+	private Biome biome;
 	public Vector2Int location2i = new Vector2Int();
 	public Vector3Int location = new Vector3Int();
     public Vector3Int blockLocation = new Vector3Int();
@@ -449,12 +449,16 @@ public class Chunk implements BitSerializable
 		return region;
 	}
 
-	public void setBiome(int x, int y, int z, Biome biome)
+	public void setBiome(Biome biome)
 	{
-		// TODO Auto-generated method stub
-		
+		this.biome = biome;
 	}
 
+	public Biome getBiome()
+	{
+		return biome;
+	}
+	
 	public void setBlock(BaseVector3i pos, Block block)
 	{
 		setBlock(pos.x(), pos.y(), pos.z(), block);
