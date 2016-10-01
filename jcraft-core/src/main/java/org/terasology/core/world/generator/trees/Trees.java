@@ -35,8 +35,8 @@ public final class Trees {
             .put('A', new LSystemRule("[&FFBFA]////[&BFFFA]////[&FBFFA]", 1.0f))
             .put('B', new LSystemRule("[&FFFA]////[&FFFA]////[&FFFA]", 0.8f)).build(),
             4, (float) Math.toRadians(30))
-            .setLeafType(Blocks.leaves)
-            .setBarkType(Blocks.wood);
+            .setLeafType(Blocks.oakLeaves)
+            .setBarkType(Blocks.oakLog);
     }
 
     public static TreeGenerator oakVariationTree() {
@@ -45,8 +45,8 @@ public final class Trees {
             .put('A', new LSystemRule("[&FFBFA]////[&BFFFA]////[&FBFFAFFA]", 1.0f))
             .put('B', new LSystemRule("[&FFFAFFFF]////[&FFFAFFF]////[&FFFAFFAA]", 0.8f)).build(),
             4, (float) Math.toRadians(35))
-                .setLeafType(Blocks.leaves)
-                .setBarkType(Blocks.wood);
+                .setLeafType(Blocks.oakLeaves)
+                .setBarkType(Blocks.oakLog);
     }
 
     public static TreeGenerator pineTree() {
@@ -54,8 +54,8 @@ public final class Trees {
             "FFFFAFFFFFFFAFFFFA", ImmutableMap.<Character, LSystemRule>builder()
             .put('A', new LSystemRule("[&FFFFFA]////[&FFFFFA]////[&FFFFFA]", 1.0f)).build(),
             4, (float) Math.toRadians(35))
-                .setLeafType(Blocks.leaves)
-                .setBarkType(Blocks.wood);
+                .setLeafType(Blocks.oakLeaves)
+                .setBarkType(Blocks.darkOakLog);
     }
 
     public static TreeGenerator birchTree() {
@@ -63,16 +63,16 @@ public final class Trees {
             "FFFFAFFFFBFFFFAFFFFBFFFFAFFFFBFF", ImmutableMap.<Character, LSystemRule>builder()
             .put('A', new LSystemRule("[&FFFAFFF]////[&FFAFFF]////[&FFFAFFF]", 1.0f))
             .put('B', new LSystemRule("[&FAF]////[&FAF]////[&FAF]", 0.8f)).build(), 4, (float) Math.toRadians(35))
-                .setLeafType(Blocks.leaves)
-                .setBarkType(Blocks.wood);
+                .setLeafType(Blocks.birchLeaves)
+                .setBarkType(Blocks.birchLog);
     }
 
     public static TreeGenerator redTree() {
         return new TreeGeneratorLSystem("FFFFFAFAFAF", ImmutableMap.<Character, LSystemRule>builder()
             .put('A', new LSystemRule("[&FFAFF]////[&FFAFF]////[&FFAFF]", 1.0f)).build(),
             4, (float) Math.toRadians(40))
-                .setLeafType(Blocks.leaves)
-                .setBarkType(Blocks.wood);
+                .setLeafType(Blocks.oakLeaves)
+                .setBarkType(Blocks.oakLog);
     }
 
     public static TreeGenerator cactus() {

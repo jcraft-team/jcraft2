@@ -47,8 +47,11 @@ public class Blocks
 	public static final Block smoothStone = new Block(nextId++, 0, 1).setStepSound(SoundConstants.STEP_STONE_1);
 	public static final Block redstone = new Block(nextId++, 3, 3).setStepSound(SoundConstants.STEP_STONE_1);
 	public static final Block iron = new Block(nextId++, 2, 1).setStepSound(SoundConstants.STEP_STONE_1);
-	public static final Block wood = new Block(nextId++, new Skin[] { new Skin(1, 5, false), new Skin(1, 5, false), new Skin(1, 4, false)}).setStepSound(SoundConstants.STEP_WOOD_1);
-	public static final Block leaves = new Block(nextId++, new Skin[] { new Skin(8, 4, true) }).setStepSound(SoundConstants.STEP_GRASS_1).setTransparent(true).setBlockedSkylight(2);
+	public static final Block oakLog = new Block(nextId++, new Skin[] { new Skin(1, 5, false), new Skin(1, 5, false), new Skin(1, 4, false)}).setStepSound(SoundConstants.STEP_WOOD_1);
+	public static final Block darkOakLog = new Block(nextId++, new Skin[] { new Skin(1, 5, false), new Skin(1, 5, false), new Skin(7, 4, false)}).setStepSound(SoundConstants.STEP_WOOD_1);
+	public static final Block oakLeaves = new Block(nextId++, new Skin[] { new Skin(8, 4, true) }).setStepSound(SoundConstants.STEP_GRASS_1).setTransparent(true).setBlockedSkylight(2);
+	public static final Block birchLog = new Block(nextId++, new Skin[] { new Skin(1, 5, false), new Skin(1, 5, false), new Skin(7, 5, false)}).setStepSound(SoundConstants.STEP_WOOD_1);
+	public static final Block birchLeaves = new Block(nextId++, new Skin[] { new Skin(10, 13, true) }).setStepSound(SoundConstants.STEP_GRASS_1).setTransparent(true).setBlockedSkylight(2);
 	public static final Block tallGrass = new BlockFlower(nextId++, 7, 2).setShapes(new BlockShape_Flower()).bounds(AABB.fromWidthAndHeight(0.25, 0.75)).setTransparent(true).setColor(new ColorRGBA(1, 0, 0, 0));
 	public static final Block snow = new Block(nextId++, new Skin[]{
 			new Skin(4, 2, false),

@@ -71,7 +71,7 @@ public class DefaultTreeProvider extends SurfaceObjectProvider<Biome, TreeGenera
         register(CoreBiome.PLAINS, Trees.birchTree(), 0.01f);
         register(CoreBiome.PLAINS, Trees.oakTree(), 0.02f);
 
-        register(CoreBiome.DESERT, Trees.cactus(), 0.04f);
+        register(CoreBiome.DESERT, Trees.cactus(), 0.06f);
     }
 
     /**

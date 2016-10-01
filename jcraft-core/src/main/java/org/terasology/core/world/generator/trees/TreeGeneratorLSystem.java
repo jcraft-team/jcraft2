@@ -15,18 +15,15 @@
  */
 package org.terasology.core.world.generator.trees;
 
+import java.util.Map;
+
 import org.terasology.math.LSystemRule;
-import org.terasology.math.TeraMath;
-import org.terasology.math.geom.Matrix4f;
-import org.terasology.math.geom.Quat4f;
-import org.terasology.math.geom.Vector3f;
+import org.terasology.math.geom.*;
 import org.terasology.utilities.collection.CharSequenceIterator;
 import org.terasology.utilities.random.Random;
 
 import com.chappelle.jcraft.blocks.*;
 import com.chappelle.jcraft.world.chunk.Chunk;
-
-import java.util.Map;
 
 /**
  * Allows the generation of complex trees based on L-Systems.
@@ -37,8 +34,8 @@ public class TreeGeneratorLSystem extends AbstractTreeGenerator {
     public static final float MAX_ANGLE_OFFSET = (float) Math.toRadians(5);
 
     /* SETTINGS */
-    private Block leafType = Blocks.leaves;
-    private Block barkType = Blocks.wood;
+    private Block leafType = Blocks.oakLeaves;
+    private Block barkType = Blocks.oakLog;
 
     /* RULES */
     private final String initialAxiom;

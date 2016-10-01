@@ -59,10 +59,10 @@ public class TreeFeature extends AbstractFeature
 	{
 		for(int i = 1; i <= treeHeight; i++)
 		{
-			blockTypes[x][y+i][z] = Blocks.wood.blockId;
+			blockTypes[x][y+i][z] = Blocks.oakLog.blockId;
 		}
 		int treeTop = y+treeHeight;
-		blockTypes[x][treeTop+1][z] = Blocks.leaves.blockId;
+		blockTypes[x][treeTop+1][z] = Blocks.oakLeaves.blockId;
 		
 		addLeaves(blockTypes, x, treeTop+1, z);
 		addLeaves(blockTypes, x, treeTop, z);
@@ -72,14 +72,14 @@ public class TreeFeature extends AbstractFeature
 	
 	private void addLeaves(byte[][][] blockTypes, int x, int y, int z)
 	{
-		blockTypes[x][y][z+1] = Blocks.leaves.blockId;
-		blockTypes[x+1][y][z] = Blocks.leaves.blockId;
-		blockTypes[x][y][z-1] = Blocks.leaves.blockId;
-		blockTypes[x-1][y][z] = Blocks.leaves.blockId;
-		blockTypes[x+1][y][z+1] = Blocks.leaves.blockId;
-		blockTypes[x-1][y][z-1] = Blocks.leaves.blockId;
-		blockTypes[x+1][y][z-1] = Blocks.leaves.blockId;
-		blockTypes[x-1][y][z+1] = Blocks.leaves.blockId;
+		blockTypes[x][y][z+1] = Blocks.oakLeaves.blockId;
+		blockTypes[x+1][y][z] = Blocks.oakLeaves.blockId;
+		blockTypes[x][y][z-1] = Blocks.oakLeaves.blockId;
+		blockTypes[x-1][y][z] = Blocks.oakLeaves.blockId;
+		blockTypes[x+1][y][z+1] = Blocks.oakLeaves.blockId;
+		blockTypes[x-1][y][z-1] = Blocks.oakLeaves.blockId;
+		blockTypes[x+1][y][z-1] = Blocks.oakLeaves.blockId;
+		blockTypes[x-1][y][z+1] = Blocks.oakLeaves.blockId;
 	}
 
 }
